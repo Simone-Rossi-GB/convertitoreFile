@@ -1,71 +1,88 @@
 import java.io.IOException;
-//classi per gestire i percorsi dei file con watchService
 import java.nio.file.*;
-//costanti evento per creazione, modifica , ecc..
-import static java.nio.file.StandardWatchEventKinds.*;
-//classi per gestire i thread
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-
-
-public class DirectoryWatcher implements Runnable{
+public class DirectoryWatcher implements Runnable {
 
     private final Path dir;
+    private final WatchService watchService;
     private final ExecutorService executor;
+    private final Map<WatchKey, Path> watchKeyToPath = new HashMap<>();
 
-    public DirectoryWatcher(String directoryPath){
-        //percorso della cartella sulla quale ci si mette in ascolto
+    public DirectoryWatcher(String directoryPath) throws IOException {
         this.dir = Paths.get(directoryPath);
-        //executor per i thread che si occupano della conversione
         this.executor = Executors.newCachedThreadPool();
+        this.watchService = FileSystems.getDefault().newWatchService();
+        registerAll(dir); // Registra tutte le sottocartelle esistenti
+    }
+
+    // Metodo per registrare ricorsivamente tutte le sottodirectory
+    private void registerAll(final Path start) throws IOException {
+        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                WatchKey key = dir.register(watchService, ENTRY_CREATE);
+                watchKeyToPath.put(key, dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
     @Override
     public void run() {
-        try {
-            //oggetto WatchService per mettersi in ascolto sulla cartella
-            WatchService watchService = FileSystems.getDefault().newWatchService();
-            //eventi che si vogliono registrare
-            // ENTRY_CREATE -> creazione
-            // ENTRY_MODIFY -> modifica
-            dir.register(watchService, ENTRY_CREATE);
+        System.out.println("In ascolto ricorsivo sulla directory: " + dir.toAbsolutePath());
 
-            System.out.println("In ascolto sulla directory: " + dir.toAbsolutePath());
+        while (true) {
+            WatchKey key;
+            try {
+                key = watchService.take(); // Bloccante
+            } catch (InterruptedException e) {
+                return;
+            }
 
-            while (true) {
-                //istruzione bloccante che attende un evento
-                WatchKey key = watchService.take();
+            Path parentDir = watchKeyToPath.get(key);
+            if (parentDir == null) continue;
 
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    WatchEvent.Kind<?> kind = event.kind();
-                    //se si tratta di un errore lo ignora
-                    if (kind == OVERFLOW) {
-                        continue;
-                    }
-                    //estrazione del nome e del percorso del file coinvolto
-                    WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                    Path fileName = ev.context();
-                    Path filePath = dir.resolve(fileName);
-                    executor.submit(() -> {
+            for (WatchEvent<?> event : key.pollEvents()) {
+                WatchEvent.Kind<?> kind = event.kind();
+                if (kind == OVERFLOW) continue;
+
+                WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                Path fileName = ev.context();
+                Path fullPath = parentDir.resolve(fileName);
+
+                if (kind == ENTRY_CREATE) {
+                    if (Files.isDirectory(fullPath)) {
+                        // Registra la nuova directory creata
                         try {
-                            Converter.conversione(filePath);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+                            registerAll(fullPath);
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            e.printStackTrace();
                         }
-                    });
-                }
-                //watchkey libera per ricevere nuovi eventi
-                boolean valid = key.reset();
-                if (!valid) {
-                    break;
+                    } else {
+                        /*executor.submit(() -> {
+                            try {
+                                Converter.conversione(fullPath.toAbsolutePath().toString());
+                            } catch (InterruptedException | IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });*/
+                    }
                 }
             }
-        }catch (IOException | InterruptedException e) {
-        System.err.println("Errore nel watcher: " + e.getMessage());
-    }
+
+            boolean valid = key.reset();
+            if (!valid) {
+                watchKeyToPath.remove(key);
+                if (watchKeyToPath.isEmpty()) break;
+            }
+        }
     }
 }
