@@ -1,7 +1,9 @@
 package Converters;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public interface Converter {
-    public File convert(File srcFile);
+    ArrayList<File> convert(File srcFile) throws IOException;
 }
