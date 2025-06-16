@@ -15,12 +15,15 @@ public class DirectoryWatcher implements Runnable {
     private final Path dir;
     private final WatchService watchService;
     private final ExecutorService executor;
-    private final Map<WatchKey, Path> watchKeyToPath = new HashMap<>();
+    private final Map<WatchKey, Path> watchKeyToPath;
+    private FileTypeConverter controller;
 
     public DirectoryWatcher(String directoryPath) throws IOException {
         this.dir = Paths.get(directoryPath);
         this.executor = Executors.newCachedThreadPool();
         this.watchService = FileSystems.getDefault().newWatchService();
+        this.controller = new FileTypeConverter();
+        this.watchKeyToPath = new HashMap<>();
         registerAll(dir); // Registra tutte le sottocartelle esistenti
     }
 
@@ -68,7 +71,13 @@ public class DirectoryWatcher implements Runnable {
                             e.printStackTrace();
                         }
                     } else {
-                        //alert e conversione
+                        executor.submit(() -> {
+                            try {
+                                controller.settingsConversione(fullPath);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                     }
                 }
             }

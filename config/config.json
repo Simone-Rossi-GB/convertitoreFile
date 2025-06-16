@@ -3,8 +3,9 @@
   "errorOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\error\\",
   "conversions": {
     "pdf": {
-      "docx": "converters.PDFToDOCXConverter",
-      "jpg": "converters.PDFtoJPGConvetrter"
+      "doc": "converters.PDFtoDOCconverter",
+      "docx": "converters.PDFtoDOCXconverter",
+      "jpg": "converters.PDFtoJPGconvetrter"
     },
     "xls": {
       "json": "converters.ZipToTarGzConverter"
