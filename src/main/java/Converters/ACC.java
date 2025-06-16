@@ -24,11 +24,12 @@ public class ACC {
     public static void convertiZipToTarGz(File zipFile, File tarGzOut) throws IOException{
         ZipFile zip = null;
         TarArchiveOutputStream tarOut = null;
-
+        FileOutputStream fos = null;
+        GzipCompressorOutputStream gcos = null;
         try{
             zip = new ZipFile(zipFile);
-            FileOutputStream fos = new FileOutputStream(tarGzOut);
-            GzipCompressorOutputStream gcos = new GzipCompressorOutputStream(fos);
+            fos = new FileOutputStream(tarGzOut);
+            gcos = new GzipCompressorOutputStream(fos);
             tarOut = new TarArchiveOutputStream(gcos);
             tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
@@ -49,7 +50,10 @@ public class ACC {
         } finally {
             if (zip != null) zip.close();
             if (tarOut != null) tarOut.close();
+            if(fos != null) fos.close();
+            if(gcos != null) gcos.close();
         }
+
     }
 
     public static void convertiZipToTarGzInCartella(File zipFile, File outputFolder) throws IOException {
@@ -85,6 +89,7 @@ public class ACC {
                     zipOut.closeArchiveEntry();
                 }
             }
+
         }
     }
 
