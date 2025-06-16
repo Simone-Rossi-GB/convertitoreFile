@@ -1,18 +1,15 @@
 {
-  "pdf": ["doc", "docx", "html", "txt"],
-  "doc": ["pdf", "docx", "html", "txt"],
-  "docx": ["pdf", "doc", "html", "txt"],
-  "html": ["pdf", "doc", "docx", "txt"],
-  "txt": ["pdf", "doc", "docx", "html"],
-  "xls": ["csv", "xlsx"],
-  "csv": ["xls", "xlsx"],
-  "xlsx": ["xls", "csv"],
-  "ppt": ["pptx"],
-  "pptx": ["ppt"],
-  "jpg": ["jpeg", "bmp", "png"],
-  "jpeg": ["jpg", "bmp", "png"],
-  "bmp": ["jpg", "jpeg", "png"],
-  "png": ["jpg", "jpeg", "bmp"],
-  "zip": ["tar.gz"],
-  "tar.gz": ["zip"]
+  "pdf": {
+    "docx": "converters.PdfToDocxConverter",
+    "jpg": "converters.PdfToTxtConverter"
+  },
+  "xls": {
+    "json": "converters.ZipToTarGzConverter"
+  },
+  "csv": {
+    "json": "converters.TarGzToZipConverter"
+  },
+  "eml": {
+    "pdf" : "converters.EmlToPdfConverter"
+  }
 }
