@@ -68,7 +68,7 @@ public class DirectoryWatcher implements Runnable {
                             e.printStackTrace();
                         }
                     } else {
-                      //  executor.submit(() -> ConverterConfig.selectConversion(fullPath.toAbsolutePath().toString()));
+                        //alert e conversione
                     }
                 }
             }
