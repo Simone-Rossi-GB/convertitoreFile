@@ -1,10 +1,11 @@
 {
-  "successOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\success",
-  "errorOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\error",
+  "successOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\success\\",
+  "errorOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\error\\",
   "conversions": {
     "pdf": {
-      "docx": "converters.PdfToDocxConverter",
-      "jpg": "converters.PdfToTxtConverter"
+      "doc": "converters.PDFtoDOCconverter",
+      "docx": "converters.PDFtoDOCXconverter",
+      "jpg": "converters.PDFtoJPGconvetrter"
     },
     "xls": {
       "json": "converters.ZipToTarGzConverter"
