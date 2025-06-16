@@ -36,8 +36,10 @@ public class Engine{
                 Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
                 try{
                     List<File> outFiles = converter.convert(srcFile);
-                    for(File f : outFiles)
+                    for(File f : outFiles) {
+                        System.out.println(f.getAbsolutePath());
                         spostaFile(config.getSuccessOutputDir(), f);
+                    }
                 } catch (IOException e) {
                     spostaFile(config.getErrorOutputDir(), srcFile);
                     throw new Exception("Errore nella conversione");
