@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class PDFtoJPGconverter implements Converter{
     private static final int DPI = 300; // DPI of rendered image
+    @Override
     public ArrayList<File> convert(File inputFile) throws IOException {
         PDDocument document = PDDocument.load(inputFile);
         PDFRenderer renderer = new PDFRenderer(document);
