@@ -1,4 +1,5 @@
 import Converters.ACC;
+import Converters.PDFtoJPGconverter;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class FileTypeConverter {
 
         watcherThread.setDaemon(true);
         watcherThread.start();
+
         while(true){}
     }
 }
