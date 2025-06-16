@@ -1,17 +1,36 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Map;
+
 public class ConverterConfig {
-    String folderPath = "config/";
-    String configFile = "config.json";
-    String configFilePath = folderPath + configFile;
+    private String folderPath = "config/";
+    private String configFile = "config.json";
+    private String configFilePath = "";
+    private Gson gson;
+    private Type mapType;
 
-    try {
+    public ConverterConfig() {
+        this.folderPath = folderPath;
+        this.configFile = configFile;
+        this.configFilePath = folderPath + configFile;
 
-    } catch () {
+        try {
+            fileReader = new FileReader(configFilePath);
+            gson = new Gson();
+            mapType = new TypeToken<HashMap<String, String>>() {}.getType();
 
+            Map<String, String> configMap = gson.fromJson(fileReader, mapType);
+
+            for(String key : )
+
+        } catch () {
+
+        }
     }
 
-    private Type mapType = new TypeToken<Map<String, String>>() {}.getType();
-    private
+
 }
