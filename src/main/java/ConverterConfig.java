@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ public class ConverterConfig {
     private String configFilePath = "";
     private Gson gson;
     private Type mapType;
+    private static Map<String, LinkedList<String>> configMap;
 
     public ConverterConfig() {
         this.configFilePath = folderPath + configFile;
@@ -22,9 +24,9 @@ public class ConverterConfig {
             gson = new Gson();
             mapType = new TypeToken<HashMap<String, LinkedList<String>>>() {}.getType();
 
-            Map<String, LinkedList<String>> configMap = gson.fromJson(fileReader, mapType);
+            configMap = gson.fromJson(fileReader, mapType);
 
-            for(String key : configMap.keySet()) {
+            /*for(String key : configMap.keySet()) {
                 System.out.print(key + ": ");
                 for(String value : configMap.get(key)) {
                     System.out.print(value + " - ");
@@ -32,7 +34,7 @@ public class ConverterConfig {
                 System.out.println();
             }
 
-            /*
+
             uscirà una roba così
             pdf: doc - docx - ecc.
              */
@@ -42,5 +44,17 @@ public class ConverterConfig {
         }
     }
 
+    public static void selectConversion(String sourceFilePath){
+        int lastDotIndex = sourceFilePath.lastIndexOf(".");
+        String extension = "";
+        if(lastDotIndex > 0 && lastDotIndex < sourceFilePath.length() - 1)
+            extension = sourceFilePath.substring(lastDotIndex + 1);
+        System.out.println(extension + ": ");
+        for(String value : configMap.get(extension)) {
+            System.out.print(value + " - ");
+        }
+        System.out.println();
+
+    }
 
 }
