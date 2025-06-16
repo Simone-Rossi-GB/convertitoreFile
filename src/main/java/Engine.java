@@ -55,5 +55,6 @@ public class Engine{
         Path srcPath = Paths.get(file.getAbsolutePath());
         Path destPath = Paths.get(outPath + fileName);
         Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("File copiato in " + destPath.toString());
     }
 }
