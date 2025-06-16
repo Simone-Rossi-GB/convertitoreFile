@@ -25,10 +25,17 @@ public class ConverterConfig {
 
             Map<String, String> configMap = gson.fromJson(fileReader, mapType);
 
-            for(String key : mapType.getKeys())
+            for(String key : configMap.keySet()) {
+                System.out.println(key + ": " + for(String value : configMap.get(key)) {System.out.print(value + " - ");});
+            }
 
-        } catch (Exception e ) {
+            /*
+            uscirà una roba così
+            pdf: doc - docx - ecc.
+             */
 
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
