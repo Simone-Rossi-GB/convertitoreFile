@@ -1,4 +1,5 @@
 import Converters.ACC;
+import Converters.PDFtoJPGconverter;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,7 @@ public class FileTypeConverter {
         Thread watcherThread = new Thread(new DirectoryWatcher("C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\input"));
         watcherThread.setDaemon(true);
         watcherThread.start();
+
         while(true){}
     }
 }
