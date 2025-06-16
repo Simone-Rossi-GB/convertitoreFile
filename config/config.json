@@ -1,15 +1,19 @@
 {
-  "pdf": {
-    "docx": "converters.PdfToDocxConverter",
-    "jpg": "converters.PdfToTxtConverter"
-  },
-  "xls": {
-    "json": "converters.ZipToTarGzConverter"
-  },
-  "csv": {
-    "json": "converters.TarGzToZipConverter"
-  },
-  "eml": {
-    "pdf" : "converters.EmlToPdfConverter"
+  "successOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\success",
+  "errorOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\error",
+  "conversions": {
+    "pdf": {
+      "docx": "converters.PdfToDocxConverter",
+      "jpg": "converters.PdfToTxtConverter"
+    },
+    "xls": {
+      "json": "converters.ZipToTarGzConverter"
+    },
+    "csv": {
+      "json": "converters.TarGzToZipConverter"
+    },
+    "eml": {
+      "pdf" : "converters.EmlToPdfConverter"
+    }
   }
 }
