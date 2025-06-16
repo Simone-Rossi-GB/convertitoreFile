@@ -21,13 +21,13 @@ public class ConverterConfig {
         try {
             fileReader = new FileReader(configFilePath);
             gson = new Gson();
-            mapType = new TypeToken<HashMap<String, String>>() {}.getType();
+            mapType = new TypeToken<HashMap<String, LinkedList<String>>>() {}.getType();
 
             Map<String, String> configMap = gson.fromJson(fileReader, mapType);
 
-            for(String key : )
+            for(String key : mapType.getKeys())
 
-        } catch () {
+        } catch (Exception e ) {
 
         }
     }
