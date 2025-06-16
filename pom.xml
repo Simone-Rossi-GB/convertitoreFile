@@ -31,7 +31,16 @@
             <version>1.15</version> <!-- o la versione più aggiornata -->
         </dependency>
 
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-jpeg</artifactId>
+            <version>3.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-bmp</artifactId>
+            <version>3.11.0</version>
+        </dependency>
     </dependencies>
-
 
 </project>
