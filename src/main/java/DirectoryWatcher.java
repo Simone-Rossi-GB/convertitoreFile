@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -67,13 +68,7 @@ public class DirectoryWatcher implements Runnable {
                             e.printStackTrace();
                         }
                     } else {
-                        /*executor.submit(() -> {
-                            try {
-                                Converter.conversione(fullPath.toAbsolutePath().toString());
-                            } catch (InterruptedException | IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });*/
+                        executor.submit(() -> ConverterConfig.selectConversion(fullPath.toAbsolutePath().toString()));
                     }
                 }
             }
