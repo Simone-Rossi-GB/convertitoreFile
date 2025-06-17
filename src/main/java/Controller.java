@@ -16,6 +16,9 @@ import java.util.*;
 public class Controller implements Initializable {
     private DirectoryWatcher watcher = null;
     private Engine engine = null;
+    private int fileRicevuti;
+    private int fileConvertiti;
+    private int fileScartati;
     public Label txtPathDirectory;
     @FXML
     private Label welcomeText;
@@ -34,6 +37,9 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        fileRicevuti = 0;
+        fileConvertiti = 0;
+        fileScartati = 0;
     }
 
     public static String getExtension(File file) {
@@ -46,6 +52,7 @@ public class Controller implements Initializable {
     }
 
     public void launchDialogConversion(File srcFile) {
+        Platform.runLater(() -> fileRicevuti++);
         engine = new Engine();
         String srcExtension = getExtension(srcFile);
         System.out.println("Estensione file sorgente: " + srcExtension);
@@ -53,10 +60,9 @@ public class Controller implements Initializable {
         try {
             formats = engine.getPossibleConversions(srcExtension);
         } catch (Exception e) {
+            Platform.runLater(() -> fileScartati++);
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
-        }
-        if (formats.isEmpty()) {
-            System.out.println("Nessun formato di conversione disponibile.");
+            stampaRisultati();
             return;
         }
         System.out.println("prima parte finita");
@@ -72,15 +78,23 @@ public class Controller implements Initializable {
             result.ifPresent(format -> {
                 try {
                     engine.conversione(srcExtension, format, srcFile);
+                    fileConvertiti++;
                     launchAlertSuccess(srcFile);
                 } catch (Exception e) {
+                    fileScartati++;
                     launchAlertError("Conversione di " + srcFile.getName() + " interrotta a causa di un errore");
                 }
+                stampaRisultati();
             });
         });
 
     }
 
+public void stampaRisultati(){
+    System.out.println("Ricevuti: " + fileRicevuti);
+    System.out.println("Scartati: " + fileScartati);
+    System.out.println("Convertiti: " + fileConvertiti);
+}
 
     public void launchAlertSuccess(File file){
         Platform.runLater(() -> {
