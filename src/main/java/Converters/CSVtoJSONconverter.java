@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class CSVtoJSONconverter implements Converter{
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException {
+        System.out.println("CONVERSION CSV-JSON START");
         BufferedReader reader = new BufferedReader(new FileReader(srcFile));
         String[] headers = reader.readLine().split(",");
 
