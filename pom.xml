@@ -32,6 +32,12 @@
             <version>1.6.2</version> </dependency>
 
         <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.3</version>
@@ -103,11 +109,14 @@
             <artifactId>json</artifactId>
             <version>20230227</version>
         </dependency>
+        <!-- Log4j2 API -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.20.0</version>
         </dependency>
+
+        <!-- Log4j2 Core -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -125,5 +134,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

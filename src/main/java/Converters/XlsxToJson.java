@@ -9,8 +9,6 @@ import java.io.IOException;
 
 public class XlsxToJson {
 
-
-
     public static void main(String[] args) {
         String filePath = "src/main/java/Converters/prova.xls";  // Modifica con il tuo percorso
 

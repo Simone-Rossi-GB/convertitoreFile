@@ -15,6 +15,12 @@
     },
     "eml": {
       "pdf" : "Converters.EmlToPdfConverter"
+    },
+    "zip": {
+      "targz" : "Converters.ZIPtoTARGZconverter"
+    },
+    "gz": {
+      "zip" : "Converters.TARGZtoZIPconverter"
     }
   }
 }

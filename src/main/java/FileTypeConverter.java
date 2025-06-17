@@ -1,5 +1,6 @@
 
 import Converters.CSVtoJSONconverter;
+import Converters.PDFtoDOCconverter;
 import Converters.PDFtoJPGconverter;
 
 import java.io.File;
@@ -11,7 +12,7 @@ public class FileTypeConverter {
     Engine engine = new Engine();
     public static void main(String[] args) throws IOException {
         ConverterConfig config = new ConverterConfig();
-        Thread watcherThread = new Thread(new DirectoryWatcher("src\\input"));
+        Thread watcherThread = new Thread(new DirectoryWatcher("src/input"));
         watcherThread.setDaemon(true);
         watcherThread.start();
         while(true){}

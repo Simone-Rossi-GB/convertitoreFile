@@ -30,7 +30,7 @@ public class CSVtoJSONconverter implements Converter{
                 if (values[i].matches("^-?\\d+(\\.\\d+)?$")){
                     jsonObject.put(cleanKey, Double.parseDouble(value));
                 } else {
-                    jsonObject.put(cleanKey, value);
+                    jsonObject.put(cleanKey, value.replaceAll("^\"|\"$",""));
                 }
             }
             jsonArray.add(jsonObject);
