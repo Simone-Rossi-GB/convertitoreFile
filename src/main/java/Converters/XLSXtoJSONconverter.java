@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.util.*;
 
-public class XlsxToJson implements Converter {
+public class XLSXtoJSONconverter implements Converter {
 
     /**
      * Converte un file .xlsx in un file .json
@@ -31,7 +31,7 @@ public class XlsxToJson implements Converter {
             if (rowIterator.hasNext()) {
                 Row headerRow = rowIterator.next();
                 for (Cell cell : headerRow) {
-                    headers.add(cell.getStringCellValue());
+                    headers.add(getCellValue(cell));
                 }
             }
 
