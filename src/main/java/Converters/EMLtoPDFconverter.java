@@ -26,10 +26,11 @@ import org.jsoup.safety.Safelist;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EMLtoPDF {
+public class EMLtoPDFconverter implements Converter {
 
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
@@ -42,7 +43,8 @@ public class EMLtoPDF {
      * @throws IOException se ci sono problemi di I/O
      * @throws DocumentException se ci sono problemi nella creazione del PDF
      */
-    public static File convert(String emlFilePath, String outputPdfPath)
+    @Override
+    public List<File> convert(String emlFilePath, String outputPdfPath)
             throws IOException, DocumentException {
 
         File emlFile = new File(emlFilePath);
@@ -226,5 +228,54 @@ public class EMLtoPDF {
             }
             return sb.toString();
         }
+    }
+
+    @Override
+    public ArrayList<File> convert(File srcFile)  throws IOException, DocumentException {
+        File emlFile = new File(emlFilePath);
+        if (!emlFile.exists()) {
+            throw new FileNotFoundException("File EML non trovato: " + emlFilePath);
+        }
+
+        // Crea le directory parent se non esistono
+        File outputPdfFile = new File(outputPdfPath);
+        File parentDir = outputPdfFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        DefaultMessageBuilder builder = new DefaultMessageBuilder();
+        Message mime4jMessage;
+        try (InputStream is = new FileInputStream(emlFile)) {
+            mime4jMessage = builder.parseMessage(is);
+        }
+
+        Document document = new Document();
+        PdfWriter writer = null;
+        try {
+            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfPath));
+            document.open();
+
+            addEmlHeadersToPdf(mime4jMessage, document);
+            document.add(new Paragraph("\n"));
+
+            processMime4jBody(mime4jMessage.getBody(), document, writer);
+
+        } finally {
+            if (document.isOpen()) {
+                document.close();
+            }
+            if (writer != null) {
+                writer.close();
+            }
+        }
+
+        // Verifica che il file sia stato creato correttamente
+        if (!outputPdfFile.exists()) {
+            throw new IOException("Errore nella creazione del file PDF: " + outputPdfPath);
+        }
+
+        // Ritorna il file creato per permettere all'engine di spostarlo
+        return outputPdfFile;
     }
 }

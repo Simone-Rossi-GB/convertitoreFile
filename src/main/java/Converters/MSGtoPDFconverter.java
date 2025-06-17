@@ -22,8 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MSGtoPDF {
-
+public class MSGtoPDFconverter {
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
