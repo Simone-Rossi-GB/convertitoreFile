@@ -5,13 +5,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
@@ -71,39 +68,24 @@
                                         <!-- Monitored Folder -->
                                         <HBox alignment="CENTER_LEFT" spacing="8.8">
                                             <children>
-                                                <Label minWidth="154.0" text="Cartella Monitorata:" />
-                                                <Label fx:id="monitoredFolderLabel" maxWidth="220.0" style="-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 3; -fx-padding: 8;" text="Non configurata" wrapText="true" HBox.hgrow="ALWAYS">
-                                                    <font>
-                                                        <Font name="System" size="12.0" />
-                                                    </font>
-                                                </Label>
-                                                <Button fx:id="openMonitoredFolderBtn" mnemonicParsing="false" minWidth="55.0" prefWidth="55.0" text="Apri" />
+                                                <Label alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="375.0" text="Cartellla monitorata non configurata" />
+                                                <Button fx:id="openMonitoredFolderBtn" minWidth="55.0" mnemonicParsing="false" prefWidth="55.0" text="Apri" />
                                             </children>
                                         </HBox>
 
                                         <!-- Converted Files Folder -->
                                         <HBox alignment="CENTER_LEFT" spacing="8.8">
                                             <children>
-                                                <Label minWidth="154.0" text="Destinazione Convertiti:" />
-                                                <Label fx:id="convertedFolderLabel" maxWidth="220.0" style="-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 3; -fx-padding: 8;" text="Non configurata" wrapText="true" HBox.hgrow="ALWAYS">
-                                                    <font>
-                                                        <Font name="System" size="12.0" />
-                                                    </font>
-                                                </Label>
-                                                <Button fx:id="openConvertedFolderBtn" mnemonicParsing="false" minWidth="55.0" prefWidth="55.0" text="Apri" />
+                                                <Label alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="377.0" text="Destinazione File Convertiti non configurata" />
+                                                <Button fx:id="openConvertedFolderBtn" minWidth="55.0" mnemonicParsing="false" prefWidth="55.0" text="Apri" />
                                             </children>
                                         </HBox>
 
                                         <!-- Failed Files Folder -->
                                         <HBox alignment="CENTER_LEFT" spacing="8.8">
                                             <children>
-                                                <Label minWidth="154.0" text="Destinazione Falliti:" />
-                                                <Label fx:id="failedFolderLabel" maxWidth="220.0" style="-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 3; -fx-padding: 8;" text="Non configurata" wrapText="true" HBox.hgrow="ALWAYS">
-                                                    <font>
-                                                        <Font name="System" size="12.0" />
-                                                    </font>
-                                                </Label>
-                                                <Button fx:id="openFailedFolderBtn" mnemonicParsing="false" minWidth="55.0" prefWidth="55.0" text="Apri" />
+                                                <Label alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="375.0" text="Destinazione conversioni fallite" />
+                                                <Button fx:id="openFailedFolderBtn" minWidth="55.0" mnemonicParsing="false" prefWidth="55.0" text="Apri" />
                                             </children>
                                         </HBox>
                                     </children>
