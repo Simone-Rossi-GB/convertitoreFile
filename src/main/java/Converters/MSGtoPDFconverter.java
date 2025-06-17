@@ -77,7 +77,7 @@ public class MSGtoPDFconverter implements Converter {
         File parentDir = outputPdfFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                System.out.println("Failed to create directories: " + parentDir.getAbsolutePath());
+                System.err.println("Failed to create directories: " + parentDir.getAbsolutePath());
             }
         }
 

@@ -17,17 +17,16 @@ import org.apache.james.mime4j.dom.Header;
 import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.dom.field.DateTimeField;
-import org.apache.james.mime4j.dom.field.MailboxListField;
 import org.apache.james.mime4j.message.DefaultMessageBuilder;
 
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class EMLtoPDFconverter implements Converter {
@@ -76,28 +75,29 @@ public class EMLtoPDFconverter implements Converter {
     public static File convertEmlToPdf(File fileEML, String outputPdfPath)
             throws IOException, DocumentException {
 
-        File emlFile = fileEML;
-        if (!emlFile.exists()) {
-            throw new FileNotFoundException("File EML non trovato: " + emlFile.getName());
+        if (!fileEML.exists()) {
+            throw new FileNotFoundException("File EML non trovato: " + fileEML.getName());
         }
 
         // Crea le directory parent se non esistono
         File outputPdfFile = new File(outputPdfPath);
         File parentDir = outputPdfFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
+            if (!parentDir.mkdirs()) {
+                System.err.println("Failed to create directories: " + parentDir.getAbsolutePath());
+            }
         }
 
         DefaultMessageBuilder builder = new DefaultMessageBuilder();
         Message mime4jMessage;
-        try (InputStream is = new FileInputStream(emlFile)) {
+        try (InputStream is = Files.newInputStream(fileEML.toPath())) {
             mime4jMessage = builder.parseMessage(is);
         }
 
         Document document = new Document();
         PdfWriter writer = null;
         try {
-            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfPath));
+            writer = PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(outputPdfPath)));
             document.open();
 
             addEmlHeadersToPdf(mime4jMessage, document);
@@ -166,7 +166,7 @@ public class EMLtoPDFconverter implements Converter {
 
     private static void addFieldToPdf(Document document, String fieldName, Object fieldValue) throws DocumentException {
         if (fieldValue != null) {
-            String valueString = "";
+            String valueString;
             if (fieldValue instanceof List) {
                 // Handle List<Mailbox> (from getTo(), getCc(), getBcc())
                 /*
