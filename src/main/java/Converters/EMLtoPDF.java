@@ -34,12 +34,27 @@ public class EMLtoPDF {
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
-    public static void convert(String emlFilePath, String outputPdfPath)
+    /**
+     * Converte un file EML in PDF
+     * @param emlFilePath percorso del file EML di input
+     * @param outputPdfPath percorso del file PDF di output
+     * @return File oggetto che rappresenta il PDF creato
+     * @throws IOException se ci sono problemi di I/O
+     * @throws DocumentException se ci sono problemi nella creazione del PDF
+     */
+    public static File convert(String emlFilePath, String outputPdfPath)
             throws IOException, DocumentException {
 
         File emlFile = new File(emlFilePath);
         if (!emlFile.exists()) {
             throw new FileNotFoundException("File EML non trovato: " + emlFilePath);
+        }
+
+        // Crea le directory parent se non esistono
+        File outputPdfFile = new File(outputPdfPath);
+        File parentDir = outputPdfFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
         }
 
         DefaultMessageBuilder builder = new DefaultMessageBuilder();
@@ -67,6 +82,28 @@ public class EMLtoPDF {
                 writer.close();
             }
         }
+
+        // Verifica che il file sia stato creato correttamente
+        if (!outputPdfFile.exists()) {
+            throw new IOException("Errore nella creazione del file PDF: " + outputPdfPath);
+        }
+
+        // Ritorna il file creato per permettere all'engine di spostarlo
+        return outputPdfFile;
+    }
+
+    /**
+     * Versione alternativa che ritorna il percorso assoluto del file creato
+     * @param emlFilePath percorso del file EML di input
+     * @param outputPdfPath percorso del file PDF di output
+     * @return String percorso assoluto del PDF creato
+     * @throws IOException se ci sono problemi di I/O
+     * @throws DocumentException se ci sono problemi nella creazione del PDF
+     */
+    public static String convertAndGetPath(String emlFilePath, String outputPdfPath)
+            throws IOException, DocumentException {
+        File createdFile = convert(emlFilePath, outputPdfPath);
+        return createdFile.getAbsolutePath();
     }
 
     private static void addEmlHeadersToPdf(Message message, Document document) throws DocumentException {
