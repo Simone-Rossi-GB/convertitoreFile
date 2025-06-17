@@ -19,53 +19,49 @@ import org.jsoup.safety.Safelist;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MSGtoPDF {
-
+public class MSGtoPDFconverter implements Converter{
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
     /**
      * Converte un file MSG di Outlook in un file PDF.
      * Estrae intestazioni e corpo (testo semplice o HTML) e li formatta nel PDF.
-     *
-     * @param msgFilePath   Il percorso completo del file MSG di input.
-     * @param outputPdfPath Il percorso completo dove salvare il file PDF di output.
      * @return File oggetto che rappresenta il PDF creato
      * @throws IOException      Se si verifica un errore di lettura/scrittura del file.
      * @throws DocumentException Se si verifica un errore durante la creazione del PDF con iText.
      */
-    public static File convert(String msgFilePath, String outputPdfPath)
-            throws IOException, DocumentException {
+    @Override
+    public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
 
-        File msgFile = new File(msgFilePath);
-        if (!msgFile.exists()) {
-            throw new FileNotFoundException("File MSG non trovato: " + msgFilePath);
+        if (msgFile == null || !msgFile.exists()) {
+            throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
 
-        // Crea le directory parent se non esistono
-        File outputPdfFile = new File(outputPdfPath);
-        File parentDir = outputPdfFile.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
+        // Directory di output fissa
+        File outputDir = new File("src/temp");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
         }
+
+        // Crea nome PDF con lo stesso nome del file .msg
+        String baseName = msgFile.getName().replaceFirst("[.][^.]+$", ""); // es: messaggio.msg → messaggio
+        File outputPdfFile = new File(outputDir, baseName + ".pdf");
 
         MAPIMessage msg = new MAPIMessage(msgFile.getAbsolutePath());
 
-        // 1. Creazione del documento PDF
         Document document = new Document();
         PdfWriter writer = null;
+
         try {
-            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfPath));
+            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
             document.open();
 
-            // 2. Aggiungi intestazioni dell'email al PDF
             addMsgHeadersToPdf(msg, document);
-            document.add(new Paragraph("\n")); // Spazio dopo le intestazioni
-
-            // 3. Processa il corpo dell'email
+            document.add(new Paragraph("\n"));
             addMsgBodyToPdf(msg, document, writer);
 
         } finally {
@@ -75,36 +71,20 @@ public class MSGtoPDF {
             if (writer != null) {
                 writer.close();
             }
-            // Chiudi il MAPIMessage per liberare le risorse
             try {
                 msg.close();
             } catch (IOException e) {
-                // Log warning ma non propagare l'eccezione
                 System.err.println("Warning: Impossibile chiudere il MAPIMessage: " + e.getMessage());
             }
         }
 
-        // Verifica che il file sia stato creato correttamente
         if (!outputPdfFile.exists()) {
-            throw new IOException("Errore nella creazione del file PDF: " + outputPdfPath);
+            throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
-        // Ritorna il file creato per permettere all'engine di spostarlo
-        return outputPdfFile;
-    }
-
-    /**
-     * Versione alternativa che ritorna il percorso assoluto del file creato
-     * @param msgFilePath percorso del file MSG di input
-     * @param outputPdfPath percorso del file PDF di output
-     * @return String percorso assoluto del PDF creato
-     * @throws IOException se ci sono problemi di I/O
-     * @throws DocumentException se ci sono problemi nella creazione del PDF
-     */
-    public static String convertAndGetPath(String msgFilePath, String outputPdfPath)
-            throws IOException, DocumentException {
-        File createdFile = convert(msgFilePath, outputPdfPath);
-        return createdFile.getAbsolutePath();
+        ArrayList<File> result = new ArrayList<>();
+        result.add(outputPdfFile);
+        return result;
     }
 
     private static void addMsgHeadersToPdf(MAPIMessage msg, Document document) throws DocumentException, IOException {

@@ -15,10 +15,9 @@ public class PDFtoDOCXconverter implements Converter {
         ArrayList<File> files = new ArrayList<>();
         String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
         File outputFile = new File(baseName + ".docx");
-        try (
-                PDDocument documento = PDDocument.load(pdfFile);
-                XWPFDocument docx = new XWPFDocument();
-                FileOutputStream out = new FileOutputStream(outputFile);) {
+        try (PDDocument documento = PDDocument.load(pdfFile);
+             XWPFDocument docx = new XWPFDocument();
+             FileOutputStream out = new FileOutputStream(outputFile)) {
 
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(documento);

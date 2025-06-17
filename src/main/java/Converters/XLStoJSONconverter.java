@@ -7,45 +7,42 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.util.*;
 
-public class XlsToJson implements Converter{
-    public File convertToJson(File inputFile) throws IOException {
-        // Validazione input
-        validateInputFile(inputFile);
+public class XLStoJSONconverter implements Converter{
+    @Override
+    public ArrayList<File> convert(File xlsFile) throws IOException {
+        ArrayList<File> resultFiles = new ArrayList<>();
 
-        // Determina il tipo di file e applica la conversione appropriata
-        String fileName = inputFile.getName().toLowerCase();
+        try {
+            File jsonFile = convertToJson(xlsFile);
 
-        if (fileName.endsWith(".xls")) {
-            return convertXlsToJson(inputFile);
-        } else {
-            throw new IllegalArgumentException("Tipo di file non supportato: " + fileName +
-                    ". Formati supportati: .xls");
+            if (jsonFile != null && jsonFile.exists()) {
+                resultFiles.add(jsonFile);
+                System.out.println("✓ File convertito aggiunto alla lista: " + jsonFile.getName());
+            } else {
+                System.err.println("⚠ Conversione fallita: file JSON non creato correttamente");
+            }
+
+        } catch (Exception e) {
+            System.err.println("✗ Errore durante la conversione: " + e.getMessage());
+            throw new IOException("Errore nella conversione XLS to JSON", e);
         }
+
+        return resultFiles;
     }
 
-    /**
-     * Overload con percorso di output personalizzato
-     *
-     * @param inputFile File da convertire
-     * @param outputPath Percorso del file JSON di output
-     * @return File JSON convertito
-     * @throws IOException Se si verificano errori durante la conversione
-     */
-    public File convertToJson(File inputFile, String outputPath) throws IOException {
-        validateInputFile(inputFile);
 
-        if (outputPath == null || outputPath.trim().isEmpty()) {
-            throw new IllegalArgumentException("Il percorso di output non può essere null o vuoto");
+    private File convertToJson(File xlsFile) throws IOException {
+        // Usa nome file base e salva in src/temp/
+        String baseName = xlsFile.getName().replaceFirst("[.][^.]+$", "");
+        File outputDir = new File("src/temp");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
         }
 
-        String fileName = inputFile.getName().toLowerCase();
-
-        if (fileName.endsWith(".xls")) {
-            return convertXlsToJson(inputFile, outputPath);
-        } else {
-            throw new IllegalArgumentException("Tipo di file non supportato: " + fileName);
-        }
+        File outputFile = new File(outputDir, baseName + ".json");
+        return convertXlsToJson(xlsFile, outputFile.getAbsolutePath());
     }
+
 
     /**
      * Converte un file XLS in JSON
@@ -322,39 +319,5 @@ public class XlsToJson implements Converter{
         info.append("Supportato: ").append(isFileSupported(file));
 
         return info.toString();
-    }
-
-    //interfaccia
-    @Override
-    public ArrayList<File> convert(File xlsFile) throws IOException {
-        ArrayList<File> resultFiles = new ArrayList<>();
-
-        try {
-            // Utilizza il metodo esistente convertToJson per eseguire la conversione
-            File jsonFile = convertToJson(xlsFile);
-
-            // Aggiunge il file JSON convertito alla lista dei risultati
-            if (jsonFile != null && jsonFile.exists()) {
-                resultFiles.add(jsonFile);
-                System.out.println("✓ File convertito aggiunto alla lista: " + jsonFile.getName());
-            } else {
-                System.err.println("⚠ Conversione fallita: file JSON non creato correttamente");
-            }
-
-        } catch (IllegalArgumentException e) {
-            // Converte IllegalArgumentException in IOException per rispettare la firma del metodo
-            System.err.println("✗ Argomento non valido: " + e.getMessage());
-            throw new IOException("Parametro non valido per la conversione: " + e.getMessage(), e);
-        } catch (IOException e) {
-            // Rilancia l'eccezione IOException per mantenere la compatibilità
-            System.err.println("✗ Errore I/O durante la conversione: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            // Converte altre eccezioni in IOException per rispettare la firma del metodo
-            System.err.println("✗ Errore imprevisto durante la conversione: " + e.getMessage());
-            throw new IOException("Errore nella conversione XLS to JSON: " + e.getMessage(), e);
-        }
-
-        return resultFiles;
     }
 }

@@ -17,94 +17,21 @@ import org.apache.james.mime4j.dom.Header;
 import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.dom.field.DateTimeField;
-import org.apache.james.mime4j.dom.field.MailboxListField;
 import org.apache.james.mime4j.message.DefaultMessageBuilder;
 
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class EMLtoPDF {
+public class EMLtoPDFconverter implements Converter {
 
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
-
-    /**
-     * Converte un file EML in PDF
-     * @param emlFilePath percorso del file EML di input
-     * @param outputPdfPath percorso del file PDF di output
-     * @return File oggetto che rappresenta il PDF creato
-     * @throws IOException se ci sono problemi di I/O
-     * @throws DocumentException se ci sono problemi nella creazione del PDF
-     */
-    public static File convert(String emlFilePath, String outputPdfPath)
-            throws IOException, DocumentException {
-
-        File emlFile = new File(emlFilePath);
-        if (!emlFile.exists()) {
-            throw new FileNotFoundException("File EML non trovato: " + emlFilePath);
-        }
-
-        // Crea le directory parent se non esistono
-        File outputPdfFile = new File(outputPdfPath);
-        File parentDir = outputPdfFile.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
-        }
-
-        DefaultMessageBuilder builder = new DefaultMessageBuilder();
-        Message mime4jMessage;
-        try (InputStream is = new FileInputStream(emlFile)) {
-            mime4jMessage = builder.parseMessage(is);
-        }
-
-        Document document = new Document();
-        PdfWriter writer = null;
-        try {
-            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfPath));
-            document.open();
-
-            addEmlHeadersToPdf(mime4jMessage, document);
-            document.add(new Paragraph("\n"));
-
-            processMime4jBody(mime4jMessage.getBody(), document, writer);
-
-        } finally {
-            if (document.isOpen()) {
-                document.close();
-            }
-            if (writer != null) {
-                writer.close();
-            }
-        }
-
-        // Verifica che il file sia stato creato correttamente
-        if (!outputPdfFile.exists()) {
-            throw new IOException("Errore nella creazione del file PDF: " + outputPdfPath);
-        }
-
-        // Ritorna il file creato per permettere all'engine di spostarlo
-        return outputPdfFile;
-    }
-
-    /**
-     * Versione alternativa che ritorna il percorso assoluto del file creato
-     * @param emlFilePath percorso del file EML di input
-     * @param outputPdfPath percorso del file PDF di output
-     * @return String percorso assoluto del PDF creato
-     * @throws IOException se ci sono problemi di I/O
-     * @throws DocumentException se ci sono problemi nella creazione del PDF
-     */
-    public static String convertAndGetPath(String emlFilePath, String outputPdfPath)
-            throws IOException, DocumentException {
-        File createdFile = convert(emlFilePath, outputPdfPath);
-        return createdFile.getAbsolutePath();
-    }
 
     private static void addEmlHeadersToPdf(Message message, Document document) throws DocumentException {
         document.add(new Paragraph("Email Headers:", HEADER_FONT));
@@ -226,5 +153,59 @@ public class EMLtoPDF {
             }
             return sb.toString();
         }
+    }
+
+    @Override
+    public ArrayList<File> convert(File emlFile) throws IOException, DocumentException {
+
+        if (emlFile == null || !emlFile.exists()) {
+            throw new FileNotFoundException("File EML non trovato: " + emlFile);
+        }
+
+        // Directory di output fissa
+        File outputDir = new File("src/temp");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
+        // Nome PDF: stesso nome del file EML, con estensione .pdf
+        String baseName = emlFile.getName().replaceFirst("[.][^.]+$", ""); // Rimuove estensione
+        File outputPdfFile = new File(outputDir, baseName + ".pdf");
+
+        // Parsing EML
+        DefaultMessageBuilder builder = new DefaultMessageBuilder();
+        Message mime4jMessage;
+        try (InputStream is = new FileInputStream(emlFile)) {
+            mime4jMessage = builder.parseMessage(is);
+        }
+
+        // Creazione PDF
+        Document document = new Document();
+        PdfWriter writer = null;
+        try {
+            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
+            document.open();
+
+            addEmlHeadersToPdf(mime4jMessage, document);
+            document.add(new Paragraph("\n"));
+
+            processMime4jBody(mime4jMessage.getBody(), document, writer);
+
+        } finally {
+            if (document.isOpen()) {
+                document.close();
+            }
+            if (writer != null) {
+                writer.close();
+            }
+        }
+
+        // Verifica che il PDF sia stato creato
+        if (!outputPdfFile.exists()) {
+            throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
+        }
+        ArrayList<File> results = new ArrayList<>();
+        results.add(outputPdfFile);
+        return results;
     }
 }

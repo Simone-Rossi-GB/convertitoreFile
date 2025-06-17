@@ -8,19 +8,25 @@
       "jpg": "Converters.PDFtoJPGconvetrter"
     },
     "xls": {
-      "json": "Converters.ZipToTarGzConverter"
+      "json": "Converters.XLStoJSONconverter"
+    },
+    "xlsx": {
+      "json": "Converters.XLSXtoJSONconverter"
     },
     "csv": {
       "json": "Converters.CSVtoJSONconverter"
     },
     "eml": {
-      "pdf" : "Converters.EmlToPdfConverter"
+      "pdf" : "Converters.EMLtoPDFconverter"
     },
     "zip": {
       "targz" : "Converters.ZIPtoTARGZconverter"
     },
     "gz": {
       "zip" : "Converters.TARGZtoZIPconverter"
+    },
+    "msg": {
+      "pdf" : "Converters.MSGtoPDFconverter"
     }
   }
 }
