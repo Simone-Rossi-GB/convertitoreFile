@@ -3,7 +3,6 @@ package gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -12,83 +11,62 @@ import java.io.IOException;
 public class MainApp extends Application {
 
     private Stage primaryStage;
-    private BorderPane rootLayout;
 
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Convertitore Email - EML/MSG to PDF");
+        this.primaryStage.setTitle("Convertitore File");
 
-        showMainView();
+        loadMainView();
     }
 
-    /**
-     * Mostra la vista principale dentro il layout principale
-     */
-    public void showMainView() {
+    private void loadMainView() {
         try {
-            // Carica la vista principale - percorso corretto
+            // Carica il file FXML dal percorso corretto
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/MainView.fxml"));
+            // CORREZIONE: usa solo "/MainView.fxml" non il percorso completo
+            loader.setLocation(MainApp.class.getResource("/MainView.fxml"));
 
-            // Se MainView.fxml non esiste, crea una vista semplice
-            VBox mainView;
-            MainAppController controller;
+            System.out.println("Cercando MainView.fxml in: " + MainApp.class.getResource("/MainView.fxml"));
 
-            try {
-                mainView = (VBox) loader.load();
-                controller = loader.getController();
+            VBox mainView = loader.load();
 
-                // Imposta la vista principale al centro del layout principale
-                if (rootLayout != null) {
-                    rootLayout.setCenter(mainView);
-                } else {
-                    Scene scene = new Scene(mainView, 800, 600);
-                    primaryStage.setScene(scene);
-                }
+            // Ottieni il controller e passagli il riferimento all'app
+            MainViewController controller = loader.getController();
+            controller.setMainApp(this);
 
-                // Configura il controller
-                if (controller != null) {
-                    controller.setMainApp(this);
-                }
-            } catch (Exception e) {
-                // Crea una vista semplice se il file FXML non esiste
-                System.err.println("MainView.fxml non trovato, creo vista semplice");
-            }
+            // Crea e mostra la scena
+            Scene scene = new Scene(mainView, 900, 700);
+            primaryStage.setScene(scene);
+            primaryStage.show();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Errore nel caricare MainView.fxml: " + e.getMessage());
+            System.err.println("Percorso cercato: " + MainApp.class.getResource("/MainView.fxml"));
+            System.err.println("Assicurati che il file sia in src/main/resources/MainView.fxml");
+
+            // Mostra errore dettagliato
+            showErrorDialog("Errore FXML",
+                    "Impossibile caricare MainView.fxml\n" +
+                            "Verifica che il file sia in src/main/resources/MainView.fxml\n\n" +
+                            "Errore: " + e.getMessage());
         }
     }
 
     /**
-     * Crea una vista principale semplice se il file FXML non esiste
+     * Mostra un dialog di errore dettagliato
      */
-    private VBox createSimpleMainView() {
-        VBox vbox = new VBox();
-        vbox.setSpacing(10);
-        vbox.setStyle("-fx-padding: 20");
+    private void showErrorDialog(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText("Errore di configurazione");
+        alert.setContentText(message);
+        alert.showAndWait();
 
-        javafx.scene.control.Label titleLabel = new javafx.scene.control.Label("Convertitore Email to PDF");
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
-        javafx.scene.control.TextField pathField = new javafx.scene.control.TextField();
-        pathField.setPromptText("Seleziona cartella di output");
-
-        javafx.scene.control.Button selectButton = new javafx.scene.control.Button("Seleziona File");
-        javafx.scene.control.Button convertButton = new javafx.scene.control.Button("Converti");
-
-        javafx.scene.control.TextArea logArea = new javafx.scene.control.TextArea();
-        logArea.setPrefRowCount(15);
-
-        vbox.getChildren().addAll(titleLabel, pathField, selectButton, convertButton, logArea);
-
-        return vbox;
+        primaryStage.close();
     }
 
-    /**
-     * Ritorna il stage principale
-     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }

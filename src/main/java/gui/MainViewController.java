@@ -10,12 +10,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-public class MainAppController {
+public class MainViewController {
 
     @FXML
     private ListView<File> fileListView;
@@ -89,6 +86,7 @@ public class MainAppController {
         // Inizializza lo status
         statusLabel.setText("Pronto");
         progressBar.setVisible(false);
+        outputDirectoryField.setText();
     }
 
     /**
@@ -106,14 +104,37 @@ public class MainAppController {
     @FXML
     private void handleSelectFiles() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleziona file email da convertire");
+        fileChooser.setTitle("Seleziona File da Convertire");
 
-        // Filtri per i tipi di file supportati
+        // Filtri per i tipi di email
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("File Email", "*.eml", "*.msg"),
                 new FileChooser.ExtensionFilter("File EML", "*.eml"),
-                new FileChooser.ExtensionFilter("File MSG", "*.msg"),
-                new FileChooser.ExtensionFilter("Tutti i file", "*.*")
+                new FileChooser.ExtensionFilter("File MSG", "*.msg")
+        );
+
+        // Filtri per documenti Word
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Documenti Word", "*.doc", "*.docx")
+        );
+
+        // Filtri per fogli di calcolo Excel
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Fogli di Calcolo Excel", "*.xls", "*.xlsx")
+        );
+
+        // Filtro per file JSON
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("File JSON", "*.json")
+        );
+
+        // Filtro per immagini JPG
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Immagini JPG", "*.jpg")
+        );
+
+        // Filtro per file CSV
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("File CSV", "*.csv")
         );
 
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(getPrimaryStage());
@@ -154,9 +175,6 @@ public class MainAppController {
         }
     }
 
-    /**
-     * Pulisce tutta la lista dei file
-     */
     @FXML
     private void handleClearAll() {
         int count = fileListView.getItems().size();
