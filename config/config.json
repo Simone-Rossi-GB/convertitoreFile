@@ -33,32 +33,46 @@
       "bmp" : "Converters.ImageConverter",
       "gif" : "Converters.ImageConverter",
       "tiff" : "Converters.ImageConverter",
-      "webp" : "Converters.ImageConverter"
+      "webp" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
     },
     "png": {
       "jpeg" : "Converters.ImageConverter",
       "bmp" : "Converters.ImageConverter",
       "gif" : "Converters.ImageConverter",
-      "tiff" : "Converters.ImageConverter"
+      "tiff" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
     },
     "bmp": {
       "png" : "Converters.ImageConverter",
       "jpeg" : "Converters.ImageConverter",
       "gif" : "Converters.ImageConverter",
-      "tiff" : "Converters.ImageConverter"
+      "tiff" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
     },
     "gif": {
       "png" : "Converters.ImageConverter",
       "bmp" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter"
+      "jpeg" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
     },
     "tiff": {
       "png" : "Converters.ImageConverter",
       "bmp" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter"
+      "jpeg" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
     },
     "webp": {
       "png" : "Converters.ImageConverter",
+      "jpeg" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
+    },
+    "jpg": {
+      "png" : "Converters.ImageConverter",
+      "bmp" : "Converters.ImageConverter",
+      "gif" : "Converters.ImageConverter",
+      "tiff" : "Converters.ImageConverter",
+      "webp" : "Converters.ImageConverter",
       "jpeg" : "Converters.ImageConverter"
     }
   }
