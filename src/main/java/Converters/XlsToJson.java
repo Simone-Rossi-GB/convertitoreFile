@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.util.*;
 
-public class XlsToJson {
+public class XlsToJson implements Converter{
     public File convertToJson(File inputFile) throws IOException {
         // Validazione input
         validateInputFile(inputFile);
@@ -322,5 +322,39 @@ public class XlsToJson {
         info.append("Supportato: ").append(isFileSupported(file));
 
         return info.toString();
+    }
+
+    //interfaccia
+    @Override
+    public ArrayList<File> convert(File xlsFile) throws IOException {
+        ArrayList<File> resultFiles = new ArrayList<>();
+
+        try {
+            // Utilizza il metodo esistente convertToJson per eseguire la conversione
+            File jsonFile = convertToJson(xlsFile);
+
+            // Aggiunge il file JSON convertito alla lista dei risultati
+            if (jsonFile != null && jsonFile.exists()) {
+                resultFiles.add(jsonFile);
+                System.out.println("✓ File convertito aggiunto alla lista: " + jsonFile.getName());
+            } else {
+                System.err.println("⚠ Conversione fallita: file JSON non creato correttamente");
+            }
+
+        } catch (IllegalArgumentException e) {
+            // Converte IllegalArgumentException in IOException per rispettare la firma del metodo
+            System.err.println("✗ Argomento non valido: " + e.getMessage());
+            throw new IOException("Parametro non valido per la conversione: " + e.getMessage(), e);
+        } catch (IOException e) {
+            // Rilancia l'eccezione IOException per mantenere la compatibilità
+            System.err.println("✗ Errore I/O durante la conversione: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            // Converte altre eccezioni in IOException per rispettare la firma del metodo
+            System.err.println("✗ Errore imprevisto durante la conversione: " + e.getMessage());
+            throw new IOException("Errore nella conversione XLS to JSON: " + e.getMessage(), e);
+        }
+
+        return resultFiles;
     }
 }
