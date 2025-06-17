@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Engine{
-    private ConverterConfig config = null;
+    private final ConverterConfig config;
 
     public Engine(){
         try (FileReader reader = new FileReader("config\\config.json")) {
@@ -26,7 +26,7 @@ public class Engine{
     public void conversione (String srcExt, String outExt, File srcFile) throws Exception{
         Map<String, Map<String, String>> conversions = config.getConversions();
         if(!conversions.containsKey(srcExt))
-        throw new Exception("Conversione non supportata");
+            throw new Exception("Conversione non supportata");
         Map<String, String> possibleConversions = conversions.get(srcExt);
         if(possibleConversions.containsKey(outExt)){
             String converterClassName = possibleConversions.get(outExt);
@@ -56,6 +56,6 @@ public class Engine{
         Path srcPath = Paths.get(file.getAbsolutePath());
         Path destPath = Paths.get(outPath + fileName);
         Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("File copiato in " + destPath.toString());
+        System.out.println("File copiato in " + destPath);
     }
 }
