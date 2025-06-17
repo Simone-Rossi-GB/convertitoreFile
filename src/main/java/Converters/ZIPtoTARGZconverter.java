@@ -22,11 +22,11 @@ public class ZIPtoTARGZconverter implements Converter{
     @Override
     public ArrayList<File> convert(File zipFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
-
+        String directoryPath = "src\\temp\\";
         String zipName = zipFile.getName();
         int lastDot = zipName.lastIndexOf('.');
         String baseName = (lastDot == -1) ? zipName : zipName.substring(0, lastDot);
-        File tarGzOut = new File(zipFile.getParent(), baseName + ".tar.gz");
+        File tarGzOut = new File(directoryPath, baseName + ".tar.gz");
 
         try (ZipFile zip = new ZipFile(zipFile);
              FileOutputStream fos = new FileOutputStream(tarGzOut);
