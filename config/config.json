@@ -33,14 +33,16 @@
       "bmp" : "Converters.ImageConverter",
       "gif" : "Converters.ImageConverter",
       "tiff" : "Converters.ImageConverter",
-      "jpg" : "Converters.ImageConverter"
+      "jpg" : "Converters.ImageConverter",
+      "webp" : "Converters.ImageConverter"
     },
     "png": {
       "jpeg" : "Converters.ImageConverter",
       "bmp" : "Converters.ImageConverter",
       "gif" : "Converters.ImageConverter",
       "tiff" : "Converters.ImageConverter",
-      "jpg" : "Converters.ImageConverter"
+      "jpg" : "Converters.ImageConverter",
+      "webp" : "Converters.ImageConverter"
     },
     "bmp": {
       "png" : "Converters.ImageConverter",
@@ -66,7 +68,13 @@
       "bmp" : "Converters.ImageConverter",
       "gif" : "Converters.ImageConverter",
       "tiff" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter"
+      "jpeg" : "Converters.ImageConverter",
+      "webp" : "Converters.ImageConverter"
+    },
+    "webp": {
+      "png" : "Converters.ImageConverter",
+      "jpeg" : "Converters.ImageConverter",
+      "jpg" : "Converters.ImageConverter"
     }
   }
 }
