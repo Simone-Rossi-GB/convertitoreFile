@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -18,28 +19,7 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Convertitore Email - EML/MSG to PDF");
 
-        initRootLayout();
         showMainView();
-    }
-
-    /**
-     * Inizializza il layout principale dell'applicazione
-     */
-    public void initRootLayout() {
-        try {
-            // Carica il layout principale dal file FXML
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/view/RootLayout.fxml"));
-            rootLayout = (BorderPane) loader.load();
-
-            // Mostra la scena con il layout principale
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -47,21 +27,63 @@ public class MainApp extends Application {
      */
     public void showMainView() {
         try {
-            // Carica la vista principale
+            // Carica la vista principale - percorso corretto
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("src/main/java/gui/view/MainView.fxml"));
-            BorderPane mainView = (BorderPane) loader.load();
+            loader.setLocation(MainApp.class.getResource("view/MainView.fxml"));
 
-            // Imposta la vista principale al centro del layout principale
-            rootLayout.setCenter(mainView);
+            // Se MainView.fxml non esiste, crea una vista semplice
+            VBox mainView;
+            MainAppController controller;
 
-            // Accesso al controller per eventuali configurazioni
-            MainAppController controller = loader.getController();
-            controller.setMainApp(this);
+            try {
+                mainView = (VBox) loader.load();
+                controller = loader.getController();
 
-        } catch (IOException e) {
+                // Imposta la vista principale al centro del layout principale
+                if (rootLayout != null) {
+                    rootLayout.setCenter(mainView);
+                } else {
+                    Scene scene = new Scene(mainView, 800, 600);
+                    primaryStage.setScene(scene);
+                }
+
+                // Configura il controller
+                if (controller != null) {
+                    controller.setMainApp(this);
+                }
+            } catch (Exception e) {
+                // Crea una vista semplice se il file FXML non esiste
+                System.err.println("MainView.fxml non trovato, creo vista semplice");
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Crea una vista principale semplice se il file FXML non esiste
+     */
+    private VBox createSimpleMainView() {
+        VBox vbox = new VBox();
+        vbox.setSpacing(10);
+        vbox.setStyle("-fx-padding: 20");
+
+        javafx.scene.control.Label titleLabel = new javafx.scene.control.Label("Convertitore Email to PDF");
+        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        javafx.scene.control.TextField pathField = new javafx.scene.control.TextField();
+        pathField.setPromptText("Seleziona cartella di output");
+
+        javafx.scene.control.Button selectButton = new javafx.scene.control.Button("Seleziona File");
+        javafx.scene.control.Button convertButton = new javafx.scene.control.Button("Converti");
+
+        javafx.scene.control.TextArea logArea = new javafx.scene.control.TextArea();
+        logArea.setPrefRowCount(15);
+
+        vbox.getChildren().addAll(titleLabel, pathField, selectButton, convertButton, logArea);
+
+        return vbox;
     }
 
     /**

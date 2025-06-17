@@ -1,20 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainAppController">
     <children>
-        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+        <!-- Header -->
+        <VBox spacing="10.0">
             <children>
-                <Button layoutX="407.0" layoutY="337.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="26.0" text="..." />
-                <Button layoutX="480.0" layoutY="338.0" mnemonicParsing="false" text="View Output Folder" />
-                <TextField layoutX="47.0" layoutY="338.0" prefHeight="26.0" prefWidth="345.0" promptText="Input Folder Path" />
-                <TextArea layoutX="47.0" layoutY="50.0" prefHeight="242.0" prefWidth="550.0" />
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Convertitore Email to PDF" />
+                <Separator />
             </children>
-        </AnchorPane>
+            <VBox.margin>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+            </VBox.margin>
+        </VBox>
+
+        <!-- Main Content -->
+        <VBox spacing="15.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- File Selection Section -->
+                <VBox spacing="10.0">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="Selezione File:" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="selectFilesButton" onAction="#handleSelectFiles" text="Seleziona File Email" />
+                                <Button fx:id="removeFileButton" onAction="#handleRemoveFile" text="Rimuovi Selezionato" />
+                                <Button fx:id="clearAllButton" onAction="#handleClearAll" text="Pulisci Lista" />
+                            </children>
+                        </HBox>
+                        <ListView fx:id="fileListView" prefHeight="150.0" />
+                    </children>
+                </VBox>
+
+                <!-- Output Directory Section -->
+                <VBox spacing="10.0">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="Cartella di Destinazione:" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <TextField fx:id="outputDirectoryField" promptText="Seleziona cartella di output..." HBox.hgrow="ALWAYS" />
+                                <Button fx:id="selectOutputButton" onAction="#handleSelectOutput" text="Sfoglia..." />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Convert Button and Progress -->
+                <VBox spacing="10.0">
+                    <children>
+                        <Button fx:id="convertButton" onAction="#handleConvert" style="-fx-font-weight: bold;" text="Avvia Conversione" />
+                        <ProgressBar fx:id="progressBar" prefWidth="200.0" visible="false" />
+                        <Label fx:id="statusLabel" text="Pronto" />
+                    </children>
+                </VBox>
+
+                <!-- Log Area -->
+                <VBox spacing="10.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="Log Operazioni:" />
+                        <TextArea fx:id="logTextArea" editable="false" prefHeight="200.0" wrapText="true" VBox.vgrow="ALWAYS" />
+                    </children>
+                </VBox>
+            </children>
+            <VBox.margin>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+            </VBox.margin>
+        </VBox>
     </children>
 </VBox>

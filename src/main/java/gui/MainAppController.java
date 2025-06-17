@@ -8,7 +8,6 @@ import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import gui.MainApp;
 
 import java.io.File;
 import java.io.IOException;
@@ -207,9 +206,11 @@ public class MainAppController {
                         // Determina il tipo di file e usa il convertitore appropriato
                         File resultFile;
                         if (fileName.toLowerCase().endsWith(".eml")) {
-                            resultFile = EMLtoPDF.convert(file, outputPath);
+                            // Usa il metodo statico legacy che accetta (File, String)
+                            resultFile = EMLtoPDF.convertEmlToPdf(file, outputPath);
                         } else if (fileName.toLowerCase().endsWith(".msg")) {
-                            resultFile = MSGtoPDF.convert(file, outputPath);
+                            // Usa il metodo statico legacy che accetta (File, String)
+                            resultFile = MSGtoPDF.convertMsgToPdf(file, outputPath);
                         } else {
                             throw new IllegalArgumentException("Tipo di file non supportato: " + fileName);
                         }
