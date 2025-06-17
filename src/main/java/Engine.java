@@ -35,17 +35,15 @@ public class Engine{
                 Class<?> clazz = Class.forName(converterClassName);
                 Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
                 try{
-                    File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[["+outExt+"]]-"));
+                    Path tempFilePath = Paths.get("src"+File.separator+"temp"+File.separator + srcFile.getName());
+                    Files.copy(srcFile.toPath(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+                    srcFile = tempFilePath.toFile();                    File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[["+outExt+"]]-"));
                     if (!srcFile.renameTo(newFile)) {
                         System.err.println("Errore: Un file con questo nome e gia stato convertito al formato richiesto");
                     }
                     srcFile = newFile;
                     List<File> outFiles = converter.convert(srcFile);
-                    File originFile = new File(srcFile.getPath().replaceAll("-\\[\\[.*?]]-", ""));
-                    if (!srcFile.renameTo(originFile)) {
-                        System.err.println("Errore: Un file con questo nome e gia stato convertito al formato richiesto");
-                    }
-                    srcFile = originFile;
+                    Files.delete(srcFile.toPath());
                     for(File f : outFiles) {
                         File returnFile = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
                         if (!f.renameTo(returnFile)) {
