@@ -35,6 +35,7 @@ public class Engine{
                 Class<?> clazz = Class.forName(converterClassName);
                 Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
                 try{
+                    // WORK
                     List<File> outFiles = converter.convert(srcFile);
                     for(File f : outFiles) {
                         spostaFile(config.getSuccessOutputDir(), f);
