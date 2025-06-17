@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class XlsToJson implements Converter{
@@ -22,31 +23,6 @@ public class XlsToJson implements Converter{
                     ". Formati supportati: .xls");
         }
     }
-
-    /**
-     * Overload con percorso di output personalizzato
-     *
-     * @param inputFile File da convertire
-     * @param outputPath Percorso del file JSON di output
-     * @return File JSON convertito
-     * @throws IOException Se si verificano errori durante la conversione
-     */
-    public File convertToJson(File inputFile, String outputPath) throws IOException {
-        validateInputFile(inputFile);
-
-        if (outputPath == null || outputPath.trim().isEmpty()) {
-            throw new IllegalArgumentException("Il percorso di output non può essere null o vuoto");
-        }
-
-        String fileName = inputFile.getName().toLowerCase();
-
-        if (fileName.endsWith(".xls")) {
-            return convertXlsToJson(inputFile, outputPath);
-        } else {
-            throw new IllegalArgumentException("Tipo di file non supportato: " + fileName);
-        }
-    }
-
     /**
      * Converte un file XLS in JSON
      *
@@ -75,7 +51,7 @@ public class XlsToJson implements Converter{
         System.out.println("  Input: " + xlsFile.getAbsolutePath());
         System.out.println("  Output: " + outputFile.getAbsolutePath());
 
-        try (InputStream fileStream = new FileInputStream(xlsFile);
+        try (InputStream fileStream = Files.newInputStream(xlsFile.toPath());
              Workbook workbook = new HSSFWorkbook(fileStream)) {
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -291,37 +267,6 @@ public class XlsToJson implements Converter{
             }
         }
         return true;
-    }
-
-    /**
-     * Metodo di utilità per verificare se un file è supportato
-     */
-    public boolean isFileSupported(File file) {
-        if (file == null || !file.exists() || !file.isFile()) {
-            return false;
-        }
-
-        String fileName = file.getName().toLowerCase();
-        return fileName.endsWith(".xls");
-    }
-
-    /**
-     * Ottiene informazioni sul file di input
-     */
-    public String getFileInfo(File file) {
-        if (file == null || !file.exists()) {
-            return "File non valido";
-        }
-
-        StringBuilder info = new StringBuilder();
-        info.append("Nome: ").append(file.getName()).append("\n");
-        info.append("Percorso: ").append(file.getAbsolutePath()).append("\n");
-        info.append("Dimensione: ").append(file.length()).append(" bytes\n");
-        info.append("Leggibile: ").append(file.canRead()).append("\n");
-        info.append("Modificabile: ").append(file.canWrite()).append("\n");
-        info.append("Supportato: ").append(isFileSupported(file));
-
-        return info.toString();
     }
 
     //interfaccia

@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ImageInOut {
     public static String convertiFile(String srcPath, String inExt, String outExt , String outPath) throws IOException {
@@ -19,12 +18,8 @@ public class ImageInOut {
         }
         File outFile = new File(outPath, getName(inputFile) + "." + outExt);
         // Preparazione dell'immagine alla conversione
-        if (outExt.equals("png")){
-            //image = colorCodecSwitcher(image);
-        }
         if (inExt.equals("png")){
             image = alphaChannelRemover(image);
-            //image = colorCodecSwitcher(image);
         }
 
         boolean written = ImageIO.write(image, outExt, outFile);
