@@ -19,30 +19,60 @@ import org.jsoup.safety.Safelist;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MSGtoPDF {
+public class MSGtoPDF implements Converter {
 
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
     /**
+     * Implementazione dell'interfaccia Converter
+     * Converte un file MSG in PDF e ritorna la lista dei file creati
+     *
+     * @param srcFile file MSG di input
+     * @return ArrayList contenente il file PDF creato
+     * @throws IOException se ci sono problemi di I/O o conversione
+     */
+    @Override
+    public ArrayList<File> convert(File srcFile) throws IOException {
+        ArrayList<File> resultFiles = new ArrayList<>();
+
+        try {
+            // Genera il nome del file PDF di output
+            String fileName = srcFile.getName();
+            String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+            String outputDir = srcFile.getParent(); // Stessa directory del file sorgente
+            String outputPath = outputDir + File.separator + baseName + ".pdf";
+
+            // Converte usando il metodo esistente
+            File pdfFile = convertMsgToPdf(srcFile, outputPath);
+            resultFiles.add(pdfFile);
+
+        } catch (DocumentException e) {
+            throw new IOException("Errore nella creazione del PDF: " + e.getMessage(), e);
+        }
+
+        return resultFiles;
+    }
+
+    /**
      * Converte un file MSG di Outlook in un file PDF.
      * Estrae intestazioni e corpo (testo semplice o HTML) e li formatta nel PDF.
      *
-     * @param msgFilePath   Il percorso completo del file MSG di input.
+     * @param fileMSG   Il file MSG di input.
      * @param outputPdfPath Il percorso completo dove salvare il file PDF di output.
      * @return File oggetto che rappresenta il PDF creato
      * @throws IOException      Se si verifica un errore di lettura/scrittura del file.
      * @throws DocumentException Se si verifica un errore durante la creazione del PDF con iText.
      */
-    public static File convert(String msgFilePath, String outputPdfPath)
+    public static File convertMsgToPdf(File fileMSG, String outputPdfPath)
             throws IOException, DocumentException {
-
-        File msgFile = new File(msgFilePath);
+        File msgFile = fileMSG;
         if (!msgFile.exists()) {
-            throw new FileNotFoundException("File MSG non trovato: " + msgFilePath);
+            throw new FileNotFoundException("File MSG non trovato: " + msgFile.getName());
         }
 
         // Crea le directory parent se non esistono
@@ -54,18 +84,18 @@ public class MSGtoPDF {
 
         MAPIMessage msg = new MAPIMessage(msgFile.getAbsolutePath());
 
-        // 1. Creazione del documento PDF
+        // Creazione documento PDF
         Document document = new Document();
         PdfWriter writer = null;
         try {
             writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfPath));
             document.open();
 
-            // 2. Aggiungi intestazioni dell'email al PDF
+            // Aggiunta intestazioni dell'email al PDF
             addMsgHeadersToPdf(msg, document);
             document.add(new Paragraph("\n")); // Spazio dopo le intestazioni
 
-            // 3. Processa il corpo dell'email
+            // conversione corpo dell'email
             addMsgBodyToPdf(msg, document, writer);
 
         } finally {
@@ -75,11 +105,10 @@ public class MSGtoPDF {
             if (writer != null) {
                 writer.close();
             }
-            // Chiudi il MAPIMessage per liberare le risorse
+            // Chiusura il MAPIMessage per liberare le risorse
             try {
                 msg.close();
             } catch (IOException e) {
-                // Log warning ma non propagare l'eccezione
                 System.err.println("Warning: Impossibile chiudere il MAPIMessage: " + e.getMessage());
             }
         }
@@ -89,22 +118,7 @@ public class MSGtoPDF {
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfPath);
         }
 
-        // Ritorna il file creato per permettere all'engine di spostarlo
         return outputPdfFile;
-    }
-
-    /**
-     * Versione alternativa che ritorna il percorso assoluto del file creato
-     * @param msgFilePath percorso del file MSG di input
-     * @param outputPdfPath percorso del file PDF di output
-     * @return String percorso assoluto del PDF creato
-     * @throws IOException se ci sono problemi di I/O
-     * @throws DocumentException se ci sono problemi nella creazione del PDF
-     */
-    public static String convertAndGetPath(String msgFilePath, String outputPdfPath)
-            throws IOException, DocumentException {
-        File createdFile = convert(msgFilePath, outputPdfPath);
-        return createdFile.getAbsolutePath();
     }
 
     private static void addMsgHeadersToPdf(MAPIMessage msg, Document document) throws DocumentException, IOException {
@@ -118,7 +132,6 @@ public class MSGtoPDF {
                 document.add(new Paragraph("Da: " + displayFrom, CONTENT_FONT));
             }
         } catch (ChunkNotFoundException e) {
-            // Ignora se non trovato
         }
 
         // Destinatario
@@ -128,7 +141,6 @@ public class MSGtoPDF {
                 document.add(new Paragraph("A: " + displayTo, CONTENT_FONT));
             }
         } catch (ChunkNotFoundException e) {
-            // Ignora se non trovato
         }
 
         // Cc

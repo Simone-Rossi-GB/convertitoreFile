@@ -1,0 +1,9 @@
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/ConverterConfig.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Converters/CSVtoJson.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Converters/EMLtoPDF.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Converters/MSGtoPDF.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Converters/PDFtoDoc.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Converters/PDFtoDocx.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Converters/PDFtoJPG.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/Exceptions/ConversionException.java
+/Users/simo/Documents/GitHub/convertitoreFile/src/main/java/FileTypeConverter.java
