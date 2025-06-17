@@ -1,5 +1,7 @@
 package converter;
 
+import gui.MainViewController;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -17,17 +19,17 @@ public class DirectoryWatcher implements Runnable {
     private final WatchService watchService;
     private final ExecutorService executor;
     private final Map<WatchKey, Path> watchKeyToPath;
-    private FileTypeConverter controller;
+    private MainViewController controller;
 
     public String getWatchedDir() {
         return dir.toString();
     }
 
-    public DirectoryWatcher(String directoryPath) throws IOException {
+    public DirectoryWatcher(String directoryPath, MainViewController controller) throws IOException {
         this.dir = Paths.get(directoryPath);
         this.executor = Executors.newCachedThreadPool();
         this.watchService = FileSystems.getDefault().newWatchService();
-        this.controller = new FileTypeConverter();
+        this.controller = controller;
         this.watchKeyToPath = new HashMap<>();
         registerAll(dir); // Registra tutte le sottocartelle esistenti
     }
@@ -78,7 +80,7 @@ public class DirectoryWatcher implements Runnable {
                     } else {
                         executor.submit(() -> {
                             try {
-                                controller.settingsConversione(fullPath);
+                                controller.instanceDialogPanel(fullPath);
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

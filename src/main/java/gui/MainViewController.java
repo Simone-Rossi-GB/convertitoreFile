@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 import converter.Engine;
 
@@ -60,8 +61,10 @@ public class MainViewController {
 
         // TODO: Carica configurazione dal JSON
         loadConfiguration();
-        watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath));
-        watcherThread.start();
+        if (isMonitoring) {
+            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
+            watcherThread.start();
+        }
     }
 
     private void setupEventHandlers() {
@@ -87,19 +90,31 @@ public class MainViewController {
     }
 
     private void toggleMonitoring() throws IOException {
-        updateMonitoringStatus();
 
         if (isMonitoring) {
             addLogMessage("Monitoraggio fermato.");
+            System.out.println("Monitoraggio fermato.");
+
             // TODO: Ferma converter.DirectoryWatcher
             watcherThread.interrupt();
         } else {
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             // TODO: Avvia converter.DirectoryWatcher
-            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath));
+            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
         }
         isMonitoring = !isMonitoring;
+        updateMonitoringStatus();
+    }
+
+    public void instanceDialogPanel(Path srcPath){
+        // codice per istanziare il dialog
+    }
+
+    private String getExtension(Path filePath){
+        String path = filePath.toAbsolutePath().toString();
+        int lastDotIndex = path.lastIndexOf(".");
+        return path.substring(lastDotIndex + 1);
     }
 
     private void updateMonitoringStatus() {
