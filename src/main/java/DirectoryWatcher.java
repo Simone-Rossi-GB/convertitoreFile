@@ -15,7 +15,7 @@ public class DirectoryWatcher implements Runnable {
     private final WatchService watchService;
     private final ExecutorService executor;
     private final Map<WatchKey, Path> watchKeyToPath;
-    private FileTypeConverter controller;
+    private final FileTypeConverter controller;
 
     public DirectoryWatcher(String directoryPath) throws IOException {
         this.dir = Paths.get(directoryPath);
