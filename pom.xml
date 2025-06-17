@@ -9,7 +9,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.release>8</maven.compiler.release> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -32,7 +34,8 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
-            <version>3.17</version> </dependency>
+            <version>5.2.5</version>
+        </dependency>
 
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -106,15 +109,23 @@
             <artifactId>json</artifactId>
             <version>20230227</version>
         </dependency>
+        <!-- Log4j2 API -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.20.0</version>
         </dependency>
+
+        <!-- Log4j2 Core -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.9.0</version>
         </dependency>
     </dependencies>
 
@@ -128,5 +139,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

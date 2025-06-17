@@ -81,7 +81,8 @@ public class DirectoryWatcher implements Runnable {
                     } else {
                         executor.submit(() -> {
                             try {
-                                controller.instanceDialogPanel(fullPath);
+                                System.out.println("lancia conversione");
+                                controller.launchDialogConversion(new File(fullPath.toString()));
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

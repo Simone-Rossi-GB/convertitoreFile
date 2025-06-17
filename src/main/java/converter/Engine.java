@@ -10,14 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class Engine{
-    private ConverterConfig config = null;
+    private final ConverterConfig config;
 
     public Engine(){
-        try (FileReader reader = new FileReader("config\\config.json")) {
+        try (FileReader reader = new FileReader("config/config.json")) {
             Gson gson = new Gson();
             config = gson.fromJson(reader, ConverterConfig.class);
         } catch (Exception e) {
@@ -25,10 +26,22 @@ public class Engine{
         }
     }
 
+    public List<String> getPossibleConversions(String extension) throws Exception {
+        if(!config.getConversions().containsKey(extension))
+            throw new Exception("Conversione non supportata");
+        for (String e : config.getConversions().get(extension).keySet())
+            System.out.println(e);
+        List<String> possibleExtensions = new ArrayList<>(config.getConversions().get(extension).keySet());
+        System.out.println("Lista ottenuta");
+        System.out.println();
+        return possibleExtensions;
+    }
+
+
     public void conversione (String srcExt, String outExt, File srcFile) throws Exception{
         Map<String, Map<String, String>> conversions = config.getConversions();
         if(!conversions.containsKey(srcExt))
-        throw new Exception("Conversione non supportata");
+            throw new Exception("Conversione non supportata");
         Map<String, String> possibleConversions = conversions.get(srcExt);
         if(possibleConversions.containsKey(outExt)){
             String converterClassName = possibleConversions.get(outExt);
@@ -39,7 +52,6 @@ public class Engine{
                 try{
                     List<File> outFiles = converter.convert(srcFile);
                     for(File f : outFiles) {
-                        System.out.println(f.getAbsolutePath());
                         spostaFile(config.getSuccessOutputDir(), f);
                     }
                 } catch (IOException e) {
@@ -47,7 +59,7 @@ public class Engine{
                     throw new Exception("Errore nella conversione");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
         else
@@ -59,7 +71,7 @@ public class Engine{
         Path srcPath = Paths.get(file.getAbsolutePath());
         Path destPath = Paths.get(outPath + fileName);
         Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("File copiato in " + destPath.toString());
+        System.out.println("File copiato in " + destPath);
     }
 
     public ConverterConfig getConverterConfig() {

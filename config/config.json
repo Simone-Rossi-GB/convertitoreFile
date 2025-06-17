@@ -28,39 +28,6 @@
     },
     "msg": {
       "pdf" : "Converters.MSGtoPDFconverter"
-    },
-    "jpeg": {
-      "png" : "Converters.ImageConverter",
-      "bmp" : "Converters.ImageConverter",
-      "gif" : "Converters.ImageConverter",
-      "tiff" : "Converters.ImageConverter",
-      "webp" : "Converters.ImageConverter"
-    },
-    "png": {
-      "jpeg" : "Converters.ImageConverter",
-      "bmp" : "Converters.ImageConverter",
-      "gif" : "Converters.ImageConverter",
-      "tiff" : "Converters.ImageConverter"
-    },
-    "bmp": {
-      "png" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter",
-      "gif" : "Converters.ImageConverter",
-      "tiff" : "Converters.ImageConverter"
-    },
-    "gif": {
-      "png" : "Converters.ImageConverter",
-      "bmp" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter"
-    },
-    "tiff": {
-      "png" : "Converters.ImageConverter",
-      "bmp" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter"
-    },
-    "webp": {
-      "png" : "Converters.ImageConverter",
-      "jpeg" : "Converters.ImageConverter"
     }
   }
 }
