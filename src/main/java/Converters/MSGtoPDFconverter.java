@@ -76,7 +76,9 @@ public class MSGtoPDFconverter implements Converter {
         File outputPdfFile = new File(outputPdfPath);
         File parentDir = outputPdfFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
+            if (!parentDir.mkdirs()) {
+                System.out.println("Failed to create directories: " + parentDir.getAbsolutePath());
+            }
         }
 
         MAPIMessage msg = new MAPIMessage(fileMSG.getAbsolutePath());
