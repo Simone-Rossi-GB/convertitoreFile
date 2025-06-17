@@ -10,6 +10,10 @@ import javafx.stage.Stage;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import converter.Engine;
 
 public class MainViewController {
@@ -128,11 +132,42 @@ public class MainViewController {
         }
     }
 
+    public static boolean ensureDirectoryExists(String directoryPath) {
+        try {
+            Path path = Paths.get(directoryPath);
+
+            if (!Files.exists(path)) {
+                Files.createDirectories(path); // Crea tutte le cartelle padre se necessario
+                System.out.println("Cartella creata: " + directoryPath);
+                return true;
+            } else if (Files.isDirectory(path)) {
+                System.out.println("Cartella già esistente: " + directoryPath);
+                return true;
+            } else {
+                System.err.println("ERRORE: " + directoryPath + " esiste ma non è una cartella!");
+                return false;
+            }
+
+        } catch (IOException e) {
+            System.err.println("ERRORE durante la creazione di: " + directoryPath);
+            System.err.println("Dettagli: " + e.getMessage());
+            return false;
+        } catch (SecurityException e) {
+            System.err.println("ERRORE: Permessi insufficienti per: " + directoryPath);
+            System.err.println("Dettagli: " + e.getMessage());
+            return false;
+        }
+    }
+
     private void loadConfiguration() {
         try {
             monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
             convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
             failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
+
+            ensureDirectoryExists(monitoredFolderPath);
+            ensureDirectoryExists(convertedFolderPath);
+            ensureDirectoryExists(failedFolderPath);
 
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
