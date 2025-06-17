@@ -3,6 +3,7 @@ package gui;
 import converter.ConverterConfig;
 import converter.DirectoryWatcher;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
@@ -235,5 +236,11 @@ public class MainViewController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+    }
+
+    public void toggleMonitoringBtn(ActionEvent actionEvent) {
+        if( isMonitoring ) {
+
+        }
     }
 }

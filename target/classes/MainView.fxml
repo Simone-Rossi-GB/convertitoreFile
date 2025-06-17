@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
+    <children>
+        <!-- Header -->
+        <VBox spacing="15.0">
+            <children>
+                <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Convertitore formati file" />
+                <Separator />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+            </VBox.margin>
+        </VBox>
+
+        <!-- Main Content -->
+        <VBox spacing="20.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- File Selection Section -->
+                <VBox spacing="10.0">
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Selezione File:" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="selectFilesButton" onAction="#handleSelectFiles" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Seleziona File" />
+                                <Button fx:id="removeFileButton" onAction="#handleRemoveFile" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Rimuovi Selezionato" />
+                                <Button fx:id="clearAllButton" onAction="#handleClearAll" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Pulisci Lista" />
+                            </children>
+                        </HBox>
+                        <ListView fx:id="fileListView" prefHeight="150.0" />
+                    </children>
+                </VBox>
+
+                <!-- Output Directory Section -->
+                <VBox spacing="10.0">
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Cartella di Destinazione:" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <TextField fx:id="outputDirectoryField" promptText="Seleziona cartella di output..." HBox.hgrow="ALWAYS" />
+                                <Button fx:id="selectOutputButton" onAction="#handleSelectOutput" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Sfoglia..." />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Convert Button and Progress -->
+                <VBox alignment="CENTER" spacing="15.0">
+                    <children>
+                        <Button fx:id="convertButton" onAction="#handleConvert" prefWidth="200.0" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" text="Avvia Conversione" />
+                        <ProgressBar fx:id="progressBar" prefWidth="300.0" visible="false" />
+                        <Label fx:id="statusLabel" style="-fx-font-size: 14px;" text="Pronto" />
+                    </children>
+                </VBox>
+
+                <!-- Log Area -->
+                <VBox spacing="10.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Log Operazioni:" />
+                        <TextArea fx:id="logTextArea" editable="false" prefHeight="200.0" style="-fx-font-family: monospace;" wrapText="true" VBox.vgrow="ALWAYS" />
+                    </children>
+                </VBox>
+            </children>
+            <VBox.margin>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+            </VBox.margin>
+        </VBox>
+    </children>
+</VBox>
