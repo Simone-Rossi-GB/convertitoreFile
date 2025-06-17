@@ -9,92 +9,59 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import org.apache.poi.hsmf.MAPIMessage;
+import org.apache.poi.hsmf.datatypes.Chunk;
+import org.apache.poi.hsmf.datatypes.MAPIProperty;
+import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 
 import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MSGtoPDFconverter implements Converter {
-
+public class MSGtoPDFconverter implements Converter{
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
     /**
-     * Implementazione dell'interfaccia Converter
-     * Converte un file MSG in PDF e ritorna la lista dei file creati
-     *
-     * @param srcFile file MSG di input
-     * @return ArrayList contenente il file PDF creato
-     * @throws IOException se ci sono problemi di I/O o conversione
-     */
-    @Override
-    public ArrayList<File> convert(File srcFile) throws IOException {
-        ArrayList<File> resultFiles = new ArrayList<>();
-
-        try {
-            // Genera il nome del file PDF di output
-            String fileName = srcFile.getName();
-            String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
-            String outputDir = srcFile.getParent(); // Stessa directory del file sorgente
-            String outputPath = outputDir + File.separator + baseName + ".pdf";
-
-            // Converte usando il metodo esistente
-            File pdfFile = convertMsgToPdf(srcFile, outputPath);
-            resultFiles.add(pdfFile);
-
-        } catch (DocumentException e) {
-            throw new IOException("Errore nella creazione del PDF: " + e.getMessage(), e);
-        }
-
-        return resultFiles;
-    }
-
-    /**
      * Converte un file MSG di Outlook in un file PDF.
      * Estrae intestazioni e corpo (testo semplice o HTML) e li formatta nel PDF.
-     *
-     * @param fileMSG   Il file MSG di input.
-     * @param outputPdfPath Il percorso completo dove salvare il file PDF di output.
      * @return File oggetto che rappresenta il PDF creato
      * @throws IOException      Se si verifica un errore di lettura/scrittura del file.
      * @throws DocumentException Se si verifica un errore durante la creazione del PDF con iText.
      */
-    public static File convertMsgToPdf(File fileMSG, String outputPdfPath)
-            throws IOException, DocumentException {
-        if (!fileMSG.exists()) {
-            throw new FileNotFoundException("File MSG non trovato: " + fileMSG.getName());
+    @Override
+    public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
+
+        if (msgFile == null || !msgFile.exists()) {
+            throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
 
-        // Crea le directory parent se non esistono
-        File outputPdfFile = new File(outputPdfPath);
-        File parentDir = outputPdfFile.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                System.err.println("Failed to create directories: " + parentDir.getAbsolutePath());
-            }
+        // Directory di output fissa
+        File outputDir = new File("src/temp");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
         }
 
-        MAPIMessage msg = new MAPIMessage(fileMSG.getAbsolutePath());
+        // Crea nome PDF con lo stesso nome del file .msg
+        String baseName = msgFile.getName().replaceFirst("[.][^.]+$", ""); // es: messaggio.msg → messaggio
+        File outputPdfFile = new File(outputDir, baseName + ".pdf");
 
-        // Creazione documento PDF
+        MAPIMessage msg = new MAPIMessage(msgFile.getAbsolutePath());
+
         Document document = new Document();
         PdfWriter writer = null;
+
         try {
-            writer = PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(outputPdfPath)));
+            writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
             document.open();
 
-            // Aggiunta intestazioni dell'email al PDF
             addMsgHeadersToPdf(msg, document);
-            document.add(new Paragraph("\n")); // Spazio dopo le intestazioni
-
-            // conversione corpo dell'email
+            document.add(new Paragraph("\n"));
             addMsgBodyToPdf(msg, document, writer);
 
         } finally {
@@ -104,7 +71,6 @@ public class MSGtoPDFconverter implements Converter {
             if (writer != null) {
                 writer.close();
             }
-            // Chiusura il MAPIMessage per liberare le risorse
             try {
                 msg.close();
             } catch (IOException e) {
@@ -112,15 +78,16 @@ public class MSGtoPDFconverter implements Converter {
             }
         }
 
-        // Verifica che il file sia stato creato correttamente
         if (!outputPdfFile.exists()) {
-            throw new IOException("Errore nella creazione del file PDF: " + outputPdfPath);
+            throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
-        return outputPdfFile;
+        ArrayList<File> result = new ArrayList<>();
+        result.add(outputPdfFile);
+        return result;
     }
 
-    private static void addMsgHeadersToPdf(MAPIMessage msg, Document document) throws DocumentException {
+    private static void addMsgHeadersToPdf(MAPIMessage msg, Document document) throws DocumentException, IOException {
         document.add(new Paragraph("Email Headers:", HEADER_FONT));
         document.add(new Paragraph("----------------------------------------", HEADER_FONT));
 
@@ -130,7 +97,8 @@ public class MSGtoPDFconverter implements Converter {
             if (displayFrom != null && !displayFrom.trim().isEmpty()) {
                 document.add(new Paragraph("Da: " + displayFrom, CONTENT_FONT));
             }
-        } catch (ChunkNotFoundException ignored) {
+        } catch (ChunkNotFoundException e) {
+            // Ignora se non trovato
         }
 
         // Destinatario
@@ -139,7 +107,8 @@ public class MSGtoPDFconverter implements Converter {
             if (displayTo != null && !displayTo.trim().isEmpty()) {
                 document.add(new Paragraph("A: " + displayTo, CONTENT_FONT));
             }
-        } catch (ChunkNotFoundException ignored) {
+        } catch (ChunkNotFoundException e) {
+            // Ignora se non trovato
         }
 
         // Cc
@@ -186,7 +155,7 @@ public class MSGtoPDFconverter implements Converter {
             Calendar messageCalendar = msg.getMessageDate();
             if (messageCalendar != null) {
                 Date messageDate = messageCalendar.getTime();
-                document.add(new Paragraph("Data: " + messageDate, CONTENT_FONT));
+                document.add(new Paragraph("Data: " + messageDate.toString(), CONTENT_FONT));
             }
         } catch (ChunkNotFoundException e) {
             // Ignora se non trovato
@@ -195,7 +164,7 @@ public class MSGtoPDFconverter implements Converter {
         document.add(new Paragraph("----------------------------------------\n", HEADER_FONT));
     }
 
-    private static void addMsgBodyToPdf(MAPIMessage msg, Document document, PdfWriter writer) throws DocumentException {
+    private static void addMsgBodyToPdf(MAPIMessage msg, Document document, PdfWriter writer) throws DocumentException, IOException {
         String htmlBody = null;
         String textBody = null;
 
