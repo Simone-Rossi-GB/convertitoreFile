@@ -3,7 +3,7 @@ package gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -15,41 +15,38 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Convertitore File");
+        this.primaryStage.setTitle("File Converter Manager");
+        this.primaryStage.setResizable(false); // Opzionale: impedisce il ridimensionamento
 
         loadMainView();
     }
 
     private void loadMainView() {
         try {
-            // Carica il file FXML dal percorso corretto
+            // Carica il file FXML
             FXMLLoader loader = new FXMLLoader();
-            // CORREZIONE: usa solo "/MainView.fxml" non il percorso completo
-            loader.setLocation(MainApp.class.getResource("/MainView.fxml"));
+            loader.setLocation(MainApp.class.getResource("/GraphicalMenu.fxml"));
 
-            System.out.println("Cercando MainView.fxml in: " + MainApp.class.getResource("/MainView.fxml"));
-
-            VBox mainView = loader.load();
+            // Carica come Pane (non VBox) per corrispondere all'FXML
+            Pane mainView = loader.load();
 
             // Ottieni il controller e passagli il riferimento all'app
             MainViewController controller = loader.getController();
             controller.setMainApp(this);
 
-            // Crea e mostra la scena
-            Scene scene = new Scene(mainView, 900, 700);
+            // Crea e mostra la scena con le dimensioni dell'FXML
+            Scene scene = new Scene(mainView, 990, 770);
             primaryStage.setScene(scene);
             primaryStage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Errore nel caricare MainView.fxml: " + e.getMessage());
-            System.err.println("Percorso cercato: " + MainApp.class.getResource("/MainView.fxml"));
-            System.err.println("Assicurati che il file sia in src/main/resources/MainView.fxml");
+            System.err.println("Errore nel caricare GraphicalMenu.fxml: " + e.getMessage());
 
             // Mostra errore dettagliato
             showErrorDialog(
-                    "Impossibile caricare MainView.fxml\n" +
-                            "Verifica che il file sia in src/main/resources/MainView.fxml\n\n" +
+                    "Impossibile caricare GraphicalMenu.fxml\n" +
+                            "Verifica che il file sia in src/main/resources/GraphicalMenu.fxml\n\n" +
                             "Errore: " + e.getMessage());
         }
     }
@@ -64,7 +61,7 @@ public class MainApp extends Application {
         alert.setContentText(message);
         alert.showAndWait();
 
-        primaryStage.close();
+        System.exit(1); // Termina l'applicazione in caso di errore critico
     }
 
     public Stage getPrimaryStage() {
