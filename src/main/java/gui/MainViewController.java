@@ -368,6 +368,6 @@ public class MainViewController {
 
     @FXML
     public void openConfig(ActionEvent actionEvent) {
-
+        // codice
     }
 }
