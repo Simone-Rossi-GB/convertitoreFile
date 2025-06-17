@@ -1,67 +1,81 @@
 package Converters;
 
+import Converters.Converter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.io.FileInputStream;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class XlsxToJson {
+import java.io.*;
+import java.util.*;
 
-    public static void main(String[] args) {
-        String filePath = "src/main/java/Converters/prova.xls";  // Modifica con il tuo percorso
+public class XlsxToJson implements Converter {
 
-        try (FileInputStream fis = new FileInputStream(filePath);
-             Workbook workbook = new XSSFWorkbook(fis)) {  // Usa XSSFWorkbook per .xlsx
+    /**
+     * Converte un file .xlsx in un file .json
+     * @param excelFile il file Excel (.xlsx) in input
+     * @return un file JSON generato con i dati dell'Excel
+     * @throws IOException in caso di errori di lettura/scrittura
+     */
+    public File convertXlsxToJson(File excelFile) throws IOException {
+        // Carica il file Excel
+        try (InputStream inputStream = new FileInputStream(excelFile);
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
 
-            Sheet sheet = workbook.getSheetAt(0);          // Legge il primo foglio
-            JSONArray jsonArray = new JSONArray();
+            Sheet sheet = workbook.getSheetAt(0); // Primo foglio
+            Iterator<Row> rowIterator = sheet.iterator();
 
-            Row headerRow = sheet.getRow(0);               // Intestazioni nella prima riga
-            int numCols = headerRow.getLastCellNum();
+            List<Map<String, String>> jsonData = new ArrayList<>();
+            List<String> headers = new ArrayList<>();
 
-            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
-                Row row = sheet.getRow(r);
-                if (row == null) continue;
-
-                JSONObject jsonObject = new JSONObject();
-
-                for (int c = 0; c < numCols; c++) {
-                    Cell headerCell = headerRow.getCell(c);
-                    Cell cell = row.getCell(c);
-
-                    String key = headerCell != null ? headerCell.toString() : "Col" + c;
-                    String value = getCellValue(cell);
-
-                    jsonObject.put(key, value);
+            // Intestazioni (prima riga)
+            if (rowIterator.hasNext()) {
+                Row headerRow = rowIterator.next();
+                for (Cell cell : headerRow) {
+                    headers.add(cell.getStringCellValue());
                 }
-
-                jsonArray.put(jsonObject);
             }
 
-            // Stampa o salva il JSON
-            System.out.println(jsonArray.toString(2));
+            // Righe dati
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                Map<String, String> rowMap = new LinkedHashMap<>();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                for (int i = 0; i < headers.size(); i++) {
+                    Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    rowMap.put(headers.get(i), getCellValue(cell));
+                }
+
+                jsonData.add(rowMap);
+            }
+
+            // Crea file temporaneo per l'output JSON
+            File jsonFile = File.createTempFile("excel-to-json-", ".json");
+
+            // Scrittura del JSON
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, jsonData);
+
+            return jsonFile;
         }
     }
 
-    private static String getCellValue(Cell cell) {
-        if (cell == null) return "";
+    /**
+     * Estrae il valore della cella come stringa
+     */
+    private String getCellValue(Cell cell) {
+        CellType cellType = cell.getCellType();
 
-        switch (cell.getCellType()) {
+        switch (cellType) {
             case STRING:
                 return cell.getStringCellValue();
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
                     return cell.getDateCellValue().toString();
                 } else {
-                    return String.valueOf(cell.getNumericCellValue());
+                    return Double.toString(cell.getNumericCellValue());
                 }
             case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
+                return Boolean.toString(cell.getBooleanCellValue());
             case FORMULA:
                 return cell.getCellFormula();
             case BLANK:
@@ -71,4 +85,8 @@ public class XlsxToJson {
         }
     }
 
+    @Override
+    public ArrayList<File> convert(File srcFile) throws IOException {
+        return null;
+    }
 }

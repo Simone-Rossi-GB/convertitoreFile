@@ -17,11 +17,6 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-mime4j-core</artifactId>
-            <version>0.8.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j-dom</artifactId>
             <version>0.8.3</version>
         </dependency>
@@ -94,11 +89,7 @@
             <artifactId>pdfbox</artifactId>
             <version>2.0.27</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.5</version>
-        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
