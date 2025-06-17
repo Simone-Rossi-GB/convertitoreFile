@@ -1,3 +1,5 @@
+package converter;
+
 import Converters.Converter;
 import com.google.gson.Gson;
 
@@ -58,5 +60,9 @@ public class Engine{
         Path destPath = Paths.get(outPath + fileName);
         Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
         System.out.println("File copiato in " + destPath.toString());
+    }
+
+    public ConverterConfig getConverterConfig() {
+        return config;
     }
 }

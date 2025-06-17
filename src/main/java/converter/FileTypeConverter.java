@@ -1,6 +1,4 @@
-
-import Converters.CSVtoJSONconverter;
-import Converters.PDFtoJPGconverter;
+package converter;
 
 import java.io.File;
 import java.io.IOException;

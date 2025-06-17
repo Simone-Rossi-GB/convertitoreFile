@@ -1,20 +1,66 @@
 {
   "successOutputDir": "src\\output\\success\\",
   "errorOutputDir": "src\\output\\error\\",
+  "monitoredDir": "src\\input\\",
   "conversions": {
     "pdf": {
-      "doc": "converters.PDFtoDOCconverter",
-      "docx": "converters.PDFtoDOCXconverter",
-      "jpg": "converters.PDFtoJPGconvetrter"
+      "doc": "Converters.PDFtoDOCconverter",
+      "docx": "Converters.PDFtoDOCXconverter",
+      "jpg": "Converters.PDFtoJPGconvetrter"
     },
     "xls": {
-      "json": "converters.ZipToTarGzConverter"
+      "json": "Converters.XLStoJSONconverter"
+    },
+    "xlsx": {
+      "json": "Converters.XLSXtoJSONconverter"
     },
     "csv": {
-      "json": "converters.CSVtoJSONconverter"
+      "json": "Converters.CSVtoJSONconverter"
     },
     "eml": {
-      "pdf" : "converters.EmlToPdfConverter"
+      "pdf" : "Converters.EMLtoPDFconverter"
+    },
+    "zip": {
+      "targz" : "Converters.ZIPtoTARGZconverter"
+    },
+    "gz": {
+      "zip" : "Converters.TARGZtoZIPconverter"
+    },
+    "msg": {
+      "pdf" : "Converters.MSGtoPDFconverter"
+    },
+    "jpeg": {
+      "png" : "Converters.ImageConverter",
+      "bmp" : "Converters.ImageConverter",
+      "gif" : "Converters.ImageConverter",
+      "tiff" : "Converters.ImageConverter",
+      "webp" : "Converters.ImageConverter"
+    },
+    "png": {
+      "jpeg" : "Converters.ImageConverter",
+      "bmp" : "Converters.ImageConverter",
+      "gif" : "Converters.ImageConverter",
+      "tiff" : "Converters.ImageConverter"
+    },
+    "bmp": {
+      "png" : "Converters.ImageConverter",
+      "jpeg" : "Converters.ImageConverter",
+      "gif" : "Converters.ImageConverter",
+      "tiff" : "Converters.ImageConverter"
+    },
+    "gif": {
+      "png" : "Converters.ImageConverter",
+      "bmp" : "Converters.ImageConverter",
+      "jpeg" : "Converters.ImageConverter"
+    },
+    "tiff": {
+      "png" : "Converters.ImageConverter",
+      "bmp" : "Converters.ImageConverter",
+      "jpeg" : "Converters.ImageConverter"
+    },
+    "webp": {
+      "png" : "Converters.ImageConverter",
+      "jpeg" : "Converters.ImageConverter"
     }
   }
 }

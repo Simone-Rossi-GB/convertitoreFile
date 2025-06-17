@@ -1,4 +1,5 @@
-import java.io.File;
+package converter;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -17,6 +18,10 @@ public class DirectoryWatcher implements Runnable {
     private final ExecutorService executor;
     private final Map<WatchKey, Path> watchKeyToPath;
     private FileTypeConverter controller;
+
+    public String getWatchedDir() {
+        return dir.toString();
+    }
 
     public DirectoryWatcher(String directoryPath) throws IOException {
         this.dir = Paths.get(directoryPath);

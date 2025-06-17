@@ -1,5 +1,7 @@
 package gui;
 
+import converter.ConverterConfig;
+import converter.DirectoryWatcher;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -8,6 +10,7 @@ import javafx.stage.Stage;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import converter.Engine;
 
 public class MainViewController {
 
@@ -38,9 +41,12 @@ public class MainViewController {
     private String monitoredFolderPath = "Non configurata";
     private String convertedFolderPath = "Non configurata";
     private String failedFolderPath = "Non configurata";
+    private Engine engine;
+    private DirectoryWatcher directoryWatcher;
 
     @FXML
-    private void initialize() {
+    private void initialize() throws IOException {
+        engine = new Engine();
         // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
@@ -49,6 +55,7 @@ public class MainViewController {
 
         // TODO: Carica configurazione dal JSON
         loadConfiguration();
+        directoryWatcher = new DirectoryWatcher(monitoredFolderPath);
     }
 
     private void setupEventHandlers() {
@@ -73,10 +80,10 @@ public class MainViewController {
 
         if (isMonitoring) {
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
-            // TODO: Avvia DirectoryWatcher
+            // TODO: Avvia converter.DirectoryWatcher
         } else {
             addLogMessage("Monitoraggio fermato.");
-            // TODO: Ferma DirectoryWatcher
+            // TODO: Ferma converter.DirectoryWatcher
         }
     }
 
@@ -123,11 +130,9 @@ public class MainViewController {
 
     private void loadConfiguration() {
         try {
-            // TODO: Carica configurazione dal JSON usando Engine/ConverterConfig
-            // Per ora usa valori di default per test
-            monitoredFolderPath = "src\\input";
-            convertedFolderPath = "src\\output\\converted";
-            failedFolderPath = "src\\output\\failed";
+            monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
+            convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
+            failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
 
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
