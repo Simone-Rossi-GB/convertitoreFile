@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,18 @@ public class Engine{
             throw new RuntimeException("Errore nella lettura del file di configurazione", e);
         }
     }
+
+    public List<String> getPossibleConversions(String extension) throws Exception {
+        if(!config.getConversions().containsKey(extension))
+            throw new Exception("Conversione non supportata");
+        for (String e : config.getConversions().get(extension).keySet())
+            System.out.println(e);
+        List<String> possibleExtensions = new ArrayList<>(config.getConversions().get(extension).keySet());
+        System.out.println("Lista ottenuta");
+        System.out.println();
+        return possibleExtensions;
+    }
+
 
     public void conversione (String srcExt, String outExt, File srcFile) throws Exception{
         Map<String, Map<String, String>> conversions = config.getConversions();
