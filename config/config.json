@@ -11,7 +11,7 @@
       "json": "Converters.ZipToTarGzConverter"
     },
     "csv": {
-      "json": "converters.CSVtoJSONconverter"
+      "json": "Converters.CSVtoJSONconverter"
     },
     "eml": {
       "pdf" : "Converters.EmlToPdfConverter"

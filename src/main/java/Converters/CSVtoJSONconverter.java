@@ -26,10 +26,12 @@ public class CSVtoJSONconverter implements Converter{
             String[] values = line.split(",");
             ObjectNode jsonObject = objectMapper.createObjectNode();
             for (int i=0; i < headers.length; i++){
+                String cleanKey = headers[i].replaceAll("^\"|\"$","");
+                String value  = values[i];
                 if (values[i].matches("^-?\\d+(\\.\\d+)?$")){
-                    jsonObject.put(headers[i], Double.parseDouble(values[i]));
+                    jsonObject.put(cleanKey, Double.parseDouble(value));
                 } else {
-                    jsonObject.put(headers[i], values[i]);
+                    jsonObject.put(cleanKey, value);
                 }
             }
             jsonArray.add(jsonObject);

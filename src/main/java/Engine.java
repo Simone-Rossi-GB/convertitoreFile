@@ -44,7 +44,7 @@ public class Engine{
                     throw new Exception("Errore nella conversione");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
         else
