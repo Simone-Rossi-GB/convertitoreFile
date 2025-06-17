@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 public class CSVtoJSONconverter implements Converter{
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException {
+        System.out.println("CONVERSION CSV-JSON START");
         BufferedReader reader = new BufferedReader(new FileReader(srcFile));
         String[] headers = reader.readLine().split(",");
 
@@ -25,7 +25,13 @@ public class CSVtoJSONconverter implements Converter{
             String[] values = line.split(",");
             ObjectNode jsonObject = objectMapper.createObjectNode();
             for (int i=0; i < headers.length; i++){
-                jsonObject.put(headers[i], values[i]);
+                String cleanKey = headers[i].replaceAll("^\"|\"$","");
+                String value  = values[i];
+                if (values[i].matches("^-?\\d+(\\.\\d+)?$")){
+                    jsonObject.put(cleanKey, Double.parseDouble(value));
+                } else {
+                    jsonObject.put(cleanKey, value.replaceAll("^\"|\"$",""));
+                }
             }
             jsonArray.add(jsonObject);
         }

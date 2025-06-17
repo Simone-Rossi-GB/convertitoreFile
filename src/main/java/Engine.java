@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Engine{
-    private ConverterConfig config = null;
+    private final ConverterConfig config;
 
     public Engine(){
         try (FileReader reader = new FileReader("config/config.json")) {
@@ -44,7 +44,7 @@ public class Engine{
                     throw new Exception("Errore nella conversione");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
         else
@@ -56,6 +56,6 @@ public class Engine{
         Path srcPath = Paths.get(file.getAbsolutePath());
         Path destPath = Paths.get(outPath + fileName);
         Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("File copiato in " + destPath.toString());
+        System.out.println("File copiato in " + destPath);
     }
 }
