@@ -15,7 +15,7 @@ public class Engine{
     private ConverterConfig config = null;
 
     public Engine(){
-        try (FileReader reader = new FileReader("config\\config.json")) {
+        try (FileReader reader = new FileReader("config/config.json")) {
             Gson gson = new Gson();
             config = gson.fromJson(reader, ConverterConfig.class);
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class Engine{
     public void conversione (String srcExt, String outExt, File srcFile) throws Exception{
         Map<String, Map<String, String>> conversions = config.getConversions();
         if(!conversions.containsKey(srcExt))
-        throw new Exception("Conversione non supportata");
+            throw new Exception("Conversione non supportata");
         Map<String, String> possibleConversions = conversions.get(srcExt);
         if(possibleConversions.containsKey(outExt)){
             String converterClassName = possibleConversions.get(outExt);
