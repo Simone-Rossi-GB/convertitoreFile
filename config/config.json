@@ -1,6 +1,6 @@
 {
-  "successOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\success\\",
-  "errorOutputDir": "C:\\Users\\DELLMuletto\\IdeaProjects\\convertitoreFile\\src\\output\\error\\",
+  "successOutputDir": "src\\output\\success\\",
+  "errorOutputDir": "src\\output\\error\\",
   "conversions": {
     "pdf": {
       "doc": "converters.PDFtoDOCconverter",
