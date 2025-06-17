@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import converter.Engine;
@@ -42,6 +44,9 @@ public class MainViewController {
     private int detectedFiles = 0;
     private int successfulConversions = 0;
     private int failedConversions = 0;
+    private int fileRicevuti = 0;
+    private int fileConvertiti = 0;
+    private int fileScartati = 0;
 
     // Percorsi delle cartelle (verranno caricati dal JSON)
     private String monitoredFolderPath = "Non configurata";
@@ -49,6 +54,7 @@ public class MainViewController {
     private String failedFolderPath = "Non configurata";
     private Engine engine;
     Thread watcherThread;
+
 
     @FXML
     private void initialize() throws IOException {
@@ -65,6 +71,15 @@ public class MainViewController {
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
         }
+    }
+
+    public static String getExtension(File file) {
+        String name = file.getName();
+        int lastDot = name.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == name.length() - 1) {
+            return ""; // niente estensione
+        }
+        return name.substring(lastDot + 1).toLowerCase();
     }
 
     private void setupEventHandlers() {
@@ -89,6 +104,7 @@ public class MainViewController {
         openFailedFolderBtn.setOnAction(e -> openFolder(failedFolderPath));
     }
 
+    @FXML
     private void toggleMonitoring() throws IOException {
 
         if (isMonitoring) {
@@ -243,6 +259,71 @@ public class MainViewController {
     private void exitApplication() {
         addLogMessage("Chiusura applicazione...");
         Platform.exit();
+    }
+
+    public void launchDialogConversion(File srcFile) {
+        Platform.runLater(() -> fileRicevuti++);
+        engine = new Engine();
+        String srcExtension = getExtension(srcFile);
+        System.out.println("Estensione file sorgente: " + srcExtension);
+        List<String> formats = null;
+        try {
+            formats = engine.getPossibleConversions(srcExtension);
+        } catch (Exception e) {
+            Platform.runLater(() -> fileScartati++);
+            launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
+            stampaRisultati();
+            return;
+        }
+        System.out.println("prima parte finita");
+        List<String> finalFormats = formats;
+        Platform.runLater(() -> {
+            ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
+            dialog.setTitle("Seleziona Formato");
+            dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
+            dialog.setContentText("Formato desiderato:");
+            System.out.println("dialog mandato");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(format -> {
+                try {
+                    engine.conversione(srcExtension, format, srcFile);
+                    fileConvertiti++;
+                    launchAlertSuccess(srcFile);
+                } catch (Exception e) {
+                    fileScartati++;
+                    launchAlertError("Conversione di " + srcFile.getName() + " interrotta a causa di un errore");
+                }
+                stampaRisultati();
+            });
+        });
+
+    }
+
+    public void stampaRisultati(){
+        System.out.println("Ricevuti: " + fileRicevuti);
+        System.out.println("Scartati: " + fileScartati);
+        System.out.println("Convertiti: " + fileConvertiti);
+    }
+
+    public void launchAlertSuccess(File file){
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Conversione eseguita");
+            alert.setHeaderText(null);
+            alert.setContentText("Conversione di " + file.getName() + " completata con successo!");
+            alert.showAndWait();
+        });
+    }
+
+    public void launchAlertError(String message){
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Conversione interrotta");
+            alert.setHeaderText(null); // Nessun header
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
     }
 
     private void showAlert(String title, String message) {
