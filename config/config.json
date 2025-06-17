@@ -3,18 +3,18 @@
   "errorOutputDir": "src\\output\\error\\",
   "conversions": {
     "pdf": {
-      "doc": "converters.PDFtoDOCconverter",
-      "docx": "converters.PDFtoDOCXconverter",
-      "jpg": "converters.PDFtoJPGconvetrter"
+      "doc": "Converters.PDFtoDOCconverter",
+      "docx": "Converters.PDFtoDOCXconverter",
+      "jpg": "Converters.PDFtoJPGconvetrter"
     },
     "xls": {
-      "json": "converters.ZipToTarGzConverter"
+      "json": "Converters.ZipToTarGzConverter"
     },
     "csv": {
       "json": "converters.CSVtoJSONconverter"
     },
     "eml": {
-      "pdf" : "converters.EmlToPdfConverter"
+      "pdf" : "Converters.EmlToPdfConverter"
     }
   }
 }

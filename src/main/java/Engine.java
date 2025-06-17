@@ -37,7 +37,6 @@ public class Engine{
                 try{
                     List<File> outFiles = converter.convert(srcFile);
                     for(File f : outFiles) {
-                        System.out.println(f.getAbsolutePath());
                         spostaFile(config.getSuccessOutputDir(), f);
                     }
                 } catch (IOException e) {
