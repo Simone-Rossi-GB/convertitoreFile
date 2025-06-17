@@ -69,6 +69,7 @@ public class DirectoryWatcher implements Runnable {
 
                 if (kind == ENTRY_CREATE) {
                     if (Files.isDirectory(fullPath)) {
+                        System.out.println("fileName: " + fileName + " fullPath: " + fullPath);
                         // Registra la nuova directory creata
                         try {
                             registerAll(fullPath);

@@ -60,8 +60,10 @@ public class MainViewController {
 
         // TODO: Carica configurazione dal JSON
         loadConfiguration();
-        watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath));
-        watcherThread.start();
+        if(isMonitoring){
+            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath));
+            watcherThread.start();}
+
     }
 
     private void setupEventHandlers() {
@@ -86,9 +88,8 @@ public class MainViewController {
         openFailedFolderBtn.setOnAction(e -> openFolder(failedFolderPath));
     }
 
+    @FXML
     private void toggleMonitoring() throws IOException {
-        updateMonitoringStatus();
-
         if (isMonitoring) {
             addLogMessage("Monitoraggio fermato.");
             // TODO: Ferma converter.DirectoryWatcher
@@ -100,6 +101,7 @@ public class MainViewController {
             watcherThread.start();
         }
         isMonitoring = !isMonitoring;
+        updateMonitoringStatus();
     }
 
     private void updateMonitoringStatus() {
