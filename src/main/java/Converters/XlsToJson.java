@@ -1,6 +1,5 @@
 package Converters;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,175 +7,271 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.util.*;
 
-/**
- * Convertitore da file Excel (.xls) a JSON
- * Compatibile con Java 1.8
- */
-public class XlsToJsonConverter {
+public class XlsToJson {
+    public File convertToJson(File inputFile) throws IOException {
+        // Validazione input
+        validateInputFile(inputFile);
 
-    public static void main(String[] args) {
-        // Configurazione file
-        String inputFile = "input.xls";
-        String outputFile = "output.json";
+        // Determina il tipo di file e applica la conversione appropriata
+        String fileName = inputFile.getName().toLowerCase();
 
-        // Parsing parametri da riga di comando
-        if (args.length >= 2) {
-            inputFile = args[0];
-            outputFile = args[1];
-        }
-
-        XlsToJsonConverter converter = new XlsToJsonConverter();
-        try {
-            converter.convertXlsToJson(inputFile, outputFile);
-        } catch (IOException e) {
-            System.err.println("Errore I/O durante la conversione: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Errore durante la conversione: " + e.getMessage());
-            e.printStackTrace();
+        if (fileName.endsWith(".xls")) {
+            return convertXlsToJson(inputFile);
+        } else {
+            throw new IllegalArgumentException("Tipo di file non supportato: " + fileName +
+                    ". Formati supportati: .xls");
         }
     }
 
     /**
-     * Converte un file XLS in formato JSON
+     * Overload con percorso di output personalizzato
+     *
+     * @param inputFile File da convertire
+     * @param outputPath Percorso del file JSON di output
+     * @return File JSON convertito
+     * @throws IOException Se si verificano errori durante la conversione
      */
-    public void convertXlsToJson(String inputFilePath, String outputFilePath) throws IOException {
-        System.out.println("Inizio conversione: " + inputFilePath + " -> " + outputFilePath);
+    public File convertToJson(File inputFile, String outputPath) throws IOException {
+        validateInputFile(inputFile);
 
-        try (InputStream inputStream = new FileInputStream(inputFilePath);
-             Workbook workbook = new HSSFWorkbook(inputStream)) {
+        if (outputPath == null || outputPath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Il percorso di output non può essere null o vuoto");
+        }
 
-            // Prende il primo foglio
+        String fileName = inputFile.getName().toLowerCase();
+
+        if (fileName.endsWith(".xls")) {
+            return convertXlsToJson(inputFile, outputPath);
+        } else {
+            throw new IllegalArgumentException("Tipo di file non supportato: " + fileName);
+        }
+    }
+
+    /**
+     * Converte un file XLS in JSON
+     *
+     * @param xlsFile File XLS da convertire
+     * @return File JSON creato
+     * @throws IOException Se si verificano errori durante la conversione
+     */
+    private File convertXlsToJson(File xlsFile) throws IOException {
+        // Genera automaticamente il percorso del file JSON
+        String outputPath = generateJsonPath(xlsFile);
+        return convertXlsToJson(xlsFile, outputPath);
+    }
+
+    /**
+     * Converte un file XLS in JSON con percorso personalizzato
+     *
+     * @param xlsFile File XLS da convertire
+     * @param outputPath Percorso del file JSON di output
+     * @return File JSON creato
+     * @throws IOException Se si verificano errori durante la conversione
+     */
+    private File convertXlsToJson(File xlsFile, String outputPath) throws IOException {
+        File outputFile = new File(outputPath);
+
+        System.out.println("Conversione XLS → JSON:");
+        System.out.println("  Input: " + xlsFile.getAbsolutePath());
+        System.out.println("  Output: " + outputFile.getAbsolutePath());
+
+        try (InputStream fileStream = new FileInputStream(xlsFile);
+             Workbook workbook = new HSSFWorkbook(fileStream)) {
+
             Sheet sheet = workbook.getSheetAt(0);
-            System.out.println("Elaborazione foglio: " + sheet.getSheetName());
+            Iterator<Row> rowIterator = sheet.iterator();
+            List<String> headers = new ArrayList<>();
+            List<Map<String, String>> dataList = new ArrayList<>();
 
-            // Converte i dati
-            List<Map<String, Object>> jsonData = convertSheetToJson(sheet);
+            // Elabora le intestazioni (prima riga)
+            if (rowIterator.hasNext()) {
+                Row headerRow = rowIterator.next();
+                for (Cell cell : headerRow) {
+                    String headerValue = getCellValue(cell);
+                    headers.add(headerValue.isEmpty() ? "column_" + cell.getColumnIndex() : headerValue);
+                }
+                System.out.println("  Intestazioni: " + headers);
+            }
+
+            // Elabora i dati
+            int rowCount = 0;
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+
+                if (isRowEmpty(row)) {
+                    continue;
+                }
+
+                Map<String, String> rowData = new LinkedHashMap<>();
+                for (int i = 0; i < headers.size(); i++) {
+                    Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    rowData.put(headers.get(i), getCellValue(cell));
+                }
+
+                dataList.add(rowData);
+                rowCount++;
+            }
+
+            // Crea la cartella di output se necessario
+            createOutputDirectory(outputFile);
 
             // Scrive il file JSON
-            writeJsonToFile(jsonData, outputFilePath);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writerWithDefaultPrettyPrinter().writeValue(outputFile, dataList);
 
-            System.out.println("Conversione completata! Righe elaborate: " + jsonData.size());
+            System.out.println("  ✓ Conversione completata! Righe elaborate: " + rowCount);
+            System.out.println("  ✓ File creato: " + outputFile.getAbsolutePath() + " (" + outputFile.length() + " bytes)");
+
+            // Verifica che il file sia stato creato correttamente
+            if (outputFile.exists() && outputFile.length() > 0) {
+                return outputFile;
+            } else {
+                throw new IOException("Il file JSON non è stato creato correttamente");
+            }
+
+        } catch (Exception e) {
+            // Pulizia in caso di errore
+            cleanupFailedConversion(outputFile);
+            throw new IOException("Errore durante la conversione XLS: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Converte un foglio Excel in una lista di oggetti JSON
+     * Valida il file di input
      */
-    private List<Map<String, Object>> convertSheetToJson(Sheet sheet) {
-        List<Map<String, Object>> jsonData = new ArrayList<>();
-        Iterator<Row> rowIterator = sheet.iterator();
-        List<String> headers = new ArrayList<>();
-
-        // Legge le intestazioni (prima riga)
-        if (rowIterator.hasNext()) {
-            Row headerRow = rowIterator.next();
-            for (Cell cell : headerRow) {
-                String header = getCellValueAsString(cell).trim();
-                headers.add(header.isEmpty() ? "column_" + cell.getColumnIndex() : header);
-            }
-            System.out.println("Intestazioni trovate: " + headers);
+    private void validateInputFile(File inputFile) throws IOException {
+        if (inputFile == null) {
+            throw new IllegalArgumentException("Il file di input non può essere null");
         }
 
-        // Elabora le righe di dati
-        int rowCount = 0;
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-
-            // Salta righe completamente vuote
-            if (isRowEmpty(row)) {
-                continue;
-            }
-
-            Map<String, Object> rowData = new LinkedHashMap<>();
-
-            for (int i = 0; i < headers.size(); i++) {
-                Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                Object cellValue = getCellValue(cell);
-                rowData.put(headers.get(i), cellValue);
-            }
-
-            jsonData.add(rowData);
-            rowCount++;
+        if (!inputFile.exists()) {
+            throw new FileNotFoundException("File non trovato: " + inputFile.getAbsolutePath());
         }
 
-        System.out.println("Righe di dati elaborate: " + rowCount);
-        return jsonData;
+        if (!inputFile.isFile()) {
+            throw new IllegalArgumentException("Il percorso non punta a un file: " + inputFile.getAbsolutePath());
+        }
+
+        if (!inputFile.canRead()) {
+            throw new IOException("File non leggibile: " + inputFile.getAbsolutePath());
+        }
+
+        if (inputFile.length() == 0) {
+            throw new IOException("Il file è vuoto: " + inputFile.getAbsolutePath());
+        }
     }
 
     /**
-     * Estrae il valore di una cella come Object (preserva i tipi)
+     * Genera il percorso del file JSON sostituendo l'estensione
      */
-    private Object getCellValue(Cell cell) {
+    private String generateJsonPath(File inputFile) {
+        String inputPath = inputFile.getAbsolutePath();
+        return inputPath.replaceAll("\\.[^.]+$", ".json");
+    }
+
+    /**
+     * Crea la cartella di output se non esiste
+     */
+    private void createOutputDirectory(File outputFile) throws IOException {
+        File parentDir = outputFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean created = parentDir.mkdirs();
+            if (!created) {
+                throw new IOException("Impossibile creare la cartella: " + parentDir.getAbsolutePath());
+            }
+            System.out.println("  Cartella creata: " + parentDir.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Pulisce i file creati in caso di conversione fallita
+     */
+    private void cleanupFailedConversion(File outputFile) {
+        if (outputFile != null && outputFile.exists()) {
+            boolean deleted = outputFile.delete();
+            if (deleted) {
+                System.out.println("  File parziale eliminato: " + outputFile.getName());
+            }
+        }
+    }
+
+    /**
+     * Estrae il valore di una cella come stringa (senza usare getCellType)
+     */
+    private String getCellValue(Cell cell) {
         if (cell == null) {
-            return null;
+            return "";
         }
 
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_STRING:
-                return cell.getStringCellValue();
+        // Prova con stringa
+        try {
+            String stringValue = cell.getStringCellValue();
+            if (stringValue != null) {
+                return stringValue.trim();
+            }
+        } catch (Exception e) {
+            // Non è una stringa
+        }
 
-            case Cell.CELL_TYPE_NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getDateCellValue();
-                } else {
-                    double numValue = cell.getNumericCellValue();
-                    // Se è un numero intero, restituisce come Integer
-                    if (numValue == Math.floor(numValue)) {
-                        return (int) numValue;
-                    }
-                    return numValue;
+        // Prova con numero
+        try {
+            if (DateUtil.isCellDateFormatted(cell)) {
+                Date dateValue = cell.getDateCellValue();
+                return dateValue != null ? dateValue.toString() : "";
+            } else {
+                double numValue = cell.getNumericCellValue();
+                if (numValue == Math.floor(numValue) && !Double.isInfinite(numValue)) {
+                    return String.valueOf((long) numValue);
                 }
+                return Double.toString(numValue);
+            }
+        } catch (Exception e) {
+            // Non è un numero
+        }
 
-            case Cell.CELL_TYPE_BOOLEAN:
-                return cell.getBooleanCellValue();
+        // Prova con booleano
+        try {
+            boolean boolValue = cell.getBooleanCellValue();
+            return Boolean.toString(boolValue);
+        } catch (Exception e) {
+            // Non è un booleano
+        }
 
-            case Cell.CELL_TYPE_FORMULA:
-                // Tenta di valutare la formula
+        // Prova con formula
+        try {
+            String formula = cell.getCellFormula();
+            if (formula != null && !formula.isEmpty()) {
                 try {
-                    return evaluateFormula(cell);
-                } catch (Exception e) {
-                    return cell.getCellFormula();
+                    FormulaEvaluator evaluator = cell.getSheet().getWorkbook()
+                            .getCreationHelper().createFormulaEvaluator();
+                    CellValue cellValue = evaluator.evaluate(cell);
+
+                    try {
+                        return cellValue.getStringValue();
+                    } catch (Exception ex1) {
+                        try {
+                            double numVal = cellValue.getNumberValue();
+                            if (numVal == Math.floor(numVal)) {
+                                return String.valueOf((long) numVal);
+                            }
+                            return Double.toString(numVal);
+                        } catch (Exception ex2) {
+                            try {
+                                return Boolean.toString(cellValue.getBooleanValue());
+                            } catch (Exception ex3) {
+                                return formula;
+                            }
+                        }
+                    }
+                } catch (Exception evalEx) {
+                    return formula;
                 }
-
-            case Cell.CELL_TYPE_BLANK:
-                return null;
-
-            default:
-                return null;
+            }
+        } catch (Exception e) {
+            // Non è una formula
         }
-    }
 
-    /**
-     * Estrae il valore di una cella come String
-     */
-    private String getCellValueAsString(Cell cell) {
-        Object value = getCellValue(cell);
-        return value != null ? value.toString() : "";
-    }
-
-    /**
-     * Valuta una formula e restituisce il risultato
-     */
-    private Object evaluateFormula(Cell cell) {
-        FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-        CellValue cellValue = evaluator.evaluate(cell);
-
-        switch (cellValue.getCellType()) {
-            case Cell.CELL_TYPE_NUMERIC:
-                double numValue = cellValue.getNumberValue();
-                // Se è un numero intero, restituisce come Integer
-                if (numValue == Math.floor(numValue)) {
-                    return (int) numValue;
-                }
-                return numValue;
-            case Cell.CELL_TYPE_STRING:
-                return cellValue.getStringValue();
-            case Cell.CELL_TYPE_BOOLEAN:
-                return cellValue.getBooleanValue();
-            default:
-                return cell.getCellFormula();
-        }
+        return "";
     }
 
     /**
@@ -188,8 +283,8 @@ public class XlsToJsonConverter {
         }
 
         for (Cell cell : row) {
-            if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK) {
-                String cellValue = getCellValueAsString(cell).trim();
+            if (cell != null) {
+                String cellValue = getCellValue(cell).trim();
                 if (!cellValue.isEmpty()) {
                     return false;
                 }
@@ -199,16 +294,33 @@ public class XlsToJsonConverter {
     }
 
     /**
-     * Scrive i dati JSON su file
+     * Metodo di utilità per verificare se un file è supportato
      */
-    private void writeJsonToFile(List<Map<String, Object>> data, String filePath) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            // Configura il mapper per una formattazione leggibile
-            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), data);
-        } catch (JsonMappingException e) {
-            throw new IOException();
+    public boolean isFileSupported(File file) {
+        if (file == null || !file.exists() || !file.isFile()) {
+            return false;
         }
+
+        String fileName = file.getName().toLowerCase();
+        return fileName.endsWith(".xls");
+    }
+
+    /**
+     * Ottiene informazioni sul file di input
+     */
+    public String getFileInfo(File file) {
+        if (file == null || !file.exists()) {
+            return "File non valido";
+        }
+
+        StringBuilder info = new StringBuilder();
+        info.append("Nome: ").append(file.getName()).append("\n");
+        info.append("Percorso: ").append(file.getAbsolutePath()).append("\n");
+        info.append("Dimensione: ").append(file.length()).append(" bytes\n");
+        info.append("Leggibile: ").append(file.canRead()).append("\n");
+        info.append("Modificabile: ").append(file.canWrite()).append("\n");
+        info.append("Supportato: ").append(isFileSupported(file));
+
+        return info.toString();
     }
 }
