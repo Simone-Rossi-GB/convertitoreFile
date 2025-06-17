@@ -34,7 +34,7 @@ public class ImageConverter implements Converter {
     }
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
-        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff");
+        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif");
         BufferedImage image = ImageIO.read(imgFile);
 
         if (image == null) {
@@ -45,10 +45,9 @@ public class ImageConverter implements Converter {
         int lastDotIndex = imgFile.getName().lastIndexOf('.');
         String extension = imgFile.getName().substring(lastDotIndex + 1).toLowerCase();
 
-        if (!estensioniTrasparenza.contains(extension) && !estensioniTrasparenza.contains(extracted.toLowerCase())) {
+        if (!estensioniTrasparenza.contains(extension) || !estensioniTrasparenza.contains(extracted.toLowerCase())) {
             image = alphaChannelRemover(image);
         }
-
         ImageIO.write(image, extracted, outFile);
         return outFile;
     }
