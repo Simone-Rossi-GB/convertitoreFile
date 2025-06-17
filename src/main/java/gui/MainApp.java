@@ -47,7 +47,7 @@ public class MainApp extends Application {
             System.err.println("Assicurati che il file sia in src/main/resources/MainView.fxml");
 
             // Mostra errore dettagliato
-            showErrorDialog("Errore FXML",
+            showErrorDialog(
                     "Impossibile caricare MainView.fxml\n" +
                             "Verifica che il file sia in src/main/resources/MainView.fxml\n\n" +
                             "Errore: " + e.getMessage());
@@ -57,9 +57,9 @@ public class MainApp extends Application {
     /**
      * Mostra un dialog di errore dettagliato
      */
-    private void showErrorDialog(String title, String message) {
+    private void showErrorDialog(String message) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-        alert.setTitle(title);
+        alert.setTitle("Errore FXML");
         alert.setHeaderText("Errore di configurazione");
         alert.setContentText(message);
         alert.showAndWait();

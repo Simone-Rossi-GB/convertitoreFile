@@ -33,4 +33,8 @@ public class MainViewController {
     private Stage getPrimaryStage() {
         return mainApp.getPrimaryStage();
     }
+
+    public void setMainApp(MainApp mainApp) {
+        this.mainApp = mainApp;
+    }
 }
