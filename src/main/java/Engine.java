@@ -35,7 +35,11 @@ public class Engine{
                 Class<?> clazz = Class.forName(converterClassName);
                 Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
                 try{
-                    // WORK
+                    File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[["+outExt+"]]-"));
+                    if (!srcFile.renameTo(newFile)) {
+                        System.err.println("Errore: Un file con questo nome e gia stato convertito al formato richiesto");
+                    }
+                    srcFile = newFile;
                     List<File> outFiles = converter.convert(srcFile);
                     for(File f : outFiles) {
                         spostaFile(config.getSuccessOutputDir(), f);
@@ -58,5 +62,19 @@ public class Engine{
         Path destPath = Paths.get(outPath + fileName);
         Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
         System.out.println("File copiato in " + destPath);
+    }
+
+    private static File giveBackNewFileWithNewName(String filePath, String suffix) {
+        File file = new File(filePath);
+        String name = file.getName();
+
+        int lastDot = name.lastIndexOf(".");
+
+        // Separate name and extension
+        String baseName = name.substring(0, lastDot);
+        String extension = name.substring(lastDot); // Includes the dot (.)
+
+        // Construct new file path
+        return new File(file.getParent() + File.separator + baseName + suffix + extension);
     }
 }
