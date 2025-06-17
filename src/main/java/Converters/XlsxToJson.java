@@ -87,6 +87,10 @@ public class XlsxToJson implements Converter {
 
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException {
-        return null;
+        ArrayList<File> resultFiles = new ArrayList<>();
+        File jsonFile = convertXlsxToJson(srcFile);
+        resultFiles.add(jsonFile);
+        return resultFiles;
     }
+
 }
