@@ -26,7 +26,7 @@ public class MainViewController {
     @FXML private Label detectedFilesCounter;
     @FXML private Label successfulConversionsCounter;
     @FXML private Label failedConversionsCounter;
-    @FXML private Button toggleMonitoringBtn;
+    @FXML private Button MonitoringBtn;
     @FXML private Button configBtn;
     @FXML private Button exitBtn;
     @FXML private Button openMonitoredFolderBtn;
@@ -47,7 +47,7 @@ public class MainViewController {
     private String convertedFolderPath = "Non configurata";
     private String failedFolderPath = "Non configurata";
     private Engine engine;
-    private DirectoryWatcher directoryWatcher;
+    Thread watcherThread;
 
     @FXML
     private void initialize() throws IOException {
@@ -60,12 +60,19 @@ public class MainViewController {
 
         // TODO: Carica configurazione dal JSON
         loadConfiguration();
-        directoryWatcher = new DirectoryWatcher(monitoredFolderPath);
+        watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath));
+        watcherThread.start();
     }
 
     private void setupEventHandlers() {
         // Handler per il pulsante toggle monitoraggio
-        toggleMonitoringBtn.setOnAction(e -> toggleMonitoring());
+        MonitoringBtn.setOnAction(e -> {
+            try {
+                toggleMonitoring();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         // Handler per il pulsante configurazione
         configBtn.setOnAction(e -> openConfigurationWindow());
@@ -79,17 +86,20 @@ public class MainViewController {
         openFailedFolderBtn.setOnAction(e -> openFolder(failedFolderPath));
     }
 
-    private void toggleMonitoring() {
-        isMonitoring = !isMonitoring;
+    private void toggleMonitoring() throws IOException {
         updateMonitoringStatus();
 
         if (isMonitoring) {
-            addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
-            // TODO: Avvia converter.DirectoryWatcher
-        } else {
             addLogMessage("Monitoraggio fermato.");
             // TODO: Ferma converter.DirectoryWatcher
+            watcherThread.interrupt();
+        } else {
+            addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
+            // TODO: Avvia converter.DirectoryWatcher
+            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath));
+            watcherThread.start();
         }
+        isMonitoring = !isMonitoring;
     }
 
     private void updateMonitoringStatus() {
@@ -97,14 +107,14 @@ public class MainViewController {
             // Stato ATTIVO
             monitoringStatusLabel.setText("Monitoraggio: Attivo");
             statusIndicator.setTextFill(javafx.scene.paint.Color.web("#27ae60")); // Verde
-            toggleMonitoringBtn.setText("Ferma Monitoraggio");
-            toggleMonitoringBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
+            MonitoringBtn.setText("Ferma Monitoraggio");
+            MonitoringBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
         } else {
             // Stato FERMO
             monitoringStatusLabel.setText("Monitoraggio: Fermo");
             statusIndicator.setTextFill(javafx.scene.paint.Color.web("#e74c3c")); // Rosso
-            toggleMonitoringBtn.setText("Avvia Monitoraggio");
-            toggleMonitoringBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
+            MonitoringBtn.setText("Avvia Monitoraggio");
+            MonitoringBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
         }
     }
 
@@ -236,11 +246,5 @@ public class MainViewController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-    }
-
-    public void toggleMonitoringBtn(ActionEvent actionEvent) {
-        if( isMonitoring ) {
-
-        }
     }
 }
