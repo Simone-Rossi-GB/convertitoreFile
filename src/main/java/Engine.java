@@ -41,7 +41,17 @@ public class Engine{
                     }
                     srcFile = newFile;
                     List<File> outFiles = converter.convert(srcFile);
+                    File originFile = new File(srcFile.getPath().replaceAll("-\\[\\[.*?]]-", ""));
+                    if (!srcFile.renameTo(originFile)) {
+                        System.err.println("Errore: Un file con questo nome e gia stato convertito al formato richiesto");
+                    }
+                    srcFile = originFile;
                     for(File f : outFiles) {
+                        File returnFile = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
+                        if (!f.renameTo(returnFile)) {
+                            System.err.println("Errore: Un file con questo nome e gia stato convertito al formato richiesto");
+                        }
+                        f = returnFile;
                         spostaFile(config.getSuccessOutputDir(), f);
                     }
                 } catch (IOException e) {
