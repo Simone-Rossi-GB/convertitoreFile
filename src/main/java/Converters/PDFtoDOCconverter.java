@@ -15,7 +15,7 @@ public class PDFtoDOCconverter implements Converter{
         ArrayList<File> files = new ArrayList<>();
         String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
         File outputFile = new File(baseName + ".doc");
-        File thempleate  = new File("/Users/paoloferrari/Desktop/Progetto stage/convertitoreFile/themplate.doc");
+        File thempleate  = new File("convertitoreFile/themplate.doc");
         PDDocument pdf = PDDocument.load(pdfFile);
         PDFTextStripper stripper = new PDFTextStripper();
         String text = stripper.getText(pdf);
