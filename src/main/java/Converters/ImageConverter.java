@@ -17,7 +17,6 @@ public class ImageConverter implements Converter {
 
     @Override
     public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
-        System.out.println("ciao bello");
         ArrayList<File> files = new ArrayList<>();
         String imgName = imgFile.getName();
         Pattern pattern = Pattern.compile("\\[\\[(.*?)\\]\\]");
@@ -35,7 +34,7 @@ public class ImageConverter implements Converter {
     }
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
-        List<String> estensioniTrasparenza = new ArrayList<>(Arrays.asList("png", "TIFF", "WebP"));
+        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff");
         BufferedImage image = ImageIO.read(imgFile);
 
         if (image == null) {
@@ -44,9 +43,9 @@ public class ImageConverter implements Converter {
 
         File outFile = new File("src/temp", getName(imgFile) + "." + extracted);
         int lastDotIndex = imgFile.getName().lastIndexOf('.');
-        String extension = imgFile.getName().substring(lastDotIndex + 1);
+        String extension = imgFile.getName().substring(lastDotIndex + 1).toLowerCase();
 
-        if (!estensioniTrasparenza.contains(extension) && !estensioniTrasparenza.contains(extracted)) {
+        if (!estensioniTrasparenza.contains(extension) && !estensioniTrasparenza.contains(extracted.toLowerCase())) {
             image = alphaChannelRemover(image);
         }
 
@@ -69,4 +68,3 @@ public class ImageConverter implements Converter {
         return copy;
     }
 }
-
