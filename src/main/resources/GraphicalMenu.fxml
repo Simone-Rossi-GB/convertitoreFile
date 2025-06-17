@@ -103,7 +103,7 @@
 
                                         <HBox alignment="CENTER" spacing="16.5">
                                             <children>
-                                                <Button fx:id="toggleMonitoringBtn" mnemonicParsing="false" prefHeight="44.0" prefWidth="165.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;" text="Avvia Monitoraggio">
+                                                <Button fx:id="MonitoringBtn" mnemonicParsing="false" onAction="#toggleMonitoringBtn" prefHeight="44.0" prefWidth="165.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;" text="Avvia Monitoraggio">
                                                     <font>
                                                         <Font name="System Bold" size="13.2" />
                                                     </font>
