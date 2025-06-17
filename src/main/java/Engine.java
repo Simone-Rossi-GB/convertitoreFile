@@ -35,7 +35,9 @@ public class Engine{
                 Class<?> clazz = Class.forName(converterClassName);
                 Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
                 try{
+                    System.out.println("Avvio conversione");
                     List<File> outFiles = converter.convert(srcFile);
+                    System.out.println("Conversione avvenuta");
                     for(File f : outFiles) {
                         System.out.println(f.getAbsolutePath());
                         spostaFile(config.getSuccessOutputDir(), f);
