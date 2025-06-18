@@ -5,38 +5,38 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Log {
-    private final File logFile;
-    private final PrintWriter writer;
+    private static File logFile = null;
+    private static PrintWriter writer = null;
 
     public Log() throws IOException {
         File logDir = new File("src/logs");
         if (!logDir.exists()) logDir.mkdirs();
 
         String fileName = "log_" + getDateOnly() + ".txt"; // log_2025-06-18.txt
-        this.logFile = new File(logDir, fileName);
+        logFile = new File(logDir, fileName);
 
-        this.writer = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+        writer = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
     }
 
-    public void addMessage(String message) {
+    public static void addMessage(String message) {
         String time = getTimeOnly();
         writer.println("[" + time + "] " + message);
         writer.flush();
     }
 
-    public void close() {
+    public static void close() {
         writer.close();
     }
 
-    public File getLogFile() {
+    public static File getLogFile() {
         return logFile;
     }
 
-    private String getTimeOnly() {
+    private static String getTimeOnly() {
         return new SimpleDateFormat("HH:mm:ss").format(new Date());
     }
 
-    private String getDateOnly() {
+    private static String getDateOnly() {
         return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 }
