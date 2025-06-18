@@ -219,11 +219,6 @@
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
       "png": "Converters.ImageConverter"
-    },
-    "psd": {
-      "jpg": "Converters.ImageConverter",
-      "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
     }
   }
 }
