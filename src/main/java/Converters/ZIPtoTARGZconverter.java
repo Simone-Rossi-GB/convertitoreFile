@@ -22,7 +22,7 @@ public class ZIPtoTARGZconverter implements Converter{
     @Override
     public ArrayList<File> convert(File zipFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
-        String directoryPath = "src\\temp\\";
+        String directoryPath = "src/temp/";
         String zipName = zipFile.getName();
         int lastDot = zipName.lastIndexOf('.');
         String baseName = (lastDot == -1) ? zipName : zipName.substring(0, lastDot);
