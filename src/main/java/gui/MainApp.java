@@ -1,5 +1,6 @@
 package gui;
 
+import converter.Log;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -42,7 +43,8 @@ public class MainApp extends Application {
             primaryStage.show();
 
             primaryStage.setOnCloseRequest(event -> {
-                converter.Log.addMessage("Applicazione chiusa.");
+                Log.addMessage("Applicazione chiusa.");
+                Log.close();
             });
 
         } catch (IOException e) {
