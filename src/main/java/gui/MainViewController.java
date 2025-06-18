@@ -1,6 +1,7 @@
 package gui;
 
 import converter.DirectoryWatcher;
+import converter.Log;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -84,8 +85,8 @@ public class MainViewController {
         // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
-        addLogMessage("Applicazione avviata.");
-        addLogMessage("Caricamento configurazione...");
+        Log.addMessage("Applicazione avviata.");
+        Log.addMessage("Caricamento configurazione...");
 
         // Carica configurazione dal JSON
         loadConfiguration();

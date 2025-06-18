@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Engine {
     private ConverterConfig config;
-    private static final String CONFIG_FILE_PATH = "config/config.json";
+    private static final String CONFIG_FILE_PATH = "src/main/java/converter/config/config.json";
 
     /**
      * Costruttore: legge la configurazione dal file JSON.
