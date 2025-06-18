@@ -19,6 +19,8 @@ public class MainApp extends Application {
         this.primaryStage.setResizable(false); // Opzionale: impedisce il ridimensionamento
 
         loadMainView();
+
+
     }
 
     private void loadMainView() {
@@ -38,6 +40,10 @@ public class MainApp extends Application {
             Scene scene = new Scene(mainView, 990, 770);
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            primaryStage.setOnCloseRequest(event -> {
+                converter.Log.addMessage("Applicazione chiusa.");
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
