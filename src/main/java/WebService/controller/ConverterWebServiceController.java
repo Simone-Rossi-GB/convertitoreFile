@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap; // Import HashMap
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Collections; // Import Collections for singletonMap
 
 @RestController
 @RequestMapping("/api/converter")
@@ -21,7 +23,8 @@ public class ConverterWebServiceController {
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
-        return ResponseEntity.ok(Map.of("status", "active"));
+        // Using Collections.singletonMap for a single entry map
+        return ResponseEntity.ok(Collections.singletonMap("status", "active"));
     }
 
     @GetMapping("/conversions/{extension}")
@@ -70,17 +73,19 @@ public class ConverterWebServiceController {
                 }
             }
 
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Conversione completata con successo",
-                    "conversionId", conversionId
-            ));
+            // Using HashMap for multiple entries
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("message", "Conversione completata con successo");
+            successResponse.put("conversionId", conversionId);
+            return ResponseEntity.ok(successResponse);
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Map.of(
-                    "success", false,
-                    "error", e.getMessage()
-            ));
+            // Using HashMap for multiple entries
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
         }
     }
 

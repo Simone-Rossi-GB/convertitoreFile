@@ -42,7 +42,7 @@ public class ConfigWindowController {
 
     // Area per le conversioni JSON (sola lettura)
     @FXML private TextArea conversionsTextArea;
-    @FXML private Label statusLabel;
+    @FXML private Label monitoringStatusLabel;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
@@ -376,11 +376,11 @@ public class ConfigWindowController {
      */
     private void updateStatus(String message, boolean isError) {
         Platform.runLater(() -> {
-            statusLabel.setText(message);
+            monitoringStatusLabel.setText(message);
             if (isError) {
-                statusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+                monitoringStatusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
             } else {
-                statusLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+                monitoringStatusLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
             }
         });
     }
