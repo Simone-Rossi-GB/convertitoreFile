@@ -37,15 +37,14 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "tiff": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter",
-      "gif": "Converters.ImageConverter"
+      "gif": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "png": {
       "bmp": "Converters.ImageConverter",
@@ -56,14 +55,13 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "tiff": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter",
-      "gif": "Converters.ImageConverter"
+      "gif": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "bmp": {
       "icns": "Converters.ImageConverter",
@@ -73,15 +71,14 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "tiff": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter",
-      "gif": "Converters.ImageConverter"
+      "gif": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "gif": {
       "bmp": "Converters.ImageConverter",
@@ -92,14 +89,13 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "tiff": "Converters.ImageConverter",
-      "webp": "Converters.ImageConverter"
+      "webp": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "tiff": {
       "bmp": "Converters.ImageConverter",
@@ -110,14 +106,13 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter",
-      "gif": "Converters.ImageConverter"
+      "gif": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "jpg": {
       "bmp": "Converters.ImageConverter",
@@ -127,15 +122,14 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "tiff": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter",
-      "gif": "Converters.ImageConverter"
+      "gif": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "webp": {
       "bmp": "Converters.ImageConverter",
@@ -146,14 +140,13 @@
       "pbm": "Converters.ImageConverter",
       "pgm": "Converters.ImageConverter",
       "pam": "Converters.ImageConverter",
-      "pcx": "Converters.ImageConverter",
       "pnm": "Converters.ImageConverter",
       "ppm": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "sgi": "Converters.ImageConverter",
       "tga": "Converters.ImageConverter",
       "tiff": "Converters.ImageConverter",
-      "gif": "Converters.ImageConverter"
+      "gif": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "psd": {
       "png": "Converters.ImageConverter",
@@ -164,61 +157,66 @@
       "gif": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter"
     },
+    "ico": {
+      "jpg": "Converters.ImageConverter",
+      "jpeg": "Converters.ImageConverter",
+      "png": "Converters.ImageConverter",
+      "icns": "Converters.ImageConverter"
+    },
     "icns": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "tga": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
       "png": "Converters.ImageConverter",
-      "bmp": "Converters.ImageConverter"
+      "bmp": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "pnm": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "pbm": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "pgm": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "ppm": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "pam": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "iff": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
-    },
-    "pcx": {
-      "jpg": "Converters.ImageConverter",
-      "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
-    },
-    "sgi": {
-      "jpg": "Converters.ImageConverter",
-      "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     },
     "xwd": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
+      "png": "Converters.ImageConverter",
+      "ico": "Converters.ImageConverter"
     }
   }
 }
