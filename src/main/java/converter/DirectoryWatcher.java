@@ -34,7 +34,14 @@ public class DirectoryWatcher implements Runnable {
      * @throws IOException in caso di errore nella registrazione delle directory
      */
     public DirectoryWatcher(String directoryPath, MainViewController controller) throws IOException {
+        if (directoryPath == null) throw new NullPointerException("L'oggetto directoryPath non esiste");
+        if (controller == null) throw new NullPointerException("L'oggetto controller non esiste");
+
         this.dir = Paths.get(directoryPath);
+        if (!Files.exists(this.dir) || !Files.isDirectory(this.dir)) {
+            throw new IllegalArgumentException("Il percorso " + directoryPath + " è sbagliato o non è una directory");
+        }
+
         this.executor = Executors.newCachedThreadPool();
         this.watchService = FileSystems.getDefault().newWatchService();
         this.controller = controller;
@@ -49,9 +56,13 @@ public class DirectoryWatcher implements Runnable {
      * @throws IOException in caso di errore nella registrazione
      */
     private void registerAll(final Path start) throws IOException {
+        if (start == null) throw new NullPointerException("L'oggetto start non esiste");
+
         Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if (dir == null) throw new NullPointerException("L'oggetto dir non esiste");
+
                 WatchKey key = dir.register(watchService, ENTRY_CREATE);
                 watchKeyToPath.put(key, dir);
                 return FileVisitResult.CONTINUE;
@@ -60,8 +71,9 @@ public class DirectoryWatcher implements Runnable {
     }
 
     /**
-     * Avvia il monitoraggio della directory.
-     * Risponde a eventi di creazione file o directory.
+     * Ciclo principale del watcher. Rimane in ascolto per eventi di creazione (ENTRY_CREATE)
+     * e avvia una conversione automatica per ogni nuovo file rilevato.
+     * Le directory appena create vengono registrate ricorsivamente.
      */
     @Override
     public void run() {
@@ -83,6 +95,7 @@ public class DirectoryWatcher implements Runnable {
 
                 WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path fileName = ev.context();
+                if (fileName == null) continue;
                 Path fullPath = parentDir.resolve(fileName);
 
                 if (kind == ENTRY_CREATE) {
@@ -90,9 +103,13 @@ public class DirectoryWatcher implements Runnable {
                         try {
                             registerAll(fullPath); // Registra nuove sottodirectory
                         } catch (IOException ignored) {
+                            // Ignorato: impossibile registrare sottodirectory, verrà gestito a livello superiore se necessario
                         }
                     } else {
-                        executor.submit(() -> controller.launchDialogConversion(fullPath.toFile()));
+                        File file = fullPath.toFile();
+                        if (file != null) {
+                            executor.submit(() -> controller.launchDialogConversion(file));
+                        }
                     }
                 }
             }
