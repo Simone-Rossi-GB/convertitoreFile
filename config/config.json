@@ -2,6 +2,7 @@
   "successOutputDir": "src/output/success/",
   "errorOutputDir": "src/output/error/",
   "monitoredDir": "src/input/",
+  "monitorAtStart": true,
   "conversions": {
     "pdf": {
       "doc": "Converters.PDFtoDOCconverter",

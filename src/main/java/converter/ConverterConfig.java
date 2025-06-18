@@ -6,6 +6,7 @@ public class ConverterConfig {
     private String successOutputDir;
     private String errorOutputDir;
     private String monitoredDir;
+    private boolean monitorAtStart;
 
     private Map<String, Map<String, String>> conversions;
 
@@ -23,5 +24,9 @@ public class ConverterConfig {
 
     public Map<String, Map<String, String>> getConversions() {
         return conversions;
+    }
+
+    public boolean getMonitorAtStart() {
+        return monitorAtStart;
     }
 }
