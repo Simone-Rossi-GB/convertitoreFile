@@ -35,6 +35,7 @@ public class ImageConverter implements Converter {
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
         List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "sgi");
+        System.out.println("Lettura Immagine ...");
         BufferedImage image = ImageIO.read(imgFile);
 
         if (image == null) {
@@ -48,6 +49,7 @@ public class ImageConverter implements Converter {
         if (!estensioniTrasparenza.contains(extension) || !estensioniTrasparenza.contains(extracted.toLowerCase())) {
             image = alphaChannelRemover(image);
         }
+        System.out.println("Scrittura Immagine ...");
         ImageIO.write(image, extracted, outFile);
         return outFile;
     }
