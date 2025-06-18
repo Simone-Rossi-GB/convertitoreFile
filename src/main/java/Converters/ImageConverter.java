@@ -66,7 +66,7 @@ public class ImageConverter implements Converter {
             Log.addMessage("Errore lettura immagine");
             throw new IOException("Immagine non valida: " + imgFile.getName());
         }
-        if (estensioniTrasparenza.contains(extension) && estensioniTrasparenza.contains(extracted.toLowerCase())) {
+        if (estensioniTrasparenza.contains(extension) || estensioniTrasparenza.contains(extracted.toLowerCase())) {
             image = alphaChannelRemover(image);
         }
         outFile = new File("src/temp", getName(imgFile) + "." + extracted);
