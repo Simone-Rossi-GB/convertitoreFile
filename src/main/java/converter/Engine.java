@@ -162,7 +162,8 @@ public class Engine {
 
             File renamedFile = giveBackNewFileWithNewName(srcFile.getPath(), "-[[" + outExt + "]]-");
             if (!srcFile.renameTo(renamedFile)) {
-                throw new Exception("Errore: File già convertito al formato richiesto");
+                Log.addMessage("ERRORE: Rinominazione file pre-convert fallita: "+srcFile.getName()+" -> "+renamedFile.getName());
+                throw new Exception("ERRORE: Rinominazione file pre-convert fallita");
             }
             srcFile = renamedFile;
 
@@ -182,7 +183,8 @@ public class Engine {
             for (File f : outFiles) {
                 File cleaned = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
                 if (!f.renameTo(cleaned)) {
-                    throw new Exception("Errore: File già convertito al formato richiesto");
+                    Log.addMessage("ERRORE: Rinominazione file pre-convert fallita: "+f.getName()+" -> "+cleaned.getName());
+                    throw new Exception("ERRORE: Rinominazione file pre-convert fallita");
                 }
                 //Sposto il file convertito nella directory corretta
                 spostaFile(config.getSuccessOutputDir(), cleaned);
