@@ -267,31 +267,6 @@ public class MainViewController {
         }
     }
 
-    /**
-     * Verifica che la cartella esista, e in caso la crea.
-     *
-     * @param directoryPath percorso della cartella
-     * @return true se la cartella esiste o è stata creata correttamente, false altrimenti
-     */
-    public static boolean ensureDirectoryExists(String directoryPath) {
-        try {
-            Path path = Paths.get(directoryPath);
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
-                System.out.println("Cartella creata: " + directoryPath);
-                return true;
-            } else if (Files.isDirectory(path)) {
-                System.out.println("Cartella già esistente: " + directoryPath);
-                return true;
-            } else {
-                System.err.println("ERRORE: " + directoryPath + " esiste ma non è una cartella!");
-                return false;
-            }
-        } catch (IOException | SecurityException e) {
-            System.err.println("ERRORE durante la creazione di: " + directoryPath + " - " + e.getMessage());
-            return false;
-        }
-    }
 
     /**
      * Carica la configurazione da file JSON tramite Engine.
@@ -373,17 +348,31 @@ public class MainViewController {
                 try {
                     //dialog per gestire la password
                     if(srcExtension.equals("pdf")){
-                        launchDialogPdf();
                         if(format.equals("jpg")){
                             unisci.set(launchDialogUnisci());
                         }
+                        String password = launchDialogPdf();
+                        if(password != null){
+                            if(format.equals("jpg"))
+                                engine.conversione(srcExtension, format, srcFile, password, unisci.get());
+                            else
+                                engine.conversione(srcExtension, format, srcFile, password);
+                        }
+                        else{
+                            if(format.equals("jpg"))
+                                engine.conversione(srcExtension, format, srcFile, unisci.get());
+                            else
+                                engine.conversione(srcExtension, format, srcFile);
+                        }
                     }
-                    engine.conversione(srcExtension, format, srcFile);
+                    else {
+                        engine.conversione(srcExtension, format, srcFile);
+                    }
                     fileConvertiti++;
                     launchAlertSuccess(srcFile);
                 } catch (Exception e) {
                     fileScartati++;
-                    launchAlertError("Conversione di " + srcFile.getName() + " interrotta a causa di un errore");
+                    launchAlertError(e.getMessage());
                 }
                 stampaRisultati();
             });
@@ -391,7 +380,7 @@ public class MainViewController {
     }
 
 
-    private void launchDialogPdf(){
+    private String launchDialogPdf(){
         // Campo password
         JPasswordField passwordField = new JPasswordField(20);
 
@@ -409,14 +398,9 @@ public class MainViewController {
                 JOptionPane.QUESTION_MESSAGE
         );
 
-        if (scelta == JOptionPane.YES_OPTION) {
-            String password = new String(passwordField.getPassword());
-            System.out.println("Hai scelto SÌ. Password inserita: " + password);
-        } else if (scelta == JOptionPane.NO_OPTION) {
-            System.out.println("Hai scelto NO. Nessuna password richiesta.");
-        } else {
-            System.out.println("Dialog chiuso.");
-        }
+        if (scelta == JOptionPane.YES_OPTION)
+            return new String(passwordField.getPassword());
+        return null;
     }
 
     private boolean launchDialogUnisci() {
