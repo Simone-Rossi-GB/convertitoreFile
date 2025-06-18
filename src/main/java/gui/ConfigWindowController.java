@@ -1,6 +1,7 @@
 package gui;
 
 import converter.Engine;
+import converter.Log;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -131,8 +132,10 @@ public class ConfigWindowController {
             }
 
             updateStatus("Configurazione caricata", false);
+            Log.addMessage("Configurazione caricata correttamente");
         } catch (Exception e) {
             updateStatus("Errore nel caricamento: " + e.getMessage(), true);
+            Log.addMessage("ERRORE: impossibile caricare la configurazione - " + e.getMessage());
             showAlert("Errore", "Impossibile caricare la configurazione: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -166,6 +169,7 @@ public class ConfigWindowController {
 
         File selected = directoryChooser.showDialog(dialogStage);
         if (selected != null) {
+            Log.addMessage("Selezionata directory: " + selected.getAbsolutePath());
             targetField.setText(selected.getAbsolutePath());
         }
     }
@@ -202,6 +206,7 @@ public class ConfigWindowController {
 
             if (path.isEmpty()) {
                 updateStatus(label + " non specificata!", true);
+                Log.addMessage("ERRORE: " + label + " non specificata");
                 showAlert("Errore di validazione", label + " deve essere specificata.", Alert.AlertType.ERROR);
                 return false;
             }
@@ -209,9 +214,11 @@ public class ConfigWindowController {
                 Path dirPath = Paths.get(path);
                 if (!Files.exists(dirPath)) {
                     Files.createDirectories(dirPath);
+                    Log.addMessage("Creata directory mancante: " + path);
                     updateStatus("Creata directory: " + path, false);
                 }
             } catch (IOException e) {
+                Log.addMessage("ERRORE: impossibile creare la directory " + path + " - " + e.getMessage());
                 updateStatus("Errore nella creazione directory: " + path, true);
                 showAlert("Errore", "Impossibile creare la directory: " + path, Alert.AlertType.ERROR);
                 return false;
@@ -233,6 +240,7 @@ public class ConfigWindowController {
             String jsonOut = new GsonBuilder().setPrettyPrinting().create().toJson(configJson);
             engine.setConfigFromJson(jsonOut);
 
+            Log.addMessage("Configurazione salvata con successo");
             updateStatus("Configurazione salvata con successo!", false);
             if (mainController != null) mainController.addLogMessage("Configurazione aggiornata");
             showAlert("Successo", "Configurazione salvata con successo!", Alert.AlertType.INFORMATION);
@@ -244,6 +252,7 @@ public class ConfigWindowController {
 
         } catch (Exception e) {
             updateStatus("Errore nel salvataggio: " + e.getMessage(), true);
+            Log.addMessage("ERRORE: salvataggio configurazione fallito - " + e.getMessage());
             showAlert("Errore", "Impossibile salvare: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -252,12 +261,14 @@ public class ConfigWindowController {
     private void cancelAndClose(ActionEvent event) {
         if (hasUnsavedChanges()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            Log.addMessage("Tentativo di chiusura con modifiche non salvate");
             alert.setTitle("Modifiche non salvate");
             alert.setContentText("Chiudere senza salvare?");
             alert.showAndWait().ifPresent(response -> {
                 if (response.getButtonData().isDefaultButton()) dialogStage.close();
             });
         } else {
+            Log.addMessage("Finestra di configurazione chiusa senza modifiche");
             dialogStage.close();
         }
     }
