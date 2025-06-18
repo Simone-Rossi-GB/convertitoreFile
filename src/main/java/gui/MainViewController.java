@@ -66,10 +66,7 @@ public class MainViewController {
     @FXML
     private void initialize() throws IOException {
         engine = new Engine();
-        if (engine == null) {
-            showAlert("Errore", "Engine non inizializzato.");
-            return;
-        }
+
         setupEventHandlers();
         updateMonitoringStatus();
         addLogMessage("Applicazione avviata.");
@@ -86,6 +83,7 @@ public class MainViewController {
             try {
                 toggleMonitoring();
             } catch (IOException ex) {
+                Log.addMessage("ERRORE: monitoraggio fallito : " + ex.getMessage());
                 showAlert("Errore", "Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
@@ -101,17 +99,20 @@ public class MainViewController {
     @FXML
     private void toggleMonitoring() throws IOException {
         if (engine == null || monitoredFolderPath == null) {
+            Log.addMessage("ERRORE: Engine o cartella monitorata non inizializzati");
             showAlert("Errore", "Engine o cartella monitorata non inizializzati.");
             return;
         }
 
         if (isMonitoring) {
+            Log.addMessage("Monitoraggio fermato");
             addLogMessage("Monitoraggio fermato.");
             resetCounters();
             if (watcherThread != null && watcherThread.isAlive()) {
                 watcherThread.interrupt();
             }
         } else {
+            Log.addMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.setDaemon(true);
@@ -151,11 +152,13 @@ public class MainViewController {
 
     private void loadConfiguration() {
         if (engine == null) {
+            Log.addMessage("ERRORE: Engine non inizializzato.");
             showAlert("Errore", "Engine non inizializzato.");
             return;
         }
         try {
             if (engine.getConverterConfig() == null) {
+                Log.addMessage("ERRORE: Configurazione non trovata.");
                 showAlert("Errore", "Configurazione non trovata.");
                 return;
             }
@@ -168,7 +171,12 @@ public class MainViewController {
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
             addLogMessage("Cartella file convertiti: " + convertedFolderPath);
             addLogMessage("Cartella file falliti: " + failedFolderPath);
+            Log.addMessage("Configurazione caricata da config.json");
+            Log.addMessage("Cartella monitorata: " + monitoredFolderPath);
+            Log.addMessage("Cartella file convertiti: " + convertedFolderPath);
+            Log.addMessage("Cartella file falliti: " + failedFolderPath);
         } catch (Exception e) {
+            Log.addMessage("ERRORE: caricamento della configurazione fallita:" + e.getMessage());
             addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
             showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
         }
@@ -176,6 +184,7 @@ public class MainViewController {
 
     private void openConfigurationWindow() {
         if (engine == null) {
+            Log.addMessage("ERRORE: Engine non inizializzato.");
             showAlert("Errore", "Engine non inizializzato.");
             return;
         }
@@ -199,23 +208,27 @@ public class MainViewController {
             configStage.showAndWait();
             loadConfiguration();
         } catch (IOException e) {
+            Log.addMessage("ERRORE: Impossibile aprire l'editor di configurazione: " + e.getMessage());
             showAlert("Errore", "Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
     }
 
     private void openFolder(String folderPath) {
         if (folderPath == null || "Non configurata".equals(folderPath)) {
+            Log.addMessage("ERRORE: La cartella non è stata ancora configurata.");
             showAlert("Cartella non configurata", "La cartella non è stata ancora configurata.");
             return;
         }
         File folder = new File(folderPath);
         if (!folder.exists() || !folder.isDirectory()) {
+            Log.addMessage("ERRORE: La cartella non esiste " + folderPath);
             showAlert("Errore", "La cartella non esiste: " + folderPath);
             return;
         }
         try {
             Desktop.getDesktop().open(folder);
         } catch (IOException e) {
+            Log.addMessage("ERRORE: Impossibile aprire la cartella: " + e.getMessage());
             showAlert("Errore", "Impossibile aprire la cartella: " + e.getMessage());
         }
     }
@@ -247,6 +260,7 @@ public class MainViewController {
 
     public void launchDialogConversion(File srcFile) {
         if (srcFile == null || engine == null) {
+            Log.addMessage("ERRORE: File sorgente o Engine non valido.");
             showAlert("Errore", "File sorgente o Engine non valido.");
             return;
         }
@@ -259,6 +273,7 @@ public class MainViewController {
         try {
             formats = engine.getPossibleConversions(srcExtension);
         } catch (Exception e) {
+            Log.addMessage("ERRORE: Conversione non supportata per il file " + srcFile.getName() + " (" + srcExtension + ")");
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
             Platform.runLater(() -> {
                 fileScartati++;
@@ -275,18 +290,22 @@ public class MainViewController {
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(format -> {
+                Log.addMessage("Formato selezionato: " + format + " per il file " + srcFile.getName());
                 try {
                     if ("pdf".equals(srcExtension)) {
                         if ("jpg".equals(format)) {
                             unisci.set(launchDialogUnisci());
+                            Log.addMessage("Unione JPG selezionata: " + unisci.get());
                         }
                         String password = launchDialogPdf();
                         if (password != null) {
+                            Log.addMessage("Password inserita per PDF: " + (password.isEmpty() ? "(vuota)" : "(oculta)"));
                             if ("jpg".equals(format))
                                 engine.conversione(srcExtension, format, srcFile, password, unisci.get());
                             else
                                 engine.conversione(srcExtension, format, srcFile, password);
                         } else {
+                            Log.addMessage("Nessuna password inserita per il PDF.");
                             if ("jpg".equals(format))
                                 engine.conversione(srcExtension, format, srcFile, "", unisci.get());
                             else
@@ -295,7 +314,11 @@ public class MainViewController {
                     } else {
                         engine.conversione(srcExtension, format, srcFile);
                     }
+                    Log.addMessage("Conversione completata: " + srcFile.getName() + " → " + format);
+                    fileConvertiti++;
+                    stampaRisultati();
                 } catch (Exception e) {
+                    Log.addMessage("ERRORE: Impossibile convertire " + srcFile.getName() + ": " + e.getMessage());
                     launchAlertError("Errore durante la conversione di " + srcFile.getName());
                     fileScartati++;
                     stampaRisultati();
@@ -305,8 +328,10 @@ public class MainViewController {
     }
 
     public void launchAlertError(String message) {
+        Log.addMessage("ERRORE: " + message);
         showAlert("Errore", message);
     }
+
 
     private void showAlert(String title, String message) {
         Platform.runLater(() -> {
@@ -334,9 +359,11 @@ public class MainViewController {
             if (result.isPresent() && result.get() == siBtn) {
                 unisci.set(true);
             }
+            Log.addMessage("Scelta unione JPG: " + unisci.get());
         });
         return unisci.get();
     }
+
 
     public String launchDialogPdf() {
         TextInputDialog dialog = new TextInputDialog();
@@ -345,16 +372,20 @@ public class MainViewController {
         dialog.setContentText("Password:");
 
         Optional<String> result = dialog.showAndWait();
+        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(oculta)")));
         return result.orElse(null);
     }
 
+
     public void stampaRisultati() {
+        Log.addMessage("Stato: ricevuti=" + fileRicevuti + ", convertiti=" + fileConvertiti + ", scartati=" + fileScartati);
         Platform.runLater(() -> {
             detectedFilesCounter.setText(String.valueOf(fileRicevuti));
             successfulConversionsCounter.setText(String.valueOf(fileConvertiti));
             failedConversionsCounter.setText(String.valueOf(fileScartati));
         });
     }
+
 
     private Stage getPrimaryStage() {
         return (Stage) MonitoringBtn.getScene().getWindow();
