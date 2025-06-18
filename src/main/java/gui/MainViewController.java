@@ -81,13 +81,12 @@ public class MainViewController {
      */
     @FXML
     private void initialize() throws IOException {
-        Log log = new Log();
         engine = new Engine();
         // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
-        addLogMessage("Applicazione avviata.");
-        addLogMessage("Caricamento configurazione...");
+        Log.addMessage("Applicazione avviata.");
+        Log.addMessage("Caricamento configurazione...");
 
         // Carica configurazione dal JSON
         loadConfiguration();

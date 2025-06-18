@@ -1,8 +1,10 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
+import converter.Log;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
+import org.apache.commons.logging.LogFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,6 +20,8 @@ import java.util.List;
 
 public class ImageConverter implements Converter {
 
+    private static final org.apache.commons.logging.Log log = LogFactory.getLog(ImageConverter.class);
+
     @Override
     public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
         ArrayList<File> files = new ArrayList<>();
@@ -30,13 +34,14 @@ public class ImageConverter implements Converter {
             File file = imageConversion(imgFile, extracted);
             files.add(file);
         } else {
-            System.out.println("No match found in file name: " + imgName);
+            Log.addMessage("Formato nome immagine errato");
         }
 
         return files;
     }
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
+        Log.addMessage("Inizio conversione immagine: "+imgFile.getName()+" -> ."+extracted);
         List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
         List<String> estensioniConConvIntermedia = Arrays.asList("webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm");
         File outFile;
@@ -46,7 +51,6 @@ public class ImageConverter implements Converter {
         BufferedImage image;
         List<BufferedImage> images;
 
-        System.out.println("Lettura Immagine ...");
         if (extension.equals("ico")){
             images = ICODecoder.read(imgFile);
             BufferedImage largest = images.stream()
@@ -62,25 +66,20 @@ public class ImageConverter implements Converter {
         }else {
             image = ImageIO.read(imgFile);
         }
-
         if (image == null) {
-            throw new IOException("Immagine non valida o non supportata: " + imgFile.getName());
+            Log.addMessage("Errore lettura immagine");
+            throw new IOException("Immagine non valida: " + imgFile.getName());
         }
-
-
-
-        if (!estensioniTrasparenza.contains(extension) || !estensioniTrasparenza.contains(extracted.toLowerCase())) {
+        if (estensioniTrasparenza.contains(extension) && estensioniTrasparenza.contains(extracted.toLowerCase())) {
             image = alphaChannelRemover(image);
-
-        }
-        System.out.println("Scrittura Immagine ...");
-        if (extracted.equals("ico")) {
-            outFile = new File("src/temp", getName(imgFile) + "." + extracted);
-            ICOEncoder.write(image, outFile);
-            return outFile;
         }
         outFile = new File("src/temp", getName(imgFile) + "." + extracted);
-        ImageIO.write(image, extracted, outFile);
+        if (extracted.equals("ico")) {
+            ICOEncoder.write(image, outFile);
+        } else {
+            ImageIO.write(image, extracted, outFile);
+        }
+        Log.addMessage("Creazione file ."+extracted+" completata: "+outFile.getName());
         return outFile;
     }
 
@@ -90,6 +89,7 @@ public class ImageConverter implements Converter {
     }
 
     private static BufferedImage alphaChannelRemover(BufferedImage inImage) {
+        Log.addMessage("Rimozione canale alpha da immagine");
         int imageType = BufferedImage.TYPE_INT_RGB;
         BufferedImage copy = new BufferedImage(inImage.getWidth(), inImage.getHeight(), imageType);
         Graphics2D g2d = copy.createGraphics();
