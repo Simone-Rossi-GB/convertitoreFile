@@ -1,6 +1,8 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
+import net.ifok.image.image4j.codec.ico.ICODecoder;
+import net.ifok.image.image4j.codec.ico.ICOEncoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.List;
@@ -34,20 +37,49 @@ public class ImageConverter implements Converter {
     }
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
-        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp");
-        BufferedImage image = ImageIO.read(imgFile);
+        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
+        List<String> estensioniConConvIntermedia = Arrays.asList("webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm");
+        File outFile;
+        int lastDotIndex = imgFile.getName().lastIndexOf('.');
+        String extension = imgFile.getName().substring(lastDotIndex + 1).toLowerCase();
+
+        BufferedImage image;
+        List<BufferedImage> images;
+
+        System.out.println("Lettura Immagine ...");
+        if (extension.equals("ico")){
+            images = ICODecoder.read(imgFile);
+            BufferedImage largest = images.stream()
+                    .max(Comparator.comparingInt(img -> img.getWidth() * img.getHeight()))
+                    .orElse(images.get(0));
+            if (estensioniConConvIntermedia.contains(extension)){
+                outFile = new File("src/temp", getName(imgFile) + ".png");
+                ImageIO.write(largest, "png", outFile);
+            }
+            outFile = new File("src/temp", getName(imgFile) + "." + extracted);
+            ICOEncoder.write(largest, outFile);
+            return outFile;
+        }else {
+            image = ImageIO.read(imgFile);
+        }
 
         if (image == null) {
             throw new IOException("Immagine non valida o non supportata: " + imgFile.getName());
         }
 
-        File outFile = new File("src/temp", getName(imgFile) + "." + extracted);
-        int lastDotIndex = imgFile.getName().lastIndexOf('.');
-        String extension = imgFile.getName().substring(lastDotIndex + 1).toLowerCase();
+
 
         if (!estensioniTrasparenza.contains(extension) || !estensioniTrasparenza.contains(extracted.toLowerCase())) {
             image = alphaChannelRemover(image);
+
         }
+        System.out.println("Scrittura Immagine ...");
+        if (extracted.equals("ico")) {
+            outFile = new File("src/temp", getName(imgFile) + "." + extracted);
+            ICOEncoder.write(image, outFile);
+            return outFile;
+        }
+        outFile = new File("src/temp", getName(imgFile) + "." + extracted);
         ImageIO.write(image, extracted, outFile);
         return outFile;
     }
