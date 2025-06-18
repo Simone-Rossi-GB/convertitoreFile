@@ -20,6 +20,10 @@
     "eml": {
       "pdf" : "Converters.EMLtoPDFconverter"
     },
+    "txt": {
+      "docx" : "Converters.TXTtoDOCXconverter",
+      "pdf" : "Converters.TXTtoPDFconverter"
+    },
     "zip": {
       "targz" : "Converters.ZIPtoTARGZconverter"
     },
