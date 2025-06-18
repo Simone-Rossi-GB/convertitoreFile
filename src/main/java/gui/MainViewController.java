@@ -16,12 +16,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 import converter.Engine;
 
 public class MainViewController {
 
-    // Riferimenti FXML agli elementi dell'interfaccia
+    // Riferimenti FXML agli elementi dell'interfaccia - CORRETTI
     @FXML private Label statusIndicator;
     @FXML private Label monitoringStatusLabel;
     @FXML private Label applicationLogArea;
@@ -34,9 +35,11 @@ public class MainViewController {
     @FXML private Button MonitoringBtn;
     @FXML private Button configBtn;
     @FXML private Button exitBtn;
-    @FXML private Button openMonitoredFolderBtn;
-    @FXML private Button openConvertedFolderBtn;
-    @FXML private Button openFailedFolderBtn;
+
+    // Pulsanti con nomi corretti dall'FXML
+    @FXML private Button caricaFileBtn;
+    @FXML private Button fileConvertitiBtn;
+    @FXML private Button conversioniFalliteBtn;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -51,7 +54,6 @@ public class MainViewController {
     private String monitoredFolderPath = "Non configurata";
     private String convertedFolderPath = "Non configurata";
     private String failedFolderPath = "Non configurata";
-
     private Engine engine;
     private Thread watcherThread;
 
@@ -62,14 +64,14 @@ public class MainViewController {
     @FXML
     private void initialize() throws IOException {
         engine = new Engine();
-
+        // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
         addLogMessage("Applicazione avviata.");
         addLogMessage("Caricamento configurazione...");
 
+        // Carica configurazione dal JSON
         loadConfiguration();
-
         if (isMonitoring) {
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.setDaemon(true);
@@ -95,6 +97,7 @@ public class MainViewController {
      * Configura i listener degli eventi sui pulsanti.
      */
     private void setupEventHandlers() {
+        // Handler per il pulsante toggle monitoraggio
         MonitoringBtn.setOnAction(e -> {
             try {
                 toggleMonitoring();
@@ -103,12 +106,16 @@ public class MainViewController {
             }
         });
 
+        // Handler per il pulsante configurazione
         configBtn.setOnAction(e -> openConfigurationWindow());
+
+        // Handler per il pulsante exit
         exitBtn.setOnAction(e -> exitApplication());
 
-        openMonitoredFolderBtn.setOnAction(e -> openFolder(monitoredFolderPath));
-        openConvertedFolderBtn.setOnAction(e -> openFolder(convertedFolderPath));
-        openFailedFolderBtn.setOnAction(e -> openFolder(failedFolderPath));
+        // Handler per i pulsanti "Apri cartella" - CORRETTI
+        caricaFileBtn.setOnAction(e -> openFolder(monitoredFolderPath));
+        fileConvertitiBtn.setOnAction(e -> openFolder(convertedFolderPath));
+        conversioniFalliteBtn.setOnAction(e -> openFolder(failedFolderPath));
     }
 
     /**
@@ -124,6 +131,7 @@ public class MainViewController {
             }
         } else {
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
+            // Avvia DirectoryWatcher
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.setDaemon(true);
             watcherThread.start();
@@ -150,11 +158,13 @@ public class MainViewController {
      */
     private void updateMonitoringStatus() {
         if (isMonitoring) {
+            // Stato ATTIVO
             monitoringStatusLabel.setText("Monitoraggio: Attivo");
             statusIndicator.setTextFill(javafx.scene.paint.Color.web("#27ae60")); // Verde
             MonitoringBtn.setText("Ferma Monitoraggio");
             MonitoringBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
         } else {
+            // Stato FERMO
             monitoringStatusLabel.setText("Monitoraggio: Fermo");
             statusIndicator.setTextFill(javafx.scene.paint.Color.web("#e74c3c")); // Rosso
             MonitoringBtn.setText("Avvia Monitoraggio");
@@ -241,7 +251,8 @@ public class MainViewController {
 
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
-
+            addLogMessage("Cartella file convertiti: " + convertedFolderPath);
+            addLogMessage("Cartella file falliti: " + failedFolderPath);
         } catch (Exception e) {
             addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
             showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
@@ -282,8 +293,7 @@ public class MainViewController {
 
         String srcExtension = getExtension(srcFile);
         System.out.println("Estensione file sorgente: " + srcExtension);
-
-        List<String> formats;
+        List<String> formats = null;
         try {
             formats = engine.getPossibleConversions(srcExtension);
         } catch (Exception e) {
@@ -294,7 +304,7 @@ public class MainViewController {
             });
             return;
         }
-
+        System.out.println("prima parte finita");
         List<String> finalFormats = formats;
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
@@ -385,14 +395,25 @@ public class MainViewController {
         this.mainApp = mainApp;
     }
 
+    // Metodi FXML - implementati correttamente
     @FXML
     public void openConfig(ActionEvent actionEvent) {
-        // Metodo ancora da implementare
+        openConfigurationWindow();
     }
 
-    // Metodo placeholder per un dialogo (da definire)
-    public void instanceDialogPanel(Path srcPath) {
-        // Codice da implementare se necessario
+    @FXML
+    public void loadFilesFolder(ActionEvent actionEvent) {
+        openFolder(monitoredFolderPath);
+    }
+
+    @FXML
+    public void openConvertedFolder(ActionEvent actionEvent) {
+        openFolder(convertedFolderPath);
+    }
+
+    @FXML
+    public void openFailedConvertionsFolder(ActionEvent actionEvent) {
+        openFolder(failedFolderPath);
     }
 
     // Metodo alternativo per ottenere estensione da Path (non usato attualmente)
