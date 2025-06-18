@@ -15,13 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 public class Engine {
-    private final ConverterConfig config;
+    private ConverterConfig config;
 
     /**
      * Costruttore: legge la configurazione dal file JSON.
      * @throws RuntimeException se il file di configurazione non è leggibile o è corrotto.
      */
     public Engine() {
+        setConfig();
+    }
+
+    public void setConfig(){
         try (FileReader reader = new FileReader("config/config.json")) {
             Gson gson = new Gson();
             config = gson.fromJson(reader, ConverterConfig.class);
