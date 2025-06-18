@@ -28,6 +28,11 @@ import converter.Engine;
 
 import javax.swing.*;
 
+import WebService.client.ConverterWebServiceClient;
+import WebService.client.ConversionResult;
+import java.nio.file.StandardCopyOption;
+
+
 public class MainViewController {
 
     // Riferimenti FXML agli elementi dell'interfaccia - CORRETTI
@@ -67,6 +72,9 @@ public class MainViewController {
     private int fileConvertiti = 0;
     private int fileScartati = 0;
 
+    private ConverterWebServiceClient webServiceClient;
+    private boolean useWebService = false;
+
     // Percorsi delle cartelle (caricati dal JSON)
     private String monitoredFolderPath = "Non configurata";
     private String convertedFolderPath = "Non configurata";
@@ -87,6 +95,8 @@ public class MainViewController {
         updateMonitoringStatus();
         Log.addMessage("Applicazione avviata.");
         Log.addMessage("Caricamento configurazione...");
+
+        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
 
         // Carica configurazione dal JSON
         loadConfiguration();
@@ -321,64 +331,134 @@ public class MainViewController {
      * @param srcFile file sorgente da convertire
      */
     public void launchDialogConversion(File srcFile) {
-        AtomicBoolean unisci = new AtomicBoolean(false);
         Platform.runLater(() -> fileRicevuti++);
 
         String srcExtension = getExtension(srcFile);
         System.out.println("Estensione file sorgente: " + srcExtension);
         List<String> formats = null;
+
         try {
-            formats = engine.getPossibleConversions(srcExtension);
+            // Prova prima il webservice, se fallisce usa l'engine locale
+            if (webServiceClient.isServiceAvailable()) {
+                formats = webServiceClient.getPossibleConversions(srcExtension);
+                useWebService = true;
+                addLogMessage("Usando web service per conversione di " + srcFile.getName());
+            } else {
+                formats = engine.getPossibleConversions(srcExtension);
+                useWebService = false;
+                addLogMessage("Web service non disponibile, usando engine locale per " + srcFile.getName());
+            }
         } catch (Exception e) {
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
+            moveFileToErrorFolder(srcFile);
             Platform.runLater(() -> {
                 fileScartati++;
                 stampaRisultati();
             });
             return;
         }
+
         List<String> finalFormats = formats;
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
             dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
             dialog.setContentText("Formato desiderato:");
+
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(format -> {
-                try {
-                    //dialog per gestire la password
-                    if(srcExtension.equals("pdf")){
-                        if(format.equals("jpg")){
-                            unisci.set(launchDialogUnisci());
-                        }
-                        String password = launchDialogPdf();
-                        if(password != null){
-                            if(format.equals("jpg"))
-                                engine.conversione(srcExtension, format, srcFile, password, unisci.get());
-                            else
-                                engine.conversione(srcExtension, format, srcFile, password);
-                        }
-                        else{
-                            if(format.equals("jpg"))
-                                engine.conversione(srcExtension, format, srcFile, unisci.get());
-                            else
-                                engine.conversione(srcExtension, format, srcFile);
-                        }
-                    }
-                    else {
-                        engine.conversione(srcExtension, format, srcFile);
-                    }
-                    fileConvertiti++;
-                    launchAlertSuccess(srcFile);
-                } catch (Exception e) {
-                    fileScartati++;
-                    launchAlertError(e.getMessage());
-                }
-                stampaRisultati();
+                new Thread(() -> performConversion(srcFile, format)).start();
             });
         });
     }
 
+    private void performConversion(File srcFile, String targetFormat) {
+        try {
+            String srcExtension = getExtension(srcFile);
+            String password = null;
+            boolean mergeImages = false;
+
+            // Gestione dialoghi per PDF
+            if (srcExtension.equals("pdf")) {
+                password = launchDialogPdf();
+                if (targetFormat.equals("jpg")) {
+                    mergeImages = launchDialogUnisci();
+                }
+            }
+
+            if (useWebService) {
+                // Usa webservice
+                addLogMessage("Avvio conversione tramite web service...");
+                ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, password, mergeImages);
+
+                if (result.isSuccess()) {
+                    addLogMessage("Conversione completata tramite web service: " + result.getMessage());
+                    moveFileToSuccessFolder(srcFile);
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                        launchAlertSuccess(srcFile);
+                    });
+                } else {
+                    throw new Exception(result.getError());
+                }
+            } else {
+                // Usa engine locale (codice esistente)
+                addLogMessage("Avvio conversione tramite engine locale...");
+                if (password != null) {
+                    if (mergeImages) {
+                        engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
+                    } else {
+                        engine.conversione(srcExtension, targetFormat, srcFile, password);
+                    }
+                } else {
+                    if (mergeImages) {
+                        engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
+                    } else {
+                        engine.conversione(srcExtension, targetFormat, srcFile);
+                    }
+                }
+
+                addLogMessage("Conversione completata tramite engine locale");
+                Platform.runLater(() -> {
+                    fileConvertiti++;
+                    stampaRisultati();
+                    launchAlertSuccess(srcFile);
+                });
+            }
+
+        } catch (Exception e) {
+            addLogMessage("Errore durante conversione: " + e.getMessage());
+            moveFileToErrorFolder(srcFile);
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+                launchAlertError("Errore: " + e.getMessage());
+            });
+        }
+    }
+
+    private void moveFileToSuccessFolder(File file) {
+        try {
+            Path srcPath = file.toPath();
+            Path destPath = Paths.get(convertedFolderPath, file.getName());
+            Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+            addLogMessage("File spostato in cartella successi: " + destPath);
+        } catch (Exception e) {
+            addLogMessage("Errore nello spostamento file in cartella successi: " + e.getMessage());
+        }
+    }
+
+    private void moveFileToErrorFolder(File file) {
+        try {
+            Path srcPath = file.toPath();
+            Path destPath = Paths.get(failedFolderPath, file.getName());
+            Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+            addLogMessage("File spostato in cartella errori: " + destPath);
+        } catch (Exception e) {
+            addLogMessage("Errore nello spostamento file in cartella errori: " + e.getMessage());
+        }
+    }
 
     private String launchDialogPdf(){
         // Campo password
