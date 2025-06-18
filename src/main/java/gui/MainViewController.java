@@ -1,6 +1,7 @@
 package gui;
 
 import converter.DirectoryWatcher;
+import converter.Log;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -80,6 +81,7 @@ public class MainViewController {
      */
     @FXML
     private void initialize() throws IOException {
+        Log log = new Log();
         engine = new Engine();
         // Inizializza l'interfaccia
         setupEventHandlers();
