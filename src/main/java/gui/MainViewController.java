@@ -360,29 +360,28 @@ public class MainViewController {
                 }
             } else {
                 // USA ENGINE LOCALE
-                addLogMessage("Avvio conversione tramite engine locale...");
+                try {
+                    addLogMessage("Avvio conversione tramite engine locale...");
 
-                Path engineTempOutputDirectory = Files.createTempDirectory("engine_output_" + UUID.randomUUID().toString());
-                final File engineTempOutputDirFile = engineTempOutputDirectory.toFile(); // Dichiara final se necessario
+                    Path engineTempOutputDirectory = Files.createTempDirectory("engine_output_" + UUID.randomUUID().toString());
+                    final File engineTempOutputDirFile = engineTempOutputDirectory.toFile(); // Dichiara final se necessario
 
-                File convertedFileFromEngine;
+                    File convertedFileFromEngine;
 
-                if (password != null) {
-                    if (mergeImages && targetFormat.equals("jpg")) {
-                        convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, password, mergeImages, engineTempOutputDirFile);
+                    if (password != null) {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile, password, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile, password);
+                        }
                     } else {
-                        convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, password, engineTempOutputDirFile);
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile);
+                        }
                     }
-                } else {
-                    if (mergeImages && targetFormat.equals("jpg")) {
-                        convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, mergeImages, engineTempOutputDirFile);
-                    } else {
-                        convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, engineTempOutputDirFile);
-                    }
-                }
 
-                if (convertedFileFromEngine != null && convertedFileFromEngine.exists()) {
-                    Files.move(convertedFileFromEngine.toPath(), finalOutputDestinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     addLogMessage("Conversione completata tramite engine locale. File salvato in: " + finalOutputDestinationFile.getAbsolutePath());
                     moveFileToSuccessFolder(finalSrcFile); // Usa la variabile final
                     Platform.runLater(() -> {
@@ -390,11 +389,9 @@ public class MainViewController {
                         stampaRisultati();
                         launchAlertSuccess(finalOutputDestinationFile); // Usa la variabile final
                     });
-                } else {
+                } catch(Exception e) {
                     throw new Exception("L'engine locale non ha prodotto un file di output valido.");
                 }
-
-                Files.delete(engineTempOutputDirectory);
             }
 
         } catch (Exception e) {
