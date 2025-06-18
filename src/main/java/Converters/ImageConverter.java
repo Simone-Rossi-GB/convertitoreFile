@@ -37,7 +37,7 @@ public class ImageConverter implements Converter {
     }
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
-        Log.addMessage("Inizio conversione immagine: "+imgFile.getName()+" -> ."+extracted);
+        Log.addMessage("Inizio conversione immagine: "+Utility.estraiNomePiuEstensioneFile(imgFile)+" -> ."+extracted);
         List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
         List<String> estensioniConConvIntermedia = Arrays.asList("webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm");
         File outFile;
@@ -75,7 +75,7 @@ public class ImageConverter implements Converter {
         } else {
             ImageIO.write(image, extracted, outFile);
         }
-        Log.addMessage("Creazione file ."+extracted+" completata: "+outFile.getName());
+        Log.addMessage("Creazione file ."+extracted+" completata: "+Utility.estraiNomePiuEstensioneFile(outFile));
         return outFile;
     }
 
