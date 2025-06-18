@@ -43,8 +43,8 @@ public class ImageConverter implements Converter {
         int lastDotIndex = imgFile.getName().lastIndexOf('.');
         String extension = imgFile.getName().substring(lastDotIndex + 1).toLowerCase();
 
-        BufferedImage image = null;
-        List<BufferedImage> images = null;
+        BufferedImage image;
+        List<BufferedImage> images;
 
         System.out.println("Lettura Immagine ...");
         if (extension.equals("ico")){
@@ -97,15 +97,5 @@ public class ImageConverter implements Converter {
         g2d.drawImage(inImage, 0, 0, Color.WHITE, null);
         g2d.dispose();
         return copy;
-    }
-    public static BufferedImage resize(BufferedImage originalImage, int width, int height) {
-        Image tmp = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH); // Altri: SCALE_FAST, SCALE_AREA_AVERAGING
-        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = resized.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-
-        return resized;
     }
 }
