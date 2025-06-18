@@ -1,6 +1,5 @@
 package gui;
 
-import converter.ConverterConfig;
 import converter.DirectoryWatcher;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -9,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.awt.Desktop;
@@ -20,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import converter.Engine;
 
@@ -446,7 +443,7 @@ public class MainViewController {
     /**
      * Setta il riferimento all'app principale.
      *
-     * @param mainApp istanza MainApp
+     * @param mainApp istanza gui.MainApp
      */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
