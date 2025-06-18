@@ -1,6 +1,5 @@
 package gui;
 
-import converter.ConverterConfig;
 import converter.DirectoryWatcher;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -11,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -23,7 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import converter.Engine;
 
@@ -350,6 +348,7 @@ public class MainViewController {
      * @param srcFile file sorgente da convertire
      */
     public void launchDialogConversion(File srcFile) {
+        AtomicBoolean unisci = new AtomicBoolean(false);
         Platform.runLater(() -> fileRicevuti++);
 
         String srcExtension = getExtension(srcFile);
@@ -377,6 +376,9 @@ public class MainViewController {
                     //dialog per gestire la password
                     if(srcExtension.equals("pdf")){
                         launchDialogPdf();
+                        if(format.equals("jpg")){
+                            unisci.set(launchDialogUnisci());
+                        }
                     }
                     engine.conversione(srcExtension, format, srcFile);
                     fileConvertiti++;
@@ -416,6 +418,27 @@ public class MainViewController {
             System.out.println("Hai scelto NO. Nessuna password richiesta.");
         } else {
             System.out.println("Dialog chiuso.");
+        }
+    }
+
+    private boolean launchDialogUnisci() {
+        int scelta = JOptionPane.showConfirmDialog(
+                null,
+                "Vuoi unire tutte le immagini in un'unica immagine verticale?",
+                "Unione immagini",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (scelta == JOptionPane.YES_OPTION) {
+            System.out.println("Hai scelto SÌ: unire le immagini.");
+            return true;
+        } else if (scelta == JOptionPane.NO_OPTION) {
+            System.out.println("Hai scelto NO: immagini separate.");
+            return false;
+        } else {
+            System.out.println("Dialog chiuso senza scelta, si assume NO.");
+            return false;
         }
     }
 
