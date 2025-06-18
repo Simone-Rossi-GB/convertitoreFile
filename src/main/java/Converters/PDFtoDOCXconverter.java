@@ -9,8 +9,8 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import java.io.*;
 import java.util.ArrayList;
 
-public class PDFtoDOCXconverter implements Converter {
-    @Override
+public class PDFtoDOCXconverter extends AbstractPDFConverter {
+    /*@Override
     public ArrayList<File> convert(File pdfFile) throws Exception {
         ArrayList<File> files = new ArrayList<>();
         String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
@@ -62,5 +62,31 @@ public class PDFtoDOCXconverter implements Converter {
         } catch (Exception e) {
             throw new Exception("Password errata");
         }
+    }*/
+
+    @Override
+    protected ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+        ArrayList<File> files = new ArrayList<>();
+        String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
+        File outputFile = new File(baseName + ".docx");
+
+        PDFTextStripper stripper = new PDFTextStripper();
+        String text = stripper.getText(pdfDocument);
+
+        try (XWPFDocument docx = new XWPFDocument();
+             FileOutputStream out = new FileOutputStream(outputFile)) {
+
+            String[] lines = text.split("\\r?\\n");
+            for (String line : lines) {
+                XWPFParagraph par = docx.createParagraph();
+                XWPFRun run = par.createRun();
+                run.setText(line);
+            }
+
+            docx.write(out);
+        }
+
+        files.add(outputFile);
+        return files;
     }
 }

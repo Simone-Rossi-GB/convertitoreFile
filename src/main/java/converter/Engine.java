@@ -155,19 +155,8 @@ public class Engine {
 
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-
+        List<File> outFiles;
         try {
-            Path tempPath = Paths.get("src", "temp", srcFile.getName());
-            Files.copy(srcFile.toPath(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-            Log.addMessage("Copia del file nella cartella temporanea: " + tempPath);
-            srcFile = tempPath.toFile();
-
-            File renamedFile = giveBackNewFileWithNewName(srcFile.getPath(), "-$$" + outExt + "$$-");
-            rinominaFile(srcFile, renamedFile);
-            srcFile = renamedFile;
-
-            Log.addMessage("Avvio conversione con: " + converterClassName);
-            List<File> outFiles;
             if (password != null && union != null) {
                 outFiles = converter.convert(srcFile, password, union);
             } else if (password != null) {
@@ -182,9 +171,8 @@ public class Engine {
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
 
             for (File f : outFiles) {
-                File cleaned = new File(f.getPath().replaceAll("-\\$\\$.*?\\$\\$-", ""));
-                rinominaFile(f, cleaned);
-                spostaFile(config.getSuccessOutputDir(), cleaned);
+                //Sposto il file convertito nella directory corretta
+                spostaFile(config.getSuccessOutputDir(), f);
             }
             Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
 
@@ -242,7 +230,6 @@ public class Engine {
     private void spostaFile(String outPath, File file) throws IOException {
         if (file == null) throw new NullPointerException("L'oggetto file non esiste");
         if (outPath == null) throw new NullPointerException("L'oggetto outPath non esiste");
-
         Path dest = Paths.get(outPath, file.getName());
         Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
         Log.addMessage("File spostato in: " + dest.toString());
@@ -276,17 +263,5 @@ public class Engine {
             throw new NullPointerException("L'oggetto config non esiste");
         }
         return config;
-    }
-
-    /**
-     * Rinomina il file passato a quello di destinazione
-     * @throws Exception Rinomina file fallita
-     */
-    public static void rinominaFile(File startFile, File destFile) throws Exception {
-        if (!startFile.renameTo(destFile)) {
-            Log.addMessage("ERRORE: Rinomina file pre-convert fallita: " + startFile.getName() + " -> " + destFile.getName());
-            throw new Exception("Rinomina file pre-convert fallita");
-        }
-        Log.addMessage("Rinomina file: " + startFile.getName() + " -> " + destFile.getName());
     }
 }

@@ -84,7 +84,7 @@ public class MainViewController {
                 toggleMonitoring();
             } catch (IOException ex) {
                 Log.addMessage("ERRORE: monitoraggio fallito : " + ex.getMessage());
-                showAlert("Errore", "Errore durante il monitoraggio: " + ex.getMessage());
+                launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
 
@@ -100,7 +100,7 @@ public class MainViewController {
     private void toggleMonitoring() throws IOException {
         if (engine == null || monitoredFolderPath == null) {
             Log.addMessage("ERRORE: Engine o cartella monitorata non inizializzati");
-            showAlert("Errore", "Engine o cartella monitorata non inizializzati.");
+            launchAlertError("Engine o cartella monitorata non inizializzati.");
             return;
         }
 
@@ -153,13 +153,13 @@ public class MainViewController {
     private void loadConfiguration() {
         if (engine == null) {
             Log.addMessage("ERRORE: Engine non inizializzato.");
-            showAlert("Errore", "Engine non inizializzato.");
+            launchAlertError("Engine non inizializzato.");
             return;
         }
         try {
             if (engine.getConverterConfig() == null) {
                 Log.addMessage("ERRORE: Configurazione non trovata.");
-                showAlert("Errore", "Configurazione non trovata.");
+                launchAlertError("Configurazione non trovata.");
                 return;
             }
             monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
@@ -178,14 +178,14 @@ public class MainViewController {
         } catch (Exception e) {
             Log.addMessage("ERRORE: caricamento della configurazione fallita:" + e.getMessage());
             addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
-            showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
+            launchAlertError("Impossibile caricare la configurazione: " + e.getMessage());
         }
     }
 
     private void openConfigurationWindow() {
         if (engine == null) {
             Log.addMessage("ERRORE: Engine non inizializzato.");
-            showAlert("Errore", "Engine non inizializzato.");
+            launchAlertError("Engine non inizializzato.");
             return;
         }
         try {
@@ -209,27 +209,27 @@ public class MainViewController {
             loadConfiguration();
         } catch (IOException e) {
             Log.addMessage("ERRORE: Impossibile aprire l'editor di configurazione: " + e.getMessage());
-            showAlert("Errore", "Impossibile aprire l'editor di configurazione: " + e.getMessage());
+            launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
     }
 
     private void openFolder(String folderPath) {
         if (folderPath == null || "Non configurata".equals(folderPath)) {
             Log.addMessage("ERRORE: La cartella non è stata ancora configurata.");
-            showAlert("Cartella non configurata", "La cartella non è stata ancora configurata.");
+            launchAlertError("La cartella non è stata ancora configurata.");
             return;
         }
         File folder = new File(folderPath);
         if (!folder.exists() || !folder.isDirectory()) {
             Log.addMessage("ERRORE: La cartella non esiste " + folderPath);
-            showAlert("Errore", "La cartella non esiste: " + folderPath);
+            launchAlertError("La cartella non esiste: " + folderPath);
             return;
         }
         try {
             Desktop.getDesktop().open(folder);
         } catch (IOException e) {
             Log.addMessage("ERRORE: Impossibile aprire la cartella: " + e.getMessage());
-            showAlert("Errore", "Impossibile aprire la cartella: " + e.getMessage());
+            launchAlertError("Impossibile aprire la cartella: " + e.getMessage());
         }
     }
 
@@ -261,7 +261,7 @@ public class MainViewController {
     public void launchDialogConversion(File srcFile) {
         if (srcFile == null || engine == null) {
             Log.addMessage("ERRORE: File sorgente o Engine non valido.");
-            showAlert("Errore", "File sorgente o Engine non valido.");
+            launchAlertError("File sorgente o Engine non valido.");
             return;
         }
 
@@ -317,9 +317,10 @@ public class MainViewController {
                     Log.addMessage("Conversione completata: " + srcFile.getName() + " → " + format);
                     fileConvertiti++;
                     stampaRisultati();
+                    launchAlertSuccess(srcFile);
                 } catch (Exception e) {
                     Log.addMessage("ERRORE: Impossibile convertire " + srcFile.getName() + ": " + e.getMessage());
-                    launchAlertError("Errore durante la conversione di " + srcFile.getName());
+                    launchAlertError(e.getMessage());
                     fileScartati++;
                     stampaRisultati();
                 }
@@ -329,13 +330,19 @@ public class MainViewController {
 
     public void launchAlertError(String message) {
         Log.addMessage("ERRORE: " + message);
-        showAlert("Errore", message);
+        showAlert("Errore", message, Alert.AlertType.ERROR);
+    }
+
+    public void launchAlertSuccess(File file) {
+        String message = "Conversione di " + file.getName() + " riuscita";
+        Log.addMessage(message);
+        showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
     }
 
 
-    private void showAlert(String title, String message) {
+    private void showAlert(String title, String message, Alert.AlertType tipo) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+            Alert alert = new Alert(tipo);
             alert.setTitle(title);
             alert.setHeaderText(null);
             alert.setContentText(message);
@@ -345,22 +352,22 @@ public class MainViewController {
 
     public boolean launchDialogUnisci() {
         AtomicBoolean unisci = new AtomicBoolean(false);
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Unisci PDF");
-            alert.setHeaderText(null);
-            alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
 
-            ButtonType siBtn = new ButtonType("Si");
-            ButtonType noBtn = new ButtonType("No");
-            alert.getButtonTypes().setAll(siBtn, noBtn);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Unisci PDF");
+        alert.setHeaderText(null);
+        alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == siBtn) {
-                unisci.set(true);
-            }
-            Log.addMessage("Scelta unione JPG: " + unisci.get());
-        });
+        ButtonType siBtn = new ButtonType("Si");
+        ButtonType noBtn = new ButtonType("No");
+        alert.getButtonTypes().setAll(siBtn, noBtn);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == siBtn) {
+            unisci.set(true);
+        }
+        Log.addMessage("Scelta unione JPG: " + unisci.get());
+
         return unisci.get();
     }
 
