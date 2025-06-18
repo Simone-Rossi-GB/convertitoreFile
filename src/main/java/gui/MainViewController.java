@@ -9,10 +9,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import java.awt.Desktop;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +26,8 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import converter.Engine;
+
+import javax.swing.*;
 
 public class MainViewController {
 
@@ -382,7 +387,33 @@ public class MainViewController {
     }
 
 
-    private void
+    private void launchDialogPdf(){
+        // Campo password
+        JPasswordField passwordField = new JPasswordField(20);
+
+        // Layout del messaggio
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.add(new JLabel("Il PDF è protetto? Inserisci password se sì:"), BorderLayout.NORTH);
+        panel.add(passwordField, BorderLayout.CENTER);
+
+        // Dialog con bottoni Sì/No
+        int scelta = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Protezione PDF",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (scelta == JOptionPane.YES_OPTION) {
+            String password = new String(passwordField.getPassword());
+            System.out.println("Hai scelto SÌ. Password inserita: " + password);
+        } else if (scelta == JOptionPane.NO_OPTION) {
+            System.out.println("Hai scelto NO. Nessuna password richiesta.");
+        } else {
+            System.out.println("Dialog chiuso.");
+        }
+    }
 
     /**
      * Aggiorna i contatori dei risultati a schermo.
