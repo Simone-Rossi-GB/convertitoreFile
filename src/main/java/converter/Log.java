@@ -7,18 +7,18 @@ import java.util.Date;
 public class Log {
     private static File logFile = null;
     private static PrintWriter writer = null;
-
-    public Log() throws IOException {
-        File logDir = new File("src/logs");
-        if (!logDir.exists()) logDir.mkdirs();
-
-        String fileName = "log_" + getDateOnly() + ".txt"; // log_2025-06-18.txt
-        logFile = new File(logDir, fileName);
-
-        writer = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-    }
+    private static final File logDir = new File("src/logs");
 
     public static void addMessage(String message) {
+        if (logFile == null){
+            try {
+                String fileName = "log_" + getDateOnly() + ".txt";
+                logFile = new File(logDir, fileName);
+                writer = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+            } catch (IOException e){
+                System.out.println("ERRORE CREAZIONE FILE DI LOG");
+            }
+        }
         String time = getTimeOnly();
         writer.println("[" + time + "] " + message);
         writer.flush();
