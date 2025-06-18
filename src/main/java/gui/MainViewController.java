@@ -356,17 +356,19 @@ public class MainViewController {
             });
             return;
         }
-        System.out.println("prima parte finita");
         List<String> finalFormats = formats;
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
             dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
             dialog.setContentText("Formato desiderato:");
-
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(format -> {
                 try {
+                    //dialog per gestire la password
+                    if(srcExtension.equals("pdf")){
+                        launchDialogPdf();
+                    }
                     engine.conversione(srcExtension, format, srcFile);
                     fileConvertiti++;
                     launchAlertSuccess(srcFile);
@@ -378,6 +380,9 @@ public class MainViewController {
             });
         });
     }
+
+
+    private void
 
     /**
      * Aggiorna i contatori dei risultati a schermo.
