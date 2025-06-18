@@ -91,9 +91,6 @@ public class MainViewController {
         loadConfiguration();
         System.out.println(monitorAtStart);
         if (monitorAtStart) {
-            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
-            watcherThread.setDaemon(true);
-            watcherThread.start();
             toggleMonitoring();
         }
     }
