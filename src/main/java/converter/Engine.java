@@ -23,12 +23,14 @@ public class Engine {
     public void setConfig() {
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
             Gson gson = new Gson();
-            //classe di appoggio per json
             config = gson.fromJson(reader, ConverterConfig.class);
             if (config == null) {
+                Log.addMessage("ERRORE: l'oggetto config non esiste");
                 throw new NullPointerException("L'oggetto config non esiste");
             }
+            Log.addMessage("Configurazione caricata correttamente da config.json");
         } catch (Exception e) {
+            Log.addMessage("ERRORE: Lettura del file di configurazione fallita");
             throw new RuntimeException("Errore nella lettura del file di configurazione", e);
         }
     }
@@ -40,8 +42,10 @@ public class Engine {
      */
     public String getConfigAsJson() throws Exception {
         try {
+            Log.addMessage("Lettura del contenuto di config.json eseguita con successo");
             return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)));
         } catch (IOException e) {
+            Log.addMessage("ERRORE: Lettura del file di configurazione non riuscita");
             throw new Exception("Errore nella lettura del file di configurazione: " + e.getMessage(), e);
         }
     }
@@ -55,13 +59,17 @@ public class Engine {
     public void setConfigFromJson(String jsonText) throws Exception {
         try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
             writer.write(jsonText);
+            Log.addMessage("Scrittura su config.json completata");
             setConfig();
         } catch (IOException e) {
+            Log.addMessage("ERRORE: Scrittura su config.json fallita");
             throw new Exception("Errore nella scrittura del file di configurazione: " + e.getMessage(), e);
         } catch (RuntimeException e) {
+            Log.addMessage("ERRORE: Caricamento della nuova configurazione fallito");
             throw new Exception("Errore nel caricamento della nuova configurazione: " + e.getMessage(), e);
         }
     }
+
 
     /**
      * Ritorna i formati in cui un file può essere convertito
@@ -72,11 +80,16 @@ public class Engine {
      */
     public List<String> getPossibleConversions(String extension) throws Exception {
         if (extension == null) {
+            Log.addMessage("ERRORE: Parametro extension nullo");
             throw new NullPointerException("L'oggetto extension non esiste");
         }
+
         if (config == null || config.getConversions() == null || !config.getConversions().containsKey(extension)) {
+            Log.addMessage("ERRORE: Configurazione mancante o conversione non supportata per: " + extension);
             throw new Exception("Config assente o conversione non supportata");
         }
+
+        Log.addMessage("Formati disponibili per la conversione da " + extension + " ottenuti con successo");
         return new ArrayList<>(config.getConversions().get(extension).keySet());
     }
 
@@ -144,15 +157,16 @@ public class Engine {
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
 
         try {
-            //file temporaneo per evitare conflitti
             Path tempPath = Paths.get("src", "temp", srcFile.getName());
             Files.copy(srcFile.toPath(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+            Log.addMessage("Copia del file nella cartella temporanea: " + tempPath);
             srcFile = tempPath.toFile();
 
             File renamedFile = giveBackNewFileWithNewName(srcFile.getPath(), "-$$" + outExt + "$$-");
             rinominaFile(srcFile, renamedFile);
             srcFile = renamedFile;
 
+            Log.addMessage("Avvio conversione con: " + converterClassName);
             List<File> outFiles;
             if (password != null && union != null) {
                 outFiles = converter.convert(srcFile, password, union);
@@ -165,15 +179,17 @@ public class Engine {
             }
 
             Files.deleteIfExists(srcFile.toPath());
+            Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
 
             for (File f : outFiles) {
                 File cleaned = new File(f.getPath().replaceAll("-\\$\\$.*?\\$\\$-", ""));
                 rinominaFile(f, cleaned);
-                //Sposto il file convertito nella directory corretta
                 spostaFile(config.getSuccessOutputDir(), cleaned);
             }
+            Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
+
         } catch (IOException e) {
-            //Sposto il file di origine nella directory degli errori
+            Log.addMessage("ERRORE: Errore durante la conversione o lo spostamento del file " + srcFile.getName());
             spostaFile(config.getErrorOutputDir(), srcFile);
             throw new Exception(e.getMessage());
         }
@@ -187,20 +203,33 @@ public class Engine {
      * @throws NullPointerException Ritorna il primo parametro inesistente trovato
      */
     private String checkParameters(String srcExt, String outExt, File srcFile) throws Exception {
-        if (srcExt == null) throw new NullPointerException("L'oggetto srcExt non esiste");
-        if (outExt == null) throw new NullPointerException("L'oggetto outExt non esiste");
-        if (srcFile == null) throw new NullPointerException("L'oggetto srcFile non esiste");
+        if (srcExt == null) {
+            Log.addMessage("ERRORE: srcExt nullo");
+            throw new NullPointerException("L'oggetto srcExt non esiste");
+        }
+        if (outExt == null) {
+            Log.addMessage("ERRORE: outExt nullo");
+            throw new NullPointerException("L'oggetto outExt non esiste");
+        }
+        if (srcFile == null) {
+            Log.addMessage("ERRORE: srcFile nullo");
+            throw new NullPointerException("L'oggetto srcFile non esiste");
+        }
 
         Map<String, Map<String, String>> conversions = config.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
+            Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
             throw new Exception("Conversione non supportata");
         }
 
         Map<String, String> possibleConversions = conversions.get(srcExt);
         String converterClassName = possibleConversions.get(outExt);
         if (converterClassName == null) {
+            Log.addMessage("ERRORE: Conversione da " + srcExt + " a " + outExt + " non supportata");
             throw new Exception("Conversione non supportata");
         }
+
+        Log.addMessage("Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
         return converterClassName;
     }
 
@@ -213,9 +242,10 @@ public class Engine {
     private void spostaFile(String outPath, File file) throws IOException {
         if (file == null) throw new NullPointerException("L'oggetto file non esiste");
         if (outPath == null) throw new NullPointerException("L'oggetto outPath non esiste");
+
         Path dest = Paths.get(outPath, file.getName());
         Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("File copiato in " + dest);
+        Log.addMessage("File spostato in: " + dest.toString());
     }
 
     /**
@@ -252,10 +282,11 @@ public class Engine {
      * Rinomina il file passato a quello di destinazione
      * @throws Exception Rinomina file fallita
      */
-    public static void rinominaFile(File startFile, File destFile) throws Exception{
+    public static void rinominaFile(File startFile, File destFile) throws Exception {
         if (!startFile.renameTo(destFile)) {
-            Log.addMessage("ERRORE: Rinomina file pre-convert fallita: "+startFile.getName()+" -> "+destFile.getName());
-            throw new Exception("ERRORE: Rinomina file pre-convert fallita");
+            Log.addMessage("ERRORE: Rinomina file pre-convert fallita: " + startFile.getName() + " -> " + destFile.getName());
+            throw new Exception("Rinomina file pre-convert fallita");
         }
+        Log.addMessage("Rinomina file: " + startFile.getName() + " -> " + destFile.getName());
     }
 }

@@ -34,11 +34,18 @@ public class DirectoryWatcher implements Runnable {
      * @throws IOException in caso di errore nella registrazione delle directory
      */
     public DirectoryWatcher(String directoryPath, MainViewController controller) throws IOException {
-        if (directoryPath == null) throw new NullPointerException("L'oggetto directoryPath non esiste");
-        if (controller == null) throw new NullPointerException("L'oggetto controller non esiste");
+        if (directoryPath == null) {
+            Log.addMessage("ERRORE: directoryPath nullo");
+            throw new NullPointerException("L'oggetto directoryPath non esiste");
+        }
+        if (controller == null) {
+            Log.addMessage("ERRORE: controller nullo");
+            throw new NullPointerException("L'oggetto controller non esiste");
+        }
 
         this.dir = Paths.get(directoryPath);
         if (!Files.exists(this.dir) || !Files.isDirectory(this.dir)) {
+            Log.addMessage("ERRORE: percorso non valido o non directory - " + directoryPath);
             throw new IllegalArgumentException("Il percorso " + directoryPath + " è sbagliato o non è una directory");
         }
 
@@ -46,6 +53,8 @@ public class DirectoryWatcher implements Runnable {
         this.watchService = FileSystems.getDefault().newWatchService();
         this.controller = controller;
         this.watchKeyToPath = new HashMap<>();
+
+        Log.addMessage("Inizializzazione DirectoryWatcher per: " + directoryPath);
         registerAll(dir);
     }
 
@@ -56,15 +65,22 @@ public class DirectoryWatcher implements Runnable {
      * @throws IOException in caso di errore nella registrazione
      */
     private void registerAll(final Path start) throws IOException {
-        if (start == null) throw new NullPointerException("L'oggetto start non esiste");
+        if (start == null) {
+            Log.addMessage("ERRORE: start nullo");
+            throw new NullPointerException("L'oggetto start non esiste");
+        }
 
         Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                if (dir == null) throw new NullPointerException("L'oggetto dir non esiste");
+                if (dir == null) {
+                    Log.addMessage("ERRORE: directory da registrare nulla");
+                    throw new NullPointerException("L'oggetto dir non esiste");
+                }
 
                 WatchKey key = dir.register(watchService, ENTRY_CREATE);
                 watchKeyToPath.put(key, dir);
+                Log.addMessage("Registrata directory per il monitoraggio: " + dir.toString());
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -77,38 +93,56 @@ public class DirectoryWatcher implements Runnable {
      */
     @Override
     public void run() {
+        Log.addMessage("DirectoryWatcher avviato per: " + dir.toString());
+
         while (!Thread.currentThread().isInterrupted()) {
             WatchKey key;
             try {
-                key = watchService.take(); // Operazione bloccante fino a nuovo evento
+                key = watchService.take();
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Ripristina il flag di interruzione
+                Log.addMessage("Thread interrotto, chiusura DirectoryWatcher");
+                Thread.currentThread().interrupt();
                 break;
             }
 
             Path parentDir = watchKeyToPath.get(key);
-            if (parentDir == null) continue;
+            if (parentDir == null) {
+                Log.addMessage("ERRORE: chiave sconosciuta nel watchKeyToPath");
+                continue;
+            }
 
             for (WatchEvent<?> event : key.pollEvents()) {
                 WatchEvent.Kind<?> kind = event.kind();
-                if (kind == OVERFLOW) continue;
+
+                if (kind == OVERFLOW) {
+                    Log.addMessage("Overflow rilevato, evento ignorato");
+                    continue;
+                }
 
                 WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path fileName = ev.context();
-                if (fileName == null) continue;
+                if (fileName == null) {
+                    Log.addMessage("ERRORE: nome file nullo nell'evento");
+                    continue;
+                }
+
                 Path fullPath = parentDir.resolve(fileName);
+                Log.addMessage("Nuovo file/directory rilevato: " + fullPath.toString());
 
                 if (kind == ENTRY_CREATE) {
                     if (Files.isDirectory(fullPath)) {
                         try {
-                            registerAll(fullPath); // Registra nuove sottodirectory
+                            registerAll(fullPath);
                         } catch (IOException e) {
-                            Log.addMessage("Errore nella registrazione della sottocartella");
+                            Log.addMessage("ERRORE: registrazione sottocartella fallita - " + fullPath.toString());
                         }
                     } else {
                         File file = fullPath.toFile();
                         if (file != null) {
+                            Log.addMessage("Avvio conversione automatica per: " + file.getAbsolutePath());
                             executor.submit(() -> controller.launchDialogConversion(file));
+                        } else {
+                            Log.addMessage("ERRORE: file nullo da convertire");
                         }
                     }
                 }
@@ -116,12 +150,17 @@ public class DirectoryWatcher implements Runnable {
 
             boolean valid = key.reset();
             if (!valid) {
-                watchKeyToPath.remove(key);
-                if (watchKeyToPath.isEmpty()) break;
+                Path removed = watchKeyToPath.remove(key);
+                Log.addMessage("Chiave non più valida, rimossa directory: " + (removed != null ? removed.toString() : "sconosciuta"));
+                if (watchKeyToPath.isEmpty()) {
+                    Log.addMessage("Nessuna directory rimanente da monitorare. Uscita DirectoryWatcher.");
+                    break;
+                }
             }
         }
 
-        executor.shutdown(); // Arresta l'executor quando il thread termina
+        executor.shutdown();
+        Log.addMessage("Executor arrestato, DirectoryWatcher terminato");
     }
 
     /**
