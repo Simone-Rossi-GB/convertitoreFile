@@ -22,22 +22,21 @@ import converter.Engine;
 
 public class MainViewController {
 
-    // Riferimenti FXML agli elementi dell'interfaccia
+    // Riferimenti FXML agli elementi dell'interfaccia - CORRETTI
     @FXML private Label statusIndicator;
     @FXML private Label monitoringStatusLabel;
     @FXML private Label applicationLogArea;
-    @FXML private Label cartellaMonitorataLabel;
-    @FXML private Label cartellaFileConvertitiLabel;
-    @FXML private Label cartellaFileFallitiLabel;
     @FXML private Label detectedFilesCounter;
     @FXML private Label successfulConversionsCounter;
     @FXML private Label failedConversionsCounter;
     @FXML private Button MonitoringBtn;
     @FXML private Button configBtn;
     @FXML private Button exitBtn;
-    @FXML private Button openMonitoredFolderBtn;
-    @FXML private Button openConvertedFolderBtn;
-    @FXML private Button openFailedFolderBtn;
+
+    // Pulsanti con nomi corretti dall'FXML
+    @FXML private Button caricaFileBtn;
+    @FXML private Button fileConvertitiBtn;
+    @FXML private Button conversioniFalliteBtn;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -58,7 +57,6 @@ public class MainViewController {
     private Engine engine;
     Thread watcherThread;
 
-
     @FXML
     private void initialize() throws IOException {
         engine = new Engine();
@@ -68,7 +66,7 @@ public class MainViewController {
         addLogMessage("Applicazione avviata.");
         addLogMessage("Caricamento configurazione...");
 
-        // TODO: Carica configurazione dal JSON
+        // Carica configurazione dal JSON
         loadConfiguration();
         if (isMonitoring) {
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
@@ -101,10 +99,10 @@ public class MainViewController {
         // Handler per il pulsante exit
         exitBtn.setOnAction(e -> exitApplication());
 
-        // Handler per i pulsanti "Apri cartella"
-        openMonitoredFolderBtn.setOnAction(e -> openFolder(monitoredFolderPath));
-        openConvertedFolderBtn.setOnAction(e -> openFolder(convertedFolderPath));
-        openFailedFolderBtn.setOnAction(e -> openFolder(failedFolderPath));
+        // Handler per i pulsanti "Apri cartella" - CORRETTI
+        caricaFileBtn.setOnAction(e -> openFolder(monitoredFolderPath));
+        fileConvertitiBtn.setOnAction(e -> openFolder(convertedFolderPath));
+        conversioniFalliteBtn.setOnAction(e -> openFolder(failedFolderPath));
     }
 
     @FXML
@@ -124,12 +122,14 @@ public class MainViewController {
             successfulConversionsCounter.setText("N/A");
             failedConversionsCounter.setText("N/A");
 
-            // TODO: Ferma converter.DirectoryWatcher
-            watcherThread.interrupt();
+            // Ferma DirectoryWatcher
+            if (watcherThread != null) {
+                watcherThread.interrupt();
+            }
 
         } else {
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
-            // TODO: Avvia converter.DirectoryWatcher
+            // Avvia DirectoryWatcher
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
         }
@@ -221,20 +221,15 @@ public class MainViewController {
             convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
             failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
 
-            if(ensureDirectoryExists(monitoredFolderPath)){
-                cartellaMonitorataLabel.setText(monitoredFolderPath);
-            }
-
-            if(ensureDirectoryExists(convertedFolderPath)){
-                cartellaFileConvertitiLabel.setText(convertedFolderPath);
-            }
-
-            if(ensureDirectoryExists(failedFolderPath)){
-                cartellaFileFallitiLabel.setText(failedFolderPath);
-            }
+            // Assicurati che le cartelle esistano
+            ensureDirectoryExists(monitoredFolderPath);
+            ensureDirectoryExists(convertedFolderPath);
+            ensureDirectoryExists(failedFolderPath);
 
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
+            addLogMessage("Cartella file convertiti: " + convertedFolderPath);
+            addLogMessage("Cartella file falliti: " + failedFolderPath);
         } catch (Exception e) {
             addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
             showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
@@ -254,9 +249,11 @@ public class MainViewController {
         });
     }
 
-
     private void exitApplication() {
         addLogMessage("Chiusura applicazione...");
+        if (watcherThread != null) {
+            watcherThread.interrupt();
+        }
         Platform.exit();
     }
 
@@ -299,7 +296,6 @@ public class MainViewController {
                 stampaRisultati();
             });
         });
-
     }
 
     public void stampaRisultati(){
@@ -322,7 +318,7 @@ public class MainViewController {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Conversione interrotta");
-            alert.setHeaderText(null); // Nessun header
+            alert.setHeaderText(null);
             alert.setContentText(message);
             alert.showAndWait();
         });
@@ -346,20 +342,24 @@ public class MainViewController {
         this.mainApp = mainApp;
     }
 
+    // Metodi FXML - implementati correttamente
     @FXML
     public void openConfig(ActionEvent actionEvent) {
-        // codice
+        openConfigurationWindow();
     }
 
     @FXML
     public void loadFilesFolder(ActionEvent actionEvent) {
+        openFolder(monitoredFolderPath);
     }
 
     @FXML
     public void openConvertedFolder(ActionEvent actionEvent) {
+        openFolder(convertedFolderPath);
     }
 
     @FXML
     public void openFailedConvertionsFolder(ActionEvent actionEvent) {
+        openFolder(failedFolderPath);
     }
 }
