@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="700.0" spacing="15.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ConfigWindowController">
+    <children>
+        <!-- Header -->
+        <Label alignment="CENTER" prefWidth="670.0" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 15;" text="Editor Configurazione" textAlignment="CENTER">
+            <font>
+                <Font name="System Bold" size="20.0" />
+            </font>
+        </Label>
+
+        <!-- Instructions -->
+        <Label text="Modifica il file di configurazione JSON sottostante. Assicurati che la sintassi JSON sia corretta." textFill="#2c3e50" wrapText="true">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+
+        <!-- Text Editor Area -->
+        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="400.0" prefWidth="670.0" style="-fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8;" VBox.vgrow="ALWAYS">
+            <content>
+                <TextArea fx:id="configTextArea" prefHeight="395.0" prefWidth="665.0" style="-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 13px; -fx-background-color: #ffffff; -fx-text-fill: #2c3e50; -fx-border-color: transparent;" wrapText="false" />
+            </content>
+        </ScrollPane>
+
+        <!-- Status Label -->
+        <Label fx:id="statusLabel" text="Pronto per la modifica" textFill="#7f8c8d">
+            <font>
+                <Font name="System Italic" size="12.0" />
+            </font>
+        </Label>
+
+        <!-- Buttons -->
+        <HBox alignment="CENTER" spacing="20.0">
+            <children>
+                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Salva">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Chiudi">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+                <Button fx:id="validateButton" mnemonicParsing="false" onAction="#validateJson" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="✓ Valida JSON">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+    </padding>
+</VBox>

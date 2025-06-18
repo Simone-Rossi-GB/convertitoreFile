@@ -2,9 +2,11 @@ package converter;
 
 import Converters.Converter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 public class Engine {
     private ConverterConfig config;
+    private static final String CONFIG_FILE_PATH = "config/config.json";
 
     /**
      * Costruttore: legge la configurazione dal file JSON.
@@ -30,11 +33,46 @@ public class Engine {
      * @throws RuntimeException se il file di configurazione non è leggibile o è corrotto.
      */
     public void setConfig(){
-        try (FileReader reader = new FileReader("config/config.json")) {
+        try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
             Gson gson = new Gson();
             config = gson.fromJson(reader, ConverterConfig.class);
         } catch (Exception e) {
             throw new RuntimeException("Errore nella lettura del file di configurazione", e);
+        }
+    }
+
+    /**
+     * Restituisce il contenuto del file di configurazione JSON come stringa.
+     * @return contenuto del file config.json come stringa
+     * @throws Exception se si verifica un errore durante la lettura del file
+     */
+    public String getConfigAsJson() throws Exception {
+        try {
+            return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)));
+        } catch (IOException e) {
+            throw new Exception("Errore nella lettura del file di configurazione: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Scrive il testo JSON nel file di configurazione e ricarica la configurazione.
+     * @param jsonText testo JSON da scrivere nel file config.json
+     * @throws Exception se si verifica un errore durante la scrittura o il caricamento
+     */
+    public void setConfigFromJson(String jsonText) throws Exception {
+        try {
+            // Scrive il testo nel file config.json
+            try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
+                writer.write(jsonText);
+            }
+
+            // Ricarica la configurazione usando il metodo esistente
+            setConfig();
+
+        } catch (IOException e) {
+            throw new Exception("Errore nella scrittura del file di configurazione: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            throw new Exception("Errore nel caricamento della nuova configurazione: " + e.getMessage(), e);
         }
     }
 
@@ -111,7 +149,7 @@ public class Engine {
                         spostaFile(config.getSuccessOutputDir(), f);
                     }
                 } catch (IOException e) {
-                    // Se c’è un errore durante la conversione, sposta il file nella cartella errori
+                    // Se c'è un errore durante la conversione, sposta il file nella cartella errori
                     spostaFile(config.getErrorOutputDir(), srcFile);
                     throw new Exception("Errore nella conversione");
                 }
@@ -139,7 +177,7 @@ public class Engine {
     }
 
     /**
-     * Restituisce un nuovo file con un nome modificato aggiungendo un suffisso prima dell’estensione.
+     * Restituisce un nuovo file con un nome modificato aggiungendo un suffisso prima dell'estensione.
      * @param filePath percorso originale del file
      * @param suffix suffisso da aggiungere al nome del file
      * @return nuovo file con nome modificato
@@ -150,7 +188,7 @@ public class Engine {
 
         int lastDot = name.lastIndexOf(".");
 
-        // Se non c’è estensione, aggiunge solo il suffisso
+        // Se non c'è estensione, aggiunge solo il suffisso
         if (lastDot == -1) {
             return new File(file.getParent() + File.separator + name + suffix);
         }

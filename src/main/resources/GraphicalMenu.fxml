@@ -65,27 +65,37 @@
                                         </Label>
                                         <Separator prefHeight="0.0" prefWidth="439.0" />
 
-                                        <!-- Monitored Folder -->
-                                        <HBox alignment="CENTER_LEFT" spacing="8.8">
+                                        <!-- Cartella Monitorata -->
+                                        <VBox spacing="8.8">
                                             <children>
-                                                <Button fx:id="caricaFileBtn" minWidth="55.0" mnemonicParsing="false" onAction="#loadFilesFolder" prefHeight="43.0" prefWidth="149.0" text="Carica File">
-                                       <HBox.margin>
-                                          <Insets left="124.0" />
-                                       </HBox.margin></Button>
+                                                <Button fx:id="caricaFileBtn" mnemonicParsing="false" onAction="#loadFilesFolder" prefHeight="50.0" prefWidth="200.0"
+                                                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);"
+                                                        text="Carica File">
+                                                    <VBox.margin>
+                                                        <Insets left="100.0" />
+                                                    </VBox.margin>
+                                                </Button>
                                             </children>
-                                        </HBox>
+                                        </VBox>
 
-                                        <!-- Converted Files Folder -->
-                                        <HBox alignment="CENTER_LEFT" spacing="8.8">
+                                        <!-- Cartelle Output -->
+                                        <HBox alignment="CENTER" spacing="20.0">
                                             <children>
-                                                <Button fx:id="fileConvertitiBtn" minWidth="55.0" mnemonicParsing="false" onAction="#openConvertedFolder" prefHeight="43.0" prefWidth="149.0" text="File Convertiti">
-                                       <HBox.margin>
-                                          <Insets left="25.0" />
-                                       </HBox.margin></Button>
-                                                <Button fx:id="conversioniFalliteBtn" minWidth="55.0" mnemonicParsing="false" onAction="#openFailedConvertionsFolder" prefHeight="43.0" prefWidth="149.0" text="Conversioni Fallite">
-                                       <HBox.margin>
-                                          <Insets left="40.0" />
-                                       </HBox.margin></Button>
+                                                <VBox alignment="CENTER" spacing="8.8">
+                                                    <children>
+                                                        <Button fx:id="fileConvertitiBtn" mnemonicParsing="false" onAction="#openConvertedFolder" prefHeight="50.0" prefWidth="180.0"
+                                                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 13px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);"
+                                                                text="File Convertiti" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" spacing="8.8">
+                                                    <children>
+                                                        <Button fx:id="conversioniFalliteBtn" mnemonicParsing="false" onAction="#openFailedConvertionsFolder" prefHeight="50.0" prefWidth="180.0"
+                                                                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 13px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);"
+                                                                text="Conversioni Fallite" />
+                                                    </children>
+                                                </VBox>
                                             </children>
                                         </HBox>
                                     </children>
