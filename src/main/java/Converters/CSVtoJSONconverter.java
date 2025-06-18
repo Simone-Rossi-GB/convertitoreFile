@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import converter.Log;
+import converter.Utility;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class CSVtoJSONconverter implements Converter{
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException {
-        Log.addMessage("Inizio conversione csv: "+srcFile.getName()+" -> .json");
+        Log.addMessage("Inizio conversione csv: "+Utility.estraiNomePiuEstensioneFile(srcFile)+" -> .json");
         BufferedReader reader = new BufferedReader(new FileReader(srcFile));
         String[] headers = reader.readLine().split(",");
 
@@ -40,7 +41,7 @@ public class CSVtoJSONconverter implements Converter{
 
         File outputFile = new File(srcFile.getName().split("\\.")[0]+".json");
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(outputFile, jsonArray);
-        Log.addMessage("Creazione file .json completata: "+outputFile.getName());
+        Log.addMessage("Creazione file .json completata: "+ Utility.estraiNomePiuEstensioneFile(outputFile));
         ArrayList<File> files = new ArrayList<>();
         files.add(outputFile);
         return files;
