@@ -1,3 +1,5 @@
+============================================================================================================================================
+============================================================================================================================================
 package webservice;
 
 import org.springframework.boot.SpringApplication;
@@ -308,8 +310,18 @@ import java.nio.file.StandardCopyOption;
 private ConverterWebServiceClient webServiceClient;
 private boolean useWebService = false;
 
+
+
+
+
+
+
+
+
 // ========== MODIFICA AL METODO initialize() ==========
 // Aggiungi questa riga nel metodo initialize() esistente
+
+
 @FXML
 private void initialize() throws IOException {
     engine = new Engine();
@@ -322,8 +334,15 @@ private void initialize() throws IOException {
     // ... resto del metodo initialize() esistente ...
 }
 
+
+
+
+
+
+
 // ========== SOSTITUISCI IL METODO launchDialogConversion ==========
 // Sostituisci completamente il metodo esistente con questo:
+
 public void launchDialogConversion(File srcFile) {
     Platform.runLater(() -> fileRicevuti++);
 

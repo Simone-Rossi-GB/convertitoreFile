@@ -321,6 +321,8 @@ public class ConfigWindowController {
         }
     }
 
+
+
     /**
      * Chiude la finestra senza salvare.
      */
