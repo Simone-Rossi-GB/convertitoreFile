@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import converter.Engine;
@@ -261,7 +262,7 @@ public class MainViewController {
         Platform.exit();
     }
 
-    public void launchDialogConversion(File srcFile) {
+    public void launchDialogConversion(File srcFile) { // srcFile è già final o effectively final qui
         Platform.runLater(() -> fileRicevuti++);
 
         String srcExtension = getExtension(srcFile);
@@ -275,7 +276,7 @@ public class MainViewController {
                 useWebService = true;
                 addLogMessage("Usando web service per conversione di " + srcFile.getName());
             } else {
-                formats = engine.getPossibleConversions(srcExtension); // `getPossibleConversions` non è cambiato
+                formats = engine.getPossibleConversions(srcExtension);
                 useWebService = false;
                 addLogMessage("Web service non disponibile, usando engine locale per " + srcFile.getName());
             }
@@ -289,7 +290,7 @@ public class MainViewController {
             return;
         }
 
-        List<String> finalFormats = formats;
+        final List<String> finalFormats = formats; // Rendi final la lista dei formati
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
@@ -297,30 +298,23 @@ public class MainViewController {
             dialog.setContentText("Formato desiderato:");
 
             Optional<String> result = dialog.showAndWait();
-            result.ifPresent(format -> {
-                new Thread(() -> performConversion(srcFile, format)).start();
+            result.ifPresent(chosenFormat -> { // Usa un nuovo nome per la variabile lambda
+                // srcFile è già effectively final, quindi non serve dichiararlo final qui
+                new Thread(() -> performConversion(srcFile, chosenFormat)).start();
             });
         });
     }
 
     private void performConversion(File srcFile, String targetFormat) {
-        // --- PREPARAZIONE DEI FILE TEMPORANEI E DI OUTPUT ---
-        // È cruciale che il file di input per il web service sia una COPIA
-        // perché il watcher sta monitorando la cartella e il file originale
-        // potrebbe essere eliminato o spostato mentre il WS lo processa.
-        // Anche per l'engine locale, è meglio lavorare su una copia temporanea
-        // per evitare modifiche al file originale nella cartella monitorata
-        // prima del suo spostamento finale.
 
-        Path tempInputPath = null;
-        File tempInputFile = null;
-        File outputDestinationFile = null; // Il file finale salvato localmente
-        String srcExtension = getExtension(srcFile);
-        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat; // Nome per il file convertito
+        Path tempInputPath = null; // Sarà assegnato una volta
+        File tempInputFile = null; // Sarà assegnato una volta
+        File outputDestinationFile = null; // Sarà assegnato una volta
+        String srcExtension = getExtension(srcFile); // Assegnato una volta
+        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat; // Assegnato una volta
 
         try {
             // Crea una copia temporanea del file sorgente per la conversione
-            // Questo è importante sia per il WS che per l'Engine locale
             tempInputPath = Files.createTempFile("convert_input_", srcFile.getName());
             Files.copy(srcFile.toPath(), tempInputPath, StandardCopyOption.REPLACE_EXISTING);
             tempInputFile = tempInputPath.toFile();
@@ -331,94 +325,93 @@ public class MainViewController {
                 outputDestinationFile.getParentFile().mkdirs();
             }
 
-            String password = null;
-            boolean mergeImages = false;
+            String password = null; // Potrebbe essere riassegnato, ma solo in un blocco if/else,
+            // il che lo rende "effectively final" per ogni percorso di esecuzione.
+            boolean mergeImages = false; // Stessa logica di password.
 
             // Gestione dialoghi per PDF
             if (srcExtension.equals("pdf")) {
                 password = launchDialogPdf();
-                if (targetFormat.equals("jpg")) { // Questa logica è specifica per PDF->JPG
+                if (targetFormat.equals("jpg")) {
                     mergeImages = launchDialogUnisci();
                 }
             }
 
+            // Dichiara `final` le variabili che verranno usate nelle lambda se il compilatore si lamenta,
+            // anche se sono già "effectively final". Questo serve come workaround esplicito.
+            final File finalOutputDestinationFile = outputDestinationFile;
+            final File finalSrcFile = srcFile; // Se srcFile dovesse causare problemi nella catch/finally
+
             if (useWebService) {
                 // USA WEBSERVICE
                 addLogMessage("Avvio conversione tramite web service...");
-                // Chiamiamo il metodo del client con il file temporaneo e il percorso di destinazione
                 ConversionResult result = webServiceClient.convertFile(tempInputFile, targetFormat, outputDestinationFile, password, mergeImages);
 
                 if (result.isSuccess()) {
                     addLogMessage("Conversione completata tramite web service: " + result.getMessage());
-                    // Il file è già stato salvato dal client in outputDestinationFile.
-                    // Ora spostiamo il file originale dalla monitoredFolderPath nella cartella successi.
-                    moveFileToSuccessFolder(srcFile); // Sposta il *file originale*
+                    moveFileToSuccessFolder(finalSrcFile); // Usa la variabile final
                     Platform.runLater(() -> {
                         fileConvertiti++;
                         stampaRisultati();
-                        launchAlertSuccess(outputDestinationFile); // Alert usa il nome del file convertito
+                        launchAlertSuccess(finalOutputDestinationFile); // Usa la variabile final
                     });
                 } else {
-                    // Se il WS restituisce un errore, lancia un'eccezione per catturarla nel catch
                     throw new Exception(result.getError());
                 }
             } else {
                 // USA ENGINE LOCALE
                 addLogMessage("Avvio conversione tramite engine locale...");
 
-                // Dobbiamo creare una directory temporanea per l'engine locale per scrivere il suo output
-                // Questo è cruciale perché i metodi `conversione` di Engine ora prendono `outputDirectory`
                 Path engineTempOutputDirectory = Files.createTempDirectory("engine_output_" + UUID.randomUUID().toString());
-                File engineTempOutputDirFile = engineTempOutputDirectory.toFile();
+                final File engineTempOutputDirFile = engineTempOutputDirectory.toFile(); // Dichiara final se necessario
 
-                File convertedFileFromEngine; // L'Engine restituirà il file convertito qui
+                File convertedFileFromEngine;
 
                 if (password != null) {
-                    if (mergeImages && targetFormat.equals("jpg")) { // Controlla la logica per mergeImages e jpg
+                    if (mergeImages && targetFormat.equals("jpg")) {
                         convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, password, mergeImages, engineTempOutputDirFile);
                     } else {
                         convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, password, engineTempOutputDirFile);
                     }
                 } else {
-                    if (mergeImages && targetFormat.equals("jpg")) { // Controlla la logica per mergeImages e jpg
+                    if (mergeImages && targetFormat.equals("jpg")) {
                         convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, mergeImages, engineTempOutputDirFile);
                     } else {
                         convertedFileFromEngine = engine.conversione(srcExtension, targetFormat, tempInputFile, engineTempOutputDirFile);
                     }
                 }
 
-                // Se l'engine ha generato il file, spostalo nella cartella dei successi
                 if (convertedFileFromEngine != null && convertedFileFromEngine.exists()) {
-                    Files.move(convertedFileFromEngine.toPath(), outputDestinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    addLogMessage("Conversione completata tramite engine locale. File salvato in: " + outputDestinationFile.getAbsolutePath());
-                    moveFileToSuccessFolder(srcFile); // Sposta il *file originale* dalla monitoredFolderPath
+                    Files.move(convertedFileFromEngine.toPath(), finalOutputDestinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    addLogMessage("Conversione completata tramite engine locale. File salvato in: " + finalOutputDestinationFile.getAbsolutePath());
+                    moveFileToSuccessFolder(finalSrcFile); // Usa la variabile final
                     Platform.runLater(() -> {
                         fileConvertiti++;
                         stampaRisultati();
-                        launchAlertSuccess(outputDestinationFile); // Alert usa il nome del file convertito
+                        launchAlertSuccess(finalOutputDestinationFile); // Usa la variabile final
                     });
                 } else {
                     throw new Exception("L'engine locale non ha prodotto un file di output valido.");
                 }
 
-                // Pulizia della directory temporanea dell'engine
                 Files.delete(engineTempOutputDirectory);
-
-            } // FINE else (use local engine)
+            }
 
         } catch (Exception e) {
             addLogMessage("Errore durante conversione: " + e.getMessage());
-            moveFileToErrorFolder(srcFile); // Sposta il *file originale* nella cartella errori
+            moveFileToErrorFolder(srcFile); // srcFile è effettivamente final qui
+            final String errorMessage = e.getMessage(); // Cattura il messaggio di errore
             Platform.runLater(() -> {
                 fileScartati++;
                 stampaRisultati();
-                launchAlertError("Errore: " + e.getMessage());
+                launchAlertError("Errore: " + errorMessage); // Usa la variabile final
             });
         } finally {
             // Pulizia del file temporaneo di input, INDIPENDENTEMENTE da successo o fallimento
+            final Path finalTempInputPath = tempInputPath; // Rendi final per il blocco finally
             try {
-                if (tempInputPath != null && Files.exists(tempInputPath)) {
-                    Files.delete(tempInputPath);
+                if (finalTempInputPath != null && Files.exists(finalTempInputPath)) {
+                    Files.delete(finalTempInputPath);
                 }
             } catch (IOException cleanupEx) {
                 System.err.println("Errore nella pulizia del file di input temporaneo: " + cleanupEx.getMessage());
