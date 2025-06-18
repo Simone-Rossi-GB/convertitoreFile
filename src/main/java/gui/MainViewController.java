@@ -74,6 +74,7 @@ public class MainViewController {
     private String failedFolderPath = "Non configurata";
     private Engine engine;
     private Thread watcherThread;
+    private boolean monitorAtStart;
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -90,10 +91,12 @@ public class MainViewController {
 
         // Carica configurazione dal JSON
         loadConfiguration();
-        if (isMonitoring) {
+        System.out.println(monitorAtStart);
+        if (monitorAtStart) {
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.setDaemon(true);
             watcherThread.start();
+            toggleMonitoring();
         }
     }
 
@@ -302,6 +305,7 @@ public class MainViewController {
             monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
             convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
             failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
+            monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
 
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
