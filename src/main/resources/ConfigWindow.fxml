@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -37,7 +38,7 @@
                                 <Font size="14.0" />
                             </font>
                         </Label>
-                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
                                 <TextField fx:id="monitoredDirField" prefWidth="500.0" promptText="Seleziona la cartella da monitorare..." />
                                 <Button fx:id="browseMonitoredBtn" onAction="#browseMonitoredDirectory" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Sfoglia..." />
@@ -54,7 +55,7 @@
                                 <Font size="14.0" />
                             </font>
                         </Label>
-                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
                                 <TextField fx:id="successDirField" prefWidth="500.0" promptText="Seleziona cartella per file convertiti..." />
                                 <Button fx:id="browseSuccessBtn" onAction="#browseSuccessDirectory" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;" text="Sfoglia..." />
@@ -71,7 +72,7 @@
                                 <Font size="14.0" />
                             </font>
                         </Label>
-                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
                                 <TextField fx:id="errorDirField" prefWidth="500.0" promptText="Seleziona cartella per file con errori..." />
                                 <Button fx:id="browseErrorBtn" onAction="#browseErrorDirectory" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" text="Sfoglia..." />
@@ -88,7 +89,7 @@
                                 <Font size="14.0" />
                             </font>
                         </Label>
-                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
                                 <TextField fx:id="monitorAtStartField" editable="false" prefWidth="100.0" style="-fx-background-color: #bdc3c7;" text="false" />
                                 <Button fx:id="toggleMonitorBtn" onAction="#toggleMonitorAtStart" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 5;" text="Cambia Valore" />
@@ -109,7 +110,7 @@
                         <Font name="System Bold" size="16.0" />
                     </font>
                 </Label>
-                <Label text="Modifica la sezione 'conversions' del file JSON. Assicurati che la sintassi sia corretta." textFill="#7f8c8d" wrapText="true">
+                <Label text="Visualizzazione della sezione 'conversions' del file JSON (sola lettura)." textFill="#7f8c8d" wrapText="true">
                     <font>
                         <Font size="12.0" />
                     </font>
@@ -118,27 +119,18 @@
                 <!-- Text Editor Area -->
                 <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" style="-fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8;" VBox.vgrow="ALWAYS">
                     <content>
-                        <TextArea fx:id="conversionsTextArea" style="-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 13px; -fx-background-color: #ffffff; -fx-text-fill: #2c3e50; -fx-border-color: transparent;" wrapText="false" />
+                        <TextArea fx:id="conversionsTextArea" editable="false" style="-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 13px; -fx-background-color: #f8f9fa; -fx-text-fill: #2c3e50; -fx-border-color: transparent;" wrapText="false">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></TextArea>
                     </content>
                 </ScrollPane>
             </children>
         </VBox>
 
-        <!-- Status Label -->
-        <Label fx:id="statusLabel" text="Pronto per la modifica" textFill="#7f8c8d">
-            <font>
-                <Font name="System Italic" size="12.0" />
-            </font>
-        </Label>
-
         <!-- Buttons -->
         <HBox alignment="CENTER" spacing="20.0">
             <children>
-                <Button fx:id="validateButton" mnemonicParsing="false" onAction="#validateConfiguration" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="✓ Valida">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
                 <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Salva">
                     <font>
                         <Font name="System Bold" size="14.0" />
