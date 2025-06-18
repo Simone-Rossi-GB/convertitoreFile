@@ -8,7 +8,7 @@ public class Utility {
 
     public static String estraiEstensioneInterna(File file) {
         String nomeFile = file.getName();
-        Pattern pattern = Pattern.compile("\\[\\[(.*?)\\]\\]");
+        Pattern pattern = Pattern.compile("\\[\\[(.*?)]]");
         Matcher matcher = pattern.matcher(nomeFile);
         String extracted = null;
         if (matcher.find()) {

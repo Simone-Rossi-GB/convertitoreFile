@@ -2,6 +2,7 @@ package Converters;
 
 import com.itextpdf.text.DocumentException;
 import converter.Log;
+import converter.Utility;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
 import org.apache.commons.logging.LogFactory;
@@ -25,18 +26,13 @@ public class ImageConverter implements Converter {
     @Override
     public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
         ArrayList<File> files = new ArrayList<>();
-        String imgName = imgFile.getName();
-        Pattern pattern = Pattern.compile("\\[\\[(.*?)\\]\\]");
-        Matcher matcher = pattern.matcher(imgName);
-
-        if (matcher.find()) {
-            String extracted = matcher.group(1);
+        String extracted;
+        if ((extracted = Utility.estraiEstensioneInterna(imgFile)) != null){
             File file = imageConversion(imgFile, extracted);
             files.add(file);
         } else {
             Log.addMessage("Formato nome immagine errato");
         }
-
         return files;
     }
 
