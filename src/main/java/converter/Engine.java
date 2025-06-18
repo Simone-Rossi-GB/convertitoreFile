@@ -35,8 +35,8 @@ public class Engine {
 
     /**
      * Ritorna la stringa che rappresenta il contenuto del json
-     * @return
-     * @throws Exception
+     * @return contenuto del json di ritorno
+     * @throws Exception Nel caso di errore nella lettura del file di configurazione
      */
     public String getConfigAsJson() throws Exception {
         try {
@@ -48,8 +48,9 @@ public class Engine {
 
     /**
      * Modifica config.json in base alla stringa ricevuta
-     * @param jsonText
-     * @throws Exception
+     * @param jsonText testo da aggiungere a config.json
+     * @throws IOException Errore scrittura sul file di configurazione
+     * @throws RuntimeException Errore caricamento nuova configurazione
      */
     public void setConfigFromJson(String jsonText) throws Exception {
         try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
@@ -64,26 +65,27 @@ public class Engine {
 
     /**
      * Ritorna i formati in cui un file può essere convertito
-     * @param extension
-     * @return
-     * @throws Exception
+     * @param extension Estensione di cui controllare i formati convertibili possibili
+     * @return Lista contenente tutti i formati in cui si puo convertire il file
+     * @throws NullPointerException Se viene passata una stringa nulla
+     * @throws Exception Il file config non esiste oppure la conversione non e supportata
      */
     public List<String> getPossibleConversions(String extension) throws Exception {
         if (extension == null) {
             throw new NullPointerException("L'oggetto extension non esiste");
         }
         if (config == null || config.getConversions() == null || !config.getConversions().containsKey(extension)) {
-            throw new Exception("Conversione non supportata");
+            throw new Exception("Config assente o conversione non supportata");
         }
         return new ArrayList<>(config.getConversions().get(extension).keySet());
     }
 
     /**
      * Conversione base
-     * @param srcExt
-     * @param outExt
-     * @param srcFile
-     * @throws Exception
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @throws Exception Errore nella rinomina del file
      */
     public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
         executeConversion(srcExt, outExt, srcFile, null, null);
@@ -91,11 +93,11 @@ public class Engine {
 
     /**
      * Conversione PDF protetto
-     * @param srcExt
-     * @param outExt
-     * @param srcFile
-     * @param password
-     * @throws Exception
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @param password Password per file criptati
+     * @throws Exception Errore nella rinomina del file
      */
     public void conversione(String srcExt, String outExt, File srcFile, String password) throws Exception {
         executeConversion(srcExt, outExt, srcFile, password, null);
@@ -103,11 +105,11 @@ public class Engine {
 
     /**
      * Conversione PDF -> JPG unendo le pagine in un'unica immagine
-     * @param srcExt
-     * @param outExt
-     * @param srcFile
-     * @param union
-     * @throws Exception
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
+     * @throws Exception Errore nella rinomina del file
      */
     public void conversione(String srcExt, String outExt, File srcFile, boolean union) throws Exception {
         executeConversion(srcExt, outExt, srcFile, null, union);
@@ -115,12 +117,12 @@ public class Engine {
 
     /**Conversione PDF protetto -> JPG unendo le pagine in un'unica immagine
      *
-     * @param srcExt
-     * @param outExt
-     * @param srcFile
-     * @param password
-     * @param union
-     * @throws Exception
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @param password Password per file criptati
+     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
+     * @throws Exception Errore nella rinomina del file
      */
     public void conversione(String srcExt, String outExt, File srcFile, String password, boolean union) throws Exception {
         executeConversion(srcExt, outExt, srcFile, password, union);
@@ -128,28 +130,15 @@ public class Engine {
 
     /**
      * Esecuzione conversione
-     * @param srcExt
-     * @param outExt
-     * @param srcFile
-     * @param password
-     * @param union
-     * @throws Exception
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @param password Password per file criptati
+     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
+     * @throws Exception Errore nella rinomina del file
      */
     private void executeConversion(String srcExt, String outExt, File srcFile, String password, Boolean union) throws Exception {
-        if (srcExt == null) throw new NullPointerException("L'oggetto srcExt non esiste");
-        if (outExt == null) throw new NullPointerException("L'oggetto outExt non esiste");
-        if (srcFile == null) throw new NullPointerException("L'oggetto srcFile non esiste");
-
-        Map<String, Map<String, String>> conversions = config.getConversions();
-        if (conversions == null || !conversions.containsKey(srcExt)) {
-            throw new Exception("Conversione non supportata");
-        }
-
-        Map<String, String> possibleConversions = conversions.get(srcExt);
-        String converterClassName = possibleConversions.get(outExt);
-        if (converterClassName == null) {
-            throw new Exception("Conversione non supportata");
-        }
+        String converterClassName = checkParameters(srcExt, outExt, srcFile);
 
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
@@ -197,10 +186,35 @@ public class Engine {
     }
 
     /**
+     * Controllo dell'esistenza dei parametri
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @throws NullPointerException Ritorna il primo parametro inesistente trovato
+     */
+    private String checkParameters(String srcExt, String outExt, File srcFile) throws Exception {
+        if (srcExt == null) throw new NullPointerException("L'oggetto srcExt non esiste");
+        if (outExt == null) throw new NullPointerException("L'oggetto outExt non esiste");
+        if (srcFile == null) throw new NullPointerException("L'oggetto srcFile non esiste");
+
+        Map<String, Map<String, String>> conversions = config.getConversions();
+        if (conversions == null || !conversions.containsKey(srcExt)) {
+            throw new Exception("Conversione non supportata");
+        }
+
+        Map<String, String> possibleConversions = conversions.get(srcExt);
+        String converterClassName = possibleConversions.get(outExt);
+        if (converterClassName == null) {
+            throw new Exception("Conversione non supportata");
+        }
+        return converterClassName;
+    }
+
+    /**
      * Sposta il file ricevuto nella directory indicata
-     * @param outPath
-     * @param file
-     * @throws IOException
+     * @param outPath Percorso di destinazione
+     * @param file File da spostare
+     * @throws IOException Errore sull'istruzione Files.move()
      */
     private void spostaFile(String outPath, File file) throws IOException {
         if (file == null) throw new NullPointerException("L'oggetto file non esiste");
@@ -212,9 +226,9 @@ public class Engine {
 
     /**
      * Ritorna un file temporaneo identico a quello passato ma con un suffisso, in modo da evitare conflitti con altri file
-     * @param filePath
-     * @param suffix
-     * @return
+     * @param filePath Percorso del file da utilizzare
+     * @param suffix Suffisso da aggiungere al file
+     * @return File col nome cambiato
      */
     private static File giveBackNewFileWithNewName(String filePath, String suffix) {
         if (filePath == null) throw new NullPointerException("L'oggetto filePath non esiste");
@@ -230,9 +244,10 @@ public class Engine {
 
     /**
      * Ritorna la configurazione ottenuta da config.json
-     * @return
+     * @return Configurazione estratta dal file json
+     * @throws NullPointerException Variabile config nulla
      */
-    public ConverterConfig getConverterConfig() {
+    public ConverterConfig getConverterConfig() throws NullPointerException{
         if (config == null) {
             throw new NullPointerException("L'oggetto config non esiste");
         }
