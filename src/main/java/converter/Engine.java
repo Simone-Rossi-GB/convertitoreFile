@@ -2,49 +2,41 @@ package converter;
 
 import Converters.Converter;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
 public class Engine {
     private ConverterConfig config;
     private static final String CONFIG_FILE_PATH = "src/main/java/converter/config/config.json";
 
     /**
-     * Costruttore: legge la configurazione dal file JSON.
-     * @throws RuntimeException se il file di configurazione non è leggibile o è corrotto.
+     * Costruttore: carica il file config.json
      */
     public Engine() {
         setConfig();
     }
 
     /**
-     * Legge la configurazione dal file JSON.
-     * @throws RuntimeException se il file di configurazione non è leggibile o è corrotto.
+     * Carica il file config.json
      */
-    public void setConfig(){
+    public void setConfig() {
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
             Gson gson = new Gson();
+            //classe di appoggio per json
             config = gson.fromJson(reader, ConverterConfig.class);
+            if (config == null) {
+                throw new NullPointerException("L'oggetto config non esiste");
+            }
         } catch (Exception e) {
             throw new RuntimeException("Errore nella lettura del file di configurazione", e);
         }
     }
 
     /**
-     * Restituisce il contenuto del file di configurazione JSON come stringa.
-     * @return contenuto del file config.json come stringa
-     * @throws Exception se si verifica un errore durante la lettura del file
+     * Ritorna la stringa che rappresenta il contenuto del json
+     * @return
+     * @throws Exception
      */
     public String getConfigAsJson() throws Exception {
         try {
@@ -55,20 +47,14 @@ public class Engine {
     }
 
     /**
-     * Scrive il testo JSON nel file di configurazione e ricarica la configurazione.
-     * @param jsonText testo JSON da scrivere nel file config.json
-     * @throws Exception se si verifica un errore durante la scrittura o il caricamento
+     * Modifica config.json in base alla stringa ricevuta
+     * @param jsonText
+     * @throws Exception
      */
     public void setConfigFromJson(String jsonText) throws Exception {
-        try {
-            // Scrive il testo nel file config.json
-            try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
-                writer.write(jsonText);
-            }
-
-            // Ricarica la configurazione usando il metodo esistente
+        try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
+            writer.write(jsonText);
             setConfig();
-
         } catch (IOException e) {
             throw new Exception("Errore nella scrittura del file di configurazione: " + e.getMessage(), e);
         } catch (RuntimeException e) {
@@ -77,295 +63,177 @@ public class Engine {
     }
 
     /**
-     * Restituisce la lista dei formati di conversione possibili per una data estensione.
-     * @param extension estensione sorgente del file
-     * @return lista di estensioni di output possibili
-     * @throws Exception se la conversione non è supportata
+     * Ritorna i formati in cui un file può essere convertito
+     * @param extension
+     * @return
+     * @throws Exception
      */
     public List<String> getPossibleConversions(String extension) throws Exception {
-        if (!config.getConversions().containsKey(extension))
+        if (extension == null) {
+            throw new NullPointerException("L'oggetto extension non esiste");
+        }
+        if (config == null || config.getConversions() == null || !config.getConversions().containsKey(extension)) {
             throw new Exception("Conversione non supportata");
-
-        List<String> possibleExtensions = new ArrayList<>(config.getConversions().get(extension).keySet());
-
-        // Stampa a console per debug
-        for (String e : possibleExtensions)
-            System.out.println(e);
-
-        System.out.println("Lista ottenuta\n");
-        return possibleExtensions;
+        }
+        return new ArrayList<>(config.getConversions().get(extension).keySet());
     }
 
     /**
-     * Esegue la conversione del file da srcExt a outExt usando la classe converter appropriata.
-     * @param srcExt estensione sorgente
-     * @param outExt estensione di destinazione
-     * @param srcFile file sorgente da convertire
-     * @throws Exception se la conversione non è supportata o fallisce
+     * Conversione base
+     * @param srcExt
+     * @param outExt
+     * @param srcFile
+     * @throws Exception
      */
     public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
-        System.out.println("entro in conversione");
-        Map<String, Map<String, String>> conversions = config.getConversions();
-
-        if (!conversions.containsKey(srcExt))
-            throw new Exception("Conversione non supportata");
-
-        Map<String, String> possibleConversions = conversions.get(srcExt);
-
-        if (possibleConversions.containsKey(outExt)) {
-            String converterClassName = possibleConversions.get(outExt);
-            System.out.println(srcExt + " -> " + outExt + " tramite " + converterClassName);
-
-            try {
-                // Carica dinamicamente la classe converter
-                Class<?> clazz = Class.forName(converterClassName);
-                Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-
-                try {
-                    // Copia il file sorgente in una cartella temporanea
-                    Path tempFilePath = Paths.get("src" + File.separator + "temp" + File.separator + srcFile.getName());
-                    Files.copy(srcFile.toPath(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
-                    srcFile = tempFilePath.toFile();
-
-                    // Rinomina il file temporaneo con un suffisso per evitare conflitti
-                    File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[[" + outExt + "]]-"));
-                    if (!srcFile.renameTo(newFile)) {
-                        System.err.println("Errore: File già convertito al formato richiesto");
-                    }
-                    srcFile = newFile;
-
-                    // Esegue la conversione vera e propria
-                    List<File> outFiles = converter.convert(srcFile);
-
-                    // Elimina il file temporaneo originale
-                    Files.delete(srcFile.toPath());
-
-                    // Per ogni file convertito, rimuove il suffisso e lo sposta nella cartella di successo
-                    for (File f : outFiles) {
-                        File returnFile = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
-                        if (!f.renameTo(returnFile)) {
-                            System.err.println("Errore: File già convertito al formato richiesto");
-                        }
-                        f = returnFile;
-                        spostaFile(config.getSuccessOutputDir(), f);
-                    }
-                } catch (IOException e) {
-                    // Se c'è un errore durante la conversione, sposta il file nella cartella errori
-                    spostaFile(config.getErrorOutputDir(), srcFile);
-                    throw new Exception(e.getMessage());
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                throw e; // rilancio eccezione per segnalarla in alto
-            }
-        } else {
-            throw new Exception("Conversione non supportata");
-        }
+        executeConversion(srcExt, outExt, srcFile, null, null);
     }
 
+    /**
+     * Conversione PDF protetto
+     * @param srcExt
+     * @param outExt
+     * @param srcFile
+     * @param password
+     * @throws Exception
+     */
     public void conversione(String srcExt, String outExt, File srcFile, String password) throws Exception {
-        Map<String, Map<String, String>> conversions = config.getConversions();
-        System.out.println("entro in conversione password");
-        if (!conversions.containsKey(srcExt))
-            throw new Exception("Conversione non supportata");
-
-        Map<String, String> possibleConversions = conversions.get(srcExt);
-
-        if (possibleConversions.containsKey(outExt)) {
-            String converterClassName = possibleConversions.get(outExt);
-            System.out.println(srcExt + " -> " + outExt + " tramite " + converterClassName);
-
-            try {
-                // Carica dinamicamente la classe converter
-                Class<?> clazz = Class.forName(converterClassName);
-                Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-
-                try {
-                    // Esegue la conversione vera e propria
-                    List<File> outFiles = converter.convert(srcFile, password);
-
-                    // Elimina il file originale
-                    Files.delete(srcFile.toPath());
-
-                    // Per ogni file convertito, rimuove il suffisso e lo sposta nella cartella di successo
-                    for (File f : outFiles) {
-                        spostaFile(config.getSuccessOutputDir(), f);
-                    }
-                } catch (IOException e) {
-                    // Se c'è un errore durante la conversione, sposta il file nella cartella errori
-                    spostaFile(config.getErrorOutputDir(), srcFile);
-                    throw new Exception(e.getMessage());
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                throw e; // rilancio eccezione per segnalarla in alto
-            }
-        } else {
-            throw new Exception("Conversione non supportata");
-        }
+        executeConversion(srcExt, outExt, srcFile, password, null);
     }
+
+    /**
+     * Conversione PDF -> JPG unendo le pagine in un'unica immagine
+     * @param srcExt
+     * @param outExt
+     * @param srcFile
+     * @param union
+     * @throws Exception
+     */
     public void conversione(String srcExt, String outExt, File srcFile, boolean union) throws Exception {
-        System.out.println("entro in conversione");
-        Map<String, Map<String, String>> conversions = config.getConversions();
-
-        if (!conversions.containsKey(srcExt))
-            throw new Exception("Conversione non supportata");
-
-        Map<String, String> possibleConversions = conversions.get(srcExt);
-
-        if (possibleConversions.containsKey(outExt)) {
-            String converterClassName = possibleConversions.get(outExt);
-            System.out.println(srcExt + " -> " + outExt + " tramite " + converterClassName);
-
-            try {
-                // Carica dinamicamente la classe converter
-                Class<?> clazz = Class.forName(converterClassName);
-                Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-
-                try {
-                    // Copia il file sorgente in una cartella temporanea
-                    Path tempFilePath = Paths.get("src" + File.separator + "temp" + File.separator + srcFile.getName());
-                    Files.copy(srcFile.toPath(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
-                    srcFile = tempFilePath.toFile();
-
-                    // Rinomina il file temporaneo con un suffisso per evitare conflitti
-                    File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[[" + outExt + "]]-"));
-                    if (!srcFile.renameTo(newFile)) {
-                        System.err.println("Errore: File già convertito al formato richiesto");
-                    }
-                    srcFile = newFile;
-
-                    // Esegue la conversione vera e propria
-                    List<File> outFiles = converter.convert(srcFile, union);
-
-                    // Elimina il file temporaneo originale
-                    Files.delete(srcFile.toPath());
-
-                    // Per ogni file convertito, rimuove il suffisso e lo sposta nella cartella di successo
-                    for (File f : outFiles) {
-                        File returnFile = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
-                        if (!f.renameTo(returnFile)) {
-                            System.err.println("Errore: File già convertito al formato richiesto");
-                        }
-                        f = returnFile;
-                        spostaFile(config.getSuccessOutputDir(), f);
-                    }
-                } catch (IOException e) {
-                    // Se c'è un errore durante la conversione, sposta il file nella cartella errori
-                    spostaFile(config.getErrorOutputDir(), srcFile);
-                    throw new Exception(e.getMessage());
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                throw e; // rilancio eccezione per segnalarla in alto
-            }
-        } else {
-            throw new Exception("Conversione non supportata");
-        }
+        executeConversion(srcExt, outExt, srcFile, null, union);
     }
 
+    /**Conversione PDF protetto -> JPG unendo le pagine in un'unica immagine
+     *
+     * @param srcExt
+     * @param outExt
+     * @param srcFile
+     * @param password
+     * @param union
+     * @throws Exception
+     */
     public void conversione(String srcExt, String outExt, File srcFile, String password, boolean union) throws Exception {
-        System.out.println("entro in conversione");
-        Map<String, Map<String, String>> conversions = config.getConversions();
+        executeConversion(srcExt, outExt, srcFile, password, union);
+    }
 
-        if (!conversions.containsKey(srcExt))
+    /**
+     * Esecuzione conversione
+     * @param srcExt
+     * @param outExt
+     * @param srcFile
+     * @param password
+     * @param union
+     * @throws Exception
+     */
+    private void executeConversion(String srcExt, String outExt, File srcFile, String password, Boolean union) throws Exception {
+        if (srcExt == null) throw new NullPointerException("L'oggetto srcExt non esiste");
+        if (outExt == null) throw new NullPointerException("L'oggetto outExt non esiste");
+        if (srcFile == null) throw new NullPointerException("L'oggetto srcFile non esiste");
+
+        Map<String, Map<String, String>> conversions = config.getConversions();
+        if (conversions == null || !conversions.containsKey(srcExt)) {
             throw new Exception("Conversione non supportata");
+        }
 
         Map<String, String> possibleConversions = conversions.get(srcExt);
-
-        if (possibleConversions.containsKey(outExt)) {
-            String converterClassName = possibleConversions.get(outExt);
-            System.out.println(srcExt + " -> " + outExt + " tramite " + converterClassName);
-
-            try {
-                // Carica dinamicamente la classe converter
-                Class<?> clazz = Class.forName(converterClassName);
-                Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-                System.out.println("classe istanziata");
-                try {
-                    // Copia il file sorgente in una cartella temporanea
-                    Path tempFilePath = Paths.get("src" + File.separator + "temp" + File.separator + srcFile.getName());
-                    Files.copy(srcFile.toPath(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
-                    srcFile = tempFilePath.toFile();
-
-                    // Rinomina il file temporaneo con un suffisso per evitare conflitti
-                    File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[[" + outExt + "]]-"));
-                    if (!srcFile.renameTo(newFile)) {
-                        System.err.println("Errore: File già convertito al formato richiesto");
-                    }
-                    srcFile = newFile;
-
-                    // Esegue la conversione vera e propria
-                    List<File> outFiles = converter.convert(srcFile, password, union);
-
-                    // Elimina il file temporaneo originale
-                    Files.delete(srcFile.toPath());
-
-                    // Per ogni file convertito, rimuove il suffisso e lo sposta nella cartella di successo
-                    for (File f : outFiles) {
-                        File returnFile = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
-                        if (!f.renameTo(returnFile)) {
-                            System.err.println("Errore: File già convertito al formato richiesto");
-                        }
-                        f = returnFile;
-                        spostaFile(config.getSuccessOutputDir(), f);
-                    }
-                } catch (IOException e) {
-                    // Se c'è un errore durante la conversione, sposta il file nella cartella errori
-                    spostaFile(config.getErrorOutputDir(), srcFile);
-                    throw new Exception(e.getMessage());
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                throw e; // rilancio eccezione per segnalarla in alto
-            }
-        } else {
+        String converterClassName = possibleConversions.get(outExt);
+        if (converterClassName == null) {
             throw new Exception("Conversione non supportata");
+        }
+
+        Class<?> clazz = Class.forName(converterClassName);
+        Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
+
+        try {
+            //file temporaneo per evitare conflitti
+            Path tempPath = Paths.get("src", "temp", srcFile.getName());
+            Files.copy(srcFile.toPath(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+            srcFile = tempPath.toFile();
+
+            File renamedFile = giveBackNewFileWithNewName(srcFile.getPath(), "-[[" + outExt + "]]-");
+            if (!srcFile.renameTo(renamedFile)) {
+                throw new Exception("Errore: File già convertito al formato richiesto");
+            }
+            srcFile = renamedFile;
+
+            List<File> outFiles;
+            if (password != null && union != null) {
+                outFiles = converter.convert(srcFile, password, union);
+            } else if (password != null) {
+                outFiles = converter.convert(srcFile, password);
+            } else if (union != null) {
+                outFiles = converter.convert(srcFile, union);
+            } else {
+                outFiles = converter.convert(srcFile);
+            }
+
+            Files.deleteIfExists(srcFile.toPath());
+
+            for (File f : outFiles) {
+                File cleaned = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
+                if (!f.renameTo(cleaned)) {
+                    throw new Exception("Errore: File già convertito al formato richiesto");
+                }
+                //Sposto il file convertito nella directory corretta
+                spostaFile(config.getSuccessOutputDir(), cleaned);
+            }
+        } catch (IOException e) {
+            //Sposto il file di origine nella directory degli errori
+            spostaFile(config.getErrorOutputDir(), srcFile);
+            throw new Exception(e.getMessage());
         }
     }
 
     /**
-     * Sposta il file specificato nella cartella di destinazione.
-     * @param outPath percorso della cartella di destinazione
-     * @param file file da spostare
-     * @throws IOException in caso di errore durante lo spostamento
+     * Sposta il file ricevuto nella directory indicata
+     * @param outPath
+     * @param file
+     * @throws IOException
      */
     private void spostaFile(String outPath, File file) throws IOException {
-        String fileName = file.getName();
-        Path srcPath = Paths.get(file.getAbsolutePath());
-        Path destPath = Paths.get(outPath + File.separator + fileName);
-        Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("File copiato in " + destPath);
+        if (file == null) throw new NullPointerException("L'oggetto file non esiste");
+        if (outPath == null) throw new NullPointerException("L'oggetto outPath non esiste");
+        Path dest = Paths.get(outPath, file.getName());
+        Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("File copiato in " + dest);
     }
 
     /**
-     * Restituisce un nuovo file con un nome modificato aggiungendo un suffisso prima dell'estensione.
-     * @param filePath percorso originale del file
-     * @param suffix suffisso da aggiungere al nome del file
-     * @return nuovo file con nome modificato
+     * Ritorna un file temporaneo identico a quello passato ma con un suffisso, in modo da evitare conflitti con altri file
+     * @param filePath
+     * @param suffix
+     * @return
      */
     private static File giveBackNewFileWithNewName(String filePath, String suffix) {
+        if (filePath == null) throw new NullPointerException("L'oggetto filePath non esiste");
+        if (suffix == null) throw new NullPointerException("L'oggetto suffix non esiste");
+
         File file = new File(filePath);
         String name = file.getName();
-
         int lastDot = name.lastIndexOf(".");
 
-        // Se non c'è estensione, aggiunge solo il suffisso
-        if (lastDot == -1) {
-            return new File(file.getParent() + File.separator + name + suffix);
-        }
-
-        String baseName = name.substring(0, lastDot);
-        String extension = name.substring(lastDot); // include il punto
-
-        return new File(file.getParent() + File.separator + baseName + suffix + extension);
+        String newName = (lastDot == -1) ? name + suffix : name.substring(0, lastDot) + suffix + name.substring(lastDot);
+        return new File(file.getParent(), newName);
     }
 
     /**
-     * Restituisce la configurazione corrente.
-     * @return oggetto ConverterConfig
+     * Ritorna la configurazione ottenuta da config.json
+     * @return
      */
     public ConverterConfig getConverterConfig() {
+        if (config == null) {
+            throw new NullPointerException("L'oggetto config non esiste");
+        }
         return config;
     }
 }
