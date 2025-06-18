@@ -5,8 +5,12 @@ import converter.DirectoryWatcher;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.awt.Desktop;
 import java.io.File;
@@ -23,20 +27,32 @@ import converter.Engine;
 public class MainViewController {
 
     // Riferimenti FXML agli elementi dell'interfaccia - CORRETTI
-    @FXML private Label statusIndicator;
-    @FXML private Label monitoringStatusLabel;
-    @FXML private Label applicationLogArea;
-    @FXML private Label detectedFilesCounter;
-    @FXML private Label successfulConversionsCounter;
-    @FXML private Label failedConversionsCounter;
-    @FXML private Button MonitoringBtn;
-    @FXML private Button configBtn;
-    @FXML private Button exitBtn;
+    @FXML
+    private Label statusIndicator;
+    @FXML
+    private Label monitoringStatusLabel;
+    @FXML
+    private Label applicationLogArea;
+    @FXML
+    private Label detectedFilesCounter;
+    @FXML
+    private Label successfulConversionsCounter;
+    @FXML
+    private Label failedConversionsCounter;
+    @FXML
+    private Button MonitoringBtn;
+    @FXML
+    private Button configBtn;
+    @FXML
+    private Button exitBtn;
 
     // Pulsanti con nomi corretti dall'FXML
-    @FXML private Button caricaFileBtn;
-    @FXML private Button fileConvertitiBtn;
-    @FXML private Button conversioniFalliteBtn;
+    @FXML
+    private Button caricaFileBtn;
+    @FXML
+    private Button fileConvertitiBtn;
+    @FXML
+    private Button conversioniFalliteBtn;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -78,6 +94,7 @@ public class MainViewController {
 
     /**
      * Restituisce l'estensione del file.
+     *
      * @param file file da cui estrarre l'estensione
      * @return estensione in minuscolo o stringa vuota se non presente
      */
@@ -170,15 +187,53 @@ public class MainViewController {
     }
 
     /**
-     * Apre la finestra di configurazione (ancora da implementare).
+     * Apre la finestra di configurazione.
      */
     private void openConfigurationWindow() {
-        addLogMessage("Apertura finestra configurazione...");
-        showAlert("Configurazione", "Finestra di configurazione non ancora implementata.");
+        try {
+            addLogMessage("Apertura editor configurazione...");
+
+            // Carica il file FXML per la finestra di configurazione
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
+            Parent configWindow = loader.load();
+
+            // Crea lo stage per la finestra di configurazione
+            Stage configStage = new Stage();
+            configStage.setTitle("Editor Configurazione");
+            configStage.initModality(Modality.WINDOW_MODAL);
+            configStage.initOwner(getPrimaryStage());
+            configStage.setResizable(true);
+            configStage.setMinWidth(700);
+            configStage.setMinHeight(600);
+
+            // Configura la scena
+            Scene scene = new Scene(configWindow);
+            configStage.setScene(scene);
+
+            // Ottieni il controller e passa i riferimenti necessari
+            ConfigWindowController controller = loader.getController();
+            controller.setDialogStage(configStage);
+            controller.setEngine(engine, this);
+
+            // Mostra la finestra e attendi la chiusura
+            addLogMessage("Editor configurazione aperto");
+            configStage.showAndWait();
+
+            // Ricarica la configurazione dopo la chiusura della finestra
+            addLogMessage("Editor configurazione chiuso");
+            loadConfiguration();
+
+        } catch (IOException e) {
+            addLogMessage("Errore nell'apertura dell'editor configurazione: " + e.getMessage());
+            showAlert("Errore", "Impossibile aprire l'editor di configurazione: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
      * Apre la cartella specificata nel file explorer di sistema.
+     *
      * @param folderPath percorso della cartella da aprire
      */
     private void openFolder(String folderPath) {
@@ -202,6 +257,7 @@ public class MainViewController {
 
     /**
      * Verifica che la cartella esista, e in caso la crea.
+     *
      * @param directoryPath percorso della cartella
      * @return true se la cartella esiste o è stata creata correttamente, false altrimenti
      */
@@ -247,6 +303,7 @@ public class MainViewController {
 
     /**
      * Aggiunge un messaggio al log dell'applicazione.
+     *
      * @param message messaggio da aggiungere
      */
     public void addLogMessage(String message) {
@@ -272,6 +329,7 @@ public class MainViewController {
 
     /**
      * Avvia il dialog per la selezione del formato di conversione di un file.
+     *
      * @param srcFile file sorgente da convertire
      */
     public void launchDialogConversion(File srcFile) {
@@ -324,6 +382,7 @@ public class MainViewController {
 
     /**
      * Mostra un alert di successo conversione.
+     *
      * @param file file convertito con successo
      */
     public void launchAlertSuccess(File file) {
@@ -338,6 +397,7 @@ public class MainViewController {
 
     /**
      * Mostra un alert di errore conversione.
+     *
      * @param message messaggio di errore da mostrare
      */
     public void launchAlertError(String message) {
@@ -352,7 +412,8 @@ public class MainViewController {
 
     /**
      * Mostra un alert informativo generico.
-     * @param title titolo finestra alert
+     *
+     * @param title   titolo finestra alert
      * @param message messaggio alert
      */
     private void showAlert(String title, String message) {
@@ -367,6 +428,7 @@ public class MainViewController {
 
     /**
      * Ritorna lo stage principale dell'applicazione.
+     *
      * @return stage principale
      */
     private Stage getPrimaryStage() {
@@ -375,6 +437,7 @@ public class MainViewController {
 
     /**
      * Setta il riferimento all'app principale.
+     *
      * @param mainApp istanza MainApp
      */
     public void setMainApp(MainApp mainApp) {
@@ -400,12 +463,5 @@ public class MainViewController {
     @FXML
     public void openFailedConvertionsFolder(ActionEvent actionEvent) {
         openFolder(failedFolderPath);
-    }
-
-    // Metodo alternativo per ottenere estensione da Path (non usato attualmente)
-    private String getExtension(Path filePath){
-        String path = filePath.toAbsolutePath().toString();
-        int lastDotIndex = path.lastIndexOf(".");
-        return path.substring(lastDotIndex + 1);
     }
 }
