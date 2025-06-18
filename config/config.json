@@ -162,6 +162,16 @@
       "tiff": "Converters.ImageConverter",
       "gif": "Converters.ImageConverter"
     },
+    "psd": {
+      "png": "Converters.ImageConverter",
+      "jpg": "Converters.ImageConverter",
+      "jpeg": "Converters.ImageConverter",
+      "bmp": "Converters.ImageConverter",
+      "tiff": "Converters.ImageConverter",
+      "gif": "Converters.ImageConverter",
+      "webp": "Converters.ImageConverter"
+    }
+  ,
     "ico": {
       "jpg": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
