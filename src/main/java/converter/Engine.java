@@ -130,7 +130,7 @@ public class Engine {
                     // Rinomina il file temporaneo con un suffisso per evitare conflitti
                     File newFile = giveBackNewFileWithNewName(srcFile.getPath(), ("-[[" + outExt + "]]-"));
                     if (!srcFile.renameTo(newFile)) {
-                        System.err.println("Errore: File già convertito al formato richiesto");
+                        Log.addMessage("Errore rinominazione file pre-conversione: "+newFile.getName());
                     }
                     srcFile = newFile;
 
@@ -144,7 +144,7 @@ public class Engine {
                     for (File f : outFiles) {
                         File returnFile = new File(f.getPath().replaceAll("-\\[\\[.*?]]-", ""));
                         if (!f.renameTo(returnFile)) {
-                            System.err.println("Errore: File già convertito al formato richiesto");
+                            Log.addMessage("Errore rinominazione file post-conversione: "+returnFile.getName());
                         }
                         f = returnFile;
                         spostaFile(config.getSuccessOutputDir(), f);
