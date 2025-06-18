@@ -9,6 +9,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import converter.Log;
+import converter.Utility;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.Chunk;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
@@ -37,7 +38,7 @@ public class MSGtoPDFconverter implements Converter{
      */
     @Override
     public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
-        Log.addMessage("Inizio conversione csv: "+msgFile.getName()+" -> .json");
+        Log.addMessage("Inizio conversione msg: "+ Utility.estraiNomePiuEstensioneFile(msgFile) +" -> .pdf");
         if (msgFile == null || !msgFile.exists()) {
             Log.addMessage("ERRORE: File MSG non trovato: " + msgFile);
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
@@ -87,7 +88,7 @@ public class MSGtoPDFconverter implements Converter{
 
         ArrayList<File> result = new ArrayList<>();
         result.add(outputPdfFile);
-        Log.addMessage("Creazione file .json completata: "+outputPdfFile.getName());
+        Log.addMessage("Creazione file .pdf completata: "+outputPdfFile.getName());
         return result;
     }
 
