@@ -117,6 +117,69 @@
             <artifactId>log4j-api</artifactId>
             <version>2.20.0</version>
         </dependency>
+        <!-- PSD (Adobe Photoshop) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-psd</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- ICO (Icone Windows) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-ico</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <!-- ICNS (Icone macOS) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-icns</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- TGA (Truevision TGA) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-tga</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- PNM (PBM, PGM, PPM, PAM) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-pnm</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- IFF (Amiga Interchange Format) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-iff</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- PCX / DCX (ZSoft Paintbrush) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-pcx</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- SGI (Silicon Graphics) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-sgi</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- XWD (X11 Window Dump) -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-xwd</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        <!-- WEBP -->
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-webp</artifactId>
@@ -125,7 +188,7 @@
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-core</artifactId>
-            <version>3.8.1</version>
+            <version>3.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
@@ -133,7 +196,7 @@
             <version>3.8.1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.plugin</groupId>
+            <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>3.9.0</version>
         </dependency>

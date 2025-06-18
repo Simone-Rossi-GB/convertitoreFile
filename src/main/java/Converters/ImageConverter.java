@@ -34,7 +34,7 @@ public class ImageConverter implements Converter {
     }
 
     public static File imageConversion(File imgFile, String extracted) throws IOException {
-        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp");
+        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "sgi");
         BufferedImage image = ImageIO.read(imgFile);
 
         if (image == null) {
