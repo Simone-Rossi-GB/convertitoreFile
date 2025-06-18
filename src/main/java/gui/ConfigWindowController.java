@@ -88,7 +88,7 @@ public class ConfigWindowController {
     /**
      * Salva la configurazione modificata.
      */
-    @FXML
+    @FXML // TODO: modifica per interfaccia nuova
     private void saveConfiguration(ActionEvent actionEvent) {
         try {
             String configText = configTextArea.getText().trim();
@@ -135,27 +135,6 @@ public class ConfigWindowController {
     }
 
     /**
-     * Valida il JSON inserito dall'utente.
-     */
-    @FXML
-    private void validateJson(ActionEvent actionEvent) {
-        String configText = configTextArea.getText().trim();
-
-        if (configText.isEmpty()) {
-            updateStatus("Il campo è vuoto", true);
-            return;
-        }
-
-        if (isValidJson(configText)) {
-            updateStatus("JSON valido ✓", false);
-            showAlert("Validazione", "Il JSON è sintatticamente corretto!", Alert.AlertType.INFORMATION);
-        } else {
-            updateStatus("JSON non valido ✗", true);
-            showAlert("Validazione", "Il JSON contiene errori di sintassi. Controlla parentesi, virgole e apici.", Alert.AlertType.WARNING);
-        }
-    }
-
-    /**
      * Chiude la finestra senza salvare.
      */
     @FXML
@@ -183,28 +162,6 @@ public class ConfigWindowController {
             // Se c'è un errore nel caricare la config originale, chiudi comunque.
             dialogStage.close();
             showAlert("Attenzione", "Impossibile verificare le modifiche (errore caricamento originale). Chiudo la finestra.", Alert.AlertType.WARNING);
-        }
-    }
-
-    /**
-     * Verifica se il testo è un JSON valido usando Gson.
-     * @param jsonText testo da validare
-     * @return true se è JSON valido, false altrimenti
-     */
-    private boolean isValidJson(String jsonText) {
-        try {
-            // Tentiamo di parsare il testo come JSON.
-            // Se la sintassi è errata, JsonParser.parseString lancerà JsonSyntaxException.
-            JsonParser.parseString(jsonText);
-            return true; // Se arriva qui, il parsing è avvenuto con successo
-        } catch (JsonSyntaxException e) {
-            // Cattura l'eccezione specifica di Gson per errori di sintassi JSON
-            System.err.println("Errore di sintassi JSON: " + e.getMessage()); // Per debug
-            return false;
-        } catch (Exception e) {
-            // Cattura altre potenziali eccezioni (meno comuni per la sola validazione sintattica)
-            System.err.println("Errore generico durante la validazione JSON: " + e.getMessage()); // Per debug
-            return false;
         }
     }
 
