@@ -31,7 +31,6 @@
     },
     "jpeg": {
       "bmp": "Converters.ImageConverter",
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpg": "Converters.ImageConverter",
@@ -50,7 +49,6 @@
     },
     "png": {
       "bmp": "Converters.ImageConverter",
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
@@ -68,7 +66,6 @@
       "gif": "Converters.ImageConverter"
     },
     "bmp": {
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
@@ -88,7 +85,6 @@
     },
     "gif": {
       "bmp": "Converters.ImageConverter",
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
@@ -107,7 +103,6 @@
     },
     "tiff": {
       "bmp": "Converters.ImageConverter",
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
@@ -126,7 +121,6 @@
     },
     "jpg": {
       "bmp": "Converters.ImageConverter",
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
@@ -145,7 +139,6 @@
     },
     "webp": {
       "bmp": "Converters.ImageConverter",
-      "ico": "Converters.ImageConverter",
       "icns": "Converters.ImageConverter",
       "iff": "Converters.ImageConverter",
       "jpeg": "Converters.ImageConverter",
@@ -170,12 +163,6 @@
       "tiff": "Converters.ImageConverter",
       "gif": "Converters.ImageConverter",
       "webp": "Converters.ImageConverter"
-    }
-  ,
-    "ico": {
-      "jpg": "Converters.ImageConverter",
-      "jpeg": "Converters.ImageConverter",
-      "png": "Converters.ImageConverter"
     },
     "icns": {
       "jpg": "Converters.ImageConverter",
