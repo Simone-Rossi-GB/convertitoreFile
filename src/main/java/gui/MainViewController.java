@@ -350,4 +350,16 @@ public class MainViewController {
     public void openConfig(ActionEvent actionEvent) {
         // codice
     }
+
+    @FXML
+    public void loadFilesFolder(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void openConvertedFolder(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void openFailedConvertionsFolder(ActionEvent actionEvent) {
+    }
 }
