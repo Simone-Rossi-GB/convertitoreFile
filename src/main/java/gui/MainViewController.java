@@ -254,29 +254,6 @@ public class MainViewController {
         });
     }
 
-    public void updateCounters(int detected, int successful, int failed) {
-        Platform.runLater(() -> {
-            this.detectedFiles = detected;
-            this.successfulConversions = successful;
-            this.failedConversions = failed;
-
-            detectedFilesCounter.setText(detected == 0 ? "N/A" : String.valueOf(detected));
-            successfulConversionsCounter.setText(successful == 0 ? "N/A" : String.valueOf(successful));
-            failedConversionsCounter.setText(failed == 0 ? "N/A" : String.valueOf(failed));
-        });
-    }
-
-    public void incrementDetectedFiles() {
-        updateCounters(detectedFiles + 1, successfulConversions, failedConversions);
-    }
-
-    public void incrementSuccessfulConversions() {
-        updateCounters(detectedFiles, successfulConversions + 1, failedConversions);
-    }
-
-    public void incrementFailedConversions() {
-        updateCounters(detectedFiles, successfulConversions, failedConversions + 1);
-    }
 
     private void exitApplication() {
         addLogMessage("Chiusura applicazione...");
@@ -292,9 +269,11 @@ public class MainViewController {
         try {
             formats = engine.getPossibleConversions(srcExtension);
         } catch (Exception e) {
-            Platform.runLater(() -> fileScartati++);
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
-            stampaRisultati();
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+            });
             return;
         }
         System.out.println("prima parte finita");
@@ -311,6 +290,7 @@ public class MainViewController {
                 try {
                     engine.conversione(srcExtension, format, srcFile);
                     fileConvertiti++;
+
                     launchAlertSuccess(srcFile);
                 } catch (Exception e) {
                     fileScartati++;
@@ -323,9 +303,9 @@ public class MainViewController {
     }
 
     public void stampaRisultati(){
-        System.out.println("Ricevuti: " + fileRicevuti);
-        System.out.println("Scartati: " + fileScartati);
-        System.out.println("Convertiti: " + fileConvertiti);
+        detectedFilesCounter.setText(Integer.toString(fileRicevuti));
+        successfulConversionsCounter.setText(Integer.toString(fileConvertiti));
+        failedConversionsCounter.setText(Integer.toString(fileScartati));
     }
 
     public void launchAlertSuccess(File file){
