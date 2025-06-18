@@ -1,216 +1,162 @@
-# DOCUMENTAZIONE CLASSI WEBSERVICE
-## File Converter Manager - Architettura WebService
+package webservice;
 
-==================================================================================
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
-## 1. WebServiceApplication.java
-**Package**: webservice
-
-### COMPITI:
-- Entry point dell'applicazione Spring Boot
-- Gestione del ciclo di vita del web service (start/stop)
-- Configurazione automatica di Spring Boot
-- Controllo dello stato del servizio
-
-### RESPONSABILITÀ SPECIFICHE:
-- Avviare il server embedded Tomcat
-- Inizializzare il contesto Spring
-- Fornire metodi per controllare il web service dall'app JavaFX
-- Gestire la configurazione automatica dei bean
-
-### CODICE ESEMPIO:
-```java
 @SpringBootApplication
 public class WebServiceApplication {
+
     private static ConfigurableApplicationContext context;
 
     public static void startWebService() {
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
+            System.out.println("Web Service avviato su porta 8080");
         }
     }
 
     public static void stopWebService() {
         if (context != null && context.isActive()) {
             context.close();
+            System.out.println("Web Service fermato");
         }
     }
 
     public static boolean isRunning() {
         return context != null && context.isActive();
     }
+
+    public static void main(String[] args) {
+        startWebService();
+    }
 }
-```
 
-==================================================================================
+============================================================================================================================================
 
-## 2. ConverterController.java
-**Package**: webservice.controller
+package webservice.controller;
 
-### COMPITI:
-- Esporre gli endpoint REST per la conversione
-- Gestire le richieste HTTP (GET, POST)
-- Validare i parametri di input
-- Orchestrare le operazioni di conversione
+import converter.Engine;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
 
-### ENDPOINT GESTITI:
-- GET /api/converter/status - Stato del servizio
-- GET /api/converter/conversions/{extension} - Formati disponibili
-- POST /api/converter/convert - Conversione file
-- GET /api/converter/download/{fileName} - Download file convertito
-- GET /api/converter/config - Configurazione corrente
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-### RESPONSABILITÀ SPECIFICHE:
-- Ricevere file multipart
-- Coordinare con il service layer
-- Gestire errori HTTP
-- Formattare risposte JSON
-
-### CODICE ESEMPIO:
-```java
 @RestController
 @RequestMapping("/api/converter")
 @CrossOrigin(origins = "*")
 public class ConverterController {
 
-    @Autowired
-    private FileConversionService conversionService;
+    private final Engine engine = new Engine();
 
     @GetMapping("/status")
-    public ResponseEntity<Map<String, Object>> getStatus() {
-        return ResponseEntity.ok(Map.of(
-            "status", "active",
-            "service", "File Converter API",
-            "version", "1.0"
-        ));
+    public ResponseEntity<Map<String, String>> getStatus() {
+        return ResponseEntity.ok(Map.of("status", "active"));
+    }
+
+    @GetMapping("/conversions/{extension}")
+    public ResponseEntity<List<String>> getPossibleConversions(@PathVariable String extension) {
+        try {
+            List<String> conversions = engine.getPossibleConversions(extension);
+            return ResponseEntity.ok(conversions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/convert")
     public ResponseEntity<Map<String, Object>> convertFile(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("targetFormat") String targetFormat) {
-        // Logica di conversione
+            @RequestParam("targetFormat") String targetFormat,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "mergeImages", required = false, defaultValue = "false") boolean mergeImages) {
+
+        String conversionId = UUID.randomUUID().toString();
+
+        try {
+            // Crea directory temporanea se non esiste
+            String tempDir = "temp/uploads/";
+            Files.createDirectories(Paths.get(tempDir));
+
+            // Salva file temporaneo
+            String originalFilename = file.getOriginalFilename();
+            String extension = getFileExtension(originalFilename);
+
+            File tempFile = new File(tempDir + conversionId + "_" + originalFilename);
+            file.transferTo(tempFile);
+
+            // Chiama l'Engine per conversione con i parametri giusti
+            if (password != null && !password.trim().isEmpty()) {
+                if (mergeImages && targetFormat.equals("jpg")) {
+                    engine.conversione(extension, targetFormat, tempFile, password, mergeImages);
+                } else {
+                    engine.conversione(extension, targetFormat, tempFile, password);
+                }
+            } else {
+                if (mergeImages && targetFormat.equals("jpg")) {
+                    engine.conversione(extension, targetFormat, tempFile, mergeImages);
+                } else {
+                    engine.conversione(extension, targetFormat, tempFile);
+                }
+            }
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Conversione completata con successo",
+                "conversionId", conversionId
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of(
+                "success", false,
+                "error", e.getMessage()
+            ));
+        }
+    }
+
+    private String getFileExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
     }
 }
-```
 
-==================================================================================
+============================================================================================================================================
 
-## 3. FileConversionService.java
-**Package**: webservice.service
+package webservice.client;
 
-### COMPITI:
-- Logica di business per le conversioni
-- Gestione dei file temporanei
-- Interfaccia con l'Engine di conversione
-- Cleanup automatico dei file
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import okhttp3.*;
 
-### RESPONSABILITÀ SPECIFICHE:
-```java
-@Service
-public class FileConversionService {
+import java.io.File;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-    // Gestisce l'intero processo di conversione
-    public ConversionResult processConversion(MultipartFile file, String targetFormat);
-
-    // Salva il file caricato in directory temporanea
-    private File saveUploadedFile(MultipartFile file);
-
-    // Trova e prepara i file convertiti per il download
-    private List<File> prepareConvertedFiles(String conversionId);
-
-    // Pulisce i file temporanei dopo un timeout
-    public void cleanupTempFiles(String conversionId);
-
-    // Valida estensioni e formati supportati
-    private boolean isValidConversion(String srcExt, String targetExt);
-}
-```
-
-### FUNZIONI PRINCIPALI:
-- Gestione upload sicuro dei file
-- Coordinamento con l'Engine per conversioni
-- Tracking dei job di conversione
-- Gestione delle directory temporanee
-- Validazione formati supportati
-
-==================================================================================
-
-## 4. WebServiceConfig.java
-**Package**: webservice.config
-
-### COMPITI:
-- Configurazione dei bean Spring
-- CORS policy per richieste cross-origin
-- File upload limits
-- Directory temporanee
-
-### RESPONSABILITÀ SPECIFICHE:
-```java
-@Configuration
-public class WebServiceConfig {
-
-    @Bean
-    public Engine engine() {
-        // Crea e configura l'Engine per il web service
-        return new Engine();
-    }
-
-    @Bean
-    public MultipartConfigElement multipartConfigElement() {
-        // Configura limiti upload file
-        MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize(DataSize.ofMegabytes(100));
-        factory.setMaxRequestSize(DataSize.ofMegabytes(100));
-        return factory.createMultipartConfig();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        // Configura CORS per frontend esterni
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    @Bean
-    public TaskExecutor taskExecutor() {
-        // Pool di thread per conversioni async
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setQueueCapacity(500);
-        executor.setThreadNamePrefix("Conversion-");
-        executor.initialize();
-        return executor;
-    }
-}
-```
-
-==================================================================================
-
-## 5. ConverterWebServiceClient.java
-**Package**: webservice.client
-
-### COMPITI:
-- Client HTTP per comunicare con il web service
-- Serializzazione/deserializzazione JSON
-- Gestione connessioni e timeout
-- Upload e download di file
-
-### RESPONSABILITÀ SPECIFICHE:
-```java
 public class ConverterWebServiceClient {
 
     private final OkHttpClient client;
     private final String baseUrl;
     private final Gson gson;
 
-    // Verifica disponibilità del servizio
+    public ConverterWebServiceClient(String baseUrl) {
+        this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        this.gson = new Gson();
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .build();
+    }
+
     public boolean isServiceAvailable() {
         try {
             Request request = new Request.Builder()
@@ -224,45 +170,85 @@ public class ConverterWebServiceClient {
         }
     }
 
-    // Ottiene formati di conversione disponibili
-    public List<String> getPossibleConversions(String extension) throws Exception;
+    public List<String> getPossibleConversions(String extension) throws Exception {
+        Request request = new Request.Builder()
+                .url(baseUrl + "api/converter/conversions/" + extension)
+                .build();
 
-    // Carica file e richiede conversione
-    public ConversionResult convertFile(File sourceFile, String targetFormat) throws Exception;
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new Exception("Conversione non supportata per: " + extension);
+            }
 
-    // Scarica file convertito
-    public File downloadConvertedFile(String fileName, String outputDir) throws Exception;
+            String jsonResponse = response.body().string();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            return gson.fromJson(jsonResponse, listType);
+        }
+    }
 
-    // Gestisce retry automatici
-    private Response executeWithRetry(Request request) throws Exception;
+    public ConversionResult convertFile(File sourceFile, String targetFormat) throws Exception {
+        return convertFile(sourceFile, targetFormat, null, false);
+    }
+
+    public ConversionResult convertFile(File sourceFile, String targetFormat, String password) throws Exception {
+        return convertFile(sourceFile, targetFormat, password, false);
+    }
+
+    public ConversionResult convertFile(File sourceFile, String targetFormat, String password, boolean mergeImages) throws Exception {
+
+        if (!sourceFile.exists() || !sourceFile.isFile()) {
+            throw new Exception("File sorgente non valido: " + sourceFile.getAbsolutePath());
+        }
+
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", sourceFile.getName(),
+                    RequestBody.create(sourceFile, MediaType.parse("application/octet-stream")))
+                .addFormDataPart("targetFormat", targetFormat);
+
+        if (password != null && !password.trim().isEmpty()) {
+            builder.addFormDataPart("password", password);
+        }
+
+        if (mergeImages) {
+            builder.addFormDataPart("mergeImages", "true");
+        }
+
+        Request request = new Request.Builder()
+                .url(baseUrl + "api/converter/convert")
+                .post(builder.build())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body().string();
+            Map<String, Object> result = gson.fromJson(responseBody, Map.class);
+
+            Boolean success = (Boolean) result.get("success");
+            if (success != null && success) {
+                return new ConversionResult(true, (String) result.get("message"), null);
+            } else {
+                return new ConversionResult(false, null, (String) result.get("error"));
+            }
+        }
+    }
+
+    public void close() {
+        if (client != null) {
+            client.dispatcher().executorService().shutdown();
+            client.connectionPool().evictAll();
+        }
+    }
 }
-```
 
-### CARATTERISTICHE:
-- Gestione timeout personalizzati
-- Retry automatico in caso di errori temporanei
-- Gestione sicura delle connessioni HTTP
-- Supporto per file di grandi dimensioni
+============================================================================================================================================
 
-==================================================================================
+package webservice.client;
 
-## 6. ConversionResult.java
-**Package**: webservice.client (inner class o classe separata)
-
-### COMPITI:
-- DTO (Data Transfer Object) per risultati di conversione
-- Encapsulamento dello stato dell'operazione
-- Informazioni di debug e errori
-
-### RESPONSABILITÀ SPECIFICHE:
-```java
 public class ConversionResult {
-    private boolean success;
-    private String message;
-    private String error;
-    private String conversionId;
-    private String downloadUrl;
-    private Map<String, Object> metadata;
+
+    private final boolean success;
+    private final String message;
+    private final String error;
 
     public ConversionResult(boolean success, String message, String error) {
         this.success = success;
@@ -270,254 +256,203 @@ public class ConversionResult {
         this.error = error;
     }
 
-    // Getters
-    public boolean isSuccess() { return success; }
-    public String getMessage() { return message; }
-    public String getError() { return error; }
-    public String getConversionId() { return conversionId; }
-    public String getDownloadUrl() { return downloadUrl; }
-
-    // Utility methods
-    public boolean hasError() { return error != null && !error.isEmpty(); }
-    public String getStatusMessage() { return success ? message : error; }
-}
-```
-
-==================================================================================
-
-## 7. FileUploadController.java (opzionale)
-**Package**: webservice.controller
-
-### COMPITI:
-- Gestione specializzata dell'upload
-- Progress tracking per file grandi
-- Validazione avanzata dei file
-
-### RESPONSABILITÀ SPECIFICHE:
-```java
-@RestController
-@RequestMapping("/api/upload")
-public class FileUploadController {
-
-    @PostMapping("/chunked")
-    public ResponseEntity<?> uploadChunk(
-            @RequestParam("chunk") MultipartFile chunk,
-            @RequestParam("chunkNumber") int chunkNumber,
-            @RequestParam("totalChunks") int totalChunks,
-            @RequestParam("fileName") String fileName);
-
-    @GetMapping("/progress/{uploadId}")
-    public ResponseEntity<UploadProgress> getUploadProgress(@PathVariable String uploadId);
-
-    @PostMapping("/validate")
-    public ResponseEntity<ValidationResult> validateFile(@RequestParam("file") MultipartFile file);
-}
-```
-
-==================================================================================
-
-## 8. WebServiceEngine.java (versione modificata)
-**Package**: webservice.service
-
-### COMPITI:
-- Adattamento dell'Engine per uso web service
-- Gestione asincrona delle conversioni
-- Isolamento dei file per request multiple
-
-### DIFFERENZE DALL'ENGINE ORIGINALE:
-```java
-public class WebServiceEngine extends Engine {
-
-    // Non sposta automaticamente i file
-    public List<File> convertAndReturn(String srcExt, String outExt, File srcFile) throws Exception {
-        // Conversione senza spostamento automatico
-        // Restituisce i file convertiti per gestione manuale
+    public boolean isSuccess() {
+        return success;
     }
 
-    // Gestisce conversioni in directory isolate
-    public ConversionJob startConversionJob(File srcFile, String targetFormat) {
-        String jobId = UUID.randomUUID().toString();
-        // Crea directory isolata per questo job
-        // Avvia conversione in thread separato
-        return new ConversionJob(jobId, srcFile, targetFormat);
+    public String getMessage() {
+        return message;
     }
 
-    // Supporta conversioni asincrone
-    public CompletableFuture<ConversionResult> convertAsync(File file, String format) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                List<File> results = convertAndReturn(getExtension(file), format, file);
-                return new ConversionResult(true, "Conversione completata", null);
-            } catch (Exception e) {
-                return new ConversionResult(false, null, e.getMessage());
+    public String getError() {
+        return error;
+    }
+
+    public boolean hasError() {
+        return error != null && !error.trim().isEmpty();
+    }
+
+    public String getStatusMessage() {
+        return success ? message : error;
+    }
+
+    @Override
+    public String toString() {
+        return "ConversionResult{" +
+                "success=" + success +
+                ", message='" + (success ? message : error) + "'" +
+                "}";
+    }
+
+    // Factory methods per creare risultati
+    public static ConversionResult success(String message) {
+        return new ConversionResult(true, message, null);
+    }
+
+    public static ConversionResult error(String error) {
+        return new ConversionResult(false, null, error);
+    }
+}
+
+====================================================================================================================================
+
+// AGGIUNGI QUESTE PARTI AL TUO MainViewController.java ESISTENTE
+
+// ========== IMPORT DA AGGIUNGERE ==========
+import webservice.client.ConverterWebServiceClient;
+import webservice.client.ConversionResult;
+import java.nio.file.StandardCopyOption;
+
+// ========== VARIABILI DA AGGIUNGERE ==========
+// Aggiungi dopo le altre variabili di istanza esistenti
+private ConverterWebServiceClient webServiceClient;
+private boolean useWebService = false;
+
+// ========== MODIFICA AL METODO initialize() ==========
+// Aggiungi questa riga nel metodo initialize() esistente
+@FXML
+private void initialize() throws IOException {
+    engine = new Engine();
+
+    // ... il resto del codice esistente ...
+
+    // AGGIUNGI QUESTA RIGA:
+    webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+
+    // ... resto del metodo initialize() esistente ...
+}
+
+// ========== SOSTITUISCI IL METODO launchDialogConversion ==========
+// Sostituisci completamente il metodo esistente con questo:
+public void launchDialogConversion(File srcFile) {
+    Platform.runLater(() -> fileRicevuti++);
+
+    String srcExtension = getExtension(srcFile);
+    System.out.println("Estensione file sorgente: " + srcExtension);
+    List<String> formats = null;
+
+    try {
+        // Prova prima il webservice, se fallisce usa l'engine locale
+        if (webServiceClient.isServiceAvailable()) {
+            formats = webServiceClient.getPossibleConversions(srcExtension);
+            useWebService = true;
+            addLogMessage("Usando web service per conversione di " + srcFile.getName());
+        } else {
+            formats = engine.getPossibleConversions(srcExtension);
+            useWebService = false;
+            addLogMessage("Web service non disponibile, usando engine locale per " + srcFile.getName());
+        }
+    } catch (Exception e) {
+        launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
+        moveFileToErrorFolder(srcFile);
+        Platform.runLater(() -> {
+            fileScartati++;
+            stampaRisultati();
+        });
+        return;
+    }
+
+    List<String> finalFormats = formats;
+    Platform.runLater(() -> {
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
+        dialog.setTitle("Seleziona Formato");
+        dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
+        dialog.setContentText("Formato desiderato:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(format -> {
+            new Thread(() -> performConversion(srcFile, format)).start();
+        });
+    });
+}
+
+// ========== METODI NUOVI DA AGGIUNGERE ==========
+// Aggiungi questi metodi alla fine della classe
+
+private void performConversion(File srcFile, String targetFormat) {
+    try {
+        String srcExtension = getExtension(srcFile);
+        String password = null;
+        boolean mergeImages = false;
+
+        // Gestione dialoghi per PDF
+        if (srcExtension.equals("pdf")) {
+            password = launchDialogPdf();
+            if (targetFormat.equals("jpg")) {
+                mergeImages = launchDialogUnisci();
             }
+        }
+
+        if (useWebService) {
+            // Usa webservice
+            addLogMessage("Avvio conversione tramite web service...");
+            ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, password, mergeImages);
+
+            if (result.isSuccess()) {
+                addLogMessage("Conversione completata tramite web service: " + result.getMessage());
+                moveFileToSuccessFolder(srcFile);
+                Platform.runLater(() -> {
+                    fileConvertiti++;
+                    stampaRisultati();
+                    launchAlertSuccess(srcFile);
+                });
+            } else {
+                throw new Exception(result.getError());
+            }
+        } else {
+            // Usa engine locale (codice esistente)
+            addLogMessage("Avvio conversione tramite engine locale...");
+            if (password != null) {
+                if (mergeImages) {
+                    engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
+                } else {
+                    engine.conversione(srcExtension, targetFormat, srcFile, password);
+                }
+            } else {
+                if (mergeImages) {
+                    engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
+                } else {
+                    engine.conversione(srcExtension, targetFormat, srcFile);
+                }
+            }
+
+            addLogMessage("Conversione completata tramite engine locale");
+            Platform.runLater(() -> {
+                fileConvertiti++;
+                stampaRisultati();
+                launchAlertSuccess(srcFile);
+            });
+        }
+
+    } catch (Exception e) {
+        addLogMessage("Errore durante conversione: " + e.getMessage());
+        moveFileToErrorFolder(srcFile);
+        Platform.runLater(() -> {
+            fileScartati++;
+            stampaRisultati();
+            launchAlertError("Errore: " + e.getMessage());
         });
     }
 }
-```
 
-==================================================================================
-
-## 9. ExceptionHandlerController.java
-**Package**: webservice.controller
-
-### COMPITI:
-- Gestione centralizzata degli errori
-- Formattazione delle risposte di errore
-- Logging degli errori
-
-### RESPONSABILITÀ SPECIFICHE:
-```java
-@ControllerAdvice
-public class ExceptionHandlerController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerController.class);
-
-    @ExceptionHandler(FileConversionException.class)
-    public ResponseEntity<ErrorResponse> handleConversionError(FileConversionException e) {
-        logger.error("Errore di conversione: {}", e.getMessage());
-        ErrorResponse error = new ErrorResponse("CONVERSION_ERROR", e.getMessage());
-        return ResponseEntity.badRequest().body(error);
-    }
-
-    @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleFileNotFound(FileNotFoundException e) {
-        logger.warn("File non trovato: {}", e.getMessage());
-        ErrorResponse error = new ErrorResponse("FILE_NOT_FOUND", e.getMessage());
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse> handleFileTooLarge(MaxUploadSizeExceededException e) {
-        logger.warn("File troppo grande: {}", e.getMessage());
-        ErrorResponse error = new ErrorResponse("FILE_TOO_LARGE", "Il file supera la dimensione massima consentita");
-        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(error);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericError(Exception e) {
-        logger.error("Errore generico: {}", e.getMessage(), e);
-        ErrorResponse error = new ErrorResponse("INTERNAL_ERROR", "Errore interno del server");
-        return ResponseEntity.internalServerError().body(error);
+private void moveFileToSuccessFolder(File file) {
+    try {
+        Path srcPath = file.toPath();
+        Path destPath = Paths.get(convertedFolderPath, file.getName());
+        Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+        addLogMessage("File spostato in cartella successi: " + destPath);
+    } catch (Exception e) {
+        addLogMessage("Errore nello spostamento file in cartella successi: " + e.getMessage());
     }
 }
-```
 
-==================================================================================
-
-## 10. TempFileCleanupService.java
-**Package**: webservice.service
-
-### COMPITI:
-- Pulizia automatica dei file temporanei
-- Scheduling delle operazioni di cleanup
-- Monitoring dello spazio disco
-
-### RESPONSABILITÀ SPECIFICHE:
-```java
-@Service
-public class TempFileCleanupService {
-
-    private static final Logger logger = LoggerFactory.getLogger(TempFileCleanupService.class);
-
-    @Value("${app.temp.upload.dir}")
-    private String uploadDir;
-
-    @Value("${app.temp.output.dir}")
-    private String outputDir;
-
-    @Scheduled(fixedDelay = 3600000) // ogni ora
-    public void cleanupOldTempFiles() {
-        logger.info("Avvio pulizia file temporanei...");
-
-        long maxAgeMs = 24 * 60 * 60 * 1000; // 24 ore
-
-        cleanupDirectory(uploadDir, maxAgeMs);
-        cleanupDirectory(outputDir, maxAgeMs);
-
-        logger.info("Pulizia file temporanei completata");
-    }
-
-    public void scheduleCleanup(String conversionId, long delayMs) {
-        // Programma pulizia specifica per un job di conversione
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.schedule(() -> {
-            cleanupConversionFiles(conversionId);
-        }, delayMs, TimeUnit.MILLISECONDS);
-    }
-
-    private boolean isFileExpired(File file, long maxAgeMs) {
-        long fileAge = System.currentTimeMillis() - file.lastModified();
-        return fileAge > maxAgeMs;
-    }
-
-    private void cleanupDirectory(String dirPath, long maxAgeMs) {
-        File dir = new File(dirPath);
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (isFileExpired(file, maxAgeMs)) {
-                        if (file.delete()) {
-                            logger.debug("File eliminato: {}", file.getName());
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void cleanupConversionFiles(String conversionId) {
-        // Rimuove tutti i file relativi a una specifica conversione
-        logger.debug("Pulizia file per conversione: {}", conversionId);
-        // Implementa logica di pulizia specifica
+private void moveFileToErrorFolder(File file) {
+    try {
+        Path srcPath = file.toPath();
+        Path destPath = Paths.get(failedFolderPath, file.getName());
+        Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+        addLogMessage("File spostato in cartella errori: " + destPath);
+    } catch (Exception e) {
+        addLogMessage("Errore nello spostamento file in cartella errori: " + e.getMessage());
     }
 }
-```
-
-==================================================================================
-
-## FLUSSO DI INTERAZIONE
-
-1. **JavaFX Client** → ConverterWebServiceClient → HTTP Request
-2. **ConverterController** riceve request → valida parametri
-3. **FileConversionService** gestisce la logica di business
-4. **WebServiceEngine** esegue la conversione effettiva
-5. **TempFileCleanupService** programma la pulizia
-6. **ConverterController** restituisce response al client
-7. **ConverterWebServiceClient** deserializza e restituisce risultato
-
-==================================================================================
-
-## ARCHITETTURA GENERALE
-
-### LAYER ARCHITETTURALE:
-1. **Presentation Layer**: ConverterController, ExceptionHandlerController
-2. **Service Layer**: FileConversionService, TempFileCleanupService
-3. **Integration Layer**: WebServiceEngine, ConverterWebServiceClient
-4. **Configuration Layer**: WebServiceConfig, WebServiceApplication
-
-### PATTERN UTILIZZATI:
-- **REST API**: Per l'esposizione dei servizi
-- **DTO Pattern**: ConversionResult per trasferimento dati
-- **Service Layer Pattern**: Separazione logica di business
-- **Configuration Pattern**: Centralizzazione configurazioni
-- **Exception Handling Pattern**: Gestione centralizzata errori
-
-### VANTAGGI DELL'ARCHITETTURA:
-- Separazione chiara delle responsabilità
-- Scalabilità orizzontale e verticale
-- Manutenibilità del codice
-- Testabilità dei componenti
-- Gestione robusta degli errori
-- Cleanup automatico delle risorse
-
-==================================================================================
-
-Questa architettura permette di:
-- Eseguire solo l'app JavaFX
-- Eseguire solo il web service
-- Eseguire entrambi insieme
-- Gestire richieste multiple simultanee
-- Scalare il sistema secondo le necessità
-- Mantenere il codice pulito e manutenibile
