@@ -14,28 +14,40 @@ import java.util.concurrent.Executors;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
+/**
+ * Questa classe osserva ricorsivamente una directory e tutte le sue sottodirectory,
+ * eseguendo un'azione (conversione) quando viene creato un nuovo file.
+ */
 public class DirectoryWatcher implements Runnable {
 
     private final Path dir;
     private final WatchService watchService;
     private final ExecutorService executor;
     private final Map<WatchKey, Path> watchKeyToPath;
-    private MainViewController controller;
+    private final MainViewController controller;
 
-    public String getWatchedDir() {
-        return dir.toString();
-    }
-
+    /**
+     * Costruttore che inizializza il watcher e registra tutte le sottodirectory.
+     *
+     * @param directoryPath percorso della directory da monitorare
+     * @param controller riferimento al controller per eseguire la conversione
+     * @throws IOException in caso di errore nella registrazione delle directory
+     */
     public DirectoryWatcher(String directoryPath, MainViewController controller) throws IOException {
         this.dir = Paths.get(directoryPath);
         this.executor = Executors.newCachedThreadPool();
         this.watchService = FileSystems.getDefault().newWatchService();
         this.controller = controller;
         this.watchKeyToPath = new HashMap<>();
-        registerAll(dir); // Registra tutte le sottocartelle esistenti
+        registerAll(dir);
     }
 
-    // Metodo per registrare ricorsivamente tutte le sottodirectory
+    /**
+     * Registra ricorsivamente tutte le directory figlie del percorso fornito.
+     *
+     * @param start directory di partenza
+     * @throws IOException in caso di errore nella registrazione
+     */
     private void registerAll(final Path start) throws IOException {
         Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
             @Override
@@ -47,16 +59,19 @@ public class DirectoryWatcher implements Runnable {
         });
     }
 
+    /**
+     * Avvia il monitoraggio della directory.
+     * Risponde a eventi di creazione file o directory.
+     */
     @Override
     public void run() {
-        System.out.println("In ascolto ricorsivo sulla directory: " + dir.toAbsolutePath());
-
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             WatchKey key;
             try {
-                key = watchService.take(); // Bloccante
+                key = watchService.take(); // Operazione bloccante fino a nuovo evento
             } catch (InterruptedException e) {
-                return;
+                Thread.currentThread().interrupt(); // Ripristina il flag di interruzione
+                break;
             }
 
             Path parentDir = watchKeyToPath.get(key);
@@ -72,22 +87,12 @@ public class DirectoryWatcher implements Runnable {
 
                 if (kind == ENTRY_CREATE) {
                     if (Files.isDirectory(fullPath)) {
-                        System.out.println("fileName: " + fileName + " fullPath: " + fullPath);
-                        // Registra la nuova directory creata
                         try {
-                            registerAll(fullPath);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            registerAll(fullPath); // Registra nuove sottodirectory
+                        } catch (IOException ignored) {
                         }
                     } else {
-                        executor.submit(() -> {
-                            try {
-                                System.out.println("lancia conversione");
-                                controller.launchDialogConversion(new File(fullPath.toString()));
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+                        executor.submit(() -> controller.launchDialogConversion(fullPath.toFile()));
                     }
                 }
             }
@@ -98,5 +103,16 @@ public class DirectoryWatcher implements Runnable {
                 if (watchKeyToPath.isEmpty()) break;
             }
         }
+
+        executor.shutdown(); // Arresta l'executor quando il thread termina
+    }
+
+    /**
+     * Restituisce il percorso della directory monitorata.
+     *
+     * @return directory monitorata
+     */
+    public String getWatchedDir() {
+        return dir.toString();
     }
 }
