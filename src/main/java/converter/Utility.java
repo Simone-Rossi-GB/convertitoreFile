@@ -8,7 +8,7 @@ public class Utility {
 
     public static String estraiEstensioneInterna(File file) {
         String nomeFile = file.getName();
-        Pattern pattern = Pattern.compile("\\[\\[(.*?)]]");
+        Pattern pattern = Pattern.compile("-\\$\\$(.*?)\\$\\$-");
         Matcher matcher = pattern.matcher(nomeFile);
         String extracted = null;
         if (matcher.find()) {
@@ -20,6 +20,6 @@ public class Utility {
     public static String estraiNomePiuEstensioneFile(File file){
         String nomeFile = file.getName();
         String estensioneInterna = estraiEstensioneInterna(file);
-        return nomeFile.replace("-[[" + estensioneInterna + "]]-", "");
+        return nomeFile.replace("-$$" + estensioneInterna + "$$-", "");
     }
 }
