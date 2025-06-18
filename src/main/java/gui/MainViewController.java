@@ -26,9 +26,6 @@ public class MainViewController {
     @FXML private Label statusIndicator;
     @FXML private Label monitoringStatusLabel;
     @FXML private Label applicationLogArea;
-    @FXML private Label cartellaMonitorataLabel;
-    @FXML private Label cartellaFileConvertitiLabel;
-    @FXML private Label cartellaFileFallitiLabel;
     @FXML private Label detectedFilesCounter;
     @FXML private Label successfulConversionsCounter;
     @FXML private Label failedConversionsCounter;
@@ -237,18 +234,6 @@ public class MainViewController {
             convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
             failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
 
-            if (ensureDirectoryExists(monitoredFolderPath)) {
-                cartellaMonitorataLabel.setText(monitoredFolderPath);
-            }
-
-            if (ensureDirectoryExists(convertedFolderPath)) {
-                cartellaFileConvertitiLabel.setText(convertedFolderPath);
-            }
-
-            if (ensureDirectoryExists(failedFolderPath)) {
-                cartellaFileFallitiLabel.setText(failedFolderPath);
-            }
-
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
             addLogMessage("Cartella file convertiti: " + convertedFolderPath);
@@ -256,6 +241,7 @@ public class MainViewController {
         } catch (Exception e) {
             addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
             showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

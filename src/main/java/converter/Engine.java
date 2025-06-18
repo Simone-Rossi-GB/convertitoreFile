@@ -25,6 +25,10 @@ public class Engine {
         setConfig();
     }
 
+    /**
+     * Legge la configurazione dal file JSON.
+     * @throws RuntimeException se il file di configurazione non è leggibile o è corrotto.
+     */
     public void setConfig(){
         try (FileReader reader = new FileReader("config/config.json")) {
             Gson gson = new Gson();
