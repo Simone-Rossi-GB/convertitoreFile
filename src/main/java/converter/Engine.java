@@ -150,10 +150,7 @@ public class Engine {
             srcFile = tempPath.toFile();
 
             File renamedFile = giveBackNewFileWithNewName(srcFile.getPath(), "-$$" + outExt + "$$-");
-            if (!srcFile.renameTo(renamedFile)) {
-                Log.addMessage("ERRORE: Rinomina file pre-convert fallita: "+srcFile.getName()+" -> "+renamedFile.getName());
-                throw new Exception("ERRORE: Rinomina file pre-convert fallita");
-            }
+            rinominaFile(srcFile, renamedFile);
             srcFile = renamedFile;
 
             List<File> outFiles;
@@ -171,10 +168,7 @@ public class Engine {
 
             for (File f : outFiles) {
                 File cleaned = new File(f.getPath().replaceAll("-\\$\\$.*?\\$\\$-", ""));
-                if (!f.renameTo(cleaned)) {
-                    Log.addMessage("ERRORE: Rinomina file post-convert fallita: "+f.getName()+" -> "+cleaned.getName());
-                    throw new Exception("ERRORE: Rinomina file post-convert fallita");
-                }
+                rinominaFile(f, cleaned);
                 //Sposto il file convertito nella directory corretta
                 spostaFile(config.getSuccessOutputDir(), cleaned);
             }
@@ -252,5 +246,16 @@ public class Engine {
             throw new NullPointerException("L'oggetto config non esiste");
         }
         return config;
+    }
+
+    /**
+     * Rinomina il file passato a quello di destinazione
+     * @throws Exception Rinomina file fallita
+     */
+    public static void rinominaFile(File startFile, File destFile) throws Exception{
+        if (!startFile.renameTo(destFile)) {
+            Log.addMessage("ERRORE: Rinomina file pre-convert fallita: "+startFile.getName()+" -> "+destFile.getName());
+            throw new Exception("ERRORE: Rinomina file pre-convert fallita");
+        }
     }
 }
