@@ -102,8 +102,8 @@ public class DirectoryWatcher implements Runnable {
                     if (Files.isDirectory(fullPath)) {
                         try {
                             registerAll(fullPath); // Registra nuove sottodirectory
-                        } catch (IOException ignored) {
-                            // Ignorato: impossibile registrare sottodirectory, verrà gestito a livello superiore se necessario
+                        } catch (IOException e) {
+                            Log.addMessage("Errore nella registrazione della sottocartella");
                         }
                     } else {
                         File file = fullPath.toFile();

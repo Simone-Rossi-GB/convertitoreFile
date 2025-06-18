@@ -8,6 +8,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
+import converter.Log;
 import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.TextBody;
@@ -157,8 +158,9 @@ public class EMLtoPDFconverter implements Converter {
 
     @Override
     public ArrayList<File> convert(File emlFile) throws IOException, DocumentException {
-
+        Log.addMessage("Inizio conversione csv: "+emlFile.getName()+" -> .json");
         if (emlFile == null || !emlFile.exists()) {
+            Log.addMessage("ERRORE: File EML non trovato " + emlFile);
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }
 
@@ -202,10 +204,12 @@ public class EMLtoPDFconverter implements Converter {
 
         // Verifica che il PDF sia stato creato
         if (!outputPdfFile.exists()) {
+            Log.addMessage("ERRORE: creazione del file PDF fallita:  " + outputPdfFile.getAbsolutePath());
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
         ArrayList<File> results = new ArrayList<>();
         results.add(outputPdfFile);
+        Log.addMessage("Creazione file .json completata: "+outputPdfFile.getName());
         return results;
     }
 }

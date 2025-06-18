@@ -1,5 +1,6 @@
 package Converters;
 
+import converter.Log;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
@@ -22,6 +23,7 @@ public class ZIPtoTARGZconverter implements Converter{
     @Override
     public ArrayList<File> convert(File zipFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
+        Log.addMessage("Inizio conversione csv: "+ zipFile.getName() + " -> .json");
         String directoryPath = "src/temp/";
         String zipName = zipFile.getName();
         int lastDot = zipName.lastIndexOf('.');
@@ -51,6 +53,7 @@ public class ZIPtoTARGZconverter implements Converter{
         }
 
         outputFiles.add(tarGzOut);
+        Log.addMessage("Creazione file .json completata: " + tarGzOut.getName());
         return outputFiles;
     }
 }
