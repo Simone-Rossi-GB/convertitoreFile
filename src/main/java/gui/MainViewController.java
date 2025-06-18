@@ -269,9 +269,11 @@ public class MainViewController {
         try {
             formats = engine.getPossibleConversions(srcExtension);
         } catch (Exception e) {
-            Platform.runLater(() -> fileScartati++);
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
-            stampaRisultati();
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+            });
             return;
         }
         System.out.println("prima parte finita");

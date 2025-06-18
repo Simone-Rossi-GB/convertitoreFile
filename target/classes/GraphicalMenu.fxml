@@ -68,7 +68,7 @@
                                         <!-- Monitored Folder -->
                                         <HBox alignment="CENTER_LEFT" spacing="8.8">
                                             <children>
-                                                <Label alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="375.0" text="Cartellla monitorata non configurata" />
+                                                <Label fx:id="cartellaMonitorataLabel" alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="375.0" text="Cartellla monitorata non configurata" />
                                                 <Button fx:id="openMonitoredFolderBtn" minWidth="55.0" mnemonicParsing="false" prefWidth="55.0" text="Apri" />
                                             </children>
                                         </HBox>
@@ -76,15 +76,15 @@
                                         <!-- Converted Files Folder -->
                                         <HBox alignment="CENTER_LEFT" spacing="8.8">
                                             <children>
-                                                <Label alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="377.0" text="Destinazione File Convertiti non configurata" />
+                                                <Label fx:id="cartellaFileConvertitiLabel" alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="377.0" text="Destinazione File Convertiti non configurata" />
                                                 <Button fx:id="openConvertedFolderBtn" minWidth="55.0" mnemonicParsing="false" prefWidth="55.0" text="Apri" />
                                             </children>
                                         </HBox>
 
                                         <!-- Failed Files Folder -->
-                                        <HBox alignment="CENTER_LEFT" spacing="8.8">
+                                        <HBox fx:id="cartellaFileFalliti" alignment="CENTER_LEFT" spacing="8.8">
                                             <children>
-                                                <Label alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="375.0" text="Destinazione conversioni fallite" />
+                                                <Label fx:id="cartellaFileFallitiLabel" alignment="CENTER" minWidth="154.0" prefHeight="17.0" prefWidth="375.0" text="Destinazione conversioni fallite" />
                                                 <Button fx:id="openFailedFolderBtn" minWidth="55.0" mnemonicParsing="false" prefWidth="55.0" text="Apri" />
                                             </children>
                                         </HBox>
@@ -108,7 +108,7 @@
                                                         <Font name="System Bold" size="13.2" />
                                                     </font>
                                                 </Button>
-                                                <Button fx:id="configBtn" mnemonicParsing="false" prefHeight="44.0" prefWidth="110.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Config">
+                                                <Button fx:id="configBtn" mnemonicParsing="false" onAction="#openConfig" prefHeight="44.0" prefWidth="110.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Config">
                                                     <font>
                                                         <Font name="System Bold" size="13.2" />
                                                     </font>
