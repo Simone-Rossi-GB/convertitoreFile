@@ -146,9 +146,17 @@ public class MainViewController {
         } else {
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             // Avvia DirectoryWatcher
+
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.setDaemon(true);
             watcherThread.start();
+
+            detectedFilesCounter.setText("0");
+            successfulConversionsCounter.setText("0");
+            failedConversionsCounter.setText("0");
+            fileRicevuti = 0;
+            fileConvertiti = 0;
+            fileScartati = 0;
         }
         isMonitoring = !isMonitoring;
         updateMonitoringStatus();
