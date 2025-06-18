@@ -311,6 +311,7 @@ public class MainViewController {
                 try {
                     engine.conversione(srcExtension, format, srcFile);
                     fileConvertiti++;
+
                     launchAlertSuccess(srcFile);
                 } catch (Exception e) {
                     fileScartati++;
