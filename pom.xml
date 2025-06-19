@@ -29,13 +29,17 @@
         <javax.mail.version>1.6.2</javax.mail.version>
         <itextpdf.version>5.5.13.3</itextpdf.version>
         <jsoup.version>1.17.2</jsoup.version>
-        <!-- CORREZIONE: Downgrade Commons Compress per compatibilità -->
-        <commons-compress.version>1.23.0</commons-compress.version>
-        <commons-io.version>2.13.0</commons-io.version>
+
+        <!-- VERSIONI COMPATIBILI STABILI -->
+        <commons-compress.version>1.21</commons-compress.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+
+        <!-- DOWNGRADE POI per compatibilità con Commons IO 2.11.0 -->
+        <apache.poi.version>5.2.0</apache.poi.version>
+
         <gson.version>2.8.9</gson.version>
         <commons-codec.version>1.15</commons-codec.version>
-        <apache.poi.version>5.2.5</apache.poi.version>
         <apache.pdfbox.version>2.0.27</apache.pdfbox.version>
         <json.version>20180813</json.version>
         <log4j.version>2.17.2</log4j.version>
@@ -44,7 +48,7 @@
         <webp.imageio.version>0.1.6</webp.imageio.version>
     </properties>
 
-    <!-- AGGIUNTO: Gestione esplicita delle versioni per evitare conflitti -->
+    <!-- Gestione esplicita delle versioni per evitare conflitti -->
     <dependencyManagement>
         <dependencies>
             <!-- Forza versioni specifiche di Commons per evitare conflitti -->
@@ -62,6 +66,22 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
+            </dependency>
+            <!-- POI versioni allineate -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${apache.poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>${apache.poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${apache.poi.version}</version>
             </dependency>
             <!-- Evita conflitti nelle dipendenze transitive -->
             <dependency>
@@ -184,7 +204,7 @@
             <version>${jsoup.version}</version>
         </dependency>
 
-        <!-- CORREZIONE CRITICA: Commons Dependencies con versioni compatibili -->
+        <!-- Commons Dependencies con versioni STABILI e COMPATIBILI -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -229,24 +249,43 @@
             <version>${commons-codec.version}</version>
         </dependency>
 
-        <!-- APACHE POI - Versione 5.2.5 -->
+        <!-- APACHE POI - Versione 5.2.0 COMPATIBILE -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${apache.poi.version}</version>
+            <!-- Escludi commons-io da POI per evitare conflitti -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
             <version>${apache.poi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${apache.poi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- POI Support Dependencies -->
+        <!-- POI Support Dependencies con versioni compatibili -->
         <dependency>
             <groupId>com.github.virtuald</groupId>
             <artifactId>curvesapi</artifactId>
