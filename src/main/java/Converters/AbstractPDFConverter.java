@@ -6,21 +6,49 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class AbstractPDFConverter implements Converter{
+    /**
+     * Conversione base
+     * @param pdfFile File di partenza
+     * @return ArrayList di file convertiti
+     * @throws Exception File di partenza null o errori relativi alla password
+     */
     @Override
     public ArrayList<File> convert(File pdfFile) throws Exception {
         return convertWithPassword(pdfFile, null, null);
     }
 
+    /**
+     * Conversione pdf -> immagine
+     * @param pdfFile File di partenza
+     * @param union Boolean per decidere se unire o no le pagine del pdf in un'unica immagine
+     * @retu@param union Boolean per decidere se unire o no le pagine del pdf in un'unica immaginern ArrayList di file convertiti
+     * @throws Exception File di partenza null o errori relativi alla password
+     */
     @Override
     public ArrayList<File> convert(File pdfFile, boolean union) throws Exception {
         return convertWithPassword(pdfFile, null, union);
     }
 
-
+    /**
+     * Conversione pdf protetto
+     * @param pdfFile File di partenza
+     * @param password Password inserita dall'utente per accedere al PDF
+     * @return ArrayList di file convertiti
+     * @throws Exception File di partenza null o errori relativi alla password
+     */
     @Override
     public ArrayList<File> convert(File pdfFile, String password) throws Exception {
         return convertWithPassword(pdfFile, password, null);
     }
+
+    /**
+     * Conversione pdf protetto -> immagine
+     * @param pdfFile File di partenza
+     * @param password Password inserita dall'utente per accedere al PDF
+     * @param union Boolean per decidere se unire o no le pagine del pdf in un'unica immagine
+     * @return ArrayList di file convertiti
+     * @throws Exception File di partenza null o errori relativi alla password
+     */
     @Override
     public ArrayList<File> convert(File pdfFile, String password, boolean union) throws Exception {
         return convertWithPassword(pdfFile, password, union);
