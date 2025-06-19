@@ -21,13 +21,6 @@
             </font>
         </Label>
 
-        <!-- Status Label -->
-        <Label fx:id="statusLabel" alignment="CENTER" prefWidth="770.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 8;" text="Pronto" textAlignment="CENTER" visible="true">
-            <font>
-                <Font size="12.0" />
-            </font>
-        </Label>
-
         <!-- Configuration Fields Section -->
         <VBox spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-padding: 15;">
             <children>
@@ -127,9 +120,9 @@
                 <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" style="-fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8;" VBox.vgrow="ALWAYS">
                     <content>
                         <TextArea fx:id="conversionsTextArea" editable="false" style="-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 13px; -fx-background-color: #f8f9fa; -fx-text-fill: #2c3e50; -fx-border-color: transparent;" wrapText="false">
-                            <cursor>
-                                <Cursor fx:constant="DEFAULT" />
-                            </cursor></TextArea>
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></TextArea>
                     </content>
                 </ScrollPane>
             <Label fx:id="monitoringStatusLabel" textFill="#7f8c8d" wrapText="true">
