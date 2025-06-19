@@ -84,11 +84,6 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
                 outputFiles.add(mergedFile);
             }
             pdfDocument.close();
-            if (outputFiles.size() > 1){
-                File zippedImages = Utility.zipImages(outputFiles);
-                outputFiles.clear();
-                outputFiles.add(zippedImages);
-            }
             return outputFiles;
         }catch (Exception e){
             throw new Exception("Errore durante il processo di conversione: " + e.getMessage());

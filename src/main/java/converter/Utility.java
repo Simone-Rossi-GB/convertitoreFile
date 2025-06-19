@@ -32,6 +32,7 @@ public class Utility {
      * @return File ZIP generato
      * @throws IOException in caso di errore di lettura/scrittura
      */
+    /*
     public static File zipImages(List<File> imageFiles) throws IOException {
         File outputZip = new File("src/temp/images.zip"); // nome zip più esplicito
 
@@ -59,6 +60,6 @@ public class Utility {
             }
         }
         return outputZip;
-    }
+    }*/
 
 }
