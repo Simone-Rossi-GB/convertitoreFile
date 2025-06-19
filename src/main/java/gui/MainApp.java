@@ -15,6 +15,8 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        Log.addMessage("");
+        Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("File Converter Manager");
         this.primaryStage.setResizable(false); // Opzionale: impedisce il ridimensionamento
