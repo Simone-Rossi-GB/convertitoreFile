@@ -2,7 +2,6 @@ package Converters;
 
 import com.itextpdf.text.DocumentException;
 import converter.Log;
-import converter.Utility;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
 
@@ -85,7 +84,7 @@ public class ImageConverter implements Converter {
         }
 
         // Rimuove trasparenza se necessario
-        if (formatsWithAlpha.contains(originalExtension) || formatsWithAlpha.contains(targetFormat.toLowerCase())) {
+        if (formatsWithAlpha.contains(originalExtension) ^ formatsWithAlpha.contains(targetFormat.toLowerCase())) {
             image = removeAlphaChannel(image);
         }
 
