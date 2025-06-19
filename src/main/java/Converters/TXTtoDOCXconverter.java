@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.apache.poi.xwpf.usermodel.*;
 
 public class TXTtoDOCXconverter implements Converter {
-
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException {
         ArrayList<File> result = new ArrayList<>();
