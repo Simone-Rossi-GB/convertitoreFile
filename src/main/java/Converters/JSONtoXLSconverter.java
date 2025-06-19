@@ -14,19 +14,50 @@ public class JSONtoXLSconverter implements Converter {
 
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException, DocumentException {
-        return convertJSONtoXLS(srcFile);
+        File validJsonFile = ensureJSONArrayFormat(srcFile);
+        return convertJSONtoXLS(validJsonFile);
     }
 
     @Override
     public ArrayList<File> convert(File srcFile, String password) throws IOException, DocumentException {
-        // Password non usata per XLS, ma metodo richiesto dall'interfaccia
-        return convertJSONtoXLS(srcFile);
+        File validJsonFile = ensureJSONArrayFormat(srcFile);
+        return convertJSONtoXLS(validJsonFile);
     }
 
     @Override
     public ArrayList<File> convert(File srcFile, boolean opzioni) throws IOException, DocumentException {
-        // Opzioni non usate in questo esempio
-        return convertJSONtoXLS(srcFile);
+        File validJsonFile = ensureJSONArrayFormat(srcFile);
+        return convertJSONtoXLS(validJsonFile);
+    }
+
+    /**
+     * Controlla se il file JSON inizia e finisce con parentesi quadre.
+     * Se no, le aggiunge e restituisce un nuovo file temporaneo formattato correttamente.
+     */
+    private File ensureJSONArrayFormat(File jsonFile) throws IOException {
+        String content = new String(java.nio.file.Files.readAllBytes(jsonFile.toPath())).trim();
+
+        boolean startsWithBracket = content.startsWith("[");
+        boolean endsWithBracket = content.endsWith("]");
+
+        if (!startsWithBracket || !endsWithBracket) {
+            // Rende il contenuto un array se non lo è
+            content = "[" + content;
+            if (!endsWithBracket) {
+                content = content + "]";
+            }
+
+            // Scrive il contenuto corretto in un file temporaneo
+            File tempFile = File.createTempFile("fixed-json-", ".json");
+            try (FileWriter fw = new FileWriter(tempFile)) {
+                fw.write(content);
+            }
+
+            return tempFile;
+        }
+
+        // Il file è già corretto
+        return jsonFile;
     }
 
     private ArrayList<File> convertJSONtoXLS(File jsonFile) throws IOException {
@@ -36,24 +67,24 @@ public class JSONtoXLSconverter implements Converter {
             JSONTokener tokener = new JSONTokener(is);
             JSONArray jsonArray = new JSONArray(tokener);
 
-            Workbook workbook = new HSSFWorkbook(); // XLS format
+            Workbook workbook = new HSSFWorkbook(); // formato XLS
             Sheet sheet = workbook.createSheet("Data");
 
-            // Header
             if (jsonArray.length() > 0) {
                 JSONObject first = jsonArray.getJSONObject(0);
                 Row headerRow = sheet.createRow(0);
                 int cellIndex = 0;
+
                 for (String key : first.keySet()) {
                     Cell cell = headerRow.createCell(cellIndex++);
                     cell.setCellValue(key);
                 }
 
-                // Data rows
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     Row row = sheet.createRow(i + 1);
                     cellIndex = 0;
+
                     for (String key : first.keySet()) {
                         Cell cell = row.createCell(cellIndex++);
                         Object value = obj.opt(key);
@@ -64,7 +95,6 @@ public class JSONtoXLSconverter implements Converter {
                 }
             }
 
-            // Output file
             String outputPath = jsonFile.getParent() + File.separator + removeExtension(jsonFile.getName()) + ".xls";
             File outFile = new File(outputPath);
 
@@ -84,4 +114,3 @@ public class JSONtoXLSconverter implements Converter {
         return (index > 0) ? filename.substring(0, index) : filename;
     }
 }
-
