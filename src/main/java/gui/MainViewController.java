@@ -479,13 +479,13 @@ public class MainViewController {
                 try {
                     // L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
                     if (password != null) {
-                        if (mergeImages && targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
                         } else {
                             engine.conversione(srcExtension, targetFormat, srcFile, password);
                         }
                     } else {
-                        if (mergeImages && targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
                         } else {
                             if(formatiImmagini.contains(srcExtension)){
