@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class MainApp extends Application {
 
-    private Stage primaryStage;
+    private static Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) {
@@ -74,7 +74,7 @@ public class MainApp extends Application {
         System.exit(1); // Termina l'applicazione in caso di errore critico
     }
 
-    public Stage getPrimaryStage() {
+    public static Stage getPrimaryStage() {
         return primaryStage;
     }
 

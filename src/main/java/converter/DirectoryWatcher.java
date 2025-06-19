@@ -73,11 +73,6 @@ public class DirectoryWatcher implements Runnable {
         Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                if (dir == null) {
-                    Log.addMessage("ERRORE: directory da registrare nulla");
-                    throw new NullPointerException("L'oggetto dir non esiste");
-                }
-
                 WatchKey key = dir.register(watchService, ENTRY_CREATE);
                 watchKeyToPath.put(key, dir);
                 Log.addMessage("Registrata directory per il monitoraggio: " + dir.toString());
@@ -138,12 +133,8 @@ public class DirectoryWatcher implements Runnable {
                         }
                     } else {
                         File file = fullPath.toFile();
-                        if (file != null) {
-                            Log.addMessage("Avvio conversione automatica per: " + file.getAbsolutePath());
-                            executor.submit(() -> controller.launchDialogConversion(file));
-                        } else {
-                            Log.addMessage("ERRORE: file nullo da convertire");
-                        }
+                        Log.addMessage("Avvio conversione automatica per: " + file.getAbsolutePath());
+                        executor.submit(() -> controller.launchDialogConversion(file));
                     }
                 }
             }
@@ -159,7 +150,6 @@ public class DirectoryWatcher implements Runnable {
             }
         }
         executor.shutdown();
-        System.out.println("Executor interrotto");
         Log.addMessage("Executor interrotto");
     }
 

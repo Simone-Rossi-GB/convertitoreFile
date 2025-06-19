@@ -238,24 +238,6 @@ public class Engine {
     }
 
     /**
-     * Ritorna un file temporaneo identico a quello passato ma con un suffisso, in modo da evitare conflitti con altri file
-     * @param filePath Percorso del file da utilizzare
-     * @param suffix Suffisso da aggiungere al file
-     * @return File col nome cambiato
-     */
-    private static File giveBackNewFileWithNewName(String filePath, String suffix) {
-        if (filePath == null) throw new NullPointerException("L'oggetto filePath non esiste");
-        if (suffix == null) throw new NullPointerException("L'oggetto suffix non esiste");
-
-        File file = new File(filePath);
-        String name = file.getName();
-        int lastDot = name.lastIndexOf(".");
-
-        String newName = (lastDot == -1) ? name + suffix : name.substring(0, lastDot) + suffix + name.substring(lastDot);
-        return new File(file.getParent(), newName);
-    }
-
-    /**
      * Ritorna la configurazione ottenuta da config.json
      * @return Configurazione estratta dal file json
      * @throws NullPointerException Variabile config nulla
