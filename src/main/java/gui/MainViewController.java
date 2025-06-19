@@ -294,9 +294,6 @@ public class MainViewController {
             result.ifPresent(format -> {
                 Log.addMessage("Formato selezionato: " + format + " per il file " + srcFile.getName());
                 try {
-                    if(formatiImmagini.contains(srcExtension)){
-                        engine.conversione(srcExtension, format, srcFile, format);
-                    }
                     if ("pdf".equals(srcExtension)) {
                         if ("jpg".equals(format)) {
                             unisci.set(launchDialogUnisci());
@@ -317,13 +314,18 @@ public class MainViewController {
                                 engine.conversione(srcExtension, format, srcFile);
                         }
                     } else {
-                        engine.conversione(srcExtension, format, srcFile);
+                        if(formatiImmagini.contains(srcExtension)){
+                            engine.conversione(srcExtension, format, srcFile, format);
+                        }else {
+                            engine.conversione(srcExtension, format, srcFile);
+                        }
                     }
                     Log.addMessage("Conversione completata: " + srcFile.getName() + " → " + format);
                     fileConvertiti++;
                     stampaRisultati();
                     launchAlertSuccess(srcFile);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Log.addMessage("ERRORE: Impossibile convertire " + srcFile.getName() + ": " + e.getMessage());
                     launchAlertError(e.getMessage());
                     fileScartati++;

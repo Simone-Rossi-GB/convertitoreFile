@@ -23,6 +23,8 @@ public class ImageConverter implements Converter {
      */
     @Override
     public ArrayList<File> convert(File imgFile, String estensione) throws IOException, DocumentException {
+        System.out.println(imgFile);
+        System.out.println(estensione);
         ArrayList<File> files = new ArrayList<>();
         if (estensione != null) {
             try {

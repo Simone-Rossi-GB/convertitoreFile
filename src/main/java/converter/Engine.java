@@ -169,10 +169,12 @@ public class Engine {
 
             //Files.deleteIfExists(srcFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
-
+            System.out.println(outFiles.size());
             for (File f : outFiles) {
+                System.out.println("si");
                 //Sposto il file convertito nella directory corretta
                 spostaFile(config.getSuccessOutputDir(), f);
+                System.out.println("File spostato");
             }
             Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
 
