@@ -87,7 +87,9 @@ public class MainViewController {
                 launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
-        AtomicReference<Stage> stage = new AtomicReference<>();
+        Stage stage = MainApp.getPrimaryStage();
+        exitBtn.setOnAction(e -> exitApplication());
+        stage.setOnCloseRequest(e -> interruptWatcher());
         configBtn.setOnAction(e -> openConfigurationWindow());
         caricaFileBtn.setOnAction(e -> openFolder(monitoredFolderPath));
         fileConvertitiBtn.setOnAction(e -> openFolder(convertedFolderPath));
@@ -113,7 +115,6 @@ public class MainViewController {
             Log.addMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
-            watcherThread.setDaemon(true);
             watcherThread.start();
             resetCounters();
         }
@@ -243,7 +244,7 @@ public class MainViewController {
         });
     }
 
-    private void exitApplication() {
+    public void interruptWatcher(){
         addLogMessage("Chiusura applicazione...");
         watcherThread.interrupt();
         try {
@@ -254,7 +255,10 @@ public class MainViewController {
             launchAlertError(msg);
             Log.addMessage(msg);
         }
+    }
 
+    private void exitApplication() {
+        interruptWatcher();
         Platform.exit();
     }
 
