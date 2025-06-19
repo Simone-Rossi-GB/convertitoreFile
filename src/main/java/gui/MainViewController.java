@@ -189,6 +189,28 @@ public class MainViewController {
         });
     }
 
+    public void launchAlertError(String message) {
+        Log.addMessage("ERRORE: " + message);
+        showAlert("Errore", message, Alert.AlertType.ERROR);
+    }
+
+    public void launchAlertSuccess(File file) {
+        String message = "Conversione di " + file.getName() + " riuscita";
+        Log.addMessage(message);
+        showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
+    }
+
+
+    private void showAlert(String title, String message, Alert.AlertType tipo) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(tipo);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+
     /**
      * Aggiorna l'indicatore visivo dello stato di monitoraggio.
      */
@@ -489,13 +511,6 @@ public class MainViewController {
         }
     }
 
-    public static String getExtension(File file) {
-        if (file == null) return "";
-        String name = file.getName();
-        int lastDot = name.lastIndexOf('.');
-        if (lastDot == -1 || lastDot == name.length() - 1) return "";
-        return name.substring(lastDot + 1).toLowerCase();
-    }
 
     public void launchDialogConversion(File srcFile) {
         List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff","jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
