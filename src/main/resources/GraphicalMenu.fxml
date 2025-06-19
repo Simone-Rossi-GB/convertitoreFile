@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="990.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="990.0" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
     <children>
         <VBox prefHeight="770.0" prefWidth="990.0" spacing="11.0">
             <children>
