@@ -156,18 +156,20 @@ public class Engine {
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         List<File> outFiles;
+        File tempFile = new File("src/temp/" + srcFile.getName());
+        Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
             if (password != null && union != null) {
-                outFiles = converter.convert(srcFile, password, union);
+                outFiles = converter.convert(tempFile, password, union);
             } else if (password != null) {
-                outFiles = converter.convert(srcFile, password);
+                outFiles = converter.convert(tempFile, password);
             } else if (union != null) {
-                outFiles = converter.convert(srcFile, union);
+                outFiles = converter.convert(tempFile, union);
             } else {
-                outFiles = converter.convert(srcFile);
+                outFiles = converter.convert(tempFile);
             }
 
-            //Files.deleteIfExists(srcFile.toPath());
+            Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
 
             for (File f : outFiles) {

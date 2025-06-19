@@ -91,6 +91,17 @@ public class AbstractPDFConverter implements Converter{
     }
 
     /**
+     * Metodo per controllare che i parametri non siano null
+     * @param pdfFile File di partenza
+     * @param pdfDocument Documento pdf caricato
+     * @throws IllegalArgumentException Parametro null
+     */
+    protected void validateInputs(File pdfFile, PDDocument pdfDocument) throws IllegalArgumentException {
+        if (pdfFile == null) throw new IllegalArgumentException("L'oggetto pdfFile non esiste");
+        if (pdfDocument == null) throw new IllegalArgumentException("L'oggetto pdfDocument non esiste");
+    }
+
+    /**
      * Metodo conversione da pdf a doc/docx da implementare nelle sottoclassi
      * @param pdfFile File di partenza
      * @param pdfDocument Documento pdf caricato

@@ -20,10 +20,15 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      * @return BufferedImage con tutte le pagine del pdf
      */
     private BufferedImage mergeImagesVertically(ArrayList<BufferedImage> images) {
+        if (images == null || images.isEmpty()) {
+            throw new IllegalArgumentException("L'oggetto images non esiste o è vuoto");
+        }
+
         int width = 0;
         int totalHeight = 0;
 
         for (BufferedImage img : images) {
+            if (img == null) continue; // ignora eventuali immagini null
             width = Math.max(width, img.getWidth());
             totalHeight += img.getHeight();
         }
@@ -33,6 +38,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
 
         int y = 0;
         for (BufferedImage img : images) {
+            if (img == null) continue; // ignora eventuali immagini null
             g.drawImage(img, 0, y, null);
             y += img.getHeight();
         }
@@ -51,6 +57,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      */
     @Override
     public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
+        validateInputs(pdfFile, pdfDocument);
         try{
         PDFRenderer renderer = new PDFRenderer(pdfDocument);
         ArrayList<BufferedImage> images = new ArrayList<>();
@@ -77,12 +84,16 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         }
 
         pdfDocument.close();
-        System.out.println("Conversion completed!");
         return outputFiles;
         }catch (Exception e){
             throw new Exception("Errore durante il processo di conversione: " + e.getMessage());
+        } finally {
+            if (pdfDocument != null) {
+                pdfDocument.close();
+            }
         }
     }
+
 }
 
 
