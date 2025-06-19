@@ -1,5 +1,6 @@
 package gui;
 
+import converter.Log;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,6 +20,8 @@ public class MainApp extends Application {
         this.primaryStage.setResizable(false); // Opzionale: impedisce il ridimensionamento
 
         loadMainView();
+
+
     }
 
     private void loadMainView() {
@@ -38,6 +41,11 @@ public class MainApp extends Application {
             Scene scene = new Scene(mainView, 990, 770);
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            primaryStage.setOnCloseRequest(event -> {
+                Log.addMessage("Applicazione chiusa.");
+                Log.close();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();

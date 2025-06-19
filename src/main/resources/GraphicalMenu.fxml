@@ -59,7 +59,7 @@
                                         <!-- Cartella Monitorata -->
                                         <VBox alignment="CENTER" spacing="8.8">
                                             <children>
-                                                <Button fx:id="caricaFileBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loadFilesFolder" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Carica File">
+                                                <Button fx:id="caricaFileBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"  prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Carica File">
                                                     <VBox.margin>
                                                         <Insets />
                                                     </VBox.margin>
@@ -72,13 +72,13 @@
                                             <children>
                                                 <VBox alignment="CENTER" spacing="8.8">
                                                     <children>
-                                                        <Button fx:id="fileConvertitiBtn" mnemonicParsing="false" onAction="#openConvertedFolder" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 13px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="File Convertiti" />
+                                                        <Button fx:id="fileConvertitiBtn" mnemonicParsing="false"  prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 13px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="File Convertiti" />
                                                     </children>
                                                 </VBox>
 
                                                 <VBox alignment="CENTER" spacing="8.8">
                                                     <children>
-                                                        <Button fx:id="conversioniFalliteBtn" mnemonicParsing="false" onAction="#openFailedConvertionsFolder" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 13px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Conversioni Fallite" />
+                                                        <Button fx:id="conversioniFalliteBtn" mnemonicParsing="false"  prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 13px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Conversioni Fallite" />
                                                     </children>
                                                 </VBox>
                                             </children>
@@ -103,7 +103,7 @@
                                                         <Font name="System Bold" size="13.2" />
                                                     </font>
                                                 </Button>
-                                                <Button fx:id="configBtn" mnemonicParsing="false" onAction="#openConfig" prefHeight="44.0" prefWidth="110.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Config">
+                                                <Button fx:id="configBtn" mnemonicParsing="false"  prefHeight="44.0" prefWidth="110.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Config">
                                                     <font>
                                                         <Font name="System Bold" size="13.2" />
                                                     </font>

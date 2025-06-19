@@ -8,6 +8,8 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
+import converter.Log;
+import converter.Utility;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.Chunk;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
@@ -36,8 +38,9 @@ public class MSGtoPDFconverter implements Converter{
      */
     @Override
     public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
-
+        Log.addMessage("Inizio conversione msg: "+ Utility.estraiNomePiuEstensioneFile(msgFile) +" -> .pdf");
         if (msgFile == null || !msgFile.exists()) {
+            Log.addMessage("ERRORE: File MSG non trovato: " + msgFile);
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
 
@@ -79,11 +82,13 @@ public class MSGtoPDFconverter implements Converter{
         }
 
         if (!outputPdfFile.exists()) {
+            Log.addMessage("ERRORE: creazione del file PDF fallita: " + outputPdfFile.getAbsolutePath());
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
         ArrayList<File> result = new ArrayList<>();
         result.add(outputPdfFile);
+        Log.addMessage("Creazione file .pdf completata: "+outputPdfFile.getName());
         return result;
     }
 
@@ -222,12 +227,14 @@ public class MSGtoPDFconverter implements Converter{
                         }
                     } catch (Exception e) {
                         // Ignora errori sui singoli allegati
+                        Log.addMessage("WARNING: Errore nel leggere il nome dell'allegato: " + e.getMessage());
                         System.err.println("Warning: Errore nel leggere il nome dell'allegato: " + e.getMessage());
                     }
                 }
             }
         } catch (Exception e) {
             // Ignora errori nella lettura degli allegati
+            Log.addMessage("WARNING: Errore nel leggere gli allegati: " + e.getMessage());
             System.err.println("Warning: Errore nel leggere gli allegati: " + e.getMessage());
         }
     }

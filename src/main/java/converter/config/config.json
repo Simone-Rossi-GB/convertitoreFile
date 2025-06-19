@@ -7,7 +7,7 @@
     "pdf": {
       "doc": "Converters.PDFtoDOCconverter",
       "docx": "Converters.PDFtoDOCXconverter",
-      "jpg": "Converters.PDFtoJPGconvetrter"
+      "jpg": "Converters.PDFtoJPGconverter"
     },
     "xls": {
       "json": "Converters.XLStoJSONconverter"

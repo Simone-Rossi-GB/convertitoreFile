@@ -1,5 +1,7 @@
 package Converters;
 
+import converter.Log;
+import converter.Utility;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
@@ -10,47 +12,65 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-public class ZIPtoTARGZconverter implements Converter{
-    private static void copy(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[4096];
-        int n;
-        while ((n = in.read(buffer)) != -1) {
-            out.write(buffer, 0, n);
-        }
-    }
+/**
+ * Questa classe si occupa della conversione di file .zip in .tar.gz
+ */
+public class ZIPtoTARGZconverter implements Converter {
 
+    /**
+     * Converte un file ZIP in un archivio TAR.GZ
+     * @param zipFile Il file ZIP da convertire
+     * @return Lista con il file .tar.gz risultante
+     * @throws IOException In caso di errori durante la lettura/scrittura
+     */
     @Override
     public ArrayList<File> convert(File zipFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
+
+        Log.addMessage("Inizio conversione zip: " + Utility.estraiNomePiuEstensioneFile(zipFile) + " -> .tar.gz");
+
+        // Preparazione percorso di output
         String directoryPath = "src/temp/";
         String zipName = zipFile.getName();
-        int lastDot = zipName.lastIndexOf('.');
-        String baseName = (lastDot == -1) ? zipName : zipName.substring(0, lastDot);
+        String baseName = zipName.contains(".") ? zipName.substring(0, zipName.lastIndexOf('.')) : zipName;
         File tarGzOut = new File(directoryPath, baseName + ".tar.gz");
 
+        // Apertura delle risorse con try-with-resources
         try (ZipFile zip = new ZipFile(zipFile);
              FileOutputStream fos = new FileOutputStream(tarGzOut);
              GzipCompressorOutputStream gcos = new GzipCompressorOutputStream(fos);
              TarArchiveOutputStream tarOut = new TarArchiveOutputStream(gcos)) {
 
             tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+
             Enumeration<ZipArchiveEntry> entries = zip.getEntries();
 
             while (entries.hasMoreElements()) {
                 ZipArchiveEntry entry = entries.nextElement();
+
+                // Solo i file, non le directory
                 if (!entry.isDirectory()) {
-                    InputStream input = zip.getInputStream(entry);
-                    TarArchiveEntry tarEntry = new TarArchiveEntry(entry.getName());
-                    tarEntry.setSize(entry.getSize());
-                    tarOut.putArchiveEntry(tarEntry);
-                    copy(input, tarOut);
-                    tarOut.closeArchiveEntry();
-                    input.close();
+                    try (InputStream entryInputStream = zip.getInputStream(entry)) {
+                        TarArchiveEntry tarEntry = new TarArchiveEntry(entry.getName());
+                        tarEntry.setSize(entry.getSize());
+                        tarOut.putArchiveEntry(tarEntry);
+                        Utility.copy(entryInputStream, tarOut);
+                        tarOut.closeArchiveEntry();
+                    } catch (IOException e) {
+                        Log.addMessage("ERRORE: Impossibile copiare l'entry " + entry.getName() + " nel tar.");
+                        throw e;
+                    }
                 }
             }
+
+            Log.addMessage("Creazione file .tar.gz completata: " + tarGzOut.getName());
+            outputFiles.add(tarGzOut);
+
+        } catch (IOException e) {
+            Log.addMessage("ERRORE: Problema durante la conversione del file ZIP.");
+            throw e;
         }
 
-        outputFiles.add(tarGzOut);
         return outputFiles;
     }
 }
