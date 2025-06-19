@@ -83,7 +83,7 @@ public class MainViewController {
 
     private Engine engine;
     private Thread watcherThread;
-    private boolean monitorAtStart;
+
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -279,7 +279,7 @@ public class MainViewController {
             Stage configStage = new Stage();
             configStage.setTitle("Editor Configurazione");
             configStage.initModality(Modality.WINDOW_MODAL);
-            configStage.initOwner(getPrimaryStage());
+            configStage.initOwner(MainApp.getPrimaryStage());
             configStage.setResizable(true);
             configStage.setMinWidth(700);
             configStage.setMinHeight(600);
@@ -340,26 +340,6 @@ public class MainViewController {
         }
     }
 
-    public void loadConfiguration() {
-        try {
-            monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
-            convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
-            failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
-            monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
-
-            addLogMessage("Configurazione caricata da config.json");
-            addLogMessage("Cartella monitorata: " + monitoredFolderPath);
-            addLogMessage("Cartella file convertiti: " + convertedFolderPath);
-            addLogMessage("Cartella file falliti: " + failedFolderPath);
-
-
-
-        } catch (Exception e) {
-            addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
-            showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
     public void addLogMessage(String message) {
         Platform.runLater(() -> {
@@ -559,6 +539,49 @@ public class MainViewController {
             result.ifPresent(chosenFormat -> {
                 new Thread(() -> performConversionWithFallback(srcFile, chosenFormat)).start();
             });
+        });
+    }
+
+    public boolean launchDialogUnisci() {
+        AtomicBoolean unisci = new AtomicBoolean(false);
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Unisci PDF");
+        alert.setHeaderText(null);
+        alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
+
+        ButtonType siBtn = new ButtonType("Si");
+        ButtonType noBtn = new ButtonType("No");
+        alert.getButtonTypes().setAll(siBtn, noBtn);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == siBtn) {
+            unisci.set(true);
+        }
+        Log.addMessage("Scelta unione JPG: " + unisci.get());
+
+        return unisci.get();
+    }
+
+
+    public String launchDialogPdf() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Password PDF");
+        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
+        dialog.setContentText("Password:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(oculta)")));
+        return result.orElse(null);
+    }
+
+
+    public void stampaRisultati() {
+        Log.addMessage("Stato: ricevuti=" + fileRicevuti + ", convertiti=" + fileConvertiti + ", scartati=" + fileScartati);
+        Platform.runLater(() -> {
+            detectedFilesCounter.setText(String.valueOf(fileRicevuti));
+            successfulConversionsCounter.setText(String.valueOf(fileConvertiti));
+            failedConversionsCounter.setText(String.valueOf(fileScartati));
         });
     }
 
