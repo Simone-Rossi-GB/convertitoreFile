@@ -13,11 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Collections;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/converter")
@@ -25,6 +21,7 @@ import java.util.Collections;
 public class ConverterWebServiceController {
 
     private final EngineWebService engineWebService = new EngineWebService();
+    List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
@@ -85,7 +82,11 @@ public class ConverterWebServiceController {
                 if (mergeImages && targetFormat.equals("jpg")) {
                     convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, mergeImages, outputDirectoryForEngine);
                 } else {
-                    convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, outputDirectoryForEngine);
+                    if (formatiImmagini.contains(extension)) {
+                        convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, targetFormat);
+                    } else {
+                        convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, outputDirectoryForEngine);
+                    }
                 }
             }
 

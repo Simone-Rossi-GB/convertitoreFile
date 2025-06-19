@@ -389,6 +389,7 @@ public class MainViewController {
     }
 
     private void performConversionWithFallback(File srcFile, String targetFormat) {
+        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
         String srcExtension = getExtension(srcFile);
         String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
@@ -463,7 +464,11 @@ public class MainViewController {
                         if (mergeImages && targetFormat.equals("jpg")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
                         } else {
-                            engine.conversione(srcExtension, targetFormat, srcFile);
+                            if(formatiImmagini.contains(srcExtension)){
+                                engine.conversione(srcExtension, targetFormat, srcFile, targetFormat);
+                            }else {
+                                engine.conversione(srcExtension, targetFormat, srcFile);
+                            }
                         }
                     }
 
