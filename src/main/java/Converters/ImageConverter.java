@@ -43,7 +43,7 @@ public class ImageConverter implements Converter {
      * Metodo principale per la conversione dell'immagine nel formato desiderato
      */
     public static File imageConversion(File imgFile, String targetFormat) throws IOException {
-        Log.addMessage("Inizio conversione immagine: " +
+        Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
 
         List<String> formatsWithAlpha = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
@@ -89,14 +89,16 @@ public class ImageConverter implements Converter {
         }
 
         outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
+        Log.addMessage("[IMG] File temporaneo creato correttamente");
 
         if (targetFormat.equalsIgnoreCase("ico")) {
             ICOEncoder.write(image, outFile);
         } else {
             ImageIO.write(image, targetFormat, outFile);
+            Log.addMessage("[IMG] File in uscita scritto correttamente");
         }
 
-        Log.addMessage("Creazione file ." + targetFormat + " completata: " + outFile.getName());
+        Log.addMessage("[IMG] Creazione file ." + targetFormat + " completata: " + outFile.getName());
         return outFile;
     }
 
@@ -122,7 +124,7 @@ public class ImageConverter implements Converter {
      * Rimuove il canale alpha da un'immagine, riempiendo con sfondo bianco
      */
     private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
-        Log.addMessage("Rimozione canale alpha da immagine");
+        Log.addMessage("[IMG] Rimozione canale alpha da immagine");
 
         BufferedImage copy = new BufferedImage(
                 inImage.getWidth(), inImage.getHeight(),

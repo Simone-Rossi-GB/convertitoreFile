@@ -59,8 +59,8 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
     @Override
     public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
         validateInputs(pdfFile, pdfDocument);
-        Log.addMessage("[PDFtoJPG] Conversione iniziata con parametri\n" +
-                "| pdfFile = " + pdfFile.getPath()+"\n" +
+        Log.addMessage("[PDFtoJPG] Conversione iniziata con parametri:\n" +
+                "| pdfFile.getPath() = " + pdfFile.getPath()+"\n" +
                 "| union = " + union);
         try{
             PDFRenderer renderer = new PDFRenderer(pdfDocument);
@@ -87,6 +87,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             }
             pdfDocument.close();
             if (outputFiles.size() > 1){
+                Log.addMessage("Compressione delle immagini generate in output");
                 File zippedImages = Utility.zipImages(outputFiles);
                 outputFiles.clear();
                 outputFiles.add(zippedImages);

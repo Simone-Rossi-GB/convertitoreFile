@@ -44,7 +44,7 @@
         <json.version>20180813</json.version>
         <log4j.version>2.17.2</log4j.version>
         <image4j.version>0.7.2</image4j.version>
-        <twelvemonkeys.version>3.7.0</twelvemonkeys.version>
+        <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
         <webp.imageio.version>0.1.6</webp.imageio.version>
     </properties>
 
