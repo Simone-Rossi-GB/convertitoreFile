@@ -124,7 +124,7 @@ public class ImageConverter implements Converter {
      * Rimuove il canale alpha da un'immagine, riempiendo con sfondo bianco
      */
     private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
-        Log.addMessage("Rimozione canale alpha da immagine");
+        Log.addMessage("[IMG] Rimozione canale alpha da immagine");
 
         BufferedImage copy = new BufferedImage(
                 inImage.getWidth(), inImage.getHeight(),
