@@ -23,10 +23,11 @@ public class ImageConverter implements Converter {
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
     @Override
-    public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
+    public ArrayList<File> convert(File imgFile, String destExt) throws IOException, DocumentException {
         ArrayList<File> files = new ArrayList<>();
 
         String extractedFormat = Utility.estraiEstensioneInterna(imgFile);
+
 
         if (extractedFormat != null) {
             try {

@@ -109,11 +109,11 @@ public class Engine {
      * @param srcExt Estensione file iniziale
      * @param outExt Estensione file finale
      * @param srcFile File iniziale
-     * @param password Password per file criptati
+     * @param extraParam parametro Extra
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile, String password) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, password, null);
+    public void conversione(String srcExt, String outExt, File srcFile, String extraParam) throws Exception {
+        executeConversion(srcExt, outExt, srcFile, extraParam, null);
     }
 
     /**
@@ -146,21 +146,21 @@ public class Engine {
      * @param srcExt Estensione file iniziale
      * @param outExt Estensione file finale
      * @param srcFile File iniziale
-     * @param password Password per file criptati
+     * @param parameter Parametro extra
      * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
      * @throws Exception Errore nella rinomina del file
      */
-    private void executeConversion(String srcExt, String outExt, File srcFile, String password, Boolean union) throws Exception {
+    private void executeConversion(String srcExt, String outExt, File srcFile, String parameter, Boolean union) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
 
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         List<File> outFiles;
         try {
-            if (password != null && union != null) {
-                outFiles = converter.convert(srcFile, password, union);
-            } else if (password != null) {
-                outFiles = converter.convert(srcFile, password);
+            if (parameter != null && union != null) {
+                outFiles = converter.convert(srcFile, parameter, union);
+            } else if (parameter != null) {
+                outFiles = converter.convert(srcFile, parameter);
             } else if (union != null) {
                 outFiles = converter.convert(srcFile, union);
             } else {

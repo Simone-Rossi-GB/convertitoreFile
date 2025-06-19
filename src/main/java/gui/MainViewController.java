@@ -292,6 +292,7 @@ public class MainViewController {
             result.ifPresent(format -> {
                 Log.addMessage("Formato selezionato: " + format + " per il file " + srcFile.getName());
                 try {
+
                     if ("pdf".equals(srcExtension)) {
                         if ("jpg".equals(format)) {
                             unisci.set(launchDialogUnisci());
