@@ -379,12 +379,10 @@ public class EngineWebService {
             Log.addMessage("WebService: File convertito trovato: " + convertedFile.getAbsolutePath());
 
             // Rimuove il suffisso dal nome se presente
-            String cleanName = convertedFile.getName().replaceAll("-\\$\\$.*?\\$\\$-", "");
-            File finalOutputFile = new File(te, cleanName);
 
             // Sposta il file convertito nella directory di output specificata
-            Files.move(convertedFile.toPath(), finalOutputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            Log.addMessage("WebService: File convertito spostato in: " + finalOutputFile.getAbsolutePath());
+            Files.move(convertedFile.toPath(), convertedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Log.addMessage("WebService: File convertito spostato in: " + convertedFile.getAbsolutePath());
 
             // Pulizia: elimina eventuali altri file di output
             for (int i = 1; i < outFiles.size(); i++) {
@@ -395,8 +393,8 @@ public class EngineWebService {
                 }
             }
 
-            Log.addMessage("WebService: Conversione completata con successo: " + srcFile.getName() + " -> " + finalOutputFile.getName());
-            return finalOutputFile;
+            Log.addMessage("WebService: Conversione completata con successo: " + srcFile.getName() + " -> " + convertedFile.getName());
+            return convertedFile;
 
         } catch (Exception e) {
             Log.addMessage("ERRORE WebService: Errore durante la conversione del file " + srcFile.getName() + ": " + e.getMessage());
