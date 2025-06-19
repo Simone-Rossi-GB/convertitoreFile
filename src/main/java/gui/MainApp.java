@@ -1,5 +1,6 @@
 package gui;
 
+import converter.Log;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,15 +11,19 @@ import java.io.IOException;
 
 public class MainApp extends Application {
 
-    private Stage primaryStage;
+    private static Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) {
+        Log.addMessage("");
+        Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("File Converter Manager");
         this.primaryStage.setResizable(false); // Opzionale: impedisce il ridimensionamento
 
         loadMainView();
+
+
     }
 
     private void loadMainView() {
@@ -38,6 +43,11 @@ public class MainApp extends Application {
             Scene scene = new Scene(mainView, 990, 770);
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            primaryStage.setOnCloseRequest(event -> {
+                Log.addMessage("Applicazione chiusa.");
+                Log.close();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,7 +74,7 @@ public class MainApp extends Application {
         System.exit(1); // Termina l'applicazione in caso di errore critico
     }
 
-    public Stage getPrimaryStage() {
+    public static Stage getPrimaryStage() {
         return primaryStage;
     }
 

@@ -4,26 +4,99 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class PDFtoJPGconverter implements Converter{
-    private static final int DPI = 300; // DPI of rendered image
-    @Override
-    public ArrayList<File> convert(File inputFile) throws IOException {
-        PDDocument document = PDDocument.load(inputFile);
-        PDFRenderer renderer = new PDFRenderer(document);
-        ArrayList<File> outputFiles = new ArrayList<>(document.getNumberOfPages());
-        for (int i = 0; i<document.getNumberOfPages(); i++){
-            BufferedImage image = renderer.renderImageWithDPI(i, DPI);
-            File tempFileStore = new File("output_" + (i + 1) + ".jpg");
-            ImageIO.write(image, "jpg", tempFileStore);
-            outputFiles.add(tempFileStore);
+public class PDFtoJPGconverter extends AbstractPDFConverter {
+    private static final int DPI = 300; // DPI dell'immagine renderizzata
+
+    /**
+     * Metodo per unire le pagine del pdf una sotto l'altra in un'unica immagine
+     * @param images Immagini relative alle singole pagine del pdf
+     * @return BufferedImage con tutte le pagine del pdf
+     */
+    private BufferedImage mergeImagesVertically(ArrayList<BufferedImage> images) {
+        if (images == null || images.isEmpty()) {
+            throw new IllegalArgumentException("L'oggetto images non esiste o è vuoto");
         }
-        document.close();
-        System.out.println("Conversion completed!");
-        return outputFiles;
+
+        int width = 0;
+        int totalHeight = 0;
+
+        for (BufferedImage img : images) {
+            if (img == null) continue; // ignora eventuali immagini null
+            width = Math.max(width, img.getWidth());
+            totalHeight += img.getHeight();
+        }
+
+        BufferedImage combined = new BufferedImage(width, totalHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics g = combined.getGraphics();
+
+        int y = 0;
+        for (BufferedImage img : images) {
+            if (img == null) continue; // ignora eventuali immagini null
+            g.drawImage(img, 0, y, null);
+            y += img.getHeight();
+        }
+
+        g.dispose();
+        return combined;
     }
+
+    /**
+     * Conversione pdf -> jpg
+     * @param pdfFile File di partenza
+     * @param pdfDocument Documento pdf caricato
+     * @param union Boolean che indica se unire o no le pagine in un'unica immagine
+     * @return ArrayList di file convertiti
+     * @throws Exception Errore durante il processo di conversione
+     */
+    @Override
+    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
+        validateInputs(pdfFile, pdfDocument);
+        try{
+        PDFRenderer renderer = new PDFRenderer(pdfDocument);
+        ArrayList<BufferedImage> images = new ArrayList<>();
+        ArrayList<File> outputFiles = new ArrayList<>();
+
+        String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", "")); // senza estensione
+            System.out.println();
+        for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
+            BufferedImage image = renderer.renderImageWithDPI(i, DPI);
+            images.add(image);
+
+            if (!union) {
+                File tempFile = new File(baseName + "_page_" + (i + 1) + ".jpg");
+                ImageIO.write(image, "jpg", tempFile);
+                outputFiles.add(tempFile);
+            }
+        }
+
+        if (union) {
+            BufferedImage mergedImage = mergeImagesVertically(images);
+            File mergedFile = new File(baseName + ".jpg");  // usa il nome del PDF
+            ImageIO.write(mergedImage, "jpg", mergedFile);
+            outputFiles.add(mergedFile);
+        }
+
+        pdfDocument.close();
+        return outputFiles;
+        }catch (Exception e){
+            throw new Exception("Errore durante il processo di conversione: " + e.getMessage());
+        } finally {
+            if (pdfDocument != null) {
+                pdfDocument.close();
+            }
+        }
+    }
+
 }
+
+
+
+
+

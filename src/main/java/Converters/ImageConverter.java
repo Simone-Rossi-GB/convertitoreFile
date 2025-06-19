@@ -1,69 +1,139 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
+import converter.Log;
+import net.ifok.image.image4j.codec.ico.ICODecoder;
+import net.ifok.image.image4j.codec.ico.ICOEncoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 import java.util.List;
 
+/**
+ * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
+ */
 public class ImageConverter implements Converter {
 
+    /**
+     * Converte un'immagine nel formato desiderato, dedotto dal nome del file
+     */
     @Override
-    public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
+    public ArrayList<File> convert(File imgFile, String estensione) throws IOException, DocumentException {
         ArrayList<File> files = new ArrayList<>();
-        String imgName = imgFile.getName();
-        Pattern pattern = Pattern.compile("\\[\\[(.*?)\\]\\]");
-        Matcher matcher = pattern.matcher(imgName);
-
-        if (matcher.find()) {
-            String extracted = matcher.group(1);
-            File file = imageConversion(imgFile, extracted);
-            files.add(file);
+        if (estensione != null) {
+            try {
+                File result = imageConversion(imgFile, estensione);
+                files.add(result);
+            } catch (IOException e) {
+                Log.addMessage("ERRORE: conversione immagine fallita per " + imgFile.getName());
+                throw e;
+            }
         } else {
-            System.out.println("No match found in file name: " + imgName);
+            Log.addMessage("ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
         }
 
         return files;
     }
 
-    public static File imageConversion(File imgFile, String extracted) throws IOException {
-        List<String> estensioniTrasparenza = Arrays.asList("png", "tiff", "gif", "webp");
-        BufferedImage image = ImageIO.read(imgFile);
+    /**
+     * Metodo principale per la conversione dell'immagine nel formato desiderato
+     */
+    public static File imageConversion(File imgFile, String targetFormat) throws IOException {
+        Log.addMessage("Inizio conversione immagine: " +
+                imgFile.getName() + " -> ." + targetFormat);
 
-        if (image == null) {
-            throw new IOException("Immagine non valida o non supportata: " + imgFile.getName());
+        List<String> formatsWithAlpha = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
+        List<String> formatsRequiringIntermediate = Arrays.asList("webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm");
+
+        String originalExtension = getExtension(imgFile);
+        File outFile;
+
+        BufferedImage image;
+
+        if (originalExtension.equals("ico")) {
+            List<BufferedImage> images = ICODecoder.read(imgFile);
+            if (images.isEmpty()) {
+                Log.addMessage("ERRORE: nessuna immagine valida trovata nel file ICO.");
+                throw new IOException("File ICO non valido: " + imgFile.getName());
+            }
+
+            // Seleziona l'immagine con risoluzione più alta
+            BufferedImage largest = images.stream()
+                    .max(Comparator.comparingInt(img -> img.getWidth() * img.getHeight())).get();
+
+            if (formatsRequiringIntermediate.contains(targetFormat)) {
+                outFile = new File("src/temp", getBaseName(imgFile) + ".png");
+                ImageIO.write(largest, "png", outFile);
+            }
+
+            outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
+            ICOEncoder.write(largest, outFile);
+            Log.addMessage("Creazione file ." + targetFormat + " completata: " + outFile.getName());
+            return outFile;
+
+        } else {
+            image = ImageIO.read(imgFile);
+            if (image == null) {
+                Log.addMessage("ERRORE: lettura immagine fallita - formato non supportato o file corrotto.");
+                throw new IOException("Immagine non valida: " + imgFile.getName());
+            }
         }
 
-        File outFile = new File("src/temp", getName(imgFile) + "." + extracted);
-        int lastDotIndex = imgFile.getName().lastIndexOf('.');
-        String extension = imgFile.getName().substring(lastDotIndex + 1).toLowerCase();
-
-        if (!estensioniTrasparenza.contains(extension) || !estensioniTrasparenza.contains(extracted.toLowerCase())) {
-            image = alphaChannelRemover(image);
+        // Rimuove trasparenza se necessario
+        if (formatsWithAlpha.contains(originalExtension) ^ formatsWithAlpha.contains(targetFormat.toLowerCase())) {
+            image = removeAlphaChannel(image);
         }
-        ImageIO.write(image, extracted, outFile);
+
+        outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
+
+        if (targetFormat.equalsIgnoreCase("ico")) {
+            ICOEncoder.write(image, outFile);
+        } else {
+            ImageIO.write(image, targetFormat, outFile);
+        }
+
+        Log.addMessage("Creazione file ." + targetFormat + " completata: " + outFile.getName());
         return outFile;
     }
 
-    private static String getName(File inputFile) {
-        String temp = inputFile.getName();
-        return temp.split("\\.")[0];
+    /**
+     * Estrae il nome del file senza estensione
+     */
+    private static String getBaseName(File inputFile) {
+        String fileName = inputFile.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex > 0) ? fileName.substring(0, dotIndex) : fileName;
     }
 
-    private static BufferedImage alphaChannelRemover(BufferedImage inImage) {
-        int imageType = BufferedImage.TYPE_INT_RGB;
-        BufferedImage copy = new BufferedImage(inImage.getWidth(), inImage.getHeight(), imageType);
+    /**
+     * Estrae l'estensione del file in minuscolo
+     */
+    private static String getExtension(File inputFile) {
+        String fileName = inputFile.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex > 0) ? fileName.substring(dotIndex + 1).toLowerCase() : "";
+    }
+
+    /**
+     * Rimuove il canale alpha da un'immagine, riempiendo con sfondo bianco
+     */
+    private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
+        Log.addMessage("Rimozione canale alpha da immagine");
+
+        BufferedImage copy = new BufferedImage(
+                inImage.getWidth(), inImage.getHeight(),
+                BufferedImage.TYPE_INT_RGB
+        );
+
         Graphics2D g2d = copy.createGraphics();
         g2d.setComposite(AlphaComposite.SrcOver);
         g2d.drawImage(inImage, 0, 0, Color.WHITE, null);
         g2d.dispose();
+
         return copy;
     }
 }
