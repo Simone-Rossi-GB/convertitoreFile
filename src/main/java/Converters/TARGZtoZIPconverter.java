@@ -26,7 +26,7 @@ public class TARGZtoZIPconverter implements Converter {
     public ArrayList<File> convert(File tarGzFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
 
-        Log.addMessage("Inizio conversione tarGz: " + Utility.estraiNomePiuEstensioneFile(tarGzFile) + " -> .zip");
+        Log.addMessage("Inizio conversione tarGz: " + tarGzFile.getName() + " -> .zip");
 
         String directoryPath = "src/temp/";
         String name = tarGzFile.getName();

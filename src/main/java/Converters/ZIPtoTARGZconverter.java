@@ -27,7 +27,7 @@ public class ZIPtoTARGZconverter implements Converter {
     public ArrayList<File> convert(File zipFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
 
-        Log.addMessage("Inizio conversione zip: " + Utility.estraiNomePiuEstensioneFile(zipFile) + " -> .tar.gz");
+        Log.addMessage("Inizio conversione zip: " + zipFile.getName() + " -> .tar.gz");
 
         // Preparazione percorso di output
         String directoryPath = "src/temp/";

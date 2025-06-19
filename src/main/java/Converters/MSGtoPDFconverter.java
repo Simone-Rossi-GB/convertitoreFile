@@ -38,8 +38,8 @@ public class MSGtoPDFconverter implements Converter{
      */
     @Override
     public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
-        Log.addMessage("Inizio conversione msg: "+ Utility.estraiNomePiuEstensioneFile(msgFile) +" -> .pdf");
-        if (msgFile == null || !msgFile.exists()) {
+        Log.addMessage("Inizio conversione msg: "+ msgFile.getName() +" -> .pdf");
+        if (!msgFile.exists()) {
             Log.addMessage("ERRORE: File MSG non trovato: " + msgFile);
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }

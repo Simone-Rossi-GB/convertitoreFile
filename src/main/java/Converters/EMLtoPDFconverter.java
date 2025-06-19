@@ -159,8 +159,8 @@ public class EMLtoPDFconverter implements Converter {
 
     @Override
     public ArrayList<File> convert(File emlFile) throws IOException, DocumentException {
-        Log.addMessage("Inizio conversione eml: "+ Utility.estraiNomePiuEstensioneFile(emlFile) +" -> .pdf");
-        if (emlFile == null || !emlFile.exists()) {
+        Log.addMessage("Inizio conversione eml: "+ emlFile.getName() +" -> .pdf");
+        if (!emlFile.exists()) {
             Log.addMessage("ERRORE: File EML non trovato " + emlFile);
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }

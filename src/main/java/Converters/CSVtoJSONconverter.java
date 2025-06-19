@@ -19,7 +19,7 @@ public class CSVtoJSONconverter implements Converter {
      * Ogni riga del CSV diventa un oggetto JSON.
      */
     public ArrayList<File> convert(File srcFile) throws IOException {
-        Log.addMessage("Inizio conversione CSV: " + Utility.estraiNomePiuEstensioneFile(srcFile) + " → .json");
+        Log.addMessage("Inizio conversione CSV: " + srcFile.getName() + " → .json");
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {
             Log.addMessage("Errore: Il file CSV è vuoto → " + srcFile.getName());
@@ -69,7 +69,7 @@ public class CSVtoJSONconverter implements Converter {
             throw e;
         }
 
-        Log.addMessage("File JSON creato: " + Utility.estraiNomePiuEstensioneFile(output));
+        Log.addMessage("File JSON creato: " + output.getName());
         return new ArrayList<File>() {{
             add(output);
         }};

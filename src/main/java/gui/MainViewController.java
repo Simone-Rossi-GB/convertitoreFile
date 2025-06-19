@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -267,6 +268,7 @@ public class MainViewController {
     }
 
     public void launchDialogConversion(File srcFile) {
+        List<String> formatiImmagini = Arrays.asList("jpeg", "png", "bmp", "gif", "tiff", "jpg", "webp", "psd", "ico", "icns", "tga", "pnm", "pbm", "pgm", "ppm", "pam", "iff", "xwd");
         if (srcFile == null || engine == null) {
             Log.addMessage("ERRORE: File sorgente o Engine non valido.");
             launchAlertError("File sorgente o Engine non valido.");
@@ -320,13 +322,18 @@ public class MainViewController {
                                 engine.conversione(srcExtension, format, srcFile);
                         }
                     } else {
-                        engine.conversione(srcExtension, format, srcFile);
+                        if(formatiImmagini.contains(srcExtension)){
+                            engine.conversione(srcExtension, format, srcFile, format);
+                        }else {
+                            engine.conversione(srcExtension, format, srcFile);
+                        }
                     }
                     Log.addMessage("Conversione completata: " + srcFile.getName() + " → " + format);
                     fileConvertiti++;
                     stampaRisultati();
                     launchAlertSuccess(srcFile);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Log.addMessage("ERRORE: Impossibile convertire " + srcFile.getName() + ": " + e.getMessage());
                     launchAlertError(e.getMessage());
                     fileScartati++;
