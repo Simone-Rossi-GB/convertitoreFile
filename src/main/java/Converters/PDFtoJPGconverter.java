@@ -1,5 +1,6 @@
 package Converters;
 
+import converter.Utility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -59,32 +60,36 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
     public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
         validateInputs(pdfFile, pdfDocument);
         try{
-        PDFRenderer renderer = new PDFRenderer(pdfDocument);
-        ArrayList<BufferedImage> images = new ArrayList<>();
-        ArrayList<File> outputFiles = new ArrayList<>();
+            PDFRenderer renderer = new PDFRenderer(pdfDocument);
+            ArrayList<BufferedImage> images = new ArrayList<>();
+            ArrayList<File> outputFiles = new ArrayList<>();
 
-        String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", "")); // senza estensione
+            String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", "")); // senza estensione
             System.out.println();
-        for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
-            BufferedImage image = renderer.renderImageWithDPI(i, DPI);
-            images.add(image);
+            for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
+                BufferedImage image = renderer.renderImageWithDPI(i, DPI);
+                images.add(image);
 
-            if (!union) {
-                File tempFile = new File(baseName + "_page_" + (i + 1) + ".jpg");
-                ImageIO.write(image, "jpg", tempFile);
-                outputFiles.add(tempFile);
+                if (!union) {
+                    File tempFile = new File(baseName + "_page_" + (i + 1) + ".jpg");
+                    ImageIO.write(image, "jpg", tempFile);
+                    outputFiles.add(tempFile);
+                }
             }
-        }
 
-        if (union) {
-            BufferedImage mergedImage = mergeImagesVertically(images);
-            File mergedFile = new File(baseName + ".jpg");  // usa il nome del PDF
-            ImageIO.write(mergedImage, "jpg", mergedFile);
-            outputFiles.add(mergedFile);
-        }
-
-        pdfDocument.close();
-        return outputFiles;
+            if (union) {
+                BufferedImage mergedImage = mergeImagesVertically(images);
+                File mergedFile = new File(baseName + ".jpg");  // usa il nome del PDF
+                ImageIO.write(mergedImage, "jpg", mergedFile);
+                outputFiles.add(mergedFile);
+            }
+            pdfDocument.close();
+            if (outputFiles.size() > 1){
+                File zippedImages = Utility.zipImages(outputFiles);
+                outputFiles.clear();
+                outputFiles.add(zippedImages);
+            }
+            return outputFiles;
         }catch (Exception e){
             throw new Exception("Errore durante il processo di conversione: " + e.getMessage());
         } finally {
