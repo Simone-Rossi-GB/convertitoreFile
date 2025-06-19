@@ -5,7 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import java.io.File;
 import java.util.ArrayList;
 
-public class AbstractPDFConverter implements Converter{
+public abstract class AbstractPDFConverter implements Converter{
     /**
      * Conversione base
      * @param pdfFile File di partenza
@@ -21,7 +21,7 @@ public class AbstractPDFConverter implements Converter{
      * Conversione pdf -> immagine
      * @param pdfFile File di partenza
      * @param union Boolean per decidere se unire o no le pagine del pdf in un'unica immagine
-     * @retu@param union Boolean per decidere se unire o no le pagine del pdf in un'unica immaginern ArrayList di file convertiti
+     * @retur@param union Boolean per decidere se unire o no le pagine del pdf in un'unica immaginern ArrayList di file convertiti
      * @throws Exception Pdf null o errori nel caricamento del file
      */
     @Override

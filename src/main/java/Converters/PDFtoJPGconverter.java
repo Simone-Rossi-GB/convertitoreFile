@@ -1,5 +1,6 @@
 package Converters;
 
+import converter.Log;
 import converter.Utility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -8,7 +9,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -59,13 +59,15 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
     @Override
     public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
         validateInputs(pdfFile, pdfDocument);
+        Log.addMessage("[PDFtoJPG] Conversione iniziata con parametri\n" +
+                "| pdfFile = " + pdfFile.getPath()+"\n" +
+                "| union = " + union);
         try{
             PDFRenderer renderer = new PDFRenderer(pdfDocument);
             ArrayList<BufferedImage> images = new ArrayList<>();
             ArrayList<File> outputFiles = new ArrayList<>();
 
             String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", "")); // senza estensione
-            System.out.println();
             for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
                 BufferedImage image = renderer.renderImageWithDPI(i, DPI);
                 images.add(image);
