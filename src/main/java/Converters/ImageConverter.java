@@ -12,12 +12,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
  */
 public class ImageConverter implements Converter {
-
+    private static Logger logger = LogManager.getLogger(ImageConverter.class);
     /**
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
@@ -29,11 +31,11 @@ public class ImageConverter implements Converter {
                 File result = imageConversion(imgFile, estensione);
                 files.add(result);
             } catch (IOException e) {
-                Log.addMessage("ERRORE: conversione immagine fallita per " + imgFile.getName());
+                Log.addMessage("[IMG] ERRORE: conversione immagine fallita per " + imgFile.getName());
                 throw e;
             }
         } else {
-            Log.addMessage("ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
+            Log.addMessage("[IMG] ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
         }
 
         return files;
@@ -43,6 +45,7 @@ public class ImageConverter implements Converter {
      * Metodo principale per la conversione dell'immagine nel formato desiderato
      */
     public static File imageConversion(File imgFile, String targetFormat) throws IOException {
+        logger.info("[IMG] Inizio conversione immagine:\n| {} -> .{}", imgFile.getName(), targetFormat);
         Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
 
