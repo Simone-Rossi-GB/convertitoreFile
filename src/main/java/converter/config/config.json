@@ -1,7 +1,7 @@
 {
-  "successOutputDir": "src/output/success/",
-  "errorOutputDir": "src/output/error/",
-  "monitoredDir": "src/input/",
+  "successOutputDir": "C:\\Users\\Daniel\\Desktop\\es java\\convertitoreFile\\src\\output\\success",
+  "errorOutputDir": "C:\\Users\\Daniel\\Desktop\\es java\\convertitoreFile\\src\\output\\error",
+  "monitoredDir": "C:\\Users\\Daniel\\Desktop\\es java\\convertitoreFile\\src\\input",
   "monitorAtStart": true,
   "conversions": {
     "pdf": {
@@ -15,9 +15,13 @@
     "xlsx": {
       "json": "Converters.XLSXtoJSONconverter"
     },
+    "ods": {
+      "json": "Converters.ODStoJSONconverter"
+    },
     "json": {
       "xls": "Converters.JSONtoXLSconverter",
-      "xlsx": "Converters.JSONtoXLSXconverter"
+      "xlsx": "Converters.JSONtoXLSXconverter",
+      "ods": "Converters.JSONtoODSconverter"
     },
     "csv": {
       "json": "Converters.CSVtoJSONconverter"
