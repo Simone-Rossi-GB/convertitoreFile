@@ -1,8 +1,8 @@
 {
   "successOutputDir": "src/output/success/",
-  "errorOutputDir": "src/output/error/",
-  "monitoredDir": "src/input/",
-  "monitorAtStart": false,
+  "errorOutputDir": "/Users/simo/Documents/GitHub/convertitoreFile/src/output/success",
+  "monitoredDir": "/Users/simo/Documents/GitHub/convertitoreFile/src/input,",
+  "monitorAtStart": true,
   "conversions": {
     "pdf": {
       "doc": "Converters.PDFtoDOCconverter",
