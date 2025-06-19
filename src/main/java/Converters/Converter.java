@@ -20,4 +20,5 @@ public interface Converter {
     default ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception{
         return null;
     }
+
 }

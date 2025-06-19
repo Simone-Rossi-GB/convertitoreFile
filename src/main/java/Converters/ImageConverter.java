@@ -23,14 +23,11 @@ public class ImageConverter implements Converter {
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
     @Override
-    public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
+    public ArrayList<File> convert(File imgFile, String estensione) throws IOException, DocumentException {
         ArrayList<File> files = new ArrayList<>();
-
-        String extractedFormat = Utility.estraiEstensioneInterna(imgFile);
-
-        if (extractedFormat != null) {
+        if (estensione != null) {
             try {
-                File result = imageConversion(imgFile, extractedFormat);
+                File result = imageConversion(imgFile, estensione);
                 files.add(result);
             } catch (IOException e) {
                 Log.addMessage("ERRORE: conversione immagine fallita per " + imgFile.getName());
@@ -48,7 +45,7 @@ public class ImageConverter implements Converter {
      */
     public static File imageConversion(File imgFile, String targetFormat) throws IOException {
         Log.addMessage("Inizio conversione immagine: " +
-                Utility.estraiNomePiuEstensioneFile(imgFile) + " -> ." + targetFormat);
+                imgFile.getName() + " -> ." + targetFormat);
 
         List<String> formatsWithAlpha = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
         List<String> formatsRequiringIntermediate = Arrays.asList("webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm");
@@ -67,8 +64,7 @@ public class ImageConverter implements Converter {
 
             // Seleziona l'immagine con risoluzione più alta
             BufferedImage largest = images.stream()
-                    .max(Comparator.comparingInt(img -> img.getWidth() * img.getHeight()))
-                    .orElse(images.get(0));
+                    .max(Comparator.comparingInt(img -> img.getWidth() * img.getHeight())).get();
 
             if (formatsRequiringIntermediate.contains(targetFormat)) {
                 outFile = new File("src/temp", getBaseName(imgFile) + ".png");

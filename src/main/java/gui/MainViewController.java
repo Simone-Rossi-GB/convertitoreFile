@@ -19,6 +19,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -259,6 +260,7 @@ public class MainViewController {
     }
 
     public void launchDialogConversion(File srcFile) {
+        List<String> formatiImmagini = Arrays.asList("jpeg", "png", "bmp", "gif", "tiff", "jpg", "webp", "psd", "ico", "icns", "tga", "pnm", "pbm", "pgm", "ppm", "pam", "iff", "xwd");
         if (srcFile == null || engine == null) {
             Log.addMessage("ERRORE: File sorgente o Engine non valido.");
             launchAlertError("File sorgente o Engine non valido.");
@@ -292,6 +294,9 @@ public class MainViewController {
             result.ifPresent(format -> {
                 Log.addMessage("Formato selezionato: " + format + " per il file " + srcFile.getName());
                 try {
+                    if(formatiImmagini.contains(srcExtension)){
+                        engine.conversione(srcExtension, format, srcFile, format);
+                    }
                     if ("pdf".equals(srcExtension)) {
                         if ("jpg".equals(format)) {
                             unisci.set(launchDialogUnisci());
