@@ -2,7 +2,7 @@
   "successOutputDir": "src/output/success/",
   "errorOutputDir": "src/output/error/",
   "monitoredDir": "src/input/",
-  "monitorAtStart": false,
+  "monitorAtStart": true,
   "conversions": {
     "pdf": {
       "doc": "Converters.PDFtoDOCconverter",
@@ -14,6 +14,10 @@
     },
     "xlsx": {
       "json": "Converters.XLSXtoJSONconverter"
+    },
+    "json": {
+      "xls": "Converters.JSONtoXLSconverter",
+      "xlsx": "Converters.JSONtoXLSXconverter"
     },
     "csv": {
       "json": "Converters.CSVtoJSONconverter"
