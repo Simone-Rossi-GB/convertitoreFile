@@ -156,23 +156,25 @@ public class Engine {
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         List<File> outFiles;
+        File tempFile = new File("src/temp/" + srcFile.getName());
+        Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
             if (parameter != null && union != null) {
                 outFiles = converter.convert(srcFile, parameter, union);
             } else if (parameter != null) {
                 outFiles = converter.convert(srcFile, parameter);
             } else if (union != null) {
-                outFiles = converter.convert(srcFile, union);
+                outFiles = converter.convert(tempFile, union);
             } else {
-                outFiles = converter.convert(srcFile);
+                outFiles = converter.convert(tempFile);
             }
 
-            //Files.deleteIfExists(srcFile.toPath());
+            Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
+
             for (File f : outFiles) {
                 //Sposto il file convertito nella directory corretta
                 spostaFile(config.getSuccessOutputDir(), f);
-                System.out.println("File spostato");
             }
             Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
 

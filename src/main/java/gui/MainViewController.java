@@ -4,7 +4,6 @@ import converter.DirectoryWatcher;
 import converter.Log;
 import converter.Engine;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Controller principale della UI per la gestione del monitoraggio cartelle e conversione file.
@@ -88,10 +87,9 @@ public class MainViewController {
                 launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
-
+        AtomicReference<Stage> stage = new AtomicReference<>();
         configBtn.setOnAction(e -> openConfigurationWindow());
-        exitBtn.setOnAction(e -> exitApplication());
-
+        stage.get().setOnCloseRequest(e -> exitApplication());
         caricaFileBtn.setOnAction(e -> openFolder(monitoredFolderPath));
         fileConvertitiBtn.setOnAction(e -> openFolder(convertedFolderPath));
         conversioniFalliteBtn.setOnAction(e -> openFolder(failedFolderPath));
@@ -248,6 +246,16 @@ public class MainViewController {
 
     private void exitApplication() {
         addLogMessage("Chiusura applicazione...");
+        watcherThread.interrupt();
+        try {
+            watcherThread.join();
+
+        } catch (InterruptedException e) {
+            String msg = "Thread in background interrotto in maniera anomala";
+            launchAlertError(msg);
+            Log.addMessage(msg);
+        }
+
         Platform.exit();
     }
 

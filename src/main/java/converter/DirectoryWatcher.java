@@ -158,9 +158,9 @@ public class DirectoryWatcher implements Runnable {
                 }
             }
         }
-
         executor.shutdown();
-        Log.addMessage("Executor arrestato, DirectoryWatcher terminato");
+        System.out.println("Executor interrotto");
+        Log.addMessage("Executor interrotto");
     }
 
     /**

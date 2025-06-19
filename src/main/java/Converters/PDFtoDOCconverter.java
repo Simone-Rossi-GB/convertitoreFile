@@ -22,30 +22,37 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
      */
     @Override
     protected ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+        validateInputs(pdfFile, pdfDocument);
         try {
             ArrayList<File> files = new ArrayList<>();
             String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
             File outputFile = new File(baseName + ".doc");
             File template = new File("themplate.doc");
 
+            if (!template.exists()) {
+                throw new FileNotFoundException("Il file template 'themplate.doc' non esiste");
+            }
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(pdfDocument);
 
-            try (FileInputStream fis = new FileInputStream(template)) {
-                HWPFDocument doc = new HWPFDocument(fis);
+            try (FileInputStream fis = new FileInputStream(template);
+                 HWPFDocument doc = new HWPFDocument(fis);
+                 FileOutputStream out = new FileOutputStream(outputFile)) {
+
                 Range range = doc.getRange();
                 range.replaceText(range.text(), text);
+                doc.write(out);
 
-                try (FileOutputStream out = new FileOutputStream(outputFile)) {
-                    doc.write(out);
-                }
+                files.add(outputFile);
+                return files;
+
             }
 
-            files.add(outputFile);
-            return files;
-        }catch (Exception e){
-            throw new Exception("Errore durante il processo di conversione");
+        } catch (Exception e) {
+            throw new Exception("Errore durante il processo di conversione: " + e.getMessage());
         }
     }
+
+
 }
 
