@@ -262,7 +262,127 @@ public class MainViewController {
         Platform.exit();
     }
 
-    public void launchDialogConversion(File srcFile) { // srcFile è già final o effectively final qui
+    private void performConversionWithFallback(File srcFile, String targetFormat) {
+        String srcExtension = getExtension(srcFile);
+        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
+        File outputDestinationFile = new File(convertedFolderPath, outputFileName);
+
+        // Variabili per gestire i dialoghi PDF
+        String password = null;
+        boolean mergeImages = false;
+
+        try {
+            // Assicurati che la directory di output esista
+            if (outputDestinationFile.getParentFile() != null && !outputDestinationFile.getParentFile().exists()) {
+                outputDestinationFile.getParentFile().mkdirs();
+            }
+
+            // Gestione dialoghi per PDF (fatto una sola volta)
+            if (srcExtension.equals("pdf")) {
+                password = launchDialogPdf();
+                if (targetFormat.equals("jpg")) {
+                    mergeImages = launchDialogUnisci();
+                }
+            }
+
+            // PRIMO TENTATIVO: USA WEBSERVICE
+            boolean webServiceSuccess = false;
+            if (webServiceClient.isServiceAvailable()) {
+                try {
+                    addLogMessage("Tentativo conversione tramite web service...");
+                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, password, mergeImages);
+
+                    if (result.isSuccess()) {
+                        // Verifica che il file convertito sia stato effettivamente salvato
+                        if (outputDestinationFile.exists()) {
+                            addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                            webServiceSuccess = true;
+                        } else {
+                            throw new Exception("Il file convertito non è stato salvato correttamente dal web service");
+                        }
+                    } else {
+                        throw new Exception("Web service ha restituito errore: " + result.getError());
+                    }
+                } catch (Exception wsError) {
+                    addLogMessage("Web service fallito: " + wsError.getMessage());
+                    webServiceSuccess = false;
+
+                    // Pulisci eventuale file parzialmente creato
+                    if (outputDestinationFile.exists()) {
+                        try {
+                            Files.delete(outputDestinationFile.toPath());
+                            addLogMessage("File parziale eliminato per retry con engine locale");
+                        } catch (Exception cleanupError) {
+                            addLogMessage("Errore pulizia file parziale: " + cleanupError.getMessage());
+                        }
+                    }
+                }
+            } else {
+                addLogMessage("Web service non disponibile, passo direttamente a engine locale");
+            }
+
+            // SECONDO TENTATIVO: USA ENGINE LOCALE (solo se webservice fallito)
+            if (!webServiceSuccess) {
+                addLogMessage("Fallback: uso engine locale per conversione...");
+
+                try {
+                    // L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
+                    if (password != null) {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, srcFile, password);
+                        }
+                    } else {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, srcFile);
+                        }
+                    }
+
+                    addLogMessage("Conversione ENGINE LOCALE riuscita");
+
+                    // Per l'engine locale, il file originale è già stato gestito automaticamente
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                        launchAlertSuccess(srcFile);
+                    });
+                    return; // Esci qui se engine locale ha successo
+
+                } catch (Exception engineError) {
+                    addLogMessage("Anche engine locale fallito: " + engineError.getMessage());
+                    throw new Exception("Entrambi i metodi di conversione falliti. Web service: fallito. Engine locale: " + engineError.getMessage());
+                }
+            }
+
+            // Se arriviamo qui, il web service ha avuto successo
+            if (webServiceSuccess) {
+                addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
+
+                // Gestisci il file originale dopo successo web service
+                moveOriginalFileAfterSuccess(srcFile);
+
+                Platform.runLater(() -> {
+                    fileConvertiti++;
+                    stampaRisultati();
+                    launchAlertSuccess(outputDestinationFile);
+                });
+            }
+
+        } catch (Exception e) {
+            addLogMessage("ERRORE FINALE: " + e.getMessage());
+            moveFileToErrorFolder(srcFile);
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+                launchAlertError("Conversione fallita: " + e.getMessage());
+            });
+        }
+    }
+
+    public void launchDialogConversion(File srcFile) {
         Platform.runLater(() -> fileRicevuti++);
 
         String srcExtension = getExtension(srcFile);
@@ -270,15 +390,18 @@ public class MainViewController {
         List<String> formats = null;
 
         try {
-            // Prova prima il webservice, se fallisce usa l'engine locale
+            // Prova prima il webservice per ottenere i formati
             if (webServiceClient.isServiceAvailable()) {
-                formats = webServiceClient.getPossibleConversions(srcExtension);
-                useWebService = true;
-                addLogMessage("Usando web service per conversione di " + srcFile.getName());
+                try {
+                    formats = webServiceClient.getPossibleConversions(srcExtension);
+                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
+                } catch (Exception wsError) {
+                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
+                    formats = engine.getPossibleConversions(srcExtension);
+                }
             } else {
+                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
                 formats = engine.getPossibleConversions(srcExtension);
-                useWebService = false;
-                addLogMessage("Web service non disponibile, usando engine locale per " + srcFile.getName());
             }
         } catch (Exception e) {
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata: " + e.getMessage());
@@ -290,7 +413,7 @@ public class MainViewController {
             return;
         }
 
-        final List<String> finalFormats = formats; // Rendi final la lista dei formati
+        final List<String> finalFormats = formats;
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
@@ -298,9 +421,8 @@ public class MainViewController {
             dialog.setContentText("Formato desiderato:");
 
             Optional<String> result = dialog.showAndWait();
-            result.ifPresent(chosenFormat -> { // Usa un nuovo nome per la variabile lambda
-                // srcFile è già effectively final, quindi non serve dichiararlo final qui
-                new Thread(() -> performConversion(srcFile, chosenFormat)).start();
+            result.ifPresent(chosenFormat -> {
+                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat)).start();
             });
         });
     }
@@ -413,6 +535,18 @@ public class MainViewController {
             } catch (IOException cleanupEx) {
                 System.err.println("Errore nella pulizia del file di input temporaneo: " + cleanupEx.getMessage());
             }
+        }
+    }
+
+    private void moveOriginalFileAfterSuccess(File originalFile) {
+        try {
+            if (originalFile.exists()) {
+                // Elimina il file originale dalla cartella monitorata
+                Files.delete(originalFile.toPath());
+                addLogMessage("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
+            }
+        } catch (Exception e) {
+            addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
         }
     }
 
