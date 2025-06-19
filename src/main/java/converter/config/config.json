@@ -1,7 +1,7 @@
 {
-  "successOutputDir": "C:\\Users\\Daniel\\Desktop\\es java\\convertitoreFile\\src\\output\\success",
-  "errorOutputDir": "C:\\Users\\Daniel\\Desktop\\es java\\convertitoreFile\\src\\output\\error",
-  "monitoredDir": "C:\\Users\\Daniel\\Desktop\\es java\\convertitoreFile\\src\\input",
+  "successOutputDir": "src/output/success",
+  "errorOutputDir": "src/output/error",
+  "monitoredDir": "src/input",
   "monitorAtStart": true,
   "conversions": {
     "pdf": {
