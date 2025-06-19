@@ -380,7 +380,7 @@ public class EngineWebService {
 
             // Rimuove il suffisso dal nome se presente
             String cleanName = convertedFile.getName().replaceAll("-\\$\\$.*?\\$\\$-", "");
-            File finalOutputFile = new File(outputDirectory, cleanName);
+            File finalOutputFile = new File(te, cleanName);
 
             // Sposta il file convertito nella directory di output specificata
             Files.move(convertedFile.toPath(), finalOutputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
