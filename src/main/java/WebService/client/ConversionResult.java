@@ -18,7 +18,7 @@ public class ConversionResult {
     public ConversionResult(boolean success, String message) {
         this.success = success;
         this.message = message;
-        this.error = null; // <-- CORREZIONE QUI: Inizializza 'error' a null
+        this.error = null;
     }
 
     public boolean isSuccess() {
