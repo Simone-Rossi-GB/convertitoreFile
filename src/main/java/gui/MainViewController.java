@@ -19,19 +19,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.swing.*;
+import java.nio.file.StandardCopyOption;
 
 import WebService.client.ConverterWebServiceClient;
 import WebService.client.ConversionResult;
-import java.nio.file.StandardCopyOption;
-
 
 /**
  * Controller principale della UI per la gestione del monitoraggio cartelle e conversione file.
@@ -56,7 +53,6 @@ public class MainViewController {
     private Button configBtn;
     @FXML
     private Button exitBtn;
-
     @FXML
     private Button caricaFileBtn;
     @FXML
@@ -83,7 +79,6 @@ public class MainViewController {
 
     private Engine engine;
     private Thread watcherThread;
-
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -135,6 +130,7 @@ public class MainViewController {
                 launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
+
         Stage stage = MainApp.getPrimaryStage();
         exitBtn.setOnAction(e -> exitApplication());
         stage.setOnCloseRequest(e -> interruptWatcher());
@@ -166,7 +162,6 @@ public class MainViewController {
             Log.addMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             // Avvia DirectoryWatcher
-
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
             resetCounters();
@@ -186,28 +181,6 @@ public class MainViewController {
             detectedFilesCounter.setText("0");
             successfulConversionsCounter.setText("0");
             failedConversionsCounter.setText("0");
-        });
-    }
-
-    public void launchAlertError(String message) {
-        Log.addMessage("ERRORE: " + message);
-        showAlert("Errore", message, Alert.AlertType.ERROR);
-    }
-
-    public void launchAlertSuccess(File file) {
-        String message = "Conversione di " + file.getName() + " riuscita";
-        Log.addMessage(message);
-        showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
-    }
-
-
-    private void showAlert(String title, String message, Alert.AlertType tipo) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(tipo);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
         });
     }
 
@@ -285,10 +258,6 @@ public class MainViewController {
             configStage.setMinHeight(600);
             configStage.setScene(new Scene(configWindow));
 
-            // Configura la scena
-            Scene scene = new Scene(configWindow);
-            configStage.setScene(scene);
-
             // Ottieni il controller e passa i riferimenti necessari
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
@@ -304,10 +273,8 @@ public class MainViewController {
             if (watcherThread != null && watcherThread.isAlive()) {
                 watcherThread.interrupt();
                 watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
-                watcherThread.setDaemon(true);
                 watcherThread.start();
             }
-
 
         } catch (IOException e) {
             Log.addMessage("ERRORE: Impossibile aprire l'editor di configurazione: " + e.getMessage());
@@ -340,7 +307,6 @@ public class MainViewController {
         }
     }
 
-
     public void addLogMessage(String message) {
         Platform.runLater(() -> {
             String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
@@ -353,22 +319,73 @@ public class MainViewController {
         });
     }
 
-    public void interruptWatcher(){
+    public void interruptWatcher() {
         addLogMessage("Chiusura applicazione...");
-        watcherThread.interrupt();
-        try {
-            watcherThread.join();
-
-        } catch (InterruptedException e) {
-            String msg = "Thread in background interrotto in maniera anomala";
-            launchAlertError(msg);
-            Log.addMessage(msg);
+        if (watcherThread != null) {
+            watcherThread.interrupt();
+            try {
+                watcherThread.join();
+            } catch (InterruptedException e) {
+                String msg = "Thread in background interrotto in maniera anomala";
+                launchAlertError(msg);
+                Log.addMessage(msg);
+            }
         }
     }
 
     private void exitApplication() {
         interruptWatcher();
         Platform.exit();
+    }
+
+    public void launchDialogConversion(File srcFile) {
+        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
+        if (srcFile == null || engine == null) {
+            Log.addMessage("ERRORE: File sorgente o Engine non valido.");
+            launchAlertError("File sorgente o Engine non valido.");
+            return;
+        }
+
+        Platform.runLater(() -> fileRicevuti++);
+
+        String srcExtension = getExtension(srcFile);
+        List<String> formats;
+        try {
+            // Prova prima il webservice per ottenere i formati
+            if (webServiceClient.isServiceAvailable()) {
+                try {
+                    formats = webServiceClient.getPossibleConversions(srcExtension);
+                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
+                } catch (Exception wsError) {
+                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
+                    formats = engine.getPossibleConversions(srcExtension);
+                }
+            } else {
+                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
+                formats = engine.getPossibleConversions(srcExtension);
+            }
+        } catch (Exception e) {
+            Log.addMessage("ERRORE: Conversione non supportata per il file " + srcFile.getName() + " (" + srcExtension + ")");
+            launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+            });
+            return;
+        }
+
+        List<String> finalFormats = formats;
+        Platform.runLater(() -> {
+            ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
+            dialog.setTitle("Seleziona Formato");
+            dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
+            dialog.setContentText("Formato desiderato:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(chosenFormat -> {
+                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat)).start();
+            });
+        });
     }
 
     private void performConversionWithFallback(File srcFile, String targetFormat) {
@@ -491,227 +508,6 @@ public class MainViewController {
         }
     }
 
-
-    public void launchDialogConversion(File srcFile) {
-        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff","jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
-        if (srcFile == null || engine == null) {
-            Log.addMessage("ERRORE: File sorgente o Engine non valido.");
-            launchAlertError("File sorgente o Engine non valido.");
-            return;
-        }
-
-        AtomicBoolean unisci = new AtomicBoolean(false);
-        Platform.runLater(() -> fileRicevuti++);
-
-        String srcExtension = getExtension(srcFile);
-        List<String> formats;
-        try {
-            // Prova prima il webservice per ottenere i formati
-            if (webServiceClient.isServiceAvailable()) {
-                try {
-                    formats = webServiceClient.getPossibleConversions(srcExtension);
-                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
-                } catch (Exception wsError) {
-                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
-                    formats = engine.getPossibleConversions(srcExtension);
-                }
-            } else {
-                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
-                formats = engine.getPossibleConversions(srcExtension);
-            }
-        } catch (Exception e) {
-            Log.addMessage("ERRORE: Conversione non supportata per il file " + srcFile.getName() + " (" + srcExtension + ")");
-            launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
-            Platform.runLater(() -> {
-                fileScartati++;
-                stampaRisultati();
-            });
-            return;
-        }
-
-        Platform.runLater(() -> {
-            ChoiceDialog<String> dialog = new ChoiceDialog<>(formats.get(0), formats);
-            dialog.setTitle("Seleziona Formato");
-            dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
-            dialog.setContentText("Formato desiderato:");
-
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat)).start();
-            });
-        });
-    }
-
-    public boolean launchDialogUnisci() {
-        AtomicBoolean unisci = new AtomicBoolean(false);
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Unisci PDF");
-        alert.setHeaderText(null);
-        alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
-
-        ButtonType siBtn = new ButtonType("Si");
-        ButtonType noBtn = new ButtonType("No");
-        alert.getButtonTypes().setAll(siBtn, noBtn);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == siBtn) {
-            unisci.set(true);
-        }
-        Log.addMessage("Scelta unione JPG: " + unisci.get());
-
-        return unisci.get();
-    }
-
-
-    public String launchDialogPdf() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Password PDF");
-        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-        dialog.setContentText("Password:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(oculta)")));
-        return result.orElse(null);
-    }
-
-
-    public void stampaRisultati() {
-        Log.addMessage("Stato: ricevuti=" + fileRicevuti + ", convertiti=" + fileConvertiti + ", scartati=" + fileScartati);
-        Platform.runLater(() -> {
-            detectedFilesCounter.setText(String.valueOf(fileRicevuti));
-            successfulConversionsCounter.setText(String.valueOf(fileConvertiti));
-            failedConversionsCounter.setText(String.valueOf(fileScartati));
-        });
-    }
-
-    private void performConversion(File srcFile, String targetFormat) {
-
-        Path tempInputPath = null; // Sarà assegnato una volta
-        File tempInputFile = null; // Sarà assegnato una volta
-        File outputDestinationFile = null; // Sarà assegnato una volta
-        String srcExtension = getExtension(srcFile); // Assegnato una volta
-        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat; // Assegnato una volta
-
-        try {
-            // Crea una copia temporanea del file sorgente per la conversione
-            tempInputPath = Files.createTempFile("convert_input_", srcFile.getName());
-            Files.copy(srcFile.toPath(), tempInputPath, StandardCopyOption.REPLACE_EXISTING);
-            tempInputFile = tempInputPath.toFile();
-
-            // Determina il percorso del file di output FINALE
-            outputDestinationFile = new File(convertedFolderPath, outputFileName);
-            if (outputDestinationFile.getParentFile() != null && !outputDestinationFile.getParentFile().exists()) {
-                outputDestinationFile.getParentFile().mkdirs();
-            }
-
-            String password = null; // Potrebbe essere riassegnato, ma solo in un blocco if/else,
-            // il che lo rende "effectively final" per ogni percorso di esecuzione.
-            boolean mergeImages = false; // Stessa logica di password.
-
-            // Gestione dialoghi per PDF
-            if (srcExtension.equals("pdf")) {
-                password = launchDialogPdf();
-                if (targetFormat.equals("jpg")) {
-                    mergeImages = launchDialogUnisci();
-                }
-            }
-
-            // Dichiara `final` le variabili che verranno usate nelle lambda se il compilatore si lamenta,
-            // anche se sono già "effectively final". Questo serve come workaround esplicito.
-            final File finalOutputDestinationFile = outputDestinationFile;
-            final File finalSrcFile = srcFile; // Se srcFile dovesse causare problemi nella catch/finally
-
-            if (useWebService) {
-                // USA WEBSERVICE
-                addLogMessage("Avvio conversione tramite web service...");
-                ConversionResult result = webServiceClient.convertFile(tempInputFile, targetFormat, outputDestinationFile, password, mergeImages);
-
-                if (result.isSuccess()) {
-                    addLogMessage("Conversione completata tramite web service: " + result.getMessage());
-                    moveFileToSuccessFolder(finalSrcFile); // Usa la variabile final
-                    Platform.runLater(() -> {
-                        fileConvertiti++;
-                        stampaRisultati();
-                        launchAlertSuccess(finalOutputDestinationFile); // Usa la variabile final
-                    });
-                } else {
-                    throw new Exception(result.getError());
-                }
-            } else {
-                // USA ENGINE LOCALE
-                try {
-                    addLogMessage("Avvio conversione tramite engine locale...");
-
-                    Path engineTempOutputDirectory = Files.createTempDirectory("engine_output_" + UUID.randomUUID().toString());
-                    final File engineTempOutputDirFile = engineTempOutputDirectory.toFile(); // Dichiara final se necessario
-
-                    File convertedFileFromEngine;
-
-                    if (password != null) {
-                        if (mergeImages && targetFormat.equals("jpg")) {
-                            engine.conversione(srcExtension, targetFormat, tempInputFile, password, mergeImages);
-                        } else {
-                            engine.conversione(srcExtension, targetFormat, tempInputFile, password);
-                        }
-                    } else {
-                        if (mergeImages && targetFormat.equals("jpg")) {
-                            engine.conversione(srcExtension, targetFormat, tempInputFile, mergeImages);
-                        } else {
-                            engine.conversione(srcExtension, targetFormat, tempInputFile);
-            result.ifPresent(format -> {
-                Log.addMessage("Formato selezionato: " + format + " per il file " + srcFile.getName());
-                try {
-                    if ("pdf".equals(srcExtension)) {
-                        if ("jpg".equals(format)) {
-                            unisci.set(launchDialogUnisci());
-                            Log.addMessage("Unione JPG selezionata: " + unisci.get());
-                        }
-                        String password = launchDialogPdf();
-                        if (password != null) {
-                            Log.addMessage("Password inserita per PDF: " + (password.isEmpty() ? "(vuota)" : "(oculta)"));
-                            if ("jpg".equals(format))
-                                engine.conversione(srcExtension, format, srcFile, password, unisci.get());
-                            else
-                                engine.conversione(srcExtension, format, srcFile, password);
-                        } else {
-                            Log.addMessage("Nessuna password inserita per il PDF.");
-                            if ("jpg".equals(format))
-                                engine.conversione(srcExtension, format, srcFile, "", unisci.get());
-                            else
-                                engine.conversione(srcExtension, format, srcFile);
-                        }
-                    } else {
-                        if(formatiImmagini.contains(srcExtension)){
-                            engine.conversione(srcExtension, format, srcFile, format);
-                        }else {
-                            engine.conversione(srcExtension, format, srcFile);
-                        }
-                    }
-                    Log.addMessage("Conversione completata: " + srcFile.getName() + " → " + format);
-                    fileConvertiti++;
-                    stampaRisultati();
-                    launchAlertSuccess(srcFile);
-                } catch (Exception e) {
-                    Log.addMessage("ERRORE: Impossibile convertire " + srcFile.getName() + ": " + e.getMessage());
-                    launchAlertError(e.getMessage());
-                    fileScartati++;
-                    stampaRisultati();
-                }
-            });
-        } finally {
-            // Pulizia del file temporaneo di input, INDIPENDENTEMENTE da successo o fallimento
-            final Path finalTempInputPath = tempInputPath; // Rendi final per il blocco finally
-            try {
-                if (finalTempInputPath != null && Files.exists(finalTempInputPath)) {
-                    Files.delete(finalTempInputPath);
-                }
-            } catch (IOException cleanupEx) {
-                System.err.println("Errore nella pulizia del file di input temporaneo: " + cleanupEx.getMessage());
-            }
-        }
-    }
-
     private void moveOriginalFileAfterSuccess(File originalFile) {
         try {
             if (originalFile.exists()) {
@@ -721,24 +517,6 @@ public class MainViewController {
             }
         } catch (Exception e) {
             addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
-        }
-    }
-
-    // Questi metodi `moveFileTo...Folder` ora spostano il *file originale* dalla monitoredFolderPath
-    // Il file convertito/fallito è già stato gestito (salvato dal client o spostato dall'Engine)
-    private void moveFileToSuccessFolder(File originalMonitoredFile) {
-        try {
-            // Solo se il file esiste ancora nella cartella monitorata, spostalo
-            if (originalMonitoredFile.exists()) {
-                Path srcPath = originalMonitoredFile.toPath();
-                // Potresti voler spostare il file originale in una sottocartella "processed" di monitored,
-                // o semplicemente eliminarlo se non serve mantenerlo.
-                // Per ora, lo elimino dalla monitored folder dato che il risultato è altrove.
-                Files.delete(srcPath);
-                addLogMessage("File originale spostato (eliminato da monitored): " + srcPath);
-            }
-        } catch (Exception e) {
-            addLogMessage("Errore nello spostamento/eliminazione del file originale da monitored: " + e.getMessage());
         }
     }
 
@@ -766,7 +544,6 @@ public class MainViewController {
         Log.addMessage(message);
         showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
     }
-
 
     private void showAlert(String title, String message, Alert.AlertType tipo) {
         Platform.runLater(() -> {
@@ -799,7 +576,6 @@ public class MainViewController {
         return unisci.get();
     }
 
-
     public String launchDialogPdf() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Password PDF");
@@ -807,10 +583,9 @@ public class MainViewController {
         dialog.setContentText("Password:");
 
         Optional<String> result = dialog.showAndWait();
-        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(oculta)")));
+        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
         return result.orElse(null);
     }
-
 
     public void stampaRisultati() {
         Log.addMessage("Stato: ricevuti=" + fileRicevuti + ", convertiti=" + fileConvertiti + ", scartati=" + fileScartati);
@@ -819,15 +594,6 @@ public class MainViewController {
             successfulConversionsCounter.setText(String.valueOf(fileConvertiti));
             failedConversionsCounter.setText(String.valueOf(fileScartati));
         });
-    }
-
-    /**
-     * Ritorna lo stage principale dell'applicazione.
-     *
-     * @return stage principale
-     */
-    private Stage getPrimaryStage() {
-        return (Stage) MonitoringBtn.getScene().getWindow();
     }
 
     /**
@@ -840,22 +606,22 @@ public class MainViewController {
     }
 
     @FXML
-    public void openConfig(ActionEvent actionEvent) {
+    public void openConfig(javafx.event.ActionEvent actionEvent) {
         openConfigurationWindow();
     }
 
     @FXML
-    public void loadFilesFolder(ActionEvent actionEvent) {
+    public void loadFilesFolder(javafx.event.ActionEvent actionEvent) {
         openFolder(monitoredFolderPath);
     }
 
     @FXML
-    public void openConvertedFolder(ActionEvent actionEvent) {
+    public void openConvertedFolder(javafx.event.ActionEvent actionEvent) {
         openFolder(convertedFolderPath);
     }
 
     @FXML
-    public void openFailedConvertionsFolder(ActionEvent actionEvent) {
+    public void openFailedConvertionsFolder(javafx.event.ActionEvent actionEvent) {
         openFolder(failedFolderPath);
     }
 }
