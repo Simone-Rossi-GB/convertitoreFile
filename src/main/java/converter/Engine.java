@@ -170,6 +170,7 @@ public class Engine {
             //Files.deleteIfExists(srcFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
             System.out.println(outFiles.size());
+            System.out.println(outFiles);
             for (File f : outFiles) {
                 System.out.println("si");
                 //Sposto il file convertito nella directory corretta
