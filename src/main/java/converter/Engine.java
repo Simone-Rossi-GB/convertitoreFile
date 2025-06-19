@@ -167,7 +167,7 @@ public class Engine {
                 outFiles = converter.convert(srcFile);
             }
 
-            Files.deleteIfExists(srcFile.toPath());
+            //Files.deleteIfExists(srcFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
 
             for (File f : outFiles) {

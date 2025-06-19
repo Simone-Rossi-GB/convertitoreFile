@@ -9,83 +9,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PDFtoJPGconverter extends AbstractPDFConverter {
     private static final int DPI = 300; // DPI dell'immagine renderizzata
 
-    /*@Override
-    public ArrayList<File> convert(File inputFile, boolean unisci) throws Exception {
-        System.out.println("entro nel converter");
-        try {
-            PDDocument document = PDDocument.load(inputFile);
-            PDFRenderer renderer = new PDFRenderer(document);
-            ArrayList<BufferedImage> images = new ArrayList<>();
-            ArrayList<File> outputFiles = new ArrayList<>();
-
-            String baseName = inputFile.getName().replaceAll("(?i)\\.pdf$", ""); // senza estensione
-
-            for (int i = 0; i < document.getNumberOfPages(); i++) {
-                BufferedImage image = renderer.renderImageWithDPI(i, DPI);
-                images.add(image);
-
-                if (!unisci) {
-                    File tempFile = new File(baseName + "_page_" + (i + 1) + ".jpg");
-                    ImageIO.write(image, "jpg", tempFile);
-                    outputFiles.add(tempFile);
-                }
-            }
-
-            if (unisci) {
-                BufferedImage mergedImage = mergeImagesVertically(images);
-                File mergedFile = new File(baseName + ".jpg");  // usa il nome del PDF
-                ImageIO.write(mergedImage, "jpg", mergedFile);
-                outputFiles.add(mergedFile);
-            }
-
-            document.close();
-            System.out.println("Conversion completed!");
-            return outputFiles;
-        }catch (Exception e){
-            throw new Exception("File protetto da password");
-        }
-    }
-
-    @Override
-    public ArrayList<File> convert(File inputFile, String password, boolean unisci) throws Exception {
-        try {
-            PDDocument document = PDDocument.load(inputFile, password);
-            PDFRenderer renderer = new PDFRenderer(document);
-            ArrayList<BufferedImage> images = new ArrayList<>();
-            ArrayList<File> outputFiles = new ArrayList<>();
-
-            String baseName = inputFile.getName().replaceAll("(?i)\\.pdf$", ""); // senza estensione
-
-            for (int i = 0; i < document.getNumberOfPages(); i++) {
-                BufferedImage image = renderer.renderImageWithDPI(i, DPI);
-                images.add(image);
-
-                if (!unisci) {
-                    File tempFile = new File(baseName + "_page_" + (i + 1) + ".jpg");
-                    ImageIO.write(image, "jpg", tempFile);
-                    outputFiles.add(tempFile);
-                }
-            }
-
-            if (unisci) {
-                BufferedImage mergedImage = mergeImagesVertically(images);
-                File mergedFile = new File(baseName + ".jpg");  // usa il nome del PDF
-                ImageIO.write(mergedImage, "jpg", mergedFile);
-                outputFiles.add(mergedFile);
-            }
-
-            document.close();
-            System.out.println("Conversion completed!");
-            return outputFiles;
-        }catch (Exception e){
-            throw new Exception("password sbagliata");
-        }
-    }*/
-
+    /**
+     * Metodo per unire le pagine del pdf una sotto l'altra in un'unica immagine
+     * @param images Immagini relative alle singole pagine del pdf
+     * @return BufferedImage con tutte le pagine del pdf
+     */
     private BufferedImage mergeImagesVertically(ArrayList<BufferedImage> images) {
         int width = 0;
         int totalHeight = 0;
@@ -107,14 +40,24 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         g.dispose();
         return combined;
     }
+
+    /**
+     * Conversione pdf -> jpg
+     * @param pdfFile File di partenza
+     * @param pdfDocument Documento pdf caricato
+     * @param union Boolean che indica se unire o no le pagine in un'unica immagine
+     * @return ArrayList di file convertiti
+     * @throws Exception Errore durante il processo di conversione
+     */
     @Override
-    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws IOException {
+    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
+        try{
         PDFRenderer renderer = new PDFRenderer(pdfDocument);
         ArrayList<BufferedImage> images = new ArrayList<>();
         ArrayList<File> outputFiles = new ArrayList<>();
 
-        String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", ""); // senza estensione
-
+        String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", "")); // senza estensione
+            System.out.println();
         for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
             BufferedImage image = renderer.renderImageWithDPI(i, DPI);
             images.add(image);
@@ -136,8 +79,13 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         pdfDocument.close();
         System.out.println("Conversion completed!");
         return outputFiles;
+        }catch (Exception e){
+            throw new Exception("Errore durante il processo di conversione: " + e.getMessage());
+        }
     }
-
 }
+
+
+
 
 
