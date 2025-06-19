@@ -199,6 +199,13 @@ public class MainViewController {
 
             addLogMessage("Editor configurazione chiuso");
             loadConfiguration();
+            if (watcherThread != null && watcherThread.isAlive()) {
+                watcherThread.interrupt();
+                watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
+                watcherThread.setDaemon(true);
+                watcherThread.start();
+            }
+
 
         } catch (IOException e) {
             addLogMessage("Errore nell'apertura dell'editor configurazione: " + e.getMessage());
@@ -237,6 +244,9 @@ public class MainViewController {
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
             addLogMessage("Cartella file convertiti: " + convertedFolderPath);
             addLogMessage("Cartella file falliti: " + failedFolderPath);
+
+
+
         } catch (Exception e) {
             addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
             showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
