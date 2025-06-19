@@ -17,41 +17,64 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.swing.*;
+
+import WebService.client.ConverterWebServiceClient;
+import WebService.client.ConversionResult;
+import java.nio.file.StandardCopyOption;
+
 
 /**
  * Controller principale della UI per la gestione del monitoraggio cartelle e conversione file.
  */
 public class MainViewController {
 
-    // ==========================
-    // FXML UI references
-    // ==========================
-    @FXML private Label statusIndicator;
-    @FXML private Label monitoringStatusLabel;
-    @FXML private Label applicationLogArea;
-    @FXML private Label detectedFilesCounter;
-    @FXML private Label successfulConversionsCounter;
-    @FXML private Label failedConversionsCounter;
+    @FXML
+    private Label statusIndicator;
+    @FXML
+    private Label monitoringStatusLabel;
+    @FXML
+    private Label applicationLogArea;
+    @FXML
+    private Label detectedFilesCounter;
+    @FXML
+    private Label successfulConversionsCounter;
+    @FXML
+    private Label failedConversionsCounter;
+    @FXML
+    private Button MonitoringBtn;
+    @FXML
+    private Button configBtn;
+    @FXML
+    private Button exitBtn;
 
-    @FXML private Button MonitoringBtn;
-    @FXML private Button configBtn;
-    @FXML private Button exitBtn;
-    @FXML private Button caricaFileBtn;
-    @FXML private Button fileConvertitiBtn;
-    @FXML private Button conversioniFalliteBtn;
+    @FXML
+    private Button caricaFileBtn;
+    @FXML
+    private Button fileConvertitiBtn;
+    @FXML
+    private Button conversioniFalliteBtn;
 
-    // ==========================
-    // Application state variables
-    // ==========================
+    // Riferimento all'applicazione principale
+    private MainApp mainApp;
+
+    // Variabili di stato
     private boolean isMonitoring = false;
     private int fileRicevuti = 0;
     private int fileConvertiti = 0;
     private int fileScartati = 0;
+
+    private ConverterWebServiceClient webServiceClient;
+    private boolean useWebService = false;
 
     private String monitoredFolderPath = "Non configurata";
     private String convertedFolderPath = "Non configurata";
@@ -60,17 +83,23 @@ public class MainViewController {
 
     private Engine engine;
     private Thread watcherThread;
+    private boolean monitorAtStart;
 
-    private MainApp mainApp;
-
+    /**
+     * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
+     * Inizializza il controller, i listener e carica la configurazione.
+     */
     @FXML
     private void initialize() throws IOException {
         engine = new Engine();
-
+        // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
-        addLogMessage("Applicazione avviata.");
-        addLogMessage("Caricamento configurazione...");
+        Log.addMessage("Applicazione avviata.");
+        Log.addMessage("Caricamento configurazione...");
+
+        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+
         loadConfiguration();
 
         if (monitorAtStart) {
@@ -78,7 +107,26 @@ public class MainViewController {
         }
     }
 
+    /**
+     * Restituisce l'estensione del file.
+     *
+     * @param file file da cui estrarre l'estensione
+     * @return estensione in minuscolo o stringa vuota se non presente
+     */
+    public static String getExtension(File file) {
+        String name = file.getName();
+        int lastDot = name.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == name.length() - 1) {
+            return ""; // nessuna estensione
+        }
+        return name.substring(lastDot + 1).toLowerCase();
+    }
+
+    /**
+     * Configura i listener degli eventi sui pulsanti.
+     */
     private void setupEventHandlers() {
+        // Handler per il pulsante toggle monitoraggio
         MonitoringBtn.setOnAction(e -> {
             try {
                 toggleMonitoring();
@@ -96,6 +144,9 @@ public class MainViewController {
         conversioniFalliteBtn.setOnAction(e -> openFolder(failedFolderPath));
     }
 
+    /**
+     * Attiva o disattiva il monitoraggio della cartella.
+     */
     @FXML
     private void toggleMonitoring() throws IOException {
         if (engine == null || monitoredFolderPath == null) {
@@ -114,6 +165,8 @@ public class MainViewController {
         } else {
             Log.addMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
+            // Avvia DirectoryWatcher
+
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
             resetCounters();
@@ -122,6 +175,9 @@ public class MainViewController {
         updateMonitoringStatus();
     }
 
+    /**
+     * Resetta i contatori di file rilevati e convertiti.
+     */
     private void resetCounters() {
         fileRicevuti = 0;
         fileConvertiti = 0;
@@ -133,6 +189,9 @@ public class MainViewController {
         });
     }
 
+    /**
+     * Aggiorna l'indicatore visivo dello stato di monitoraggio.
+     */
     private void updateMonitoringStatus() {
         Platform.runLater(() -> {
             if (isMonitoring) {
@@ -188,9 +247,13 @@ public class MainViewController {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ConfigWindow.fxml"));
+            addLogMessage("Apertura editor configurazione...");
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
             Parent configWindow = loader.load();
 
+            // Crea lo stage per la finestra di configurazione
             Stage configStage = new Stage();
             configStage.setTitle("Editor Configurazione");
             configStage.initModality(Modality.WINDOW_MODAL);
@@ -200,18 +263,41 @@ public class MainViewController {
             configStage.setMinHeight(600);
             configStage.setScene(new Scene(configWindow));
 
+            // Configura la scena
+            Scene scene = new Scene(configWindow);
+            configStage.setScene(scene);
+
+            // Ottieni il controller e passa i riferimenti necessari
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
             controller.setEngine(engine, this);
 
+            // Mostra la finestra e attendi la chiusura
+            addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
+
+            // Ricarica la configurazione dopo la chiusura della finestra
+            addLogMessage("Editor configurazione chiuso");
             loadConfiguration();
+            if (watcherThread != null && watcherThread.isAlive()) {
+                watcherThread.interrupt();
+                watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
+                watcherThread.setDaemon(true);
+                watcherThread.start();
+            }
+
+
         } catch (IOException e) {
             Log.addMessage("ERRORE: Impossibile aprire l'editor di configurazione: " + e.getMessage());
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
     }
 
+    /**
+     * Apre la cartella specificata nel file explorer di sistema.
+     *
+     * @param folderPath percorso della cartella da aprire
+     */
     private void openFolder(String folderPath) {
         if (folderPath == null || "Non configurata".equals(folderPath)) {
             Log.addMessage("ERRORE: La cartella non è stata ancora configurata.");
@@ -229,6 +315,27 @@ public class MainViewController {
         } catch (IOException e) {
             Log.addMessage("ERRORE: Impossibile aprire la cartella: " + e.getMessage());
             launchAlertError("Impossibile aprire la cartella: " + e.getMessage());
+        }
+    }
+
+    public void loadConfiguration() {
+        try {
+            monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
+            convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
+            failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
+            monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
+
+            addLogMessage("Configurazione caricata da config.json");
+            addLogMessage("Cartella monitorata: " + monitoredFolderPath);
+            addLogMessage("Cartella file convertiti: " + convertedFolderPath);
+            addLogMessage("Cartella file falliti: " + failedFolderPath);
+
+
+
+        } catch (Exception e) {
+            addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
+            showAlert("Errore Configurazione", "Impossibile caricare la configurazione: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -262,6 +369,126 @@ public class MainViewController {
         Platform.exit();
     }
 
+    private void performConversionWithFallback(File srcFile, String targetFormat) {
+        String srcExtension = getExtension(srcFile);
+        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
+        File outputDestinationFile = new File(convertedFolderPath, outputFileName);
+
+        // Variabili per gestire i dialoghi PDF
+        String password = null;
+        boolean mergeImages = false;
+
+        try {
+            // Assicurati che la directory di output esista
+            if (outputDestinationFile.getParentFile() != null && !outputDestinationFile.getParentFile().exists()) {
+                outputDestinationFile.getParentFile().mkdirs();
+            }
+
+            // Gestione dialoghi per PDF (fatto una sola volta)
+            if (srcExtension.equals("pdf")) {
+                password = launchDialogPdf();
+                if (targetFormat.equals("jpg")) {
+                    mergeImages = launchDialogUnisci();
+                }
+            }
+
+            // PRIMO TENTATIVO: USA WEBSERVICE
+            boolean webServiceSuccess = false;
+            if (webServiceClient.isServiceAvailable()) {
+                try {
+                    addLogMessage("Tentativo conversione tramite web service...");
+                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, password, mergeImages);
+
+                    if (result.isSuccess()) {
+                        // Verifica che il file convertito sia stato effettivamente salvato
+                        if (outputDestinationFile.exists()) {
+                            addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                            webServiceSuccess = true;
+                        } else {
+                            throw new Exception("Il file convertito non è stato salvato correttamente dal web service");
+                        }
+                    } else {
+                        throw new Exception("Web service ha restituito errore: " + result.getError());
+                    }
+                } catch (Exception wsError) {
+                    addLogMessage("Web service fallito: " + wsError.getMessage());
+                    webServiceSuccess = false;
+
+                    // Pulisci eventuale file parzialmente creato
+                    if (outputDestinationFile.exists()) {
+                        try {
+                            Files.delete(outputDestinationFile.toPath());
+                            addLogMessage("File parziale eliminato per retry con engine locale");
+                        } catch (Exception cleanupError) {
+                            addLogMessage("Errore pulizia file parziale: " + cleanupError.getMessage());
+                        }
+                    }
+                }
+            } else {
+                addLogMessage("Web service non disponibile, passo direttamente a engine locale");
+            }
+
+            // SECONDO TENTATIVO: USA ENGINE LOCALE (solo se webservice fallito)
+            if (!webServiceSuccess) {
+                addLogMessage("Fallback: uso engine locale per conversione...");
+
+                try {
+                    // L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
+                    if (password != null) {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, srcFile, password);
+                        }
+                    } else {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, srcFile);
+                        }
+                    }
+
+                    addLogMessage("Conversione ENGINE LOCALE riuscita");
+
+                    // Per l'engine locale, il file originale è già stato gestito automaticamente
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                        launchAlertSuccess(srcFile);
+                    });
+                    return; // Esci qui se engine locale ha successo
+
+                } catch (Exception engineError) {
+                    addLogMessage("Anche engine locale fallito: " + engineError.getMessage());
+                    throw new Exception("Entrambi i metodi di conversione falliti. Web service: fallito. Engine locale: " + engineError.getMessage());
+                }
+            }
+
+            // Se arriviamo qui, il web service ha avuto successo
+            if (webServiceSuccess) {
+                addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
+
+                // Gestisci il file originale dopo successo web service
+                moveOriginalFileAfterSuccess(srcFile);
+
+                Platform.runLater(() -> {
+                    fileConvertiti++;
+                    stampaRisultati();
+                    launchAlertSuccess(outputDestinationFile);
+                });
+            }
+
+        } catch (Exception e) {
+            addLogMessage("ERRORE FINALE: " + e.getMessage());
+            moveFileToErrorFolder(srcFile);
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+                launchAlertError("Conversione fallita: " + e.getMessage());
+            });
+        }
+    }
+
     public static String getExtension(File file) {
         if (file == null) return "";
         String name = file.getName();
@@ -284,7 +511,19 @@ public class MainViewController {
         String srcExtension = getExtension(srcFile);
         List<String> formats;
         try {
-            formats = engine.getPossibleConversions(srcExtension);
+            // Prova prima il webservice per ottenere i formati
+            if (webServiceClient.isServiceAvailable()) {
+                try {
+                    formats = webServiceClient.getPossibleConversions(srcExtension);
+                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
+                } catch (Exception wsError) {
+                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
+                    formats = engine.getPossibleConversions(srcExtension);
+                }
+            } else {
+                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
+                formats = engine.getPossibleConversions(srcExtension);
+            }
         } catch (Exception e) {
             Log.addMessage("ERRORE: Conversione non supportata per il file " + srcFile.getName() + " (" + srcExtension + ")");
             launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
@@ -302,6 +541,86 @@ public class MainViewController {
             dialog.setContentText("Formato desiderato:");
 
             Optional<String> result = dialog.showAndWait();
+            result.ifPresent(chosenFormat -> {
+                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat)).start();
+            });
+        });
+    }
+
+    private void performConversion(File srcFile, String targetFormat) {
+
+        Path tempInputPath = null; // Sarà assegnato una volta
+        File tempInputFile = null; // Sarà assegnato una volta
+        File outputDestinationFile = null; // Sarà assegnato una volta
+        String srcExtension = getExtension(srcFile); // Assegnato una volta
+        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat; // Assegnato una volta
+
+        try {
+            // Crea una copia temporanea del file sorgente per la conversione
+            tempInputPath = Files.createTempFile("convert_input_", srcFile.getName());
+            Files.copy(srcFile.toPath(), tempInputPath, StandardCopyOption.REPLACE_EXISTING);
+            tempInputFile = tempInputPath.toFile();
+
+            // Determina il percorso del file di output FINALE
+            outputDestinationFile = new File(convertedFolderPath, outputFileName);
+            if (outputDestinationFile.getParentFile() != null && !outputDestinationFile.getParentFile().exists()) {
+                outputDestinationFile.getParentFile().mkdirs();
+            }
+
+            String password = null; // Potrebbe essere riassegnato, ma solo in un blocco if/else,
+            // il che lo rende "effectively final" per ogni percorso di esecuzione.
+            boolean mergeImages = false; // Stessa logica di password.
+
+            // Gestione dialoghi per PDF
+            if (srcExtension.equals("pdf")) {
+                password = launchDialogPdf();
+                if (targetFormat.equals("jpg")) {
+                    mergeImages = launchDialogUnisci();
+                }
+            }
+
+            // Dichiara `final` le variabili che verranno usate nelle lambda se il compilatore si lamenta,
+            // anche se sono già "effectively final". Questo serve come workaround esplicito.
+            final File finalOutputDestinationFile = outputDestinationFile;
+            final File finalSrcFile = srcFile; // Se srcFile dovesse causare problemi nella catch/finally
+
+            if (useWebService) {
+                // USA WEBSERVICE
+                addLogMessage("Avvio conversione tramite web service...");
+                ConversionResult result = webServiceClient.convertFile(tempInputFile, targetFormat, outputDestinationFile, password, mergeImages);
+
+                if (result.isSuccess()) {
+                    addLogMessage("Conversione completata tramite web service: " + result.getMessage());
+                    moveFileToSuccessFolder(finalSrcFile); // Usa la variabile final
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                        launchAlertSuccess(finalOutputDestinationFile); // Usa la variabile final
+                    });
+                } else {
+                    throw new Exception(result.getError());
+                }
+            } else {
+                // USA ENGINE LOCALE
+                try {
+                    addLogMessage("Avvio conversione tramite engine locale...");
+
+                    Path engineTempOutputDirectory = Files.createTempDirectory("engine_output_" + UUID.randomUUID().toString());
+                    final File engineTempOutputDirFile = engineTempOutputDirectory.toFile(); // Dichiara final se necessario
+
+                    File convertedFileFromEngine;
+
+                    if (password != null) {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile, password, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile, password);
+                        }
+                    } else {
+                        if (mergeImages && targetFormat.equals("jpg")) {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile, mergeImages);
+                        } else {
+                            engine.conversione(srcExtension, targetFormat, tempInputFile);
             result.ifPresent(format -> {
                 Log.addMessage("Formato selezionato: " + format + " per il file " + srcFile.getName());
                 try {
@@ -342,7 +661,61 @@ public class MainViewController {
                     stampaRisultati();
                 }
             });
-        });
+        } finally {
+            // Pulizia del file temporaneo di input, INDIPENDENTEMENTE da successo o fallimento
+            final Path finalTempInputPath = tempInputPath; // Rendi final per il blocco finally
+            try {
+                if (finalTempInputPath != null && Files.exists(finalTempInputPath)) {
+                    Files.delete(finalTempInputPath);
+                }
+            } catch (IOException cleanupEx) {
+                System.err.println("Errore nella pulizia del file di input temporaneo: " + cleanupEx.getMessage());
+            }
+        }
+    }
+
+    private void moveOriginalFileAfterSuccess(File originalFile) {
+        try {
+            if (originalFile.exists()) {
+                // Elimina il file originale dalla cartella monitorata
+                Files.delete(originalFile.toPath());
+                addLogMessage("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
+            }
+        } catch (Exception e) {
+            addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
+        }
+    }
+
+    // Questi metodi `moveFileTo...Folder` ora spostano il *file originale* dalla monitoredFolderPath
+    // Il file convertito/fallito è già stato gestito (salvato dal client o spostato dall'Engine)
+    private void moveFileToSuccessFolder(File originalMonitoredFile) {
+        try {
+            // Solo se il file esiste ancora nella cartella monitorata, spostalo
+            if (originalMonitoredFile.exists()) {
+                Path srcPath = originalMonitoredFile.toPath();
+                // Potresti voler spostare il file originale in una sottocartella "processed" di monitored,
+                // o semplicemente eliminarlo se non serve mantenerlo.
+                // Per ora, lo elimino dalla monitored folder dato che il risultato è altrove.
+                Files.delete(srcPath);
+                addLogMessage("File originale spostato (eliminato da monitored): " + srcPath);
+            }
+        } catch (Exception e) {
+            addLogMessage("Errore nello spostamento/eliminazione del file originale da monitored: " + e.getMessage());
+        }
+    }
+
+    private void moveFileToErrorFolder(File originalMonitoredFile) {
+        try {
+            // Solo se il file esiste ancora nella cartella monitorata, spostalo
+            if (originalMonitoredFile.exists()) {
+                Path srcPath = originalMonitoredFile.toPath();
+                Path destPath = Paths.get(failedFolderPath, originalMonitoredFile.getName());
+                Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                addLogMessage("File originale spostato in cartella errori: " + destPath);
+            }
+        } catch (Exception e) {
+            addLogMessage("Errore nello spostamento file originale in cartella errori: " + e.getMessage());
+        }
     }
 
     public void launchAlertError(String message) {
@@ -410,12 +783,41 @@ public class MainViewController {
         });
     }
 
-
+    /**
+     * Ritorna lo stage principale dell'applicazione.
+     *
+     * @return stage principale
+     */
     private Stage getPrimaryStage() {
         return (Stage) MonitoringBtn.getScene().getWindow();
     }
 
+    /**
+     * Setta il riferimento all'app principale.
+     *
+     * @param mainApp istanza MainApp
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+    }
+
+    @FXML
+    public void openConfig(ActionEvent actionEvent) {
+        openConfigurationWindow();
+    }
+
+    @FXML
+    public void loadFilesFolder(ActionEvent actionEvent) {
+        openFolder(monitoredFolderPath);
+    }
+
+    @FXML
+    public void openConvertedFolder(ActionEvent actionEvent) {
+        openFolder(convertedFolderPath);
+    }
+
+    @FXML
+    public void openFailedConvertionsFolder(ActionEvent actionEvent) {
+        openFolder(failedFolderPath);
     }
 }

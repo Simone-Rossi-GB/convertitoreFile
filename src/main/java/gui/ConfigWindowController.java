@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,16 +33,21 @@ import java.nio.file.Paths;
  */
 public class ConfigWindowController {
 
+    // Campi per le directory
     @FXML private TextField monitoredDirField;
     @FXML private TextField successDirField;
     @FXML private TextField errorDirField;
     @FXML private TextField monitorAtStartField;
+
+    // Pulsanti per sfogliare le directory
     @FXML private Button browseMonitoredBtn;
     @FXML private Button browseSuccessBtn;
     @FXML private Button browseErrorBtn;
     @FXML private Button toggleMonitorBtn;
+
+    // Area per le conversioni JSON (sola lettura)
     @FXML private TextArea conversionsTextArea;
-    @FXML private Label statusLabel;
+    @FXML private Label monitoringStatusLabel;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
@@ -55,27 +61,30 @@ public class ConfigWindowController {
      */
     @FXML
     private void initialize() {
-        setupTextArea();
-        setupDirectoryFields();
-    }
-
-    /**
-     * Configura l'aspetto del campo conversionsTextArea.
-     */
-    private void setupTextArea() {
-        conversionsTextArea.setStyle("-fx-font-family: 'Consolas'; -fx-font-size: 13px; -fx-background-color: #f8f9fa; -fx-text-fill: #2c3e50;");
+        // Configura il TextArea per la visualizzazione (sola lettura)
+        conversionsTextArea.setStyle("-fx-font-family: 'Consolas', 'Monaco', monospace; " +
+                "-fx-font-size: 13px; " +
+                "-fx-background-color: #f8f9fa; " +
+                "-fx-text-fill: #2c3e50; " +
+                "-fx-border-color: transparent;");
         conversionsTextArea.setEditable(false);
+
+        // Configura i campi di testo per le directory
+        setupDirectoryFields();
     }
 
     /**
      * Applica stile e validazione ai campi directory.
      */
     private void setupDirectoryFields() {
-        TextField[] fields = {monitoredDirField, successDirField, errorDirField};
-        for (TextField field : fields) {
-            field.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
-            field.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, field));
-        }
+        monitoredDirField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        successDirField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        errorDirField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+
+        // Listener per validazione dei percorsi in tempo reale
+        monitoredDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, monitoredDirField));
+        successDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, successDirField));
+        errorDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, errorDirField));
     }
 
     /**
@@ -115,6 +124,7 @@ public class ConfigWindowController {
      */
     private void loadCurrentConfiguration() {
         try {
+            // Carica i campi principali dalla configurazione
             monitoredDirField.setText(engine.getConverterConfig().getMonitoredDir());
             successDirField.setText(engine.getConverterConfig().getSuccessOutputDir());
             errorDirField.setText(engine.getConverterConfig().getErrorOutputDir());
@@ -123,12 +133,15 @@ public class ConfigWindowController {
             monitorAtStartField.setText(String.valueOf(monitorAtStart));
             updateMonitorToggleButton();
 
+            // Carica solo la sezione conversions nel TextArea
             String fullConfig = engine.getConfigAsJson();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonObject configJson = JsonParser.parseString(fullConfig).getAsJsonObject();
 
             if (configJson.has("conversions")) {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                conversionsTextArea.setText(gson.toJson(configJson.get("conversions")));
+                JsonObject conversions = configJson.getAsJsonObject("conversions");
+                String conversionsString = gson.toJson(conversions);
+                conversionsTextArea.setText(conversionsString);
             }
 
             updateStatus("Configurazione caricata", false);
@@ -140,16 +153,25 @@ public class ConfigWindowController {
         }
     }
 
+    /**
+     * Sfoglia per selezionare la directory monitorata.
+     */
     @FXML
     private void browseMonitoredDirectory(ActionEvent event) {
         browseDirectory("Seleziona Cartella da Monitorare", monitoredDirField);
     }
 
+    /**
+     * Sfoglia per selezionare la directory di successo.
+     */
     @FXML
     private void browseSuccessDirectory(ActionEvent event) {
         browseDirectory("Seleziona Cartella File Convertiti", successDirField);
     }
 
+    /**
+     * Sfoglia per selezionare la directory degli errori.
+     */
     @FXML
     private void browseErrorDirectory(ActionEvent event) {
         browseDirectory("Seleziona Cartella Errori", errorDirField);
@@ -162,18 +184,25 @@ public class ConfigWindowController {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(title);
 
-        File currentDir = new File(targetField.getText().trim());
-        if (currentDir.exists()) {
-            directoryChooser.setInitialDirectory(currentDir);
+        // Imposta la directory iniziale se il campo contiene un percorso valido
+        String currentPath = targetField.getText().trim();
+        if (!currentPath.isEmpty()) {
+            File currentDir = new File(currentPath);
+            if (currentDir.exists() && currentDir.isDirectory()) {
+                directoryChooser.setInitialDirectory(currentDir);
+            }
         }
 
-        File selected = directoryChooser.showDialog(dialogStage);
-        if (selected != null) {
-            Log.addMessage("Selezionata directory: " + selected.getAbsolutePath());
-            targetField.setText(selected.getAbsolutePath());
+        File selectedDirectory = directoryChooser.showDialog(dialogStage);
+        if (selectedDirectory != null) {
+            Log.addMessage("Selezionata directory: " + selectedDirectory.getAbsolutePath());
+            targetField.setText(selectedDirectory.getAbsolutePath());
         }
     }
 
+    /**
+     * Cambia il valore del monitoraggio all'avvio.
+     */
     @FXML
     private void toggleMonitorAtStart(ActionEvent event) {
         monitorAtStart = !monitorAtStart;
@@ -185,68 +214,101 @@ public class ConfigWindowController {
      * Aggiorna l'interfaccia in base allo stato monitorAtStart.
      */
     private void updateMonitorToggleButton() {
-        toggleMonitorBtn.setText(monitorAtStart ? "Disabilita" : "Abilita");
-        toggleMonitorBtn.setStyle(monitorAtStart ? "-fx-background-color: #e74c3c; -fx-text-fill: white;" : "-fx-background-color: #27ae60; -fx-text-fill: white;");
-        monitorAtStartField.setStyle(monitorAtStart ? "-fx-background-color: #d5f4e6; -fx-text-fill: #27ae60;" : "-fx-background-color: #fadbd8; -fx-text-fill: #e74c3c;");
+        if (monitorAtStart) {
+            toggleMonitorBtn.setText("Disabilita");
+            toggleMonitorBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
+            monitorAtStartField.setStyle("-fx-background-color: #d5f4e6; -fx-text-fill: #27ae60; -fx-font-weight: bold;");
+        } else {
+            toggleMonitorBtn.setText("Abilita");
+            toggleMonitorBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
+            monitorAtStartField.setStyle("-fx-background-color: #fadbd8; -fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+        }
     }
 
     /**
      * Verifica che tutte le directory siano valide o tenti di crearle se mancanti.
      */
     private boolean validateDirectories() {
-        String[][] dirData = {
-                {monitoredDirField.getText().trim(), "Cartella Monitorata"},
-                {successDirField.getText().trim(), "Cartella Success"},
-                {errorDirField.getText().trim(), "Cartella Error"}
+        String[] directories = {
+                monitoredDirField.getText().trim(),
+                successDirField.getText().trim(),
+                errorDirField.getText().trim()
         };
 
-        for (String[] pair : dirData) {
-            String path = pair[0];
-            String label = pair[1];
+        String[] labels = {
+                "Cartella Monitorata",
+                "Cartella Success",
+                "Cartella Error"
+        };
 
-            if (path.isEmpty()) {
-                updateStatus(label + " non specificata!", true);
-                Log.addMessage("ERRORE: " + label + " non specificata");
-                showAlert("Errore di validazione", label + " deve essere specificata.", Alert.AlertType.ERROR);
+        for (int i = 0; i < directories.length; i++) {
+            if (directories[i].isEmpty()) {
+                updateStatus(labels[i] + " non specificata!", true);
+                Log.addMessage("ERRORE: " + labels[i] + " non specificata");
+                showAlert("Errore di validazione", labels[i] + " deve essere specificata.", Alert.AlertType.ERROR);
                 return false;
             }
+
+            // Crea la directory se non esiste
             try {
-                Path dirPath = Paths.get(path);
-                if (!Files.exists(dirPath)) {
-                    Files.createDirectories(dirPath);
+                Path path = Paths.get(directories[i]);
+                if (!Files.exists(path)) {
+                    Files.createDirectories(path);
                     Log.addMessage("Creata directory mancante: " + path);
-                    updateStatus("Creata directory: " + path, false);
+                    updateStatus("Creata directory: " + directories[i], false);
                 }
             } catch (IOException e) {
-                Log.addMessage("ERRORE: impossibile creare la directory " + path + " - " + e.getMessage());
-                updateStatus("Errore nella creazione directory: " + path, true);
-                showAlert("Errore", "Impossibile creare la directory: " + path, Alert.AlertType.ERROR);
+                Log.addMessage("ERRORE: impossibile creare la directory " + directories[i] + " - " + e.getMessage());
+                updateStatus("Impossibile creare directory: " + directories[i], true);
+                showAlert("Errore", "Impossibile creare la directory: " + directories[i], Alert.AlertType.ERROR);
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * Salva la configurazione modificata.
+     */
     @FXML
     private void saveConfiguration(ActionEvent event) {
-        if (!validateDirectories()) return;
         try {
-            JsonObject configJson = JsonParser.parseString(engine.getConfigAsJson()).getAsJsonObject();
-            configJson.addProperty("successOutputDir", successDirField.getText().trim());
-            configJson.addProperty("errorOutputDir", errorDirField.getText().trim());
-            configJson.addProperty("monitoredDir", monitoredDirField.getText().trim());
-            configJson.addProperty("monitorAtStart", monitorAtStart);
+            // Valida le directory prima di salvare
+            if (!validateDirectories()) {
+                return;
+            }
 
-            String jsonOut = new GsonBuilder().setPrettyPrinting().create().toJson(configJson);
-            engine.setConfigFromJson(jsonOut);
+            // Costruisci il JSON completo mantenendo le conversioni originali
+            String originalConfig = engine.getConfigAsJson();
+            JsonObject originalConfigJson = JsonParser.parseString(originalConfig).getAsJsonObject();
 
+            // Aggiorna solo i campi modificabili
+            originalConfigJson.addProperty("successOutputDir", successDirField.getText().trim());
+            originalConfigJson.addProperty("errorOutputDir", errorDirField.getText().trim());
+            originalConfigJson.addProperty("monitoredDir", monitoredDirField.getText().trim());
+            originalConfigJson.addProperty("monitorAtStart", monitorAtStart);
+
+            // Formatta e salva
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String configJson = gson.toJson(originalConfigJson);
+
+            engine.setConfigFromJson(configJson);
             Log.addMessage("Configurazione salvata con successo");
             updateStatus("Configurazione salvata con successo!", false);
-            if (mainController != null) mainController.addLogMessage("Configurazione aggiornata");
+
+            if (mainController != null) {
+                mainController.addLogMessage("Configurazione aggiornata dall'editor");
+            }
+
             showAlert("Successo", "Configurazione salvata con successo!", Alert.AlertType.INFORMATION);
 
+            // Chiudi la finestra dopo un breve delay
             Platform.runLater(() -> {
-                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
                 dialogStage.close();
             });
 
@@ -257,52 +319,90 @@ public class ConfigWindowController {
         }
     }
 
+    /**
+     * Verifica se una stringa è un JSON valido.
+     */
+    private boolean isValidJson(String jsonString) {
+        try {
+            JsonParser.parseString(jsonString);
+            return true;
+        } catch (JsonSyntaxException e) {
+            return false;
+        }
+    }
+
+
+
+    /**
+     * Chiude la finestra senza salvare.
+     */
     @FXML
     private void cancelAndClose(ActionEvent event) {
-        if (hasUnsavedChanges()) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            Log.addMessage("Tentativo di chiusura con modifiche non salvate");
-            alert.setTitle("Modifiche non salvate");
-            alert.setContentText("Chiudere senza salvare?");
-            alert.showAndWait().ifPresent(response -> {
-                if (response.getButtonData().isDefaultButton()) dialogStage.close();
-            });
-        } else {
-            Log.addMessage("Finestra di configurazione chiusa senza modifiche");
+        try {
+            // Controlla se ci sono modifiche non salvate
+            if (hasUnsavedChanges()) {
+                Log.addMessage("Tentativo di chiusura con modifiche non salvate");
+                Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmAlert.setTitle("Modifiche non salvate");
+                confirmAlert.setHeaderText("Ci sono modifiche non salvate");
+                confirmAlert.setContentText("Sei sicuro di voler chiudere senza salvare?");
+
+                confirmAlert.showAndWait().ifPresent(response -> {
+                    if (response.getButtonData().isDefaultButton()) {
+                        dialogStage.close();
+                    }
+                });
+            } else {
+                Log.addMessage("Finestra di configurazione chiusa senza modifiche");
+                dialogStage.close();
+            }
+        } catch (Exception e) {
             dialogStage.close();
+            showAlert("Attenzione", "Impossibile verificare le modifiche. Chiudo la finestra.", Alert.AlertType.WARNING);
         }
     }
 
     /**
-     * Verifica se ci sono modifiche non salvate nella configurazione.
+     * Verifica se ci sono modifiche non salvate.
      */
     private boolean hasUnsavedChanges() {
         try {
-            return !engine.getConverterConfig().getMonitoredDir().equals(monitoredDirField.getText().trim()) ||
-                    !engine.getConverterConfig().getSuccessOutputDir().equals(successDirField.getText().trim()) ||
-                    !engine.getConverterConfig().getErrorOutputDir().equals(errorDirField.getText().trim()) ||
-                    engine.getConverterConfig().getMonitorAtStart() != monitorAtStart;
+            // Controlla i campi directory
+            String currentMonitored = engine.getConverterConfig().getMonitoredDir();
+            String currentSuccess = engine.getConverterConfig().getSuccessOutputDir();
+            String currentError = engine.getConverterConfig().getErrorOutputDir();
+            boolean currentMonitorAtStart = engine.getConverterConfig().getMonitorAtStart();
+
+            return !currentMonitored.equals(monitoredDirField.getText().trim()) ||
+                    !currentSuccess.equals(successDirField.getText().trim()) ||
+                    !currentError.equals(errorDirField.getText().trim()) ||
+                    currentMonitorAtStart != monitorAtStart;
+
         } catch (Exception e) {
-            return true;
+            return true; // In caso di errore, assumi che ci siano modifiche
         }
     }
 
     /**
-     * Mostra un messaggio nello statusLabel.
+     * Aggiorna il label di stato.
      */
     private void updateStatus(String message, boolean isError) {
         Platform.runLater(() -> {
-            statusLabel.setText(message);
-            statusLabel.setStyle("-fx-text-fill: " + (isError ? "#e74c3c" : "#27ae60") + "; -fx-font-weight: bold;");
+            monitoringStatusLabel.setText(message);
+            if (isError) {
+                monitoringStatusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+            } else {
+                monitoringStatusLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+            }
         });
     }
 
     /**
-     * Mostra un alert generico.
+     * Mostra un alert.
      */
-    private void showAlert(String title, String message, Alert.AlertType type) {
+    private void showAlert(String title, String message, Alert.AlertType alertType) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(type);
+            Alert alert = new Alert(alertType);
             alert.setTitle(title);
             alert.setHeaderText(null);
             alert.setContentText(message);

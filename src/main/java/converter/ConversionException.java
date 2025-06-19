@@ -1,4 +1,4 @@
-package Exceptions;
+package converter;
 
 public class ConversionException extends RuntimeException {
     public ConversionException(String message) {

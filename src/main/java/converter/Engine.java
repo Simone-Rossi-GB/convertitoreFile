@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Engine {
     private ConverterConfig config;
-    private static final String CONFIG_FILE_PATH = "src/main/java/converter/config/config.json";
+    private static final String CONFIG_FILE_PATH = System.getProperty("user.dir") + "/src/main/java/converter/config/config.json";
 
     /**
      * Costruttore: carica il file config.json
@@ -51,20 +51,37 @@ public class Engine {
     }
 
     /**
-     * Modifica config.json in base alla stringa ricevuta
      * @param jsonText testo da aggiungere a config.json
-     * @throws IOException Errore scrittura sul file di configurazione
-     * @throws RuntimeException Errore caricamento nuova configurazione
+     * @throws Exception Errore scrittura sul file di configurazione
      */
     public void setConfigFromJson(String jsonText) throws Exception {
+        // Prima valida che il JSON sia corretto
+        try {
+            Gson gson = new Gson();
+            ConverterConfig testConfig = gson.fromJson(jsonText, ConverterConfig.class);
+            if (testConfig == null) {
+                throw new Exception("JSON non valido: impossibile parsare la configurazione");
+            }
+        } catch (Exception e) {
+            Log.addMessage("ERRORE: JSON non valido");
+            throw new Exception("Il JSON fornito non è valido: " + e.getMessage(), e);
+        }
+
+        // Scrivi il file
         try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
             writer.write(jsonText);
+            writer.flush(); // Assicurati che i dati siano scritti
             Log.addMessage("Scrittura su config.json completata");
-            setConfig();
         } catch (IOException e) {
             Log.addMessage("ERRORE: Scrittura su config.json fallita");
             throw new Exception("Errore nella scrittura del file di configurazione: " + e.getMessage(), e);
-        } catch (RuntimeException e) {
+        }
+
+        // Ricarica la configurazione
+        try {
+            setConfig();
+            Log.addMessage("Configurazione ricaricata con successo");
+        } catch (Exception e) {
             Log.addMessage("ERRORE: Caricamento della nuova configurazione fallito");
             throw new Exception("Errore nel caricamento della nuova configurazione: " + e.getMessage(), e);
         }
