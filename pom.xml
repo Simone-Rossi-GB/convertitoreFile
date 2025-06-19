@@ -197,6 +197,11 @@
             <artifactId>imageio-xwd</artifactId>
             <version>${twelvemonkeys.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-tiff</artifactId>
+            <version>${twelvemonkeys.version}</version>
+        </dependency>
         <!-- WebP separato -->
         <dependency>
             <groupId>org.sejda.imageio</groupId>
