@@ -404,11 +404,35 @@ public class MainViewController {
                 outputDestinationFile.getParentFile().mkdirs();
             }
 
-            // Gestione dialoghi per PDF (fatto una sola volta)
+            // CORREZIONE: Gestione dialoghi per PDF (eseguiti nel thread JavaFX)
             if (srcExtension.equals("pdf")) {
-                password = launchDialogPdf();
-                if (targetFormat.equals("jpg")) {
-                    mergeImages = launchDialogUnisci();
+                // Usa CountDownLatch per sincronizzare i thread
+                java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+                java.util.concurrent.atomic.AtomicReference<String> passwordRef = new java.util.concurrent.atomic.AtomicReference<>();
+                java.util.concurrent.atomic.AtomicBoolean mergeImagesRef = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+                Platform.runLater(() -> {
+                    try {
+                        // Chiedi la password nel thread JavaFX
+                        passwordRef.set(launchDialogPdfSync());
+
+                        // Se il target è JPG, chiedi se unire le immagini
+                        if (targetFormat.equals("jpg")) {
+                            mergeImagesRef.set(launchDialogUnisciSync());
+                        }
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+
+                // Aspetta che i dialoghi siano completati
+                try {
+                    latch.await();
+                    password = passwordRef.get();
+                    mergeImages = mergeImagesRef.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new Exception("Operazione interrotta dall'utente");
                 }
             }
 
@@ -560,9 +584,7 @@ public class MainViewController {
         });
     }
 
-    public boolean launchDialogUnisci() {
-        AtomicBoolean unisci = new AtomicBoolean(false);
-
+    private boolean launchDialogUnisciSync() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Unisci PDF");
         alert.setHeaderText(null);
@@ -573,12 +595,21 @@ public class MainViewController {
         alert.getButtonTypes().setAll(siBtn, noBtn);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == siBtn) {
-            unisci.set(true);
-        }
-        Log.addMessage("Scelta unione JPG: " + unisci.get());
+        boolean unisci = result.isPresent() && result.get() == siBtn;
+        Log.addMessage("Scelta unione JPG: " + unisci);
+        return unisci;
+    }
 
-        return unisci.get();
+    private String launchDialogPdfSync() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Password PDF");
+        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
+        dialog.setContentText("Password:");
+
+        Optional<String> result = dialog.showAndWait();
+        String password = result.orElse(null);
+        Log.addMessage("Password ricevuta: " + (password == null || password.isEmpty() ? "(vuota)" : "(nascosta)"));
+        return password;
     }
 
     public String launchDialogPdf() {
