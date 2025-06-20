@@ -18,22 +18,12 @@ public class JSONtoXLSXconverter implements Converter {
 
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException, DocumentException {
-        return convertInternal(srcFile, null, false);
+        return convertInternal(srcFile);
     }
 
-    @Override
-    public ArrayList<File> convert(File srcFile, String password) throws IOException, DocumentException {
-        // Password is not used in this converter, but included for interface compatibility
-        return convertInternal(srcFile, password, false);
-    }
 
-    @Override
-    public ArrayList<File> convert(File srcFile, boolean opzioni) throws IOException, DocumentException {
-        // Boolean option is not used here but could be expanded (e.g., pretty format)
-        return convertInternal(srcFile, null, opzioni);
-    }
 
-    private ArrayList<File> convertInternal(File jsonFile, String password, boolean optionFlag) throws IOException {
+    private ArrayList<File> convertInternal(File jsonFile) throws IOException {
         List<Map<String, Object>> data = objectMapper.readValue(
                 jsonFile, new TypeReference<List<Map<String, Object>>>() {}
         );

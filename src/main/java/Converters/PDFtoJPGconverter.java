@@ -2,8 +2,11 @@ package Converters;
 
 import converter.Log;
 import converter.Utility;
+import gui.MainViewController;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,15 +17,17 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 public class PDFtoJPGconverter extends AbstractPDFConverter {
+
+    private static final Logger logger = LogManager.getLogger(PDFtoJPGconverter.class);
+
     private static final int DPI = 300; // DPI dell'immagine renderizzata
-    private static final int MAX_PAGES = 3; //numero massimo di pagine
+    private static final int MAX_PAGES = 3; // numero massimo di pagine
 
     /**
      * Metodo per unire le pagine del pdf una sotto l'altra in un'unica immagine
+     *
      * @param images Immagini relative alle singole pagine del pdf
      * @return BufferedImage con tutte le pagine del pdf
      */
@@ -56,25 +61,31 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
 
     /**
      * Conversione pdf -> jpg
-     * @param pdfFile File di partenza
+     *
+     * @param pdfFile     File di partenza
      * @param pdfDocument Documento pdf caricato
-     * @param union Boolean che indica se unire o no le pagine in un'unica immagine
      * @return ArrayList di file convertiti
      * @throws Exception Errore durante il processo di conversione
      */
     @Override
-    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
+    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+        boolean union = MainViewController.launchDialogUnisci();
         validateInputs(pdfFile, pdfDocument);
-        Log.addMessage("[PDFtoJPG] Conversione iniziata con parametri:\n" +
-                "| pdfFile.getPath() = " + pdfFile.getPath()+"\n" +
+
+        logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
+        Log.addMessage("Conversione iniziata con parametri:\n" +
+                "| pdfFile.getPath() = " + pdfFile.getPath() + "\n" +
                 "| union = " + union);
+
         int nPages = pdfDocument.getNumberOfPages();
-        try{
+
+        try {
             PDFRenderer renderer = new PDFRenderer(pdfDocument);
             ArrayList<BufferedImage> images = new ArrayList<>();
             ArrayList<File> outputFiles = new ArrayList<>();
 
-            String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", "")); // senza estensione
+            String baseName = Objects.requireNonNull(pdfFile.getName().replaceAll("(?i)\\.pdf$", ""));
+
             for (int i = 0; i < nPages; i++) {
                 BufferedImage image = renderer.renderImageWithDPI(i, DPI);
                 images.add(image);
@@ -93,8 +104,10 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
                 ImageIO.write(mergedImage, "jpg", mergedFile);
                 outputFiles.add(mergedFile);
             }
+
             pdfDocument.close();
-            if (outputFiles.size() > 1){
+
+            if (outputFiles.size() > 1) {
                 Log.addMessage("Compressione delle immagini generate in output");
                 File zippedImages = Utility.zipper(outputFiles);
                 zippedImages = rinominaFileZip(zippedImages, baseName);
@@ -102,9 +115,13 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
                 outputFiles.add(zippedImages);
                 rinominaFileZip(zippedImages, baseName);
             }
+
+            logger.info("Conversione completata, {} file prodotti", outputFiles.size());
             return outputFiles;
-        }catch (Exception e){
-            throw new Exception("Errore durante il processo di conversione: " + e.getMessage());
+
+        } catch (Exception e) {
+            logger.error("Durante il processo di conversione: {}", e.getMessage(), e);
+            throw new Exception("Errore durante il processo di conversione: " + e.getMessage(), e);
         } finally {
             pdfDocument.close();
         }
@@ -115,18 +132,21 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      * @param nPages Numero di pagine del docoumento
      * @throws Exception Il documento ha troppe pagine
      */
-    private void validatePages(int nPages) throws Exception{
-        if (nPages > MAX_PAGES)
+    private void validatePages(int nPages) throws Exception {
+        if (nPages > MAX_PAGES) {
+            logger.warn("File con troppe pagine: {}", nPages);
             throw new Exception("Il file ha troppe pagine");
+        }
     }
-    private File rinominaFileZip(File zipFile, String name)throws Exception{
+
+    private File rinominaFileZip(File zipFile, String name) throws Exception {
         File renamedZip = new File(zipFile.getParent(), name + ".zip");
         try {
             Files.move(zipFile.toPath(), renamedZip.toPath(), StandardCopyOption.REPLACE_EXISTING);
             return renamedZip;
         } catch (IOException e) {
+            logger.error("Impossibile rinominare il file ZIP: {}", e.getMessage(), e);
             throw new Exception("Impossibile rinominare il file ZIP: " + e.getMessage(), e);
         }
     }
-
 }

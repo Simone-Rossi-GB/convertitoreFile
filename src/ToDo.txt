@@ -5,7 +5,7 @@ JSON
 
 2. Chiedere password / flag / altre opzioni nelle classi e non nel codice
 
-3.  Chiedere se zippare a partire dal json
+3. Chiedere se zippare a partire dal json
 
 4. più file insieme (chiedere a yassin)
 

@@ -20,17 +20,6 @@ public class JSONtoXLSconverter implements Converter {
         return convertJSONtoXLS(srcFile);
     }
 
-    @Override
-    public ArrayList<File> convert(File srcFile, String password) throws IOException, DocumentException {
-        // Password non usata per XLS, ma metodo richiesto dall'interfaccia
-        return convertJSONtoXLS(srcFile);
-    }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, boolean opzioni) throws IOException, DocumentException {
-        // Opzioni non usate in questo esempio
-        return convertJSONtoXLS(srcFile);
-    }
 
     private ArrayList<File> convertJSONtoXLS(File jsonFile) throws IOException {
         ArrayList<File> result = new ArrayList<>();
@@ -87,4 +76,3 @@ public class JSONtoXLSconverter implements Converter {
         return (index > 0) ? filename.substring(0, index) : filename;
     }
 }
-
