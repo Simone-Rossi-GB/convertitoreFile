@@ -67,22 +67,28 @@ public abstract class AbstractPDFConverter implements Converter{
             throw new IllegalArgumentException("Il file PDF non può essere nullo");
         }
         PDDocument pdf = null;
+
         try {
-            if (password == null) {
+            if (password == null || password.isEmpty()) {
                 pdf = PDDocument.load(pdfFile);
             } else {
                 pdf = PDDocument.load(pdfFile, password);
             }
+        } catch (Exception e) {
+            if (password == null || password.isEmpty()) {
+                throw new Exception("File protetto da password: " + e.getMessage());
+            } else {
+                throw new Exception("Password errata");
+            }
+        }
+
+        try{
             if(union == null)
                 return convertInternal(pdfFile, pdf);
             else
                 return convertInternal(pdfFile, pdf, union);
         } catch (Exception e) {
-            if (password == null) {
-                throw new Exception("File protetto da password");
-            } else {
-                throw new Exception("Password errata");
-            }
+            throw new Exception(e.getMessage());
         } finally {
             if (pdf != null) {
                 pdf.close();
