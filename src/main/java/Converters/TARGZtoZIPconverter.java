@@ -10,11 +10,15 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
 import java.io.*;
 import java.util.ArrayList;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Convertitore che trasforma un archivio .tar.gz in un file .zip
  */
 public class TARGZtoZIPconverter implements Converter {
+
+    private static final Logger logger = LogManager.getLogger(TARGZtoZIPconverter.class);
 
     /**
      * Converte un file tar.gz in un archivio zip
@@ -26,6 +30,7 @@ public class TARGZtoZIPconverter implements Converter {
     public ArrayList<File> convert(File tarGzFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
 
+        logger.info("Inizio conversione con parametri: \n | tarGz.getPath() = {}", tarGzFile.getPath());
         Log.addMessage("Inizio conversione tarGz: " + tarGzFile.getName() + " -> .zip");
 
         String directoryPath = "src/temp/";
@@ -51,6 +56,7 @@ public class TARGZtoZIPconverter implements Converter {
                     try {
                         Utility.copy(tarIn, zipOut);
                     } catch (IOException e) {
+                        logger.error("Impossibile copiare l'entry {} nell'archivio zip: {}", entry.getName(), e.getMessage(), e);
                         Log.addMessage("ERRORE: impossibile copiare l'entry " + entry.getName() + " nell'archivio zip.");
                         throw e;
                     }
@@ -59,10 +65,12 @@ public class TARGZtoZIPconverter implements Converter {
                 zipOut.closeArchiveEntry();
             }
 
+            logger.info("Creazione file .zip completata: {}", zipFile.getName());
             Log.addMessage("Creazione file .zip completata: " + zipFile.getName());
             outputFiles.add(zipFile);
 
         } catch (IOException e) {
+            logger.error("Errore durante la conversione del file tar.gz: {}", e.getMessage(), e);
             Log.addMessage("ERRORE: problema durante la conversione del file tar.gz.");
             throw e;
         }

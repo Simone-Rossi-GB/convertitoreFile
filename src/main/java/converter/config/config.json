@@ -2,7 +2,7 @@
   "successOutputDir": "src/output/success",
   "errorOutputDir": "src/output/error",
   "monitoredDir": "src/input",
-  "monitorAtStart": false,
+  "monitorAtStart": true,
   "conversions": {
     "pdf": {
       "doc": "Converters.PDFtoDOCconverter",
@@ -34,7 +34,7 @@
       "pdf": "Converters.TXTtoPDFconverter"
     },
     "zip": {
-      "targz": "Converters.ZIPtoTARGZconverter"
+      "tar.gz": "Converters.ZIPtoTARGZconverter"
     },
     "gz": {
       "zip": "Converters.TARGZtoZIPconverter"

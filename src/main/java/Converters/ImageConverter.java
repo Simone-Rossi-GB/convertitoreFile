@@ -1,4 +1,4 @@
-package Converters;
+/*package Converters;
 
 import com.itextpdf.text.DocumentException;
 import converter.Log;
@@ -12,16 +12,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
  */
-public class ImageConverter implements Converter {
-
+/*public class ImageConverter implements Converter {
+    private static final Logger logger = LogManager.getLogger(ImageConverter.class);
     /**
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
-    @Override
+    /*@Override
     public ArrayList<File> convert(File imgFile, String estensione) throws IOException, DocumentException {
         ArrayList<File> files = new ArrayList<>();
         if (estensione != null) {
@@ -29,11 +31,13 @@ public class ImageConverter implements Converter {
                 File result = imageConversion(imgFile, estensione);
                 files.add(result);
             } catch (IOException e) {
-                Log.addMessage("ERRORE: conversione immagine fallita per " + imgFile.getName());
+                logger.error("Conversione immagine fallita per:{}", imgFile.getName());
+                Log.addMessage("[IMG] ERRORE: conversione immagine fallita per " + imgFile.getName());
                 throw e;
             }
         } else {
-            Log.addMessage("ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
+            logger.error("Formato immagine non riconosciuto nel nome del file {}", imgFile.getName());
+            Log.addMessage("[IMG] ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
         }
 
         return files;
@@ -42,8 +46,9 @@ public class ImageConverter implements Converter {
     /**
      * Metodo principale per la conversione dell'immagine nel formato desiderato
      */
-    public static File imageConversion(File imgFile, String targetFormat) throws IOException {
-        Log.addMessage("Inizio conversione immagine: " +
+    /*public static File imageConversion(File imgFile, String targetFormat) throws IOException {
+        logger.info("Inizio conversione immagine:\n | {} -> .{}", imgFile.getName(), targetFormat);
+        Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
 
         List<String> formatsWithAlpha = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
@@ -57,6 +62,7 @@ public class ImageConverter implements Converter {
         if (originalExtension.equals("ico")) {
             List<BufferedImage> images = ICODecoder.read(imgFile);
             if (images.isEmpty()) {
+                logger.error("Nessuna immagine valida trovata nel file ICO.");
                 Log.addMessage("ERRORE: nessuna immagine valida trovata nel file ICO.");
                 throw new IOException("File ICO non valido: " + imgFile.getName());
             }
@@ -72,12 +78,14 @@ public class ImageConverter implements Converter {
 
             outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
             ICOEncoder.write(largest, outFile);
+            logger.info("Creazione file .{} completata: {}", targetFormat, outFile.getName());
             Log.addMessage("Creazione file ." + targetFormat + " completata: " + outFile.getName());
             return outFile;
 
         } else {
             image = ImageIO.read(imgFile);
             if (image == null) {
+                logger.error("Lettura immagine fallita - formato non supportato o file corrotto.");
                 Log.addMessage("ERRORE: lettura immagine fallita - formato non supportato o file corrotto.");
                 throw new IOException("Immagine non valida: " + imgFile.getName());
             }
@@ -89,21 +97,26 @@ public class ImageConverter implements Converter {
         }
 
         outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
+        logger.info("File temporaneo creato correttamente");
+        Log.addMessage("[IMG] File temporaneo creato correttamente");
 
         if (targetFormat.equalsIgnoreCase("ico")) {
             ICOEncoder.write(image, outFile);
         } else {
             ImageIO.write(image, targetFormat, outFile);
+            logger.info("File in uscita scritto correttamente");
+            Log.addMessage("[IMG] File in uscita scritto correttamente");
         }
 
-        Log.addMessage("Creazione file ." + targetFormat + " completata: " + outFile.getName());
+        logger.info("Creazione file .{} completata: {}", targetFormat, outFile.getName());
+        Log.addMessage("[IMG] Creazione file ." + targetFormat + " completata: " + outFile.getName());
         return outFile;
     }
 
     /**
      * Estrae il nome del file senza estensione
      */
-    private static String getBaseName(File inputFile) {
+    /*private static String getBaseName(File inputFile) {
         String fileName = inputFile.getName();
         int dotIndex = fileName.lastIndexOf('.');
         return (dotIndex > 0) ? fileName.substring(0, dotIndex) : fileName;
@@ -112,7 +125,7 @@ public class ImageConverter implements Converter {
     /**
      * Estrae l'estensione del file in minuscolo
      */
-    private static String getExtension(File inputFile) {
+    /*private static String getExtension(File inputFile) {
         String fileName = inputFile.getName();
         int dotIndex = fileName.lastIndexOf('.');
         return (dotIndex > 0) ? fileName.substring(dotIndex + 1).toLowerCase() : "";
@@ -121,8 +134,9 @@ public class ImageConverter implements Converter {
     /**
      * Rimuove il canale alpha da un'immagine, riempiendo con sfondo bianco
      */
-    private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
-        Log.addMessage("Rimozione canale alpha da immagine");
+    /*private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
+        logger.info("Rimozione canale alpha da immagine");
+        Log.addMessage("[IMG] Rimozione canale alpha da immagine");
 
         BufferedImage copy = new BufferedImage(
                 inImage.getWidth(), inImage.getHeight(),
@@ -136,4 +150,4 @@ public class ImageConverter implements Converter {
 
         return copy;
     }
-}
+}*/

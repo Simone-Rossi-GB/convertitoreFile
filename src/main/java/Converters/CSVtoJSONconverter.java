@@ -12,16 +12,23 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 public class CSVtoJSONconverter implements Converter {
+
+    private static final Logger logger = LogManager.getLogger(CSVtoJSONconverter.class);
     /**
      * Converte un file CSV in un file JSON con delimitatore rilevato automaticamente.
      * Ogni riga del CSV diventa un oggetto JSON.
      */
     public ArrayList<File> convert(File srcFile) throws IOException {
+        logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
         Log.addMessage("Inizio conversione CSV: " + srcFile.getName() + " → .json");
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {
+            logger.error("Il file CSV è vuoto → {}", srcFile.getName());
             Log.addMessage("Errore: Il file CSV è vuoto → " + srcFile.getName());
             throw new IOException("Il file CSV è vuoto: " + srcFile.getName());
         }
@@ -39,11 +46,13 @@ public class CSVtoJSONconverter implements Converter {
 
             String[] values = splitCsvLine(rawLine, delimiter);
             if (values.length < headers.length) {
+                logger.warn("Riga {} con celle insufficienti → Skippata", i + 1);
                 Log.addMessage("Attenzione: Riga " + (i + 1) + " con celle insufficienti → Skippata");
                 continue;
             }
 
             if (values.length > headers.length) {
+                logger.warn("Riga {} con celle extra → Verranno ignorate", i + 1);
                 Log.addMessage("Attenzione: Riga " + (i + 1) + " con celle extra → Verranno ignorate");
             }
 
@@ -65,10 +74,11 @@ public class CSVtoJSONconverter implements Converter {
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(output, jsonArray);
         } catch (IOException e) {
+            logger.error("Durante la scrittura del file JSON: {}", output.getName());
             Log.addMessage("Errore durante la scrittura del file JSON: " + output.getName());
             throw e;
         }
-
+        logger.info("File JSON creato: {}", output.getName());
         Log.addMessage("File JSON creato: " + output.getName());
         return new ArrayList<File>() {{
             add(output);

@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.util.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class XLSXtoJSONconverter implements Converter {
-
+    private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
     /**
      * Converte un file .xlsx in un file .json
      * @param excelFile il file Excel (.xlsx) in input
@@ -87,6 +89,7 @@ public class XLSXtoJSONconverter implements Converter {
 
     @Override
     public ArrayList<File> convert(File srcFile) throws IOException {
+        logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
         ArrayList<File> resultFiles = new ArrayList<>();
         File jsonFile = convertXlsxToJson(srcFile);
         resultFiles.add(jsonFile);

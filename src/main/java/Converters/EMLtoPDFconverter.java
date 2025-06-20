@@ -14,9 +14,13 @@ import org.jsoup.Jsoup;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 /**
  * Questa classe si occupa della conversione di email in formato .eml in documenti PDF.
@@ -24,6 +28,7 @@ import java.util.List;
  */
 public class EMLtoPDFconverter implements Converter {
 
+    private static final Logger logger = LogManager.getLogger(EMLtoPDFconverter.class);
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
@@ -39,15 +44,18 @@ public class EMLtoPDFconverter implements Converter {
     @Override
     public ArrayList<File> convert(File emlFile) throws IOException, DocumentException {
         if (emlFile == null) throw new NullPointerException("L'oggetto emlFile non esiste.");
+        logger.info("Inizio conversione con parametri: \n | emlFile.getPath() = {}", emlFile.getPath());
         Log.addMessage("Inizio conversione eml: " + emlFile.getName() + " -> .pdf");
 
         if (!emlFile.exists()) {
+            logger.error("File EML non trovato: {}", emlFile);
             Log.addMessage("ERRORE: File EML non trovato " + emlFile);
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }
 
         File outputDir = new File("src/temp");
         if (!outputDir.exists() && !outputDir.mkdirs()) {
+            logger.error("Impossibile creare la directory di output: {}", outputDir.getAbsolutePath());
             throw new IOException("Impossibile creare la directory di output: " + outputDir.getAbsolutePath());
         }
 
@@ -56,11 +64,14 @@ public class EMLtoPDFconverter implements Converter {
 
         DefaultMessageBuilder builder = new DefaultMessageBuilder();
         Message mime4jMessage;
-        try (InputStream is = new FileInputStream(emlFile)) {
+        try (InputStream is = Files.newInputStream(emlFile.toPath())) {
             mime4jMessage = builder.parseMessage(is);
         }
 
-        if (mime4jMessage == null) throw new NullPointerException("L'oggetto Message non esiste.");
+        if (mime4jMessage == null){
+            logger.error("L'oggetto Message non esiste.");
+            throw new NullPointerException("L'oggetto Message non esiste.");
+        }
 
         Document document = new Document();
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
@@ -76,12 +87,14 @@ public class EMLtoPDFconverter implements Converter {
         }
 
         if (!outputPdfFile.exists()) {
+            logger.error("ERRORE: creazione del file PDF fallita: {}", outputPdfFile.getAbsolutePath());
             Log.addMessage("ERRORE: creazione del file PDF fallita: " + outputPdfFile.getAbsolutePath());
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
         ArrayList<File> results = new ArrayList<>();
         results.add(outputPdfFile);
+        logger.info("Creazione file .pdf completata: {}", outputPdfFile.getName());
         Log.addMessage("Creazione file .pdf completata: " + outputPdfFile.getName());
         return results;
     }
@@ -94,8 +107,14 @@ public class EMLtoPDFconverter implements Converter {
      * @throws DocumentException se si verifica un errore nella scrittura PDF
      */
     private static void addEmlHeadersToPdf(Message message, Document document) throws DocumentException {
-        if (message == null) throw new NullPointerException("L'oggetto message non esiste.");
-        if (document == null) throw new NullPointerException("L'oggetto document non esiste.");
+        if (message == null) {
+            logger.error("L'oggetto message non esiste.");
+            throw new NullPointerException("L'oggetto message non esiste.");
+        }
+        if (document == null) {
+            logger.error("L'oggetto document non esiste.");
+            throw new NullPointerException("L'oggetto document non esiste.");
+        }
 
         document.add(new Paragraph("Email Headers:", HEADER_FONT));
         document.add(new Paragraph("----------------------------------------", HEADER_FONT));
@@ -132,7 +151,10 @@ public class EMLtoPDFconverter implements Converter {
      * @throws DocumentException in caso di errore
      */
     private static void addFieldToPdf(Document document, String fieldName, Object fieldValue) throws DocumentException {
-        if (document == null) throw new NullPointerException("L'oggetto document non esiste.");
+        if (document == null) {
+            logger.error("L'oggetto document non esiste.");
+            throw new NullPointerException("L'oggetto document non esiste.");
+        }
         if (fieldValue == null) return;
 
         String valueString = "";
@@ -166,9 +188,18 @@ public class EMLtoPDFconverter implements Converter {
      * @throws DocumentException se si verifica un errore nella scrittura PDF
      */
     private static void processMime4jBody(Body body, Document document, PdfWriter writer) throws IOException, DocumentException {
-        if (body == null) throw new NullPointerException("L'oggetto body non esiste.");
-        if (document == null) throw new NullPointerException("L'oggetto document non esiste.");
-        if (writer == null) throw new NullPointerException("L'oggetto writer non esiste.");
+        if (body == null) {
+            logger.error("L'oggetto body non esiste.");
+            throw new NullPointerException("L'oggetto body non esiste.");
+        }
+        if (document == null) {
+            logger.error("L'oggetto document non esiste.");
+            throw new NullPointerException("L'oggetto document non esiste.");
+        }
+        if (writer == null) {
+            logger.error("L'oggetto writer non esiste.");
+            throw new NullPointerException("L'oggetto writer non esiste.");
+        }
 
         if (body instanceof TextBody) {
             TextBody textBody = (TextBody) body;

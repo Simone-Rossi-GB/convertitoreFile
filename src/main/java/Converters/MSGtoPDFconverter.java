@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Converte un file email .msg (formato Outlook) in un documento PDF.
@@ -22,6 +24,7 @@ import java.util.Date;
  */
 public class MSGtoPDFconverter implements Converter {
 
+    private static final Logger logger = LogManager.getLogger(MSGtoPDFconverter.class);
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
     private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
@@ -30,19 +33,31 @@ public class MSGtoPDFconverter implements Converter {
      *
      * @param msgFile File .msg da convertire
      * @return ArrayList contenente un solo file PDF generato
-     * @throws IOException        in caso di problemi I/O
+     * @throws IOException in caso di problemi I/O
      * @throws DocumentException in caso di problemi nella generazione del PDF
      * @throws NullPointerException se uno degli oggetti critici è null
      */
     @Override
     public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
-        if (msgFile == null) throw new NullPointerException("L'oggetto msgFile non esiste.");
-        if (!msgFile.exists()) throw new FileNotFoundException("File MSG non trovato: " + msgFile);
+        if (msgFile == null) {
+            logger.error("File MSG nullo");
+            Log.addMessage("[MSG→PDF] ERRORE: il file fornito è nullo.");
+            throw new NullPointerException("L'oggetto msgFile non esiste.");
+        }
 
-        Log.addMessage("Inizio conversione msg: " + msgFile.getName() + " -> .pdf");
+        if (!msgFile.exists()) {
+            logger.error("File MSG non trovato: {}", msgFile.getAbsolutePath());
+            Log.addMessage("[MSG→PDF] ERRORE: file non trovato - " + msgFile.getName());
+            throw new FileNotFoundException("File MSG non trovato: " + msgFile);
+        }
+
+        logger.info("Inizio conversione con parametri: \n | msgFile.getPath() = {}", msgFile.getPath());
+        Log.addMessage("[MSG→PDF] Inizio conversione file: " + msgFile.getName());
 
         File outputDir = new File(System.getProperty("java.io.tmpdir"), "msg_to_pdf");
         if (!outputDir.exists() && !outputDir.mkdirs()) {
+            logger.error("Impossibile creare directory output: {}", outputDir.getAbsolutePath());
+            Log.addMessage("[MSG→PDF] ERRORE: impossibile creare la directory di output.");
             throw new IOException("Impossibile creare la directory di output: " + outputDir.getAbsolutePath());
         }
 
@@ -50,7 +65,6 @@ public class MSGtoPDFconverter implements Converter {
         File outputPdfFile = new File(outputDir, baseName + ".pdf");
 
         MAPIMessage msg = new MAPIMessage(msgFile.getAbsolutePath());
-        if (msg == null) throw new NullPointerException("L'oggetto msg non esiste.");
 
         Document document = new Document();
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
@@ -66,18 +80,22 @@ public class MSGtoPDFconverter implements Converter {
             try {
                 msg.close();
             } catch (IOException e) {
-                System.err.println("Warning: Impossibile chiudere il MAPIMessage: " + e.getMessage());
+                logger.warn("Chiusura MAPIMessage fallita: {}", e.getMessage());
+                Log.addMessage("[MSG→PDF] WARNING: errore durante la chiusura del file MSG.");
             }
         }
 
         if (!outputPdfFile.exists()) {
-            Log.addMessage("ERRORE: creazione del file PDF fallita: " + outputPdfFile.getAbsolutePath());
+            logger.error("Creazione del file PDF fallita: {}", outputPdfFile.getAbsolutePath());
+            Log.addMessage("[MSG→PDF] ERRORE: creazione del file PDF fallita.");
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
+        logger.info("Conversione completata con successo: {}", outputPdfFile.getName());
+        Log.addMessage("[MSG→PDF] Conversione completata: " + outputPdfFile.getName());
+
         ArrayList<File> result = new ArrayList<>();
         result.add(outputPdfFile);
-        Log.addMessage("Creazione file .pdf completata: " + outputPdfFile.getName());
         return result;
     }
 
@@ -87,7 +105,7 @@ public class MSGtoPDFconverter implements Converter {
      * @param msg      MAPIMessage da cui estrarre le intestazioni
      * @param document Documento PDF di destinazione
      * @throws DocumentException in caso di errore PDF
-     * @throws IOException        in caso di problemi I/O
+     * @throws IOException in caso di problemi I/O
      * @throws NullPointerException se uno degli oggetti è null
      */
     private static void addMsgHeadersToPdf(MAPIMessage msg, Document document) throws DocumentException, IOException {
@@ -97,43 +115,12 @@ public class MSGtoPDFconverter implements Converter {
         document.add(new Paragraph("Email Headers:", HEADER_FONT));
         document.add(new Paragraph("----------------------------------------", HEADER_FONT));
 
-        try {
-            String from = msg.getDisplayFrom();
-            if (from != null && !from.trim().isEmpty())
-                document.add(new Paragraph("Da: " + from, CONTENT_FONT));
-        } catch (ChunkNotFoundException ignored) {}
-
-        try {
-            String to = msg.getDisplayTo();
-            if (to != null && !to.trim().isEmpty())
-                document.add(new Paragraph("A: " + to, CONTENT_FONT));
-        } catch (ChunkNotFoundException ignored) {}
-
-        try {
-            String cc = msg.getDisplayCC();
-            if (cc != null && !cc.trim().isEmpty())
-                document.add(new Paragraph("Cc: " + cc, CONTENT_FONT));
-        } catch (ChunkNotFoundException ignored) {}
-
-        try {
-            String bcc = msg.getDisplayBCC();
-            if (bcc != null && !bcc.trim().isEmpty())
-                document.add(new Paragraph("Bcc: " + bcc, CONTENT_FONT));
-        } catch (ChunkNotFoundException ignored) {}
-
-        try {
-            String subject = msg.getSubject();
-            if (subject != null && !subject.trim().isEmpty())
-                document.add(new Paragraph("Oggetto: " + subject, CONTENT_FONT));
-        } catch (ChunkNotFoundException ignored) {}
-
-        try {
-            Calendar cal = msg.getMessageDate();
-            if (cal != null) {
-                Date date = cal.getTime();
-                document.add(new Paragraph("Data: " + date, CONTENT_FONT));
-            }
-        } catch (ChunkNotFoundException ignored) {}
+        try { String from = msg.getDisplayFrom(); if (from != null && !from.trim().isEmpty()) document.add(new Paragraph("Da: " + from, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
+        try { String to = msg.getDisplayTo(); if (to != null && !to.trim().isEmpty()) document.add(new Paragraph("A: " + to, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
+        try { String cc = msg.getDisplayCC(); if (cc != null && !cc.trim().isEmpty()) document.add(new Paragraph("Cc: " + cc, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
+        try { String bcc = msg.getDisplayBCC(); if (bcc != null && !bcc.trim().isEmpty()) document.add(new Paragraph("Bcc: " + bcc, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
+        try { String subject = msg.getSubject(); if (subject != null && !subject.trim().isEmpty()) document.add(new Paragraph("Oggetto: " + subject, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
+        try { Calendar cal = msg.getMessageDate(); if (cal != null) document.add(new Paragraph("Data: " + cal.getTime(), CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
 
         document.add(new Paragraph("----------------------------------------\n", HEADER_FONT));
     }
@@ -145,7 +132,7 @@ public class MSGtoPDFconverter implements Converter {
      * @param document Documento PDF di destinazione
      * @param writer   PdfWriter per la scrittura XHTML
      * @throws DocumentException in caso di errore PDF
-     * @throws IOException        in caso di problemi I/O
+     * @throws IOException in caso di problemi I/O
      * @throws NullPointerException se uno degli oggetti è null
      */
     private static void addMsgBodyToPdf(MAPIMessage msg, Document document, PdfWriter writer) throws DocumentException, IOException {
@@ -156,9 +143,7 @@ public class MSGtoPDFconverter implements Converter {
         String htmlBody = null;
         String textBody = null;
 
-        try {
-            htmlBody = msg.getHtmlBody();
-        } catch (ChunkNotFoundException ignored) {}
+        try { htmlBody = msg.getHtmlBody(); } catch (ChunkNotFoundException ignored) {}
 
         if (htmlBody != null && !htmlBody.trim().isEmpty()) {
             try {
@@ -172,13 +157,12 @@ public class MSGtoPDFconverter implements Converter {
                         new ByteArrayInputStream(xhtml.getBytes(StandardCharsets.UTF_8)),
                         StandardCharsets.UTF_8);
             } catch (Exception e) {
-                System.err.println("Warning: Errore nel parsing HTML, uso testo semplice: " + e.getMessage());
+                logger.warn("Errore nel parsing HTML: {}", e.getMessage());
+                Log.addMessage("[MSG→PDF] WARNING: parsing HTML fallito, si usa il testo semplice.");
                 document.add(new Paragraph("Contenuto HTML (errore nel parsing):\n" + htmlBody, CONTENT_FONT));
             }
         } else {
-            try {
-                textBody = msg.getTextBody();
-            } catch (ChunkNotFoundException ignored) {}
+            try { textBody = msg.getTextBody(); } catch (ChunkNotFoundException ignored) {}
 
             if (textBody != null && !textBody.trim().isEmpty()) {
                 document.add(new Paragraph(textBody, CONTENT_FONT));
@@ -192,8 +176,8 @@ public class MSGtoPDFconverter implements Converter {
             if (attachments != null && attachments.length > 0) {
                 document.add(new Paragraph("\nAllegati:", HEADER_FONT));
                 for (AttachmentChunks att : attachments) {
-                    String fileName = null;
                     try {
+                        String fileName = null;
                         if (att.getAttachLongFileName() != null) {
                             fileName = att.getAttachLongFileName().toString();
                         } else if (att.getAttachFileName() != null) {
@@ -203,12 +187,14 @@ public class MSGtoPDFconverter implements Converter {
                             document.add(new Paragraph("- " + fileName, CONTENT_FONT));
                         }
                     } catch (Exception e) {
-                        Log.addMessage("WARNING: Errore nel leggere il nome dell'allegato: " + e.getMessage());
+                        logger.warn("Errore nella lettura del nome dell'allegato: {}", e.getMessage());
+                        Log.addMessage("[MSG→PDF] WARNING: errore nel leggere un nome di allegato.");
                     }
                 }
             }
         } catch (Exception e) {
-            Log.addMessage("WARNING: Errore nel leggere gli allegati: " + e.getMessage());
+            logger.warn("Errore nella lettura degli allegati: {}", e.getMessage());
+            Log.addMessage("[MSG→PDF] WARNING: errore nel leggere gli allegati.");
         }
     }
 }

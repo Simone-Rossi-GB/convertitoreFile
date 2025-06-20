@@ -11,12 +11,14 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Questa classe si occupa della conversione di file .zip in .tar.gz
  */
 public class ZIPtoTARGZconverter implements Converter {
-
+    private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
     /**
      * Converte un file ZIP in un archivio TAR.GZ
      * @param zipFile Il file ZIP da convertire
@@ -27,8 +29,7 @@ public class ZIPtoTARGZconverter implements Converter {
     public ArrayList<File> convert(File zipFile) throws IOException {
         ArrayList<File> outputFiles = new ArrayList<>();
 
-        Log.addMessage("Inizio conversione zip: " + zipFile.getName() + " -> .tar.gz");
-
+        logger.info("Conversione iniziata con parametri:\n | zipFile.getPath() = {}", zipFile.getPath());
         // Preparazione percorso di output
         String directoryPath = "src/temp/";
         String zipName = zipFile.getName();
@@ -57,17 +58,16 @@ public class ZIPtoTARGZconverter implements Converter {
                         Utility.copy(entryInputStream, tarOut);
                         tarOut.closeArchiveEntry();
                     } catch (IOException e) {
-                        Log.addMessage("ERRORE: Impossibile copiare l'entry " + entry.getName() + " nel tar.");
+                        logger.error("ERRORE: Impossibile copiare l'entry {} nel tar.", entry.getName());
                         throw e;
                     }
                 }
             }
-
-            Log.addMessage("Creazione file .tar.gz completata: " + tarGzOut.getName());
+            logger.info("Creazione file .tar.gz completata: {}", tarGzOut.getName());
             outputFiles.add(tarGzOut);
 
         } catch (IOException e) {
-            Log.addMessage("ERRORE: Problema durante la conversione del file ZIP.");
+            logger.error("ERRORE: Problema durante la conversione del file ZIP.");
             throw e;
         }
 

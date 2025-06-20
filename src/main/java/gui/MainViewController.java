@@ -1,7 +1,10 @@
 package gui;
 
+import com.azul.crs.client.service.GCLogMonitor;
 import converter.DirectoryWatcher;
 import converter.Log;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import converter.Engine;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -24,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.file.StandardCopyOption;
 
@@ -62,6 +66,7 @@ public class MainViewController {
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
+    private static final Logger logger = LogManager.getLogger(MainViewController.class);
 
     // Variabili di stato
     private boolean isMonitoring = false;
@@ -90,7 +95,9 @@ public class MainViewController {
         // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
+        logger.info("Applicazione avviata.");
         Log.addMessage("Applicazione avviata.");
+        logger.info("Caricamento configurazione...");
         Log.addMessage("Caricamento configurazione...");
 
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
@@ -216,8 +223,12 @@ public class MainViewController {
                 return;
             }
             monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
+            checkAndCreateFolder(monitoredFolderPath);
             convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
+            checkAndCreateFolder(convertedFolderPath);
             failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
+            checkAndCreateFolder(failedFolderPath);
+            checkAndCreateFolder("src/temp");
             monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
 
             addLogMessage("Configurazione caricata da config.json");
@@ -234,6 +245,19 @@ public class MainViewController {
             launchAlertError("Impossibile caricare la configurazione: " + e.getMessage());
         }
     }
+    // Metodo che controlla l'esistenza di una directory e se non esiste la crea
+    private void checkAndCreateFolder(String path) {
+        File folder = new File(path);
+        if (!folder.exists()) {
+            boolean created = folder.mkdirs();
+            if (created) {
+                Log.addMessage("Cartella mancante creata: " + path);
+            } else {
+                Log.addMessage("Impossibile creare la cartella: " + path);
+            }
+        }
+    }
+
 
     private void openConfigurationWindow() {
         if (engine == null) {
@@ -398,11 +422,7 @@ public class MainViewController {
         String password = null;
         boolean mergeImages = false;
 
-        try {
-            // Assicurati che la directory di output esista
-            if (outputDestinationFile.getParentFile() != null && !outputDestinationFile.getParentFile().exists()) {
-                outputDestinationFile.getParentFile().mkdirs();
-            }
+        try {/*
 
             // CORREZIONE: Gestione dialoghi per PDF (eseguiti nel thread JavaFX)
             if (srcExtension.equals("pdf")) {
@@ -417,7 +437,7 @@ public class MainViewController {
                         passwordRef.set(launchDialogPdfSync());
 
                         // Se il target è JPG, chiedi se unire le immagini
-                        if (targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
                             mergeImagesRef.set(launchDialogUnisciSync());
                         }
                     } finally {
@@ -434,14 +454,14 @@ public class MainViewController {
                     Thread.currentThread().interrupt();
                     throw new Exception("Operazione interrotta dall'utente");
                 }
-            }
+            }*/
 
             // PRIMO TENTATIVO: USA WEBSERVICE
             boolean webServiceSuccess = false;
             if (webServiceClient.isServiceAvailable()) {
                 try {
                     addLogMessage("Tentativo conversione tramite web service...");
-                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, password, mergeImages);
+                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile/*, password, mergeImages*/);
 
                     if (result.isSuccess()) {
                         // Verifica che il file convertito sia stato effettivamente salvato
@@ -477,15 +497,16 @@ public class MainViewController {
                 addLogMessage("Fallback: uso engine locale per conversione...");
 
                 try {
-                    // L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
+                    engine.conversione(srcExtension, targetFormat, srcFile);
+                    /*// L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
                     if (password != null) {
-                        if (mergeImages && targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
                         } else {
                             engine.conversione(srcExtension, targetFormat, srcFile, password);
                         }
                     } else {
-                        if (mergeImages && targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
                         } else {
                             if(formatiImmagini.contains(srcExtension)){
@@ -494,7 +515,7 @@ public class MainViewController {
                                 engine.conversione(srcExtension, targetFormat, srcFile);
                             }
                         }
-                    }
+                    }*/
 
                     addLogMessage("Conversione ENGINE LOCALE riuscita");
 
@@ -584,43 +605,53 @@ public class MainViewController {
         });
     }
 
-    private boolean launchDialogUnisciSync() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Unisci PDF");
-        alert.setHeaderText(null);
-        alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
+    public static boolean launchDialogUnisci() throws Exception {
+        CompletableFuture<Boolean> union = new CompletableFuture<>();
 
-        ButtonType siBtn = new ButtonType("Si");
-        ButtonType noBtn = new ButtonType("No");
-        alert.getButtonTypes().setAll(siBtn, noBtn);
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Unisci PDF");
+            alert.setHeaderText(null);
+            alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        boolean unisci = result.isPresent() && result.get() == siBtn;
-        Log.addMessage("Scelta unione JPG: " + unisci);
-        return unisci;
+            ButtonType siBtn = new ButtonType("Si");
+            ButtonType noBtn = new ButtonType("No");
+            alert.getButtonTypes().setAll(siBtn, noBtn);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            boolean unisci = result.isPresent() && result.get() == siBtn;
+            Log.addMessage("Scelta unione JPG: " + unisci);
+
+            union.complete(unisci);
+        });
+
+        try {
+            return union.get(); // blocca finché la finestra non è chiusa
+        } catch (Exception e) {
+            throw new Exception("Impossibile ottenere il parametro Boolean");
+        }
     }
 
-    private String launchDialogPdfSync() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Password PDF");
-        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-        dialog.setContentText("Password:");
+    public static String launchDialogStringParameter() throws Exception {
 
-        Optional<String> result = dialog.showAndWait();
-        String password = result.orElse(null);
-        Log.addMessage("Password ricevuta: " + (password == null || password.isEmpty() ? "(vuota)" : "(nascosta)"));
-        return password;
-    }
+        CompletableFuture<String> extraParameter = new CompletableFuture<>();
+        Platform.runLater(() ->{
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Password PDF");
+            dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
+            dialog.setContentText("Password:");
 
-    public String launchDialogPdf() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Password PDF");
-        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-        dialog.setContentText("Password:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
-        return result.orElse(null);
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
+            String parameter = result.orElse(null);
+            Log.addMessage("Password ricevuta: " + (parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)"));
+            extraParameter.complete(parameter);
+        });
+        try {
+            return extraParameter.get(); // blocca finché la finestra non è chiusa
+        } catch (Exception e) {
+            throw new Exception("Impossibile ottenere il parametro String");
+        }
     }
 
     public void stampaRisultati() {

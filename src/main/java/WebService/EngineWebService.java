@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Engine per il WebService - versione modificata dell'Engine locale
@@ -72,47 +74,12 @@ public class EngineWebService {
         return new ArrayList<>(config.getConversions().get(extension).keySet());
     }
 
-    /**
-     * Conversione base per WebService - restituisce il file convertito senza spostarlo
-     */
-    public File conversione(String srcExt, String outExt, File srcFile, File outputDirectory) throws Exception {
-        return executeConversionWebService(srcExt, outExt, srcFile, null, null, outputDirectory);
-    }
-
-    /**
-     * Conversione PDF protetto per WebService
-     */
-    public File conversione(String srcExt, String outExt, File srcFile, String password, File outputDirectory) throws Exception {
-        return executeConversionWebService(srcExt, outExt, srcFile, password, null, outputDirectory);
-    }
-
-    /**
-     * Conversione PDF -> JPG unendo le pagine per WebService
-     */
-    public File conversione(String srcExt, String outExt, File srcFile, boolean union, File outputDirectory) throws Exception {
-        return executeConversionWebService(srcExt, outExt, srcFile, null, union, outputDirectory);
-    }
-
-    /**
-     * Conversione PDF -> JPG unendo le pagine per WebService
-     */
-    public File conversione(String srcExt, String outExt, File srcFile, String extraParam) throws Exception {
-        return executeConversionWebService(srcExt, outExt, srcFile, extraParam, null);
-    }
-
-    /**
-     * Conversione PDF protetto -> JPG unendo le pagine per WebService
-     */
-    public File conversione(String srcExt, String outExt, File srcFile, String password, boolean union, File outputDirectory) throws Exception {
-        return executeConversionWebService(srcExt, outExt, srcFile, password, union, outputDirectory);
-    }
 
     /**
      * Esecuzione conversione per WebService - NON sposta i file automaticamente
      */
     // SOSTITUISCI IL METODO executeConversionWebService con questa versione corretta:
-
-    private File executeConversionWebService(String srcExt, String outExt, File srcFile, String password, Boolean union, File outputDirectory) throws Exception {
+    public File conversione(String srcExt, String outExt, File srcFile, File outputDirectory) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
 
         Class<?> clazz = Class.forName(converterClassName);
@@ -130,9 +97,6 @@ public class EngineWebService {
             File tempFile = tempPath.toFile();
 
             // Rinomina il file con suffisso per evitare conflitti
-            File renamedFile = giveBackNewFileWithNewName(tempFile.getPath(), "-$$" + outExt + "$$-");
-            rinominaFile(tempFile, renamedFile);
-            tempFile = renamedFile;
 
             // SALVA IL NOME DEL FILE TEMPORANEO PER USO NELLA LAMBDA (FINAL)
             final String tempFileName = tempFile.getName();
@@ -153,23 +117,8 @@ public class EngineWebService {
                 Files.createDirectories(tempOutputDir);
 
                 System.setProperty("webservice.temp.output", tempOutputDir.toString());
+                outFiles = converter.convert(tempFile);
 
-                // Chiama il converter con i parametri appropriati
-                if (password != null && union != null) {
-                    System.out.println("WebService: Conversione con password e union");
-                    outFiles = converter.convert(tempFile, password, union);
-                } else if (password != null) {
-                    System.out.println("WebService: Conversione con password");
-                    outFiles = converter.convert(tempFile, password);
-                } else if (union != null) {
-                    System.out.println("WebService: Conversione con union");
-                    outFiles = converter.convert(tempFile, union);
-                } else {
-                    System.out.println("WebService: Conversione base");
-                    outFiles = converter.convert(tempFile);
-                }
-
-                System.out.println("WebService: File di output dal converter: " + outFiles);
 
                 // Se il converter non ha prodotto file, proviamo a cercarli nella directory di successo dell'engine
                 if (outFiles == null || outFiles.isEmpty()) {
@@ -280,10 +229,6 @@ public class EngineWebService {
             File tempFile = tempPath.toFile();
 
             // Rinomina il file con suffisso per evitare conflitti
-            File renamedFile = giveBackNewFileWithNewName(tempFile.getPath(), "-$$" + outExt + "$$-");
-            rinominaFile(tempFile, renamedFile);
-            tempFile = renamedFile;
-
             // SALVA IL NOME DEL FILE TEMPORANEO PER USO NELLA LAMBDA (FINAL)
             final String tempFileName = tempFile.getName();
 
@@ -304,20 +249,7 @@ public class EngineWebService {
 
                 System.setProperty("webservice.temp.output", tempOutputDir.toString());
 
-                // Chiama il converter con i parametri appropriati
-                if (extraParam != null && union != null) {
-                    System.out.println("WebService: Conversione con password e union");
-                    outFiles = converter.convert(tempFile, extraParam, union);
-                } else if (extraParam != null) {
-                    System.out.println("WebService: Conversione con password");
-                    outFiles = converter.convert(tempFile, extraParam);
-                } else if (union != null) {
-                    System.out.println("WebService: Conversione con union");
-                    outFiles = converter.convert(tempFile, union);
-                } else {
-                    System.out.println("WebService: Conversione base");
-                    outFiles = converter.convert(tempFile);
-                }
+                outFiles = converter.convert(tempFile);
 
                 System.out.println("WebService: File di output dal converter: " + outFiles);
 
@@ -456,30 +388,6 @@ public class EngineWebService {
         return converterClassName;
     }
 
-    /**
-     * Ritorna un file temporaneo identico a quello passato ma con un suffisso
-     */
-    private static File giveBackNewFileWithNewName(String filePath, String suffix) {
-        if (filePath == null) throw new NullPointerException("L'oggetto filePath non esiste");
-        if (suffix == null) throw new NullPointerException("L'oggetto suffix non esiste");
-
-        File file = new File(filePath);
-        String name = file.getName();
-        int lastDot = name.lastIndexOf(".");
-
-        String newName = (lastDot == -1) ? name + suffix : name.substring(0, lastDot) + suffix + name.substring(lastDot);
-        return new File(file.getParent(), newName);
-    }
-
-    /**
-     * Ritorna la configurazione ottenuta da config.json
-     */
-    public ConverterConfig getConverterConfig() throws NullPointerException {
-        if (config == null) {
-            throw new NullPointerException("L'oggetto config non esiste");
-        }
-        return config;
-    }
 
     /**
      * Rinomina il file passato a quello di destinazione

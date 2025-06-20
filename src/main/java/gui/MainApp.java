@@ -1,6 +1,8 @@
 package gui;
 
 import converter.Log;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,10 +14,13 @@ import java.io.IOException;
 public class MainApp extends Application {
 
     private static Stage primaryStage;
+    private static final Logger logger = LogManager.getLogger(MainApp.class);
 
     @Override
     public void start(Stage primaryStage) {
+
         Log.addMessage("");
+        logger.info("Applicazione avviata");
         Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("File Converter Manager");
@@ -45,12 +50,14 @@ public class MainApp extends Application {
             primaryStage.show();
 
             primaryStage.setOnCloseRequest(event -> {
+                logger.info("Applicazione chiusa.");
                 Log.addMessage("Applicazione chiusa.");
                 Log.close();
             });
 
         } catch (IOException e) {
             e.printStackTrace();
+            logger.fatal("Errore nel caricare GraphicalMenu.fxml: {}", e.getMessage());
             System.err.println("Errore nel caricare GraphicalMenu.fxml: " + e.getMessage());
 
             // Mostra errore dettagliato
