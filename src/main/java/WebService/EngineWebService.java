@@ -132,9 +132,6 @@ public class EngineWebService {
             File tempFile = tempPath.toFile();
 
             // Rinomina il file con suffisso per evitare conflitti
-            File renamedFile = giveBackNewFileWithNewName(tempFile.getPath(), "-$$" + outExt + "$$-");
-            rinominaFile(tempFile, renamedFile);
-            tempFile = renamedFile;
 
             // SALVA IL NOME DEL FILE TEMPORANEO PER USO NELLA LAMBDA (FINAL)
             final String tempFileName = tempFile.getName();
@@ -282,10 +279,6 @@ public class EngineWebService {
             File tempFile = tempPath.toFile();
 
             // Rinomina il file con suffisso per evitare conflitti
-            File renamedFile = giveBackNewFileWithNewName(tempFile.getPath(), "-$$" + outExt + "$$-");
-            rinominaFile(tempFile, renamedFile);
-            tempFile = renamedFile;
-
             // SALVA IL NOME DEL FILE TEMPORANEO PER USO NELLA LAMBDA (FINAL)
             final String tempFileName = tempFile.getName();
 
@@ -458,30 +451,6 @@ public class EngineWebService {
         return converterClassName;
     }
 
-    /**
-     * Ritorna un file temporaneo identico a quello passato ma con un suffisso
-     */
-    private static File giveBackNewFileWithNewName(String filePath, String suffix) {
-        if (filePath == null) throw new NullPointerException("L'oggetto filePath non esiste");
-        if (suffix == null) throw new NullPointerException("L'oggetto suffix non esiste");
-
-        File file = new File(filePath);
-        String name = file.getName();
-        int lastDot = name.lastIndexOf(".");
-
-        String newName = (lastDot == -1) ? name + suffix : name.substring(0, lastDot) + suffix + name.substring(lastDot);
-        return new File(file.getParent(), newName);
-    }
-
-    /**
-     * Ritorna la configurazione ottenuta da config.json
-     */
-    public ConverterConfig getConverterConfig() throws NullPointerException {
-        if (config == null) {
-            throw new NullPointerException("L'oggetto config non esiste");
-        }
-        return config;
-    }
 
     /**
      * Rinomina il file passato a quello di destinazione
