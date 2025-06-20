@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="DEBUG" monitorInterval="30">
+<Configuration status="WARN" monitorInterval="30">
     <Appenders>
-        <RollingFile name="DailyFileAppender" fileName="/tmp/log_current.txt"
-                     filePattern="/tmp/log_%d{yyyy-MM-dd}.txt"
+        <RollingFile name="DailyFileAppender" fileName="src/log4j/log_current.txt"
+                     filePattern="src/log4j/log_%d{yyyy-MM-dd}.txt"
                      immediateFlush="true">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n%throwable</Pattern>
