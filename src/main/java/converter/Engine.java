@@ -199,7 +199,6 @@ public class Engine {
                 outFiles = converter.convert(srcFile, parameter);
             } else if (union != null) {
                 outFiles = converter.convert(tempFile, union);
-                System.out.println("dio porco");
             } else {
                 outFiles = converter.convert(tempFile);
             }

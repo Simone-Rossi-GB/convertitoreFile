@@ -2,6 +2,7 @@ package Converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import converter.ConvertionException;
+import converter.Log;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
@@ -11,71 +12,80 @@ import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-
 public class JSONtoODSconverter implements Converter {
 
+    private static final Logger logger = LogManager.getLogger(JSONtoODSconverter.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public ArrayList<File> convert(File srcFile) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)){
+        if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, null, false);
         }
-        throw new ConvertionException("File vuoto o corrrotto");
+        logger.error("File vuoto o corrotto: {}", srcFile.getName());
+        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
+        throw new ConvertionException("File vuoto o corrotto");
     }
 
     @Override
     public ArrayList<File> convert(File srcFile, String password) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)) {
+        if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, password, false);
         }
+        logger.error("File vuoto o corrotto: {}", srcFile.getName());
+        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
         throw new ConvertionException("File vuoto o corrotto");
     }
 
     @Override
     public ArrayList<File> convert(File srcFile, boolean opzioni) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)){
+        if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, null, opzioni);
         }
+        logger.error("File vuoto o corrotto: {}", srcFile.getName());
+        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
         throw new ConvertionException("File vuoto o corrotto");
     }
 
     @Override
     public ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)){
+        if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, password, opzioni);
         }
+        logger.error("File vuoto o corrotto: {}", srcFile.getName());
+        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
         throw new ConvertionException("File vuoto o corrotto");
     }
 
-
     /**
      * Controlla se il file è vuoto.
-     * @param srcFile Il file da verificare.
-     * @return true se il file NON è vuoto, false se è vuoto o nullo.
      */
     private boolean controlloFileNonVuoto(File srcFile) {
         return srcFile != null && srcFile.length() > 0;
     }
 
-
-
-
-
-
-
     private ArrayList<File> convertInternal(File jsonFile, String password, boolean opzioni) throws Exception {
-        // Parsing del file JSON
-        List<LinkedHashMap<String, Object>> data = objectMapper.readValue(
-                jsonFile,
-                objectMapper.getTypeFactory().constructCollectionType(List.class, LinkedHashMap.class)
-        );
+        //logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
+        Log.addMessage("[JSON→ODS] Inizio conversione file: " + jsonFile.getName());
+
+        List<LinkedHashMap<String, Object>> data;
+        try {
+            data = objectMapper.readValue(
+                    jsonFile,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, LinkedHashMap.class)
+            );
+        } catch (Exception e) {
+            logger.error("Parsing JSON fallito: {}", e.getMessage());
+            Log.addMessage("[JSON→ODS] ERRORE: parsing del file JSON fallito.");
+            throw e;
+        }
 
         if (data.isEmpty()) {
+            logger.error("Il file JSON è vuoto o malformato: {}", jsonFile.getName());
+            Log.addMessage("[JSON→ODS] ERRORE: file JSON vuoto o malformato.");
             throw new IllegalArgumentException("Il file JSON è vuoto o malformato.");
         }
 
-        // Creazione nuovo documento .ods
         File outFile;
         try (SpreadsheetDocument document = SpreadsheetDocument.newSpreadsheetDocument()) {
             Table sheet = document.getSheetByIndex(0);
@@ -104,11 +114,19 @@ public class JSONtoODSconverter implements Converter {
             try (FileOutputStream fos = new FileOutputStream(outFile)) {
                 document.save(fos);
             }
+        } catch (Exception e) {
+            logger.error("Generazione del file ODS fallita: {}", e.getMessage());
+            Log.addMessage("[JSON→ODS] ERRORE: generazione del file ODS fallita.");
+            throw e;
         }
+
+        logger.info("Conversione completata: {}", outFile.getName());
+        Log.addMessage("[JSON→ODS] Conversione completata con successo: " + outFile.getName());
 
         ArrayList<File> output = new ArrayList<>();
         output.add(outFile);
         return output;
     }
 }
+
 
