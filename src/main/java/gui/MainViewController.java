@@ -417,7 +417,7 @@ public class MainViewController {
                         passwordRef.set(launchDialogPdfSync());
 
                         // Se il target è JPG, chiedi se unire le immagini
-                        if (targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
                             mergeImagesRef.set(launchDialogUnisciSync());
                         }
                     } finally {
@@ -485,7 +485,7 @@ public class MainViewController {
                             engine.conversione(srcExtension, targetFormat, srcFile, password);
                         }
                     } else {
-                        if (targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
                         } else {
                             if(formatiImmagini.contains(srcExtension)){
