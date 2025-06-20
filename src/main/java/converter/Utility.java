@@ -1,8 +1,11 @@
 package converter;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Utility {
@@ -60,5 +63,41 @@ public class Utility {
         }
         return outputZip;
     }
+    public static List<File> unzipper(File zipFile) throws IOException {
+        List<File> extractedFiles = new ArrayList<>();
+        File outputDir = new File("src/temp/");
 
+        // Crea la cartella di output se non esiste
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(zipFile.toPath()))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                File outFile = new File(outputDir, entry.getName());
+
+                // Crea sottocartelle se necessario
+                if (entry.isDirectory()) {
+                    outFile.mkdirs();
+                    continue;
+                } else {
+                    File parent = outFile.getParentFile();
+                    if (!parent.exists()) parent.mkdirs();
+                }
+
+                try (FileOutputStream fos = new FileOutputStream(outFile)) {
+                    byte[] buffer = new byte[4096];
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    extractedFiles.add(outFile);
+                }
+                zis.closeEntry();
+            }
+        }
+
+        return extractedFiles;
+    }
 }
