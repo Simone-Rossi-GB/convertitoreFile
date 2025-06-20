@@ -14,6 +14,9 @@ import java.util.concurrent.Executors;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * Questa classe osserva ricorsivamente una directory e tutte le sue sottodirectory,
  * eseguendo un'azione (conversione) quando viene creato un nuovo file.

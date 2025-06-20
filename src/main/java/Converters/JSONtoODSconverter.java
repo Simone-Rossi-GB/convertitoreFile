@@ -8,6 +8,9 @@ import org.odftoolkit.simple.table.Table;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 public class JSONtoODSconverter implements Converter {
 
