@@ -14,9 +14,13 @@ import java.io.IOException;
 public class MainApp extends Application {
 
     private static Stage primaryStage;
+    private static final Logger logger = LogManager.getLogger(MainApp.class);
 
     @Override
     public void start(Stage primaryStage) {
+        logger.info("This is an informational message.");
+        logger.warn("This is a warning message.");
+        logger.error("This is an error message.");
         Log.addMessage("");
         Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
