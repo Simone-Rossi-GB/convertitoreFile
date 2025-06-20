@@ -1,6 +1,7 @@
-/*package Converters;
+package Converters;
 
 import com.itextpdf.text.DocumentException;
+import converter.ConversionContext;
 import converter.Log;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
@@ -18,13 +19,14 @@ import org.apache.logging.log4j.LogManager;
 /**
  * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
  */
-/*public class ImageConverter implements Converter {
+public class ImageConverter implements Converter {
     private static final Logger logger = LogManager.getLogger(ImageConverter.class);
     /**
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
-    /*@Override
-    public ArrayList<File> convert(File imgFile, String estensione) throws IOException, DocumentException {
+    @Override
+    public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
+        String estensione = (String) ConversionContext.get("destinationFormat");
         ArrayList<File> files = new ArrayList<>();
         if (estensione != null) {
             try {
@@ -46,7 +48,7 @@ import org.apache.logging.log4j.LogManager;
     /**
      * Metodo principale per la conversione dell'immagine nel formato desiderato
      */
-    /*public static File imageConversion(File imgFile, String targetFormat) throws IOException {
+    public static File imageConversion(File imgFile, String targetFormat) throws IOException {
         logger.info("Inizio conversione immagine:\n | {} -> .{}", imgFile.getName(), targetFormat);
         Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
@@ -117,7 +119,7 @@ import org.apache.logging.log4j.LogManager;
     /**
      * Estrae il nome del file senza estensione
      */
-    /*private static String getBaseName(File inputFile) {
+    private static String getBaseName(File inputFile) {
         String fileName = inputFile.getName();
         int dotIndex = fileName.lastIndexOf('.');
         return (dotIndex > 0) ? fileName.substring(0, dotIndex) : fileName;
@@ -126,7 +128,7 @@ import org.apache.logging.log4j.LogManager;
     /**
      * Estrae l'estensione del file in minuscolo
      */
-    /*private static String getExtension(File inputFile) {
+    private static String getExtension(File inputFile) {
         String fileName = inputFile.getName();
         int dotIndex = fileName.lastIndexOf('.');
         return (dotIndex > 0) ? fileName.substring(dotIndex + 1).toLowerCase() : "";
@@ -135,7 +137,7 @@ import org.apache.logging.log4j.LogManager;
     /**
      * Rimuove il canale alpha da un'immagine, riempiendo con sfondo bianco
      */
-    /*private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
+    private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
         logger.info("Rimozione canale alpha da immagine");
         Log.addMessage("[IMG] Rimozione canale alpha da immagine");
 
@@ -151,4 +153,4 @@ import org.apache.logging.log4j.LogManager;
 
         return copy;
     }
-}*/
+}
