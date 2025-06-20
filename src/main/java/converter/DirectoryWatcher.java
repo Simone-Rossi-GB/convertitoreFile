@@ -78,7 +78,7 @@ public class DirectoryWatcher implements Runnable {
             Log.addMessage("ERRORE: start nullo");
             throw new NullPointerException("L'oggetto start non esiste");
         }
-
+        //Funzione eseguita prima di entrare in ciascuna sottocartella
         Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -87,7 +87,7 @@ public class DirectoryWatcher implements Runnable {
                     Log.addMessage("ERRORE: directory da registrare nulla");
                     throw new NullPointerException("L'oggetto dir non esiste");
                 }
-
+                //Registra nella mappa dei percorsi quello della nuova cartella
                 WatchKey key = dir.register(watchService, ENTRY_CREATE);
                 watchKeyToPath.put(key, dir);
                 logger.info("Registrata directory per il monitoraggio: " + dir.toString());
@@ -110,6 +110,7 @@ public class DirectoryWatcher implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             WatchKey key;
             try {
+                //Bloccante in attesa di un evento
                 key = watchService.take();
             } catch (InterruptedException e) {
                 logger.warn("Thread interrotto, chiusura DirectoryWatcher");
@@ -124,7 +125,7 @@ public class DirectoryWatcher implements Runnable {
                 Log.addMessage("ERRORE: chiave sconosciuta nel watchKeyToPath");
                 continue;
             }
-
+            //Controllo tutti gli eventi che sono stati registrati sulla cartella
             for (WatchEvent<?> event : key.pollEvents()) {
                 WatchEvent.Kind<?> kind = event.kind();
 
@@ -133,7 +134,7 @@ public class DirectoryWatcher implements Runnable {
                     Log.addMessage("Overflow rilevato, evento ignorato");
                     continue;
                 }
-
+                //Risalgo al percorso del file che ha generato l'evento
                 WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path fileName = ev.context();
                 if (fileName == null) {
@@ -147,6 +148,7 @@ public class DirectoryWatcher implements Runnable {
                 Log.addMessage("Nuovo file/directory rilevato: " + fullPath.toString());
 
                 if (kind == ENTRY_CREATE) {
+                    //Se si tratta di una directory registro lei e le sottocartelle
                     if (Files.isDirectory(fullPath)) {
                         try {
                             registerAll(fullPath);
@@ -154,12 +156,14 @@ public class DirectoryWatcher implements Runnable {
                             logger.error("registrazione sottocartella fallita - " + fullPath.toString());
                             Log.addMessage("ERRORE: registrazione sottocartella fallita - " + fullPath.toString());
                         }
-                    } else {
+                    }
+                    //Se è un file esistente avvio la conversione
+                    else {
                         File file = fullPath.toFile();
                         if (file != null) {
                             logger.info("Avvio conversione automatica per: " + file.getAbsolutePath());
                             Log.addMessage("Avvio conversione automatica per: " + file.getAbsolutePath());
-                            executor.submit(() -> controller.launchDialogConversion(file));
+                            executor.submit(() -> startConversion(file));
                         } else {
                             logger.error("file nullo da convertire");
                             Log.addMessage("ERRORE: file nullo da convertire");
@@ -190,7 +194,7 @@ public class DirectoryWatcher implements Runnable {
      *
      * @return directory monitorata
      */
-    public String getWatchedDir() {
-        return dir.toString();
+    private void startConversion(File file){
+        controller.launchDialogConversion(file);
     }
 }
