@@ -84,11 +84,9 @@ public class ConverterWebServiceClient {
      * @param inputFile Il file sorgente da convertire.
      * @param targetFormat Il formato di destinazione desiderato.
      * @param outputFile Il percorso completo dove salvare il file convertito localmente.
-     * @param password La password per i file protetti (opzionale, null se non presente).
-     * @param mergeImages Indica se unire le immagini (opzionale, false se non applicabile).
      * @return Un oggetto ConversionResult che indica il successo e un messaggio.
      */
-    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile, String password, boolean mergeImages) {
+    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile/*, String password, boolean mergeImages*/) {
         if (!isServiceAvailable()) {
             return new ConversionResult(false, "Servizio di conversione non disponibile.");
         }
@@ -102,12 +100,12 @@ public class ConverterWebServiceClient {
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("file", new FileSystemResource(inputFile)); // Aggiunge il file
             body.add("targetFormat", targetFormat); // Aggiunge il formato target
-
+/*
             if (password != null && !password.isEmpty()) {
                 body.add("password", password); // Aggiunge la password se presente
             }
             body.add("mergeImages", String.valueOf(mergeImages)); // Aggiunge il flag mergeImages
-
+*/
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             // Esegui la richiesta POST e aspetta un array di byte come risposta

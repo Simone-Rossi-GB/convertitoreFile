@@ -134,7 +134,8 @@ public class Engine {
      * @param srcFile File iniziale
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
+
+    /*public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
         executeConversion(srcExt, outExt, srcFile, null, null);
     }
 
@@ -146,7 +147,7 @@ public class Engine {
      * @param extraParam parametro Extra
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile, String extraParam) throws Exception {
+    /*public void conversione(String srcExt, String outExt, File srcFile, String extraParam) throws Exception {
         executeConversion(srcExt, outExt, srcFile, extraParam, null);
     }
 
@@ -158,7 +159,7 @@ public class Engine {
      * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile, boolean union) throws Exception {
+    /*public void conversione(String srcExt, String outExt, File srcFile, boolean union) throws Exception {
         executeConversion(srcExt, outExt, srcFile, null, union);
     }
 
@@ -171,51 +172,36 @@ public class Engine {
      * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile, String password, boolean union) throws Exception {
+    /*public void conversione(String srcExt, String outExt, File srcFile, String password, boolean union) throws Exception {
         executeConversion(srcExt, outExt, srcFile, password, union);
-    }
+    }*/
 
     /**
      * Esecuzione conversione
      * @param srcExt Estensione file iniziale
      * @param outExt Estensione file finale
      * @param srcFile File iniziale
-     * @param parameter Parametro extra
-     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
      * @throws Exception Errore nella rinomina del file
      */
-    private void executeConversion(String srcExt, String outExt, File srcFile, String parameter, Boolean union) throws Exception {
+    public void conversione(String srcExt, String outExt, File srcFile/*, String parameter, Boolean union*/) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         List<File> outFiles;
         File tempFile = new File("src/temp/" + srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
         try {
-            if (parameter != null && union != null) {
-                outFiles = converter.convert(srcFile, parameter, union);
-            } else if (parameter != null) {
-                outFiles = converter.convert(srcFile, parameter);
-            } else if (union != null) {
-                outFiles = converter.convert(tempFile, union);
-            } else {
-                outFiles = converter.convert(tempFile);
-            }
-
+            outFiles = converter.convert(srcFile);
             Files.deleteIfExists(tempFile.toPath());
-            logger.info("File temporaneo eliminato: {}", srcFile.getPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
 
             for (File f : outFiles) {
                 //Sposto il file convertito nella directory corretta
                 spostaFile(config.getSuccessOutputDir(), f);
             }
-            logger.info("Conversione completata con successo: {} -> {}", srcFile.getName(), outExt);
             Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
 
         } catch (IOException e) {
-            logger.error("Errore durante la conversione o lo spostamento del file {}", srcFile.getName());
             Log.addMessage("ERRORE: Errore durante la conversione o lo spostamento del file " + srcFile.getName());
             spostaFile(config.getErrorOutputDir(), srcFile);
             throw new Exception(e.getMessage());
@@ -231,24 +217,20 @@ public class Engine {
      */
     private String checkParameters(String srcExt, String outExt, File srcFile) throws Exception {
         if (srcExt == null) {
-            logger.error("srcExt nullo");
             Log.addMessage("ERRORE: srcExt nullo");
             throw new NullPointerException("L'oggetto srcExt non esiste");
         }
         if (outExt == null) {
-            logger.error("outExt nullo");
             Log.addMessage("ERRORE: outExt nullo");
             throw new NullPointerException("L'oggetto outExt non esiste");
         }
         if (srcFile == null) {
-            logger.error("srcFile nullo");
             Log.addMessage("ERRORE: srcFile nullo");
             throw new NullPointerException("L'oggetto srcFile non esiste");
         }
 
         Map<String, Map<String, String>> conversions = config.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
-            logger.error("Conversione da {} non supportata", srcExt);
             Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
             throw new Exception("Conversione non supportata");
         }
@@ -256,12 +238,10 @@ public class Engine {
         Map<String, String> possibleConversions = conversions.get(srcExt);
         String converterClassName = possibleConversions.get(outExt);
         if (converterClassName == null) {
-            logger.error("Conversione da {} a {} non supportata", srcExt, outExt);
             Log.addMessage("ERRORE: Conversione da " + srcExt + " a " + outExt + " non supportata");
             throw new Exception("Conversione non supportata");
         }
 
-        logger.info("Parametri validi. Conversione da {} a {} tramite {}", srcExt, outExt, converterClassName);
         Log.addMessage("Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
         return converterClassName;
     }
@@ -277,7 +257,6 @@ public class Engine {
         if (outPath == null) throw new NullPointerException("L'oggetto outPath non esiste");
         Path dest = Paths.get(outPath, file.getName());
         Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-        logger.info("File spostato in: {}", dest);
         Log.addMessage("File spostato in: " + dest);
     }
 

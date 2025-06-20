@@ -27,38 +27,10 @@ public class JSONtoODSconverter implements Converter {
         throw new ConvertionException("File vuoto o corrotto");
     }
 
-    @Override
-    public ArrayList<File> convert(File srcFile, String password) throws Exception, ConvertionException {
-        if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, password, false);
-        }
-        logger.error("File vuoto o corrotto: {}", srcFile.getName());
-        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
-        throw new ConvertionException("File vuoto o corrotto");
-    }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, boolean opzioni) throws Exception, ConvertionException {
-        if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, null, opzioni);
-        }
-        logger.error("File vuoto o corrotto: {}", srcFile.getName());
-        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
-        throw new ConvertionException("File vuoto o corrotto");
-    }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception, ConvertionException {
-        if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, password, opzioni);
-        }
-        logger.error("File vuoto o corrotto: {}", srcFile.getName());
-        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
-        throw new ConvertionException("File vuoto o corrotto");
-    }
-
     /**
      * Controlla se il file è vuoto.
+     * @param srcFile Il file da verificare.
+     * @return true se il file NON è vuoto, false se è vuoto o nullo.
      */
     private boolean controlloFileNonVuoto(File srcFile) {
         return srcFile != null && srcFile.length() > 0;
@@ -81,11 +53,10 @@ public class JSONtoODSconverter implements Converter {
         }
 
         if (data.isEmpty()) {
-            logger.error("Il file JSON è vuoto o malformato: {}", jsonFile.getName());
-            Log.addMessage("[JSON→ODS] ERRORE: file JSON vuoto o malformato.");
             throw new IllegalArgumentException("Il file JSON è vuoto o malformato.");
         }
 
+        // Creazione nuovo documento .ods
         File outFile;
         try (SpreadsheetDocument document = SpreadsheetDocument.newSpreadsheetDocument()) {
             Table sheet = document.getSheetByIndex(0);
@@ -128,5 +99,4 @@ public class JSONtoODSconverter implements Converter {
         return output;
     }
 }
-
 

@@ -2,6 +2,7 @@ package Converters;
 
 import converter.Log;
 import converter.Utility;
+import gui.MainViewController;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.logging.log4j.Logger;
@@ -63,12 +64,12 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      *
      * @param pdfFile     File di partenza
      * @param pdfDocument Documento pdf caricato
-     * @param union       Boolean che indica se unire o no le pagine in un'unica immagine
      * @return ArrayList di file convertiti
      * @throws Exception Errore durante il processo di conversione
      */
     @Override
-    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
+    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+        boolean union = MainViewController.launchDialogUnisci();
         validateInputs(pdfFile, pdfDocument);
 
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
@@ -112,6 +113,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
                 zippedImages = rinominaFileZip(zippedImages, baseName);
                 outputFiles.clear();
                 outputFiles.add(zippedImages);
+                rinominaFileZip(zippedImages, baseName);
             }
 
             logger.info("Conversione completata, {} file prodotti", outputFiles.size());
@@ -127,8 +129,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
 
     /**
      * Controlla se il numero di pagine del documento rientra nel limite
-     *
-     * @param nPages Numero di pagine del documento
+     * @param nPages Numero di pagine del docoumento
      * @throws Exception Il documento ha troppe pagine
      */
     private void validatePages(int nPages) throws Exception {
