@@ -5,27 +5,30 @@ import org.apache.poi.ss.usermodel.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class XLStoJSONconverter implements Converter{
+    private static final Logger logger = LogManager.getLogger(XLStoJSONconverter.class);
     @Override
     public ArrayList<File> convert(File xlsFile) throws IOException {
+        logger.info("Conversione iniziata con parametri:\n | xlsFile.getPath() = {}", xlsFile.getPath());
         ArrayList<File> resultFiles = new ArrayList<>();
 
         try {
             File jsonFile = convertToJson(xlsFile);
 
-            if (jsonFile != null && jsonFile.exists()) {
+            if (jsonFile.exists()) {
                 resultFiles.add(jsonFile);
-                System.out.println("✓ File convertito aggiunto alla lista: " + jsonFile.getName());
+                logger.info("File convertito aggiunto alla lista: {}", jsonFile.getName());
             } else {
-                System.err.println("⚠ Conversione fallita: file JSON non creato correttamente");
+                logger.error("Conversione fallita: file JSON non creato correttamente");
             }
 
         } catch (Exception e) {
-            System.err.println("✗ Errore durante la conversione: " + e.getMessage());
+            logger.error("Errore durante la conversione: {}", e.getMessage());
             throw new IOException("Errore nella conversione XLS to JSON", e);
         }
 
@@ -70,11 +73,7 @@ public class XLStoJSONconverter implements Converter{
     private File convertXlsToJson(File xlsFile, String outputPath) throws IOException {
         File outputFile = new File(outputPath);
 
-        System.out.println("Conversione XLS → JSON:");
-        System.out.println("  Input: " + xlsFile.getAbsolutePath());
-        System.out.println("  Output: " + outputFile.getAbsolutePath());
-
-        try (InputStream fileStream = new FileInputStream(xlsFile);
+        try (InputStream fileStream = Files.newInputStream(xlsFile.toPath());
              Workbook workbook = new HSSFWorkbook(fileStream)) {
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -89,7 +88,6 @@ public class XLStoJSONconverter implements Converter{
                     String headerValue = getCellValue(cell);
                     headers.add(headerValue.isEmpty() ? "column_" + cell.getColumnIndex() : headerValue);
                 }
-                System.out.println("  Intestazioni: " + headers);
             }
 
             // Elabora i dati
@@ -118,19 +116,20 @@ public class XLStoJSONconverter implements Converter{
             ObjectMapper mapper = new ObjectMapper();
             mapper.writerWithDefaultPrettyPrinter().writeValue(outputFile, dataList);
 
-            System.out.println("  ✓ Conversione completata! Righe elaborate: " + rowCount);
-            System.out.println("  ✓ File creato: " + outputFile.getAbsolutePath() + " (" + outputFile.length() + " bytes)");
+            logger.info("File creato: {} ({} bytes)", outputFile.getAbsolutePath(), outputFile.length());
 
             // Verifica che il file sia stato creato correttamente
             if (outputFile.exists() && outputFile.length() > 0) {
                 return outputFile;
             } else {
+                logger.error("Il file JSON non è stato creato correttamente");
                 throw new IOException("Il file JSON non è stato creato correttamente");
             }
 
         } catch (Exception e) {
             // Pulizia in caso di errore
             cleanupFailedConversion(outputFile);
+            logger.error("Errore durante la conversione XLS: {}", e.getMessage(), e);
             throw new IOException("Errore durante la conversione XLS: " + e.getMessage(), e);
         }
     }
@@ -312,14 +311,11 @@ public class XLStoJSONconverter implements Converter{
             return "File non valido";
         }
 
-        StringBuilder info = new StringBuilder();
-        info.append("Nome: ").append(file.getName()).append("\n");
-        info.append("Percorso: ").append(file.getAbsolutePath()).append("\n");
-        info.append("Dimensione: ").append(file.length()).append(" bytes\n");
-        info.append("Leggibile: ").append(file.canRead()).append("\n");
-        info.append("Modificabile: ").append(file.canWrite()).append("\n");
-        info.append("Supportato: ").append(isFileSupported(file));
-
-        return info.toString();
+        return "Nome: " + file.getName() + "\n" +
+                "Percorso: " + file.getAbsolutePath() + "\n" +
+                "Dimensione: " + file.length() + " bytes\n" +
+                "Leggibile: " + file.canRead() + "\n" +
+                "Modificabile: " + file.canWrite() + "\n" +
+                "Supportato: " + isFileSupported(file);
     }
 }
