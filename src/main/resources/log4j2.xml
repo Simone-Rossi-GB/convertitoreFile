@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30">
+<Configuration status="DEBUG" monitorInterval="30">
     <Appenders>
-        <!-- Appender con Rolling giornaliero -->
-        <RollingFile name="DailyFileAppender" fileName="src/log4j/log_current.txt"
-                     filePattern="src/log4j/log_%d{yyyy-MM-dd}.txt">
+        <RollingFile name="DailyFileAppender" fileName="/tmp/log_current.txt"
+                     filePattern="/tmp/log_%d{yyyy-MM-dd}.txt"
+                     immediateFlush="true">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n%throwable</Pattern>
             </PatternLayout>
@@ -11,19 +11,15 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
-
-        <!-- Appender console (opzionale per debug in console) -->
         <Console name="ConsoleAppender" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss} [%t] %-5level %c{1} - %msg%n"/>
         </Console>
     </Appenders>
 
     <Loggers>
-        <!-- Logger applicativo -->
         <Root level="info">
             <AppenderRef ref="DailyFileAppender"/>
             <AppenderRef ref="ConsoleAppender"/>
         </Root>
     </Loggers>
 </Configuration>
-
