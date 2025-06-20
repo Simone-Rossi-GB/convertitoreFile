@@ -12,6 +12,21 @@ import org.apache.logging.log4j.LogManager;
 
 public class Utility {
 
+    /**
+     * Restituisce l'estensione del file.
+     *
+     * @param file file da cui estrarre l'estensione
+     * @return estensione in minuscolo o stringa vuota se non presente
+     */
+    public static String getExtension(File file) {
+        String name = file.getName();
+        int lastDot = name.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == name.length() - 1) {
+            return ""; // nessuna estensione
+        }
+        return name.substring(lastDot + 1).toLowerCase();
+    }
+
     private static final Logger logger = LogManager.getLogger(Utility.class);
 
     /**
