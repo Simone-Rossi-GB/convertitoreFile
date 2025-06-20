@@ -188,7 +188,7 @@ public class Engine {
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         List<File> outFiles;
-        File tempFile = new File("src/temp/" + srcFile.getName());
+        File tempFile = File.createTempFile(srcFile.getName(), srcExt);
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
             ConversionContext.set("destinationFormat", targetFormat);

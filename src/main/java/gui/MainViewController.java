@@ -1,8 +1,8 @@
 package gui;
 
-import com.azul.crs.client.service.GCLogMonitor;
 import converter.DirectoryWatcher;
 import converter.Log;
+import converter.Utility;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import converter.Engine;
@@ -26,9 +26,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.file.StandardCopyOption;
 
 import WebService.client.ConverterWebServiceClient;
@@ -109,20 +107,7 @@ public class MainViewController {
         }
     }
 
-    /**
-     * Restituisce l'estensione del file.
-     *
-     * @param file file da cui estrarre l'estensione
-     * @return estensione in minuscolo o stringa vuota se non presente
-     */
-    public static String getExtension(File file) {
-        String name = file.getName();
-        int lastDot = name.lastIndexOf('.');
-        if (lastDot == -1 || lastDot == name.length() - 1) {
-            return ""; // nessuna estensione
-        }
-        return name.substring(lastDot + 1).toLowerCase();
-    }
+
 
     /**
      * Configura i listener degli eventi sui pulsanti.
@@ -372,7 +357,7 @@ public class MainViewController {
 
         Platform.runLater(() -> fileRicevuti++);
 
-        String srcExtension = getExtension(srcFile);
+        String srcExtension = Utility.getExtension(srcFile);
         List<String> formats;
         try {
             // Prova prima il webservice per ottenere i formati
@@ -414,7 +399,7 @@ public class MainViewController {
 
     private void performConversionWithFallback(File srcFile, String targetFormat) {
         List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
-        String srcExtension = getExtension(srcFile);
+        String srcExtension = Utility.getExtension(srcFile);
         String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
 
