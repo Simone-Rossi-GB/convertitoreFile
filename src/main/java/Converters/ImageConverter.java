@@ -96,6 +96,7 @@ import org.apache.logging.log4j.LogManager;
             image = removeAlphaChannel(image);
         }
 
+
         outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
         logger.info("File temporaneo creato correttamente");
         Log.addMessage("[IMG] File temporaneo creato correttamente");

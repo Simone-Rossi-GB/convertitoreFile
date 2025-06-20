@@ -482,7 +482,7 @@ public class MainViewController {
                 addLogMessage("Fallback: uso engine locale per conversione...");
 
                 try {
-                    engine.conversione(srcExtension, targetFormat, srcFile);
+                    engine.conversione(srcExtension, targetFormat, srcFile, targetFormat);
                     /*// L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
                     if (password != null) {
                         if (targetFormat.equals("jpg")) {
