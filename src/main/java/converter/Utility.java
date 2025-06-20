@@ -4,8 +4,12 @@ import java.io.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Utility {
+
+    private static final Logger logger = LogManager.getLogger(Utility.class);
 
     /**
      * Copia il contenuto da un InputStream a un OutputStream
@@ -17,6 +21,7 @@ public class Utility {
             out.write(buffer, 0, bytesRead);
         }
     }
+
     /**
      * Crea un file ZIP contenente le immagini dell'elenco, salvate in formato PNG.
      *
@@ -40,6 +45,7 @@ public class Utility {
 
             for (File imageFile : files) {
                 if (!imageFile.exists() || !imageFile.isFile()) {
+                    logger.warn("File non valido: {}", imageFile.getAbsolutePath());
                     Log.addMessage("File non valido: " + imageFile.getAbsolutePath());
                     continue;
                 }

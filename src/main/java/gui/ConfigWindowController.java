@@ -58,6 +58,7 @@ public class ConfigWindowController {
     private Stage dialogStage;
     private MainViewController mainController;
     private boolean monitorAtStart = false;
+    private static final Logger logger = LogManager.getLogger(ConfigWindowController.class);
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -148,9 +149,11 @@ public class ConfigWindowController {
             }
 
             updateStatus("Configurazione caricata", false);
+            logger.info("Configurazione caricata correttamente");
             Log.addMessage("Configurazione caricata correttamente");
         } catch (Exception e) {
             updateStatus("Errore nel caricamento: " + e.getMessage(), true);
+            logger.error("impossibile caricare la configurazione - {}", e.getMessage());
             Log.addMessage("ERRORE: impossibile caricare la configurazione - " + e.getMessage());
             showAlert("Errore", "Impossibile caricare la configurazione: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -198,6 +201,7 @@ public class ConfigWindowController {
 
         File selectedDirectory = directoryChooser.showDialog(dialogStage);
         if (selectedDirectory != null) {
+            logger.info("Selezionata directory: {}", selectedDirectory.getAbsolutePath());
             Log.addMessage("Selezionata directory: " + selectedDirectory.getAbsolutePath());
             targetField.setText(selectedDirectory.getAbsolutePath());
         }
@@ -247,6 +251,7 @@ public class ConfigWindowController {
         for (int i = 0; i < directories.length; i++) {
             if (directories[i].isEmpty()) {
                 updateStatus(labels[i] + " non specificata!", true);
+                logger.error("{} non specificata", labels[i]);
                 Log.addMessage("ERRORE: " + labels[i] + " non specificata");
                 showAlert("Errore di validazione", labels[i] + " deve essere specificata.", Alert.AlertType.ERROR);
                 return false;
@@ -257,10 +262,13 @@ public class ConfigWindowController {
                 Path path = Paths.get(directories[i]);
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
+                    logger.warn("Creata directory mancante: {}", path);
                     Log.addMessage("Creata directory mancante: " + path);
                     updateStatus("Creata directory: " + directories[i], false);
                 }
             } catch (IOException e) {
+                logger.error("impossibile creare la directory {} - {}", directories[i], e.getMessage());
+                logger.error("impossibile creare la directory " + directories[i] + " - " + e.getMessage());
                 Log.addMessage("ERRORE: impossibile creare la directory " + directories[i] + " - " + e.getMessage());
                 updateStatus("Impossibile creare directory: " + directories[i], true);
                 showAlert("Errore", "Impossibile creare la directory: " + directories[i], Alert.AlertType.ERROR);
@@ -296,6 +304,7 @@ public class ConfigWindowController {
             String configJson = gson.toJson(originalConfigJson);
 
             engine.setConfigFromJson(configJson);
+            logger.info("Configurazione salvata con successo");
             Log.addMessage("Configurazione salvata con successo");
             updateStatus("Configurazione salvata con successo!", false);
 
@@ -317,6 +326,7 @@ public class ConfigWindowController {
 
         } catch (Exception e) {
             updateStatus("Errore nel salvataggio: " + e.getMessage(), true);
+            logger.error("salvataggio configurazione fallito - {}", e.getMessage());
             Log.addMessage("ERRORE: salvataggio configurazione fallito - " + e.getMessage());
             showAlert("Errore", "Impossibile salvare: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -344,6 +354,7 @@ public class ConfigWindowController {
         try {
             // Controlla se ci sono modifiche non salvate
             if (hasUnsavedChanges()) {
+                logger.info("Tentativo di chiusura con modifiche non salvate");
                 Log.addMessage("Tentativo di chiusura con modifiche non salvate");
                 Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmAlert.setTitle("Modifiche non salvate");
@@ -356,6 +367,7 @@ public class ConfigWindowController {
                     }
                 });
             } else {
+                logger.info("Finestra di configurazione chiusa senza modifiche");
                 Log.addMessage("Finestra di configurazione chiusa senza modifiche");
                 dialogStage.close();
             }

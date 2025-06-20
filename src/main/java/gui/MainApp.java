@@ -20,6 +20,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
 
         Log.addMessage("");
+        logger.info("Applicazione avviata");
         Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("File Converter Manager");
@@ -49,12 +50,14 @@ public class MainApp extends Application {
             primaryStage.show();
 
             primaryStage.setOnCloseRequest(event -> {
+                logger.info("Applicazione chiusa.");
                 Log.addMessage("Applicazione chiusa.");
                 Log.close();
             });
 
         } catch (IOException e) {
             e.printStackTrace();
+            logger.fatal("Errore nel caricare GraphicalMenu.fxml: {}", e.getMessage());
             System.err.println("Errore nel caricare GraphicalMenu.fxml: " + e.getMessage());
 
             // Mostra errore dettagliato
