@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class PDFtoJPGconverter extends AbstractPDFConverter {
     private static final int DPI = 300; // DPI dell'immagine renderizzata

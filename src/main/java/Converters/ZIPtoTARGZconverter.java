@@ -11,6 +11,8 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Questa classe si occupa della conversione di file .zip in .tar.gz

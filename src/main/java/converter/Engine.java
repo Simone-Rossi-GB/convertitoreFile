@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 public class Engine {
     private ConverterConfig config;
@@ -169,14 +172,11 @@ public class Engine {
      */
     private void executeConversion(String srcExt, String outExt, File srcFile, String parameter, Boolean union) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
-
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         List<File> outFiles;
         File tempFile = new File("src/temp/" + srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        System.out.println(parameter);
-        System.out.println(union);
 
         try {
             if (parameter != null && union != null) {
@@ -255,7 +255,7 @@ public class Engine {
         if (outPath == null) throw new NullPointerException("L'oggetto outPath non esiste");
         Path dest = Paths.get(outPath, file.getName());
         Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-        Log.addMessage("File spostato in: " + dest.toString());
+        Log.addMessage("File spostato in: " + dest);
     }
 
 

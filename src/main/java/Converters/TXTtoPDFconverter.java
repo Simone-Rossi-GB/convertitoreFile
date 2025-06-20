@@ -5,6 +5,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.*;
 import java.util.ArrayList;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 public class TXTtoPDFconverter implements Converter {
     @Override

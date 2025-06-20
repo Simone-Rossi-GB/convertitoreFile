@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Engine per il WebService - versione modificata dell'Engine locale
