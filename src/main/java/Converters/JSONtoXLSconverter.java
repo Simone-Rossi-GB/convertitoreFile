@@ -32,17 +32,6 @@ public class JSONtoXLSconverter implements Converter {
         return true;
     }
 
-    @Override
-    public ArrayList<File> convert(File srcFile, String password) throws IOException, DocumentException {
-        File validJsonFile = ensureJSONArrayFormat(srcFile);
-        return convertJSONtoXLS(validJsonFile);
-    }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, boolean opzioni) throws IOException, DocumentException {
-        File validJsonFile = ensureJSONArrayFormat(srcFile);
-        return convertJSONtoXLS(validJsonFile);
-    }
 
     /**
      * Controlla se il file JSON inizia e finisce con parentesi quadre.
