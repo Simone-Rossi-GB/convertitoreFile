@@ -132,7 +132,6 @@ public class MainViewController {
             try {
                 toggleMonitoring();
             } catch (IOException ex) {
-                logger.
                 Log.addMessage("ERRORE: monitoraggio fallito : " + ex.getMessage());
                 launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
