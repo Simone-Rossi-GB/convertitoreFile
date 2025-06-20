@@ -82,6 +82,12 @@ public class ConverterWebServiceController {
             File outputDirectoryForEngine = conversionTempDir.toFile();
 
             // Chiamata ai metodi di EngineWebService che restituiscono il file convertito
+            if(!engineWebService.canBeConverted(extension, password)) {
+               return ResponseEntity
+                       .status(HttpStatus.BAD_REQUEST)
+                       .body(new ConversionResponse(false, "Il file richiede una password.", "PASSWORD_REQUIRED"));
+            }
+
             convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, outputDirectoryForEngine);
 
 

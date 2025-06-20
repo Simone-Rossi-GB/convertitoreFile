@@ -447,4 +447,8 @@ public class EngineWebService {
         logger.info("WebService: Rinomina file: {} -> {}", startFile.getName(), destFile.getName());
         Log.addMessage("WebService: Rinomina file: " + startFile.getName() + " -> " + destFile.getName());
     }
+
+//    public boolean canBeConverted(String extension, String password) {
+//
+//    }
 }
