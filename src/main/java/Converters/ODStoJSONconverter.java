@@ -33,62 +33,11 @@ public class ODStoJSONconverter implements Converter {
     @Override
     public ArrayList<File> convert(File srcFile) throws Exception, ConvertionException {
         if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, null, false);
+            return convertInternal(srcFile);
         }
         throw new ConvertionException("L'oggetto srcFile non esiste o è vuoto.");
     }
 
-    /**
-     * Converte un file ODS protetto da password (non usata in questa implementazione) in JSON.
-     *
-     * @param srcFile  File ODS da convertire
-     * @param password Password del file (non usata)
-     * @return Lista contenente il file JSON generato
-     * @throws Exception           In caso di errori generici
-     * @throws ConvertionException Se il file è nullo, vuoto o non valido
-     */
-    @Override
-    public ArrayList<File> convert(File srcFile, String password) throws Exception, ConvertionException {
-        if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, password, false);
-        }
-        throw new ConvertionException("L'oggetto srcFile non esiste o è vuoto.");
-    }
-
-    /**
-     * Converte un file ODS in JSON applicando opzioni personalizzate.
-     *
-     * @param srcFile File ODS da convertire
-     * @param opzioni Opzioni di elaborazione (non usate in questa versione)
-     * @return Lista contenente il file JSON generato
-     * @throws Exception           In caso di errori generici
-     * @throws ConvertionException Se il file è nullo, vuoto o non valido
-     */
-    @Override
-    public ArrayList<File> convert(File srcFile, boolean opzioni) throws Exception {
-        if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, null, opzioni);
-        }
-        throw new ConvertionException("L'oggetto srcFile non esiste o è vuoto.");
-    }
-
-    /**
-     * Converte un file ODS in JSON utilizzando password e opzioni (non utilizzati).
-     *
-     * @param srcFile  File ODS da convertire
-     * @param password Password del file (non usata)
-     * @param opzioni  Opzioni di elaborazione (non usate)
-     * @return Lista contenente il file JSON generato
-     * @throws Exception           In caso di errori generici
-     * @throws ConvertionException Se il file è nullo, vuoto o non valido
-     */
-    @Override
-    public ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception {
-        if (controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, password, opzioni);
-        }
-        throw new ConvertionException("L'oggetto srcFile non esiste o è vuoto.");
-    }
 
     /**
      * Verifica che il file esista e non sia vuoto.
@@ -104,12 +53,11 @@ public class ODStoJSONconverter implements Converter {
      * Metodo interno che esegue la logica di conversione da ODS a JSON.
      *
      * @param odsFile  Il file sorgente ODS
-     * @param password Password (non usata)
-     * @param opzioni  Opzioni (non usate)
+
      * @return Lista contenente un singolo file JSON generato
      * @throws Exception In caso di errori nella lettura o scrittura file
      */
-    private ArrayList<File> convertInternal(File odsFile, String password, boolean opzioni) throws Exception {
+    private ArrayList<File> convertInternal(File odsFile) throws Exception {
         if (odsFile == null) {
             throw new IllegalArgumentException("L'oggetto odsFile non esiste.");
         }

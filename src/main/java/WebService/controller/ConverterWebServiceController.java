@@ -74,23 +74,8 @@ public class ConverterWebServiceController {
             File outputDirectoryForEngine = conversionTempDir.toFile();
 
             // Chiamata ai metodi di EngineWebService che restituiscono il file convertito
-            if (password != null && !password.trim().isEmpty()) {
-                if (mergeImages && targetFormat.equals("jpg")) {
-                    convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, password, mergeImages, outputDirectoryForEngine);
-                } else {
-                    convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, password, outputDirectoryForEngine);
-                }
-            } else {
-                if (mergeImages && targetFormat.equals("jpg")) {
-                    convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, mergeImages, outputDirectoryForEngine);
-                } else {
-                    if (formatiImmagini.contains(extension)) {
-                        convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, targetFormat);
-                    } else {
-                        convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, outputDirectoryForEngine);
-                    }
-                }
-            }
+            convertedOutputFile = engineWebService.conversione(extension, targetFormat, inputFileForEngine, outputDirectoryForEngine);
+
 
             // 4. Verifica che il file convertito esista
             if (convertedOutputFile == null || !convertedOutputFile.exists()) {

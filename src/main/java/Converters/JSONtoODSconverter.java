@@ -19,35 +19,10 @@ public class JSONtoODSconverter implements Converter {
     @Override
     public ArrayList<File> convert(File srcFile) throws Exception, ConvertionException {
         if(controlloFileNonVuoto(srcFile)){
-            return convertInternal(srcFile, null, false);
+            return convertInternal(srcFile);
         }
         throw new ConvertionException("File vuoto o corrrotto");
     }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, String password) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)) {
-            return convertInternal(srcFile, password, false);
-        }
-        throw new ConvertionException("File vuoto o corrotto");
-    }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, boolean opzioni) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)){
-            return convertInternal(srcFile, null, opzioni);
-        }
-        throw new ConvertionException("File vuoto o corrotto");
-    }
-
-    @Override
-    public ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception, ConvertionException {
-        if(controlloFileNonVuoto(srcFile)){
-            return convertInternal(srcFile, password, opzioni);
-        }
-        throw new ConvertionException("File vuoto o corrotto");
-    }
-
 
     /**
      * Controlla se il file è vuoto.
@@ -64,7 +39,7 @@ public class JSONtoODSconverter implements Converter {
 
 
 
-    private ArrayList<File> convertInternal(File jsonFile, String password, boolean opzioni) throws Exception {
+    private ArrayList<File> convertInternal(File jsonFile) throws Exception {
         // Parsing del file JSON
         List<LinkedHashMap<String, Object>> data = objectMapper.readValue(
                 jsonFile,

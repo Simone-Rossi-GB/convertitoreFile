@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.file.StandardCopyOption;
 
@@ -417,7 +418,7 @@ public class MainViewController {
         String password = null;
         boolean mergeImages = false;
 
-        try {
+        try {/*
 
             // CORREZIONE: Gestione dialoghi per PDF (eseguiti nel thread JavaFX)
             if (srcExtension.equals("pdf")) {
@@ -449,14 +450,14 @@ public class MainViewController {
                     Thread.currentThread().interrupt();
                     throw new Exception("Operazione interrotta dall'utente");
                 }
-            }
+            }*/
 
             // PRIMO TENTATIVO: USA WEBSERVICE
             boolean webServiceSuccess = false;
             if (webServiceClient.isServiceAvailable()) {
                 try {
                     addLogMessage("Tentativo conversione tramite web service...");
-                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, password, mergeImages);
+                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile/*, password, mergeImages*/);
 
                     if (result.isSuccess()) {
                         // Verifica che il file convertito sia stato effettivamente salvato
@@ -492,7 +493,8 @@ public class MainViewController {
                 addLogMessage("Fallback: uso engine locale per conversione...");
 
                 try {
-                    // L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
+                    engine.conversione(srcExtension, targetFormat, srcFile);
+                    /*// L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
                     if (password != null) {
                         if (targetFormat.equals("jpg")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
@@ -509,7 +511,7 @@ public class MainViewController {
                                 engine.conversione(srcExtension, targetFormat, srcFile);
                             }
                         }
-                    }
+                    }*/
 
                     addLogMessage("Conversione ENGINE LOCALE riuscita");
 
@@ -599,43 +601,53 @@ public class MainViewController {
         });
     }
 
-    private boolean launchDialogUnisciSync() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Unisci PDF");
-        alert.setHeaderText(null);
-        alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
+    public static boolean launchDialogUnisci() throws Exception {
+        CompletableFuture<Boolean> union = new CompletableFuture<>();
 
-        ButtonType siBtn = new ButtonType("Si");
-        ButtonType noBtn = new ButtonType("No");
-        alert.getButtonTypes().setAll(siBtn, noBtn);
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Unisci PDF");
+            alert.setHeaderText(null);
+            alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        boolean unisci = result.isPresent() && result.get() == siBtn;
-        Log.addMessage("Scelta unione JPG: " + unisci);
-        return unisci;
+            ButtonType siBtn = new ButtonType("Si");
+            ButtonType noBtn = new ButtonType("No");
+            alert.getButtonTypes().setAll(siBtn, noBtn);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            boolean unisci = result.isPresent() && result.get() == siBtn;
+            Log.addMessage("Scelta unione JPG: " + unisci);
+
+            union.complete(unisci);
+        });
+
+        try {
+            return union.get(); // blocca finché la finestra non è chiusa
+        } catch (Exception e) {
+            throw new Exception("Impossibile ottenere il parametro Boolean");
+        }
     }
 
-    private String launchDialogPdfSync() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Password PDF");
-        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-        dialog.setContentText("Password:");
+    public static String launchDialogStringParameter() throws Exception {
 
-        Optional<String> result = dialog.showAndWait();
-        String password = result.orElse(null);
-        Log.addMessage("Password ricevuta: " + (password == null || password.isEmpty() ? "(vuota)" : "(nascosta)"));
-        return password;
-    }
+        CompletableFuture<String> extraParameter = new CompletableFuture<>();
+        Platform.runLater(() ->{
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Password PDF");
+            dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
+            dialog.setContentText("Password:");
 
-    public String launchDialogPdf() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Password PDF");
-        dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-        dialog.setContentText("Password:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
-        return result.orElse(null);
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
+            String parameter = result.orElse(null);
+            Log.addMessage("Password ricevuta: " + (parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)"));
+            extraParameter.complete(parameter);
+        });
+        try {
+            return extraParameter.get(); // blocca finché la finestra non è chiusa
+        } catch (Exception e) {
+            throw new Exception("Impossibile ottenere il parametro String");
+        }
     }
 
     public void stampaRisultati() {

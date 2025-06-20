@@ -7,10 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public interface Converter {
-    default ArrayList<File> convert(File srcFile) throws Exception {
-        return null;
-    }
-    default ArrayList<File> convert(File srcFile, String parameter) throws Exception {
+    public ArrayList<File> convert(File srcFile) throws Exception;
+    /*default ArrayList<File> convert(File srcFile, String parameter) throws Exception {
         return null;
     }
     default ArrayList<File> convert(File srcFile, boolean opzioni) throws Exception{
@@ -19,6 +17,6 @@ public interface Converter {
 
     default ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception{
         return null;
-    }
+    }*/
 
 }

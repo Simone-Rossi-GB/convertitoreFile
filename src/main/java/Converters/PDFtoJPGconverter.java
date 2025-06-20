@@ -2,6 +2,7 @@ package Converters;
 
 import converter.Log;
 import converter.Utility;
+import gui.MainViewController;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -58,12 +59,12 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      * Conversione pdf -> jpg
      * @param pdfFile File di partenza
      * @param pdfDocument Documento pdf caricato
-     * @param union Boolean che indica se unire o no le pagine in un'unica immagine
      * @return ArrayList di file convertiti
      * @throws Exception Errore durante il processo di conversione
      */
     @Override
-    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean union) throws Exception {
+    public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+        boolean union = MainViewController.launchDialogUnisci();
         validateInputs(pdfFile, pdfDocument);
         Log.addMessage("[PDFtoJPG] Conversione iniziata con parametri:\n" +
                 "| pdfFile.getPath() = " + pdfFile.getPath()+"\n" +
