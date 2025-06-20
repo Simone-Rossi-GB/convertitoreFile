@@ -183,7 +183,7 @@ public class Engine {
      * @param srcFile File iniziale
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile/*, String parameter, Boolean union*/) throws Exception {
+    public void conversione(String srcExt, String outExt, File srcFile, String targetFormat/*, String parameter, Boolean union*/) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
@@ -191,6 +191,7 @@ public class Engine {
         File tempFile = new File("src/temp/" + srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
+            ConversionContext.set("destinationFormat", targetFormat);
             outFiles = converter.convert(srcFile);
             Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
