@@ -10,10 +10,12 @@ import org.apache.logging.log4j.LogManager;
 public class WebServiceApplication {
 
     private static ConfigurableApplicationContext context;
+    private static final Logger logger = LogManager.getLogger(WebServiceApplication.class);
 
     public static void startWebService() {
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
+            logger.trace("Web Service: Web Service avviato su porta 8080");
             System.out.println("Web Service avviato su porta 8080");
         }
     }
@@ -21,6 +23,7 @@ public class WebServiceApplication {
     public static void stopWebService() {
         if (context != null && context.isActive()) {
             context.close();
+            logger.trace("Web Service: Web Service fermato");
             System.out.println("Web Service fermato");
         }
     }

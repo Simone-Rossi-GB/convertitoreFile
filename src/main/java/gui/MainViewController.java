@@ -604,7 +604,6 @@ public class MainViewController {
     }
 
     public void launchAlertError(String message) {
-        Log.addMessage("ERRORE: " + message);
         showAlert("Errore", message, Alert.AlertType.ERROR);
     }
 
