@@ -18,11 +18,6 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        for (int i = 0; i < 5; i++) {
-            logger.info("This is an informational message.");
-            logger.warn("This is a warning message.");
-            logger.error("This is an error message.");
-        }
 
         Log.addMessage("");
         Log.addMessage("Applicazione avviata");
