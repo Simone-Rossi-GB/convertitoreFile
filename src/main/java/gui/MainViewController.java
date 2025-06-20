@@ -2,6 +2,8 @@ package gui;
 
 import converter.DirectoryWatcher;
 import converter.Log;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import converter.Engine;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
