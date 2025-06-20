@@ -34,7 +34,7 @@
       "pdf": "Converters.TXTtoPDFconverter"
     },
     "zip": {
-      "targz": "Converters.ZIPtoTARGZconverter"
+      "tar.gz": "Converters.ZIPtoTARGZconverter"
     },
     "gz": {
       "zip": "Converters.TARGZtoZIPconverter"
