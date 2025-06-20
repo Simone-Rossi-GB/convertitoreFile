@@ -72,7 +72,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         validateInputs(pdfFile, pdfDocument);
 
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
-        Log.addMessage("[PDFtoJPG] Conversione iniziata con parametri:\n" +
+        Log.addMessage("Conversione iniziata con parametri:\n" +
                 "| pdfFile.getPath() = " + pdfFile.getPath() + "\n" +
                 "| union = " + union);
 
@@ -107,18 +107,18 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             pdfDocument.close();
 
             if (outputFiles.size() > 1) {
-                Log.addMessage("[PDFtoJPG] Compressione delle immagini generate in output");
+                Log.addMessage("Compressione delle immagini generate in output");
                 File zippedImages = Utility.zipper(outputFiles);
                 zippedImages = rinominaFileZip(zippedImages, baseName);
                 outputFiles.clear();
                 outputFiles.add(zippedImages);
             }
 
-            logger.info("[PDFtoJPG] Conversione completata, {} file prodotti", outputFiles.size());
+            logger.info("Conversione completata, {} file prodotti", outputFiles.size());
             return outputFiles;
 
         } catch (Exception e) {
-            logger.error("[PDFtoJPG] Errore durante il processo di conversione: {}", e.getMessage(), e);
+            logger.error("Durante il processo di conversione: {}", e.getMessage(), e);
             throw new Exception("Errore durante il processo di conversione: " + e.getMessage(), e);
         } finally {
             pdfDocument.close();
@@ -133,7 +133,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      */
     private void validatePages(int nPages) throws Exception {
         if (nPages > MAX_PAGES) {
-            logger.warn("[PDFtoJPG] File con troppe pagine: {}", nPages);
+            logger.warn("File con troppe pagine: {}", nPages);
             throw new Exception("Il file ha troppe pagine");
         }
     }
@@ -144,7 +144,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             Files.move(zipFile.toPath(), renamedZip.toPath(), StandardCopyOption.REPLACE_EXISTING);
             return renamedZip;
         } catch (IOException e) {
-            logger.error("[PDFtoJPG] Impossibile rinominare il file ZIP: {}", e.getMessage(), e);
+            logger.error("Impossibile rinominare il file ZIP: {}", e.getMessage(), e);
             throw new Exception("Impossibile rinominare il file ZIP: " + e.getMessage(), e);
         }
     }
