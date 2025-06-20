@@ -96,7 +96,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             pdfDocument.close();
             if (outputFiles.size() > 1){
                 Log.addMessage("Compressione delle immagini generate in output");
-                File zippedImages = Utility.zipImages(outputFiles);
+                File zippedImages = Utility.zipper(outputFiles);
                 zippedImages = rinominaFileZip(zippedImages, baseName);
                 outputFiles.clear();
                 outputFiles.add(zippedImages);

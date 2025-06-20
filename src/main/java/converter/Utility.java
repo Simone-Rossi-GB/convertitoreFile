@@ -26,19 +26,19 @@ public class Utility {
      */
 
     /**
-     * Crea un file ZIP contenente tutti i file immagine specificati.
+     * Crea un file ZIP contenente tutti i file specificati.
      *
-     * @param imageFiles Lista di file immagine da includere (PNG, JPG, BMP, ecc.)
+     * @param files Lista di file da includere
      * @return File ZIP generato
      * @throws IOException in caso di errore di lettura/scrittura
      */
-    public static File zipImages(List<File> imageFiles) throws IOException {
+    public static File zipper(List<File> files) throws IOException {
         File outputZip = new File("src/temp/images.zip"); // nome zip più esplicito
 
         try (FileOutputStream fos = new FileOutputStream(outputZip);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
 
-            for (File imageFile : imageFiles) {
+            for (File imageFile : files) {
                 if (!imageFile.exists() || !imageFile.isFile()) {
                     Log.addMessage("File non valido: " + imageFile.getAbsolutePath());
                     continue;

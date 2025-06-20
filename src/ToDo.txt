@@ -1,12 +1,7 @@
 1. Test generale + Risolvere problemi(pdf con troppe pagine e pagine separate)
 
-PDF (nome zip + controllo pagine)
-
 JSON
 
-Immagini
-
-XLS
 
 2. Chiedere password / flag / altre opzioni nelle classi e non nel codice
 
