@@ -1,5 +1,6 @@
 package gui;
 
+import com.azul.crs.client.service.GCLogMonitor;
 import converter.DirectoryWatcher;
 import converter.Log;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +66,7 @@ public class MainViewController {
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
+    private static final Logger logger = LogManager.getLogger(MainViewController.class);
 
     // Variabili di stato
     private boolean isMonitoring = false;
@@ -93,7 +95,9 @@ public class MainViewController {
         // Inizializza l'interfaccia
         setupEventHandlers();
         updateMonitoringStatus();
+        logger.info("Applicazione avviata.");
         Log.addMessage("Applicazione avviata.");
+        logger.info("Caricamento configurazione...");
         Log.addMessage("Caricamento configurazione...");
 
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");

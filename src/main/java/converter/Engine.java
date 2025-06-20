@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 public class Engine {
     private ConverterConfig config;
     private static final String CONFIG_FILE_PATH = System.getProperty("user.dir") + "/src/main/java/converter/config/config.json";
+    private static final Logger logger = LogManager.getLogger(Engine.class);
 
     /**
      * Costruttore: carica il file config.json
@@ -28,11 +29,14 @@ public class Engine {
             Gson gson = new Gson();
             config = gson.fromJson(reader, ConverterConfig.class);
             if (config == null) {
+                logger.error("l'oggetto config non esiste");
                 Log.addMessage("ERRORE: l'oggetto config non esiste");
                 throw new NullPointerException("L'oggetto config non esiste");
             }
+            logger.info("Configurazione caricata correttamente da config.json");
             Log.addMessage("Configurazione caricata correttamente da config.json");
         } catch (Exception e) {
+            logger.error("Lettura del file di configurazione fallita");
             Log.addMessage("ERRORE: Lettura del file di configurazione fallita");
             throw new RuntimeException("Errore nella lettura del file di configurazione", e);
         }
@@ -45,9 +49,11 @@ public class Engine {
      */
     public String getConfigAsJson() throws Exception {
         try {
+            logger.info("Lettura del contenuto di config.json eseguita con successo");
             Log.addMessage("Lettura del contenuto di config.json eseguita con successo");
             return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)));
         } catch (IOException e) {
+            logger.error("Lettura del file di configurazione non riuscita");
             Log.addMessage("ERRORE: Lettura del file di configurazione non riuscita");
             throw new Exception("Errore nella lettura del file di configurazione: " + e.getMessage(), e);
         }
@@ -66,6 +72,7 @@ public class Engine {
                 throw new Exception("JSON non valido: impossibile parsare la configurazione");
             }
         } catch (Exception e) {
+            logger.error("JSON non valido");
             Log.addMessage("ERRORE: JSON non valido");
             throw new Exception("Il JSON fornito non è valido: " + e.getMessage(), e);
         }
@@ -74,8 +81,10 @@ public class Engine {
         try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
             writer.write(jsonText);
             writer.flush(); // Assicurati che i dati siano scritti
+            logger.info("Scrittura su config.json completata");
             Log.addMessage("Scrittura su config.json completata");
         } catch (IOException e) {
+            logger.error("Scrittura su config.json fallita");
             Log.addMessage("ERRORE: Scrittura su config.json fallita");
             throw new Exception("Errore nella scrittura del file di configurazione: " + e.getMessage(), e);
         }
@@ -83,8 +92,10 @@ public class Engine {
         // Ricarica la configurazione
         try {
             setConfig();
+            logger.info("Configurazione ricaricata con successo");
             Log.addMessage("Configurazione ricaricata con successo");
         } catch (Exception e) {
+            logger.error("Caricamento della nuova configurazione fallito");
             Log.addMessage("ERRORE: Caricamento della nuova configurazione fallito");
             throw new Exception("Errore nel caricamento della nuova configurazione: " + e.getMessage(), e);
         }
@@ -100,15 +111,18 @@ public class Engine {
      */
     public List<String> getPossibleConversions(String extension) throws Exception {
         if (extension == null) {
+            logger.error("Parametro extension nullo");
             Log.addMessage("ERRORE: Parametro extension nullo");
             throw new NullPointerException("L'oggetto extension non esiste");
         }
 
         if (config == null || config.getConversions() == null || !config.getConversions().containsKey(extension)) {
+            logger.error("Configurazione mancante o conversione non supportata per: {}", extension);
             Log.addMessage("ERRORE: Configurazione mancante o conversione non supportata per: " + extension);
             throw new Exception("Config assente o conversione non supportata");
         }
 
+        logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
         Log.addMessage("Formati disponibili per la conversione da " + extension + " ottenuti con successo");
         return new ArrayList<>(config.getConversions().get(extension).keySet());
     }

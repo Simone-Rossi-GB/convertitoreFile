@@ -6,13 +6,14 @@ import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 import converter.ConvertionException;
+import converter.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 
 /**
  * Classe responsabile della conversione di file ODS (OpenDocument Spreadsheet)
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class ODStoJSONconverter implements Converter {
 
+    private static final Logger logger = LogManager.getLogger(ODStoJSONconverter.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -35,6 +37,8 @@ public class ODStoJSONconverter implements Converter {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile);
         }
+        logger.error("File nullo o vuoto con password specificata: {}", srcFile);
+        Log.addMessage("[ODS→JSON] ERRORE: file nullo o vuoto.");
         throw new ConvertionException("L'oggetto srcFile non esiste o è vuoto.");
     }
 
@@ -59,13 +63,29 @@ public class ODStoJSONconverter implements Converter {
      */
     private ArrayList<File> convertInternal(File odsFile) throws Exception {
         if (odsFile == null) {
+            logger.error("File ODS nullo");
+            Log.addMessage("[ODS→JSON] ERRORE: oggetto file nullo.");
             throw new IllegalArgumentException("L'oggetto odsFile non esiste.");
         }
 
+        logger.info("Inizio conversione con parametri: \n | odsFile.getPath() = {}", odsFile.getPath());
+        Log.addMessage("[ODS→JSON] Inizio conversione file: " + odsFile.getName());
+
         List<Map<String, Object>> jsonData = new ArrayList<>();
-        SpreadsheetDocument spreadsheet = SpreadsheetDocument.loadDocument(odsFile);
+        SpreadsheetDocument spreadsheet;
+
+        try {
+            spreadsheet = SpreadsheetDocument.loadDocument(odsFile);
+        } catch (Exception e) {
+            logger.error("Errore apertura documento ODS: {}", e.getMessage());
+            Log.addMessage("[ODS→JSON] ERRORE: apertura documento fallita.");
+            throw new ConvertionException("Errore nel caricamento del file ODS.");
+        }
+
         Table table = spreadsheet.getSheetByIndex(0);
         if (table == null) {
+            logger.error("Nessuna tabella trovata nel documento");
+            Log.addMessage("[ODS→JSON] ERRORE: nessuna tabella presente nel file.");
             throw new ConvertionException("L'oggetto table non esiste nel file ODS.");
         }
 
@@ -107,7 +127,14 @@ public class ODStoJSONconverter implements Converter {
         File outFile = File.createTempFile("converted-", ".json");
         try (FileOutputStream fos = new FileOutputStream(outFile)) {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(fos, jsonData);
+        } catch (Exception e) {
+            logger.error("Scrittura file JSON fallita: {}", e.getMessage());
+            Log.addMessage("[ODS→JSON] ERRORE: scrittura del file JSON fallita.");
+            throw new ConvertionException("Errore durante la scrittura del file JSON.");
         }
+
+        logger.info("Conversione completata: {}", outFile.getAbsolutePath());
+        Log.addMessage("[ODS→JSON] Creazione file .json completata: " + outFile.getName());
 
         ArrayList<File> output = new ArrayList<>();
         output.add(outFile);
