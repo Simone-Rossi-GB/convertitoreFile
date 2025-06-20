@@ -106,4 +106,26 @@ public class Utility {
 
         return extractedFiles;
     }
+
+    /**
+     * Elimina ricorsivamente una directory e tutto il suo contenuto.
+     *
+     * @param dir La directory da eliminare
+     * @return true se la directory è stata eliminata con successo, false altrimenti
+     */
+    public static boolean deleteDirectory(File dir) {
+        if (dir == null || !dir.exists()) return false;
+
+        File[] contents = dir.listFiles();
+        if (contents != null) {
+            for (File file : contents) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+        return dir.delete();
+    }
 }
