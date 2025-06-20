@@ -183,14 +183,27 @@ public class Engine {
      * @param srcFile File iniziale
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile/*, String parameter, Boolean union*/) throws Exception {
+    // Nel file Engine.java, sostituisci il metodo conversione con questo:
+
+    /**
+     * Esecuzione conversione - versione semplificata
+     * Il convertitore stesso gestirà i dialoghi necessari se siamo nell'ambiente GUI
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @throws Exception Errore nella conversione
+     */
+    public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
+
         List<File> outFiles;
         File tempFile = new File("src/temp/" + srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
         try {
+            // Il converter gestirà automaticamente i dialoghi se necessario
             outFiles = converter.convert(srcFile);
             Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());

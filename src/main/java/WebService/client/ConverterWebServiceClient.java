@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ public class ConverterWebServiceClient {
 
     private final String baseUrl;
     private final RestTemplate restTemplate;
+    private static final Logger logger = LogManager.getLogger(ConverterWebServiceClient.class);
 
     public ConverterWebServiceClient(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -35,19 +35,18 @@ public class ConverterWebServiceClient {
 
     /**
      * Controlla la disponibilità del servizio web.
-     * @return true se il servizio è disponibile, false altrimenti.
      */
     public boolean isServiceAvailable() {
         try {
             String url = baseUrl + "/api/converter/status";
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-            return response.getStatusCode().is2xxSuccessful() && response.getBody() != null && "active".equals(response.getBody().get("status"));
+            return response.getStatusCode().is2xxSuccessful() &&
+                    response.getBody() != null &&
+                    "active".equals(response.getBody().get("status"));
         } catch (ResourceAccessException e) {
-            // Non riuscito a connettersi al server (e.g., server down, indirizzo errato)
             System.err.println("Servizio web non disponibile (connessione fallita): " + e.getMessage());
             return false;
         } catch (Exception e) {
-            // Altri errori (e.g., server risponde con errore HTTP)
             System.err.println("Errore durante il controllo dello stato del servizio web: " + e.getMessage());
             return false;
         }
@@ -55,9 +54,6 @@ public class ConverterWebServiceClient {
 
     /**
      * Recupera la lista delle conversioni possibili per una data estensione sorgente.
-     * @param extension L'estensione del file sorgente (es. "pdf").
-     * @return Una lista di estensioni di destinazione possibili.
-     * @throws Exception Se la richiesta fallisce o il servizio non è disponibile.
      */
     public List<String> getPossibleConversions(String extension) throws Exception {
         if (!isServiceAvailable()) {
@@ -79,16 +75,62 @@ public class ConverterWebServiceClient {
     }
 
     /**
-     * Invia un file per la conversione al servizio web e salva il risultato localmente.
-     *
-     * @param inputFile Il file sorgente da convertire.
-     * @param targetFormat Il formato di destinazione desiderato.
-     * @param outputFile Il percorso completo dove salvare il file convertito localmente.
-     * @return Un oggetto ConversionResult che indica il successo e un messaggio.
+     * Verifica i requisiti di conversione per un file
      */
-    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile/*, String password, boolean mergeImages*/) {
+    public Map<String, Object> checkConversionRequirements(File inputFile) throws Exception {
         if (!isServiceAvailable()) {
-            return new ConversionResult(false, "Servizio di conversione non disponibile.");
+            throw new Exception("Servizio di conversione non disponibile.");
+        }
+
+        try {
+            String url = baseUrl + "/api/converter/check-requirements";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", new FileSystemResource(inputFile));
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Map.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new Exception("Errore durante il controllo dei requisiti: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new Exception("Errore nel controllo dei requisiti: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Conversione senza password
+     */
+    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile) {
+        return convertFileWithPassword(inputFile, targetFormat, outputFile, null);
+    }
+
+    /**
+     * Conversione con password opzionale
+     */
+    public ConversionResult convertFileWithPassword(File inputFile, String targetFormat, File outputFile, String password) {
+        return convertFileWithAllParameters(inputFile, targetFormat, outputFile, password, false);
+    }
+
+    /**
+     * Conversione con tutti i parametri
+     */
+    public ConversionResult convertFileWithAllParameters(File inputFile, String targetFormat, File outputFile,
+                                                         String password, boolean booleanOption) {
+        if (!isServiceAvailable()) {
+            return ConversionResult.error("Servizio di conversione non disponibile.");
         }
 
         try {
@@ -98,17 +140,16 @@ public class ConverterWebServiceClient {
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new FileSystemResource(inputFile)); // Aggiunge il file
-            body.add("targetFormat", targetFormat); // Aggiunge il formato target
-/*
+            body.add("file", new FileSystemResource(inputFile));
+            body.add("targetFormat", targetFormat);
+
             if (password != null && !password.isEmpty()) {
-                body.add("password", password); // Aggiunge la password se presente
+                body.add("password", password);
             }
-            body.add("mergeImages", String.valueOf(mergeImages)); // Aggiunge il flag mergeImages
-*/
+            body.add("booleanOption", String.valueOf(booleanOption));
+
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Esegui la richiesta POST e aspetta un array di byte come risposta
             ResponseEntity<byte[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
@@ -121,46 +162,43 @@ public class ConverterWebServiceClient {
                 try (FileOutputStream fos = new FileOutputStream(outputFile)) {
                     fos.write(response.getBody());
                 }
-                return new ConversionResult(true, "File convertito e salvato con successo: " + outputFile.getName());
+                return ConversionResult.success("File convertito e salvato con successo: " + outputFile.getName());
             } else {
-                // Se la risposta non è 2xx OK
-                String errorMessage = "Errore durante la conversione: " + response.getStatusCode();
-                if (response.getBody() != null) {
-                    // Tenta di decodificare l'errore JSON dal body se presente
-                    try {
-                        String responseBody = new String(response.getBody());
-                        // Potresti voler usare una libreria JSON come Gson o Jackson qui
-                        // per parsare un oggetto errore, ma per semplicità ora lo stampo
-                        System.err.println("Errore dal server: " + responseBody);
-                        errorMessage += " - Dettagli: " + responseBody;
-                    } catch (Exception e) {
-                        // Impossibile leggere il body come stringa o JSON
-                        errorMessage += " (corpo risposta illeggibile)";
-                    }
-                }
-                return new ConversionResult(false, errorMessage);
+                return ConversionResult.error("Errore durante la conversione: " + response.getStatusCode());
             }
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // Errori HTTP specifici (4xx, 5xx)
+
+        } catch (HttpClientErrorException e) {
+            // Gestione specifica per errori 400 (Bad Request) che potrebbero indicare password richiesta
+            if (e.getStatusCode().value() == 400) {
+                String responseBody = e.getResponseBodyAsString();
+                if (responseBody.contains("PASSWORD_REQUIRED")) {
+                    return new ConversionResult(false, null, "PASSWORD_REQUIRED: Il file richiede una password");
+                }
+            }
+            String errorMessage = "Errore del client (" + e.getStatusCode() + "): " + e.getResponseBodyAsString();
+            logger.error(errorMessage);
+            return ConversionResult.error(errorMessage);
+
+        } catch (HttpServerErrorException e) {
             String errorMessage = "Errore del server (" + e.getStatusCode() + "): " + e.getResponseBodyAsString();
-            System.err.println(errorMessage);
-            return new ConversionResult(false, errorMessage);
+            logger.error(errorMessage);
+            return ConversionResult.error(errorMessage);
+
         } catch (ResourceAccessException e) {
-            // Errore di rete o connessione
             String errorMessage = "Errore di connessione al servizio: " + e.getMessage();
-            System.err.println(errorMessage);
-            return new ConversionResult(false, errorMessage);
+            logger.error(errorMessage);
+            return ConversionResult.error(errorMessage);
+
         } catch (IOException e) {
-            // Errore nella scrittura del file locale
             String errorMessage = "Errore I/O durante il salvataggio del file convertito: " + e.getMessage();
-            System.err.println(errorMessage);
-            return new ConversionResult(false, errorMessage);
+            logger.error(errorMessage);
+            return ConversionResult.error(errorMessage);
+
         } catch (Exception e) {
-            // Qualsiasi altro errore inatteso
             String errorMessage = "Errore inatteso durante la conversione: " + e.getMessage();
-            System.err.println(errorMessage);
-            e.printStackTrace(); // Per debug
-            return new ConversionResult(false, errorMessage);
+            logger.error(errorMessage);
+            e.printStackTrace();
+            return ConversionResult.error(errorMessage);
         }
     }
 }

@@ -363,7 +363,6 @@ public class MainViewController {
     }
 
     public void launchDialogConversion(File srcFile) {
-        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
         if (srcFile == null || engine == null) {
             Log.addMessage("ERRORE: File sorgente o Engine non valido.");
             launchAlertError("File sorgente o Engine non valido.");
@@ -374,8 +373,9 @@ public class MainViewController {
 
         String srcExtension = getExtension(srcFile);
         List<String> formats;
+
         try {
-            // Prova prima il webservice per ottenere i formati
+            // Ottieni i formati possibili (prima dal web service, poi dall'engine locale)
             if (webServiceClient.isServiceAvailable()) {
                 try {
                     formats = webServiceClient.getPossibleConversions(srcExtension);
@@ -398,6 +398,7 @@ public class MainViewController {
             return;
         }
 
+        // Mostra il dialogo di selezione formato
         List<String> finalFormats = formats;
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
@@ -413,58 +414,21 @@ public class MainViewController {
     }
 
     private void performConversionWithFallback(File srcFile, String targetFormat) {
-        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
         String srcExtension = getExtension(srcFile);
         String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
 
-        // Variabili per gestire i dialoghi PDF
-        String password = null;
-        boolean mergeImages = false;
-
-        try {/*
-
-            // CORREZIONE: Gestione dialoghi per PDF (eseguiti nel thread JavaFX)
-            if (srcExtension.equals("pdf")) {
-                // Usa CountDownLatch per sincronizzare i thread
-                java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
-                java.util.concurrent.atomic.AtomicReference<String> passwordRef = new java.util.concurrent.atomic.AtomicReference<>();
-                java.util.concurrent.atomic.AtomicBoolean mergeImagesRef = new java.util.concurrent.atomic.AtomicBoolean(false);
-
-                Platform.runLater(() -> {
-                    try {
-                        // Chiedi la password nel thread JavaFX
-                        passwordRef.set(launchDialogPdfSync());
-
-                        // Se il target è JPG, chiedi se unire le immagini
-                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
-                            mergeImagesRef.set(launchDialogUnisciSync());
-                        }
-                    } finally {
-                        latch.countDown();
-                    }
-                });
-
-                // Aspetta che i dialoghi siano completati
-                try {
-                    latch.await();
-                    password = passwordRef.get();
-                    mergeImages = mergeImagesRef.get();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new Exception("Operazione interrotta dall'utente");
-                }
-            }*/
-
+        try {
             // PRIMO TENTATIVO: USA WEBSERVICE
             boolean webServiceSuccess = false;
             if (webServiceClient.isServiceAvailable()) {
                 try {
                     addLogMessage("Tentativo conversione tramite web service...");
-                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile/*, password, mergeImages*/);
+
+                    // Il web service gestirà automaticamente i controlli e i dialoghi necessari
+                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
 
                     if (result.isSuccess()) {
-                        // Verifica che il file convertito sia stato effettivamente salvato
                         if (outputDestinationFile.exists()) {
                             addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
                             webServiceSuccess = true;
@@ -472,7 +436,26 @@ public class MainViewController {
                             throw new Exception("Il file convertito non è stato salvato correttamente dal web service");
                         }
                     } else {
-                        throw new Exception("Web service ha restituito errore: " + result.getError());
+                        // Se il web service indica che serve una password, chiediamola qui
+                        if (result.getError() != null && result.getError().contains("PASSWORD_REQUIRED")) {
+                            // Chiedi password nell'interfaccia grafica
+                            Platform.runLater(() -> {
+                                try {
+                                    String password = launchDialogStringParameter();
+                                    if (password != null) {
+                                        // Riprova con la password
+                                        new Thread(() -> retryConversionWithPassword(srcFile, targetFormat, password)).start();
+                                    } else {
+                                        throw new Exception("Password richiesta ma non fornita");
+                                    }
+                                } catch (Exception e) {
+                                    handleConversionError(srcFile, e);
+                                }
+                            });
+                            return; // Esci qui, la conversione continuerà nel thread di retry
+                        } else {
+                            throw new Exception("Web service ha restituito errore: " + result.getError());
+                        }
                     }
                 } catch (Exception wsError) {
                     addLogMessage("Web service fallito: " + wsError.getMessage());
@@ -497,35 +480,16 @@ public class MainViewController {
                 addLogMessage("Fallback: uso engine locale per conversione...");
 
                 try {
+                    // L'engine locale gestirà automaticamente i dialoghi se necessario
                     engine.conversione(srcExtension, targetFormat, srcFile);
-                    /*// L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
-                    if (password != null) {
-                        if (targetFormat.equals("jpg")) {
-                            engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
-                        } else {
-                            engine.conversione(srcExtension, targetFormat, srcFile, password);
-                        }
-                    } else {
-                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
-                            engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
-                        } else {
-                            if(formatiImmagini.contains(srcExtension)){
-                                engine.conversione(srcExtension, targetFormat, srcFile, targetFormat);
-                            }else {
-                                engine.conversione(srcExtension, targetFormat, srcFile);
-                            }
-                        }
-                    }*/
-
                     addLogMessage("Conversione ENGINE LOCALE riuscita");
 
-                    // Per l'engine locale, il file originale è già stato gestito automaticamente
                     Platform.runLater(() -> {
                         fileConvertiti++;
                         stampaRisultati();
                         launchAlertSuccess(srcFile);
                     });
-                    return; // Esci qui se engine locale ha successo
+                    return;
 
                 } catch (Exception engineError) {
                     addLogMessage("Anche engine locale fallito: " + engineError.getMessage());
@@ -536,8 +500,6 @@ public class MainViewController {
             // Se arriviamo qui, il web service ha avuto successo
             if (webServiceSuccess) {
                 addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
-
-                // Gestisci il file originale dopo successo web service
                 moveOriginalFileAfterSuccess(srcFile);
 
                 Platform.runLater(() -> {
@@ -548,14 +510,44 @@ public class MainViewController {
             }
 
         } catch (Exception e) {
-            addLogMessage("ERRORE FINALE: " + e.getMessage());
-            moveFileToErrorFolder(srcFile);
-            Platform.runLater(() -> {
-                fileScartati++;
-                stampaRisultati();
-                launchAlertError("Conversione fallita: " + e.getMessage());
-            });
+            handleConversionError(srcFile, e);
         }
+    }
+
+    private void retryConversionWithPassword(File srcFile, String targetFormat, String password) {
+        try {
+            addLogMessage("Retry conversione con password tramite web service...");
+            String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
+            File outputDestinationFile = new File(convertedFolderPath, outputFileName);
+
+            ConversionResult result = webServiceClient.convertFileWithPassword(srcFile, targetFormat, outputDestinationFile, password);
+
+            if (result.isSuccess() && outputDestinationFile.exists()) {
+                addLogMessage("Conversione con password riuscita: " + result.getMessage());
+                moveOriginalFileAfterSuccess(srcFile);
+
+                Platform.runLater(() -> {
+                    fileConvertiti++;
+                    stampaRisultati();
+                    launchAlertSuccess(outputDestinationFile);
+                });
+            } else {
+                throw new Exception("Conversione con password fallita: " + result.getError());
+            }
+
+        } catch (Exception e) {
+            handleConversionError(srcFile, e);
+        }
+    }
+
+    private void handleConversionError(File srcFile, Exception e) {
+        addLogMessage("ERRORE FINALE: " + e.getMessage());
+        moveFileToErrorFolder(srcFile);
+        Platform.runLater(() -> {
+            fileScartati++;
+            stampaRisultati();
+            launchAlertError("Conversione fallita: " + e.getMessage());
+        });
     }
 
     private void moveOriginalFileAfterSuccess(File originalFile) {

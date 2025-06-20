@@ -28,7 +28,7 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
      * @return ArrayList contenente il file DOCX generato
      * @throws Exception in caso di errore durante la conversione
      */
-    @Override
+
     protected ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
         validateInputs(pdfFile, pdfDocument);
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
@@ -75,5 +75,10 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
             Log.addMessage("[PDF→DOCX] ERRORE: eccezione durante la conversione - " + e.getMessage());
             throw new Exception("Errore durante la conversione del file " + pdfFile.getName(), e);
         }
+    }
+
+    @Override
+    protected ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument, boolean option) throws Exception {
+        return null;
     }
 }
