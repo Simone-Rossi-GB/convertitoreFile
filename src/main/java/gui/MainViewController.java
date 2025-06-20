@@ -2,6 +2,8 @@ package gui;
 
 import converter.DirectoryWatcher;
 import converter.Log;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import converter.Engine;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -216,8 +218,12 @@ public class MainViewController {
                 return;
             }
             monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
+            checkAndCreateFolder(monitoredFolderPath);
             convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
+            checkAndCreateFolder(convertedFolderPath);
             failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
+            checkAndCreateFolder(failedFolderPath);
+            checkAndCreateFolder("src/temp");
             monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
 
             addLogMessage("Configurazione caricata da config.json");
@@ -234,6 +240,19 @@ public class MainViewController {
             launchAlertError("Impossibile caricare la configurazione: " + e.getMessage());
         }
     }
+    // Metodo che controlla l'esistenza di una directory e se non esiste la crea
+    private void checkAndCreateFolder(String path) {
+        File folder = new File(path);
+        if (!folder.exists()) {
+            boolean created = folder.mkdirs();
+            if (created) {
+                Log.addMessage("Cartella mancante creata: " + path);
+            } else {
+                Log.addMessage("Impossibile creare la cartella: " + path);
+            }
+        }
+    }
+
 
     private void openConfigurationWindow() {
         if (engine == null) {
@@ -399,10 +418,6 @@ public class MainViewController {
         boolean mergeImages = false;
 
         try {
-            // Assicurati che la directory di output esista
-            if (outputDestinationFile.getParentFile() != null && !outputDestinationFile.getParentFile().exists()) {
-                outputDestinationFile.getParentFile().mkdirs();
-            }
 
             // CORREZIONE: Gestione dialoghi per PDF (eseguiti nel thread JavaFX)
             if (srcExtension.equals("pdf")) {
@@ -417,7 +432,7 @@ public class MainViewController {
                         passwordRef.set(launchDialogPdfSync());
 
                         // Se il target è JPG, chiedi se unire le immagini
-                        if (targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
                             mergeImagesRef.set(launchDialogUnisciSync());
                         }
                     } finally {
@@ -485,7 +500,7 @@ public class MainViewController {
                             engine.conversione(srcExtension, targetFormat, srcFile, password);
                         }
                     } else {
-                        if (targetFormat.equals("jpg")) {
+                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
                             engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
                         } else {
                             if(formatiImmagini.contains(srcExtension)){

@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
  * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
  */
 public class ImageConverter implements Converter {
-    private static Logger logger = LogManager.getLogger(ImageConverter.class);
+    private static final Logger logger = LogManager.getLogger(ImageConverter.class);
     /**
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
@@ -45,7 +45,7 @@ public class ImageConverter implements Converter {
      * Metodo principale per la conversione dell'immagine nel formato desiderato
      */
     public static File imageConversion(File imgFile, String targetFormat) throws IOException {
-        logger.info("[IMG] Inizio conversione immagine:\n| {} -> .{}", imgFile.getName(), targetFormat);
+        logger.info("[IMG] Inizio conversione immagine:\n | {} -> .{}", imgFile.getName(), targetFormat);
         Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
 

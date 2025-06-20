@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class PDFtoJPGconverter extends AbstractPDFConverter {
     private static final int DPI = 300; // DPI dell'immagine renderizzata
