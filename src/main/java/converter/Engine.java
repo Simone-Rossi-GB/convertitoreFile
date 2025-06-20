@@ -177,6 +177,7 @@ public class Engine {
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         System.out.println(parameter);
         System.out.println(union);
+
         try {
             if (parameter != null && union != null) {
                 outFiles = converter.convert(srcFile, parameter, union);
