@@ -43,10 +43,10 @@
                 <!-- Main Content Area -->
                 <HBox prefHeight="682.0" prefWidth="990.0" spacing="16.5">
                     <children>
-                        <!-- Left Panel - Configuration and Controls -->
+                        <!-- Left Panel - configuration and Controls -->
                         <VBox prefHeight="682.0" prefWidth="484.0" spacing="16.5">
                             <children>
-                                <!-- Folder Configuration Section -->
+                                <!-- Folder configuration Section -->
                                 <VBox spacing="11.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-padding: 16.5;">
                                     <children>
                                         <Label text="Configurazione Cartelle" textFill="#2c3e50">

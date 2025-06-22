@@ -21,7 +21,7 @@
             </font>
         </Label>
 
-        <!-- Configuration Fields Section -->
+        <!-- configuration Fields Section -->
         <VBox spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-padding: 15;">
             <children>
                 <Label text="Configurazione Cartelle" textFill="#2c3e50">

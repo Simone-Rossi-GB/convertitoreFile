@@ -1,18 +1,27 @@
 package converter;
 
 import Converters.Converter;
-import com.google.gson.Gson;
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+
+import configuration.configExceptions.JsonStructureException;
+import configuration.configExceptions.JsonWriteException;
+import configuration.configExceptions.NullConfigValueException;
+import configuration.configHandlers.config.ConfigData;
+import configuration.configHandlers.config.ConfigInstance;
+import configuration.configHandlers.conversionContext.ConversionContext;
+import configuration.configUtilities.JsonReader;
+import configuration.configUtilities.JsonWriter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 
 public class Engine {
-    private ConverterConfig config;
-    private static final String CONFIG_FILE_PATH = System.getProperty("user.dir") + "/src/main/java/converter/config/config.json";
+    private ConfigInstance config;
     private static final Logger logger = LogManager.getLogger(Engine.class);
+    private static final File jsonFile = new File("src/main/java/converter/config/config.json");
 
     /**
      * Costruttore: carica il file config.json
@@ -25,37 +34,32 @@ public class Engine {
      * Carica il file config.json
      */
     public void setConfig() {
-        try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
-            Gson gson = new Gson();
-            config = gson.fromJson(reader, ConverterConfig.class);
-            if (config == null) {
-                logger.error("l'oggetto config non esiste");
-                Log.addMessage("ERRORE: l'oggetto config non esiste");
-                throw new NullPointerException("L'oggetto config non esiste");
-            }
+        try {
+            // Forse dovremmo controllare che il config iniziale sia strutturalmente corretto
+            config = new ConfigInstance(jsonFile);
+            ConfigData.update(config);
             logger.info("Configurazione caricata correttamente da config.json");
-            Log.addMessage("Configurazione caricata correttamente da config.json");
-        } catch (Exception e) {
-            logger.error("Lettura del file di configurazione fallita");
-            Log.addMessage("ERRORE: Lettura del file di configurazione fallita");
-            throw new RuntimeException("Errore nella lettura del file di configurazione", e);
+        } catch (NullConfigValueException e) {
+            logger.error("Caricamento di una o piu variabili del config fallito");
+            throw new RuntimeException("Caricamento di una o piu variabili del config fallito", e);
+        } catch (JsonStructureException e) {
+            logger.error("Caricamento del file json fallito");
+            throw new RuntimeException("Caricamento del file json fallito", e);
         }
     }
 
     /**
      * Ritorna la stringa che rappresenta il contenuto del json
      * @return contenuto del json di ritorno
-     * @throws Exception Nel caso di errore nella lettura del file di configurazione
      */
-    public String getConfigAsJson() throws Exception {
-        try {
-            logger.info("Lettura del contenuto di config.json eseguita con successo");
-            Log.addMessage("Lettura del contenuto di config.json eseguita con successo");
-            return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)));
-        } catch (IOException e) {
-            logger.error("Lettura del file di configurazione non riuscita");
-            Log.addMessage("ERRORE: Lettura del file di configurazione non riuscita");
-            throw new Exception("Errore nella lettura del file di configurazione: " + e.getMessage(), e);
+    public String getConfigAsString() {
+        String jsonAsString;
+        if ((jsonAsString = JsonReader.returnJsonAsString(ConfigData.getJsonFile())) != null){
+            logger.info("config.json convertito in String con successo");
+            return jsonAsString;
+        } else {
+            logger.error("Impossibile convertire il file in una String");
+            throw new RuntimeException("Impossibile convertire il file in una String");
         }
     }
 
@@ -63,40 +67,19 @@ public class Engine {
      * @param jsonText testo da aggiungere a config.json
      * @throws Exception Errore scrittura sul file di configurazione
      */
-    public void setConfigFromJson(String jsonText) throws Exception {
-        // Prima valida che il JSON sia corretto
-        try {
-            Gson gson = new Gson();
-            ConverterConfig testConfig = gson.fromJson(jsonText, ConverterConfig.class);
-            if (testConfig == null) {
-                throw new Exception("JSON non valido: impossibile parsare la configurazione");
-            }
-        } catch (Exception e) {
-            logger.error("JSON non valido");
-            Log.addMessage("ERRORE: JSON non valido");
-            throw new Exception("Il JSON fornito non è valido: " + e.getMessage(), e);
+    public void setConfigFromString(String jsonText) throws Exception {
+        try{
+            JsonWriter.overwriteJsonFromString(jsonText, jsonFile);
+        } catch (JsonStructureException | JsonWriteException e){
+            logger.error(e.getMessage());
+            throw new Exception(e.getMessage());
         }
-
-        // Scrivi il file
-        try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
-            writer.write(jsonText);
-            writer.flush(); // Assicurati che i dati siano scritti
-            logger.info("Scrittura su config.json completata");
-            Log.addMessage("Scrittura su config.json completata");
-        } catch (IOException e) {
-            logger.error("Scrittura su config.json fallita");
-            Log.addMessage("ERRORE: Scrittura su config.json fallita");
-            throw new Exception("Errore nella scrittura del file di configurazione: " + e.getMessage(), e);
-        }
-
         // Ricarica la configurazione
         try {
             setConfig();
             logger.info("Configurazione ricaricata con successo");
-            Log.addMessage("Configurazione ricaricata con successo");
         } catch (Exception e) {
             logger.error("Caricamento della nuova configurazione fallito");
-            Log.addMessage("ERRORE: Caricamento della nuova configurazione fallito");
             throw new Exception("Errore nel caricamento della nuova configurazione: " + e.getMessage(), e);
         }
     }
@@ -267,7 +250,7 @@ public class Engine {
      * @return Configurazione estratta dal file json
      * @throws NullPointerException Variabile config nulla
      */
-    public ConverterConfig getConverterConfig() throws NullPointerException{
+    public ConfigInstance getConverterConfig() throws NullPointerException{
         if (config == null) {
             throw new NullPointerException("L'oggetto config non esiste");
         }

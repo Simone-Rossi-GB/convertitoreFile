@@ -1,7 +1,7 @@
 package WebService;
 
 import Converters.Converter;
-import converter.ConverterConfig;
+import configuration.configHandlers.config.ConfigInstance;
 import converter.Log;
 import com.google.gson.Gson;
 import java.io.*;
@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
  * Gestisce le conversioni senza spostare automaticamente i file
  */
 public class EngineWebService {
-    private ConverterConfig config;
+    private ConfigInstance config;
     private static final String CONFIG_FILE_PATH = "src/main/java/converter/config/config.json";
     private static final Logger logger = LogManager.getLogger(EngineWebService.class);
 
@@ -32,7 +32,7 @@ public class EngineWebService {
     public void setConfig() {
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
             Gson gson = new Gson();
-            config = gson.fromJson(reader, ConverterConfig.class);
+            config = gson.fromJson(reader, ConfigInstance.class);
             if (config == null) {
                 logger.error("WebService: l'oggetto config non esiste");
                 Log.addMessage("ERRORE WebService: l'oggetto config non esiste");

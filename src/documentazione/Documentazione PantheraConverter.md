@@ -365,6 +365,6 @@ Architettura Generale del Sistema:
 2. **Layer Business**: Engine di conversione locale
 3. **Layer Web Service**: Spring Boot REST API
 4. **Layer Client**: Web service client con fallback
-5. **Layer Configuration**: Gestione JSON configuration
+5. **Layer configuration**: Gestione JSON configuration
 
 Il sistema implementa un pattern di **fallback intelligente**: tenta prima il web service per performance migliori, poi ricade sull'engine locale per garantire affidabilità.

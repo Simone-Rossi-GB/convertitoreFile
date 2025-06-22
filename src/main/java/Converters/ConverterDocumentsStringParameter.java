@@ -1,6 +1,6 @@
 package Converters;
-import converter.ConversionContext;
-import gui.MainViewController;
+import configuration.configHandlers.conversionContext.ConversionContext;
+
 import java.io.File;
 import java.util.ArrayList;
 

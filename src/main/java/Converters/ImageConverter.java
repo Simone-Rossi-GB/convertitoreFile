@@ -1,7 +1,7 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
-import converter.ConversionContext;
+import configuration.configHandlers.conversionContext.ConversionContext;
 import converter.Log;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;

@@ -22,7 +22,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -138,7 +137,7 @@ public class ConfigWindowController {
             updateMonitorToggleButton();
 
             // Carica solo la sezione conversions nel TextArea
-            String fullConfig = engine.getConfigAsJson();
+            String fullConfig = engine.getConfigAsString();
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonObject configJson = JsonParser.parseString(fullConfig).getAsJsonObject();
 
@@ -290,7 +289,7 @@ public class ConfigWindowController {
             }
 
             // Costruisci il JSON completo mantenendo le conversioni originali
-            String originalConfig = engine.getConfigAsJson();
+            String originalConfig = engine.getConfigAsString();
             JsonObject originalConfigJson = JsonParser.parseString(originalConfig).getAsJsonObject();
 
             // Aggiorna solo i campi modificabili
@@ -303,7 +302,7 @@ public class ConfigWindowController {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String configJson = gson.toJson(originalConfigJson);
 
-            engine.setConfigFromJson(configJson);
+            engine.setConfigFromString(configJson);
             logger.info("Configurazione salvata con successo");
             Log.addMessage("Configurazione salvata con successo");
             updateStatus("Configurazione salvata con successo!", false);
