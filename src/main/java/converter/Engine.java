@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 public class Engine {
     private ConfigInstance config;
     private static final Logger logger = LogManager.getLogger(Engine.class);
-    private static final File jsonFile = new File("src/main/java/converter/config/config.json");
+    private static final File jsonFile = new File("src/main/java/configuration/configFiles/config.json");
 
     /**
      * Costruttore: carica il file config.json

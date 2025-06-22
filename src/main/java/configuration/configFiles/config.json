@@ -1,11 +1,37 @@
 {
-  "mandatoryEntries" : ["successOutputDir", "errorOutputDir", "monitoredDir", "monitorAtStart"],
+  "mandatoryEntries": [
+    "successOutputDir",
+    "errorOutputDir",
+    "monitoredDir",
+    "monitorAtStart"
+  ],
   "successOutputDir": "src/output/success",
   "errorOutputDir": "src/output/error",
   "monitoredDir": "src/input",
   "monitorAtStart": true,
-  "formatsWithAlphaChannel" : ["png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff"],
-  "formatsRequiringIntermediateConversion" : ["webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm"],
+  "formatsWithAlphaChannel": [
+    "png",
+    "tiff",
+    "gif",
+    "webp",
+    "psd",
+    "icns",
+    "ico",
+    "tga",
+    "iff"
+  ],
+  "formatsRequiringIntermediateConversion": [
+    "webp",
+    "pbm",
+    "pgm",
+    "ppm",
+    "pam",
+    "tga",
+    "iff",
+    "xwd",
+    "icns",
+    "pnm"
+  ],
   "conversions": {
     "pdf": {
       "doc": "Converters.PDFtoDOCconverter",

@@ -26,7 +26,7 @@ public class ConfigInstance {
         this.jsonFile = jsonFile;
 
         InstanceConfigReader jsonReader = new InstanceConfigReader(jsonFile);
-
+        System.out.println(jsonReader.readSuccessOutputDir());
         successOutputDir = assignOrTrackNull(jsonReader.readSuccessOutputDir(), "successOutputDir", nullFields);
         errorOutputDir   = assignOrTrackNull(jsonReader.readErrorOutputDir(), "errorOutputDir", nullFields);
         monitoredDir     = assignOrTrackNull(jsonReader.readMonitoredDir(), "monitoredDir", nullFields);

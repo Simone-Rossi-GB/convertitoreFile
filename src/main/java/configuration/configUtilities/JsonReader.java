@@ -47,6 +47,7 @@ public interface JsonReader extends JsonUtility {
                 return null;
             }
             // Conversione del nodo JSON in oggetto Java del tipo T usando TypeReference anonimo
+            logger.info("Lettura \"{}\" da {} completata", key, jsonFile.getName());
             return mapper.convertValue(value, typeRef);
         } catch (JsonFileNotFoundException | JsonStructureException e) {
             return null;
