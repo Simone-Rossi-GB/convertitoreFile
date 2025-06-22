@@ -1,6 +1,7 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
+import configuration.configHandlers.config.ConfigReader;
 import configuration.configHandlers.conversionContext.ConversionContext;
 import converter.Log;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
@@ -53,8 +54,8 @@ public class ImageConverter implements Converter {
         Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
 
-        List<String> formatsWithAlpha = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff");
-        List<String> formatsRequiringIntermediate = Arrays.asList("webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm");
+        List<String> formatsWithAlpha = ConfigReader.getSingleton().readFormatsWithAlphaChannel();
+        List<String> formatsRequiringIntermediate = ConfigReader.getSingleton().readFormatsRequiringIntermediateConversion();
 
         String originalExtension = getExtension(imgFile);
         File outFile;
