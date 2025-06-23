@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.util.*;
 
 
-public class JSONtoXLSXconverter implements Converter {
+public class JSONtoXLSXconverter extends Converter {
 
     @Override
     public File convert(File srcFile) throws IOException, DocumentException, ConvertionException {

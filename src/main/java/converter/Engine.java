@@ -11,7 +11,6 @@ import Converters.Zipper;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
 import configuration.configExceptions.NullConfigValueException;
-import configuration.configHandlers.config.BaseConfigReader;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;

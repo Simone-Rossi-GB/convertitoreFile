@@ -12,7 +12,7 @@ import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class JSONtoODSconverter implements Converter {
+public class JSONtoODSconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(JSONtoODSconverter.class);
     private final ObjectMapper objectMapper = new ObjectMapper();

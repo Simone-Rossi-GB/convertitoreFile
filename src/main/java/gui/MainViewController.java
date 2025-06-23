@@ -399,12 +399,12 @@ public class MainViewController {
         }
 
         List<String> finalFormats = formats;
+        String finalSrcExtension = srcExtension;
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
             dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
             dialog.setContentText("Formato desiderato:");
-
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(chosenFormat -> {
                 new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
