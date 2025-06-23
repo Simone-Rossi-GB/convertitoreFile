@@ -96,7 +96,7 @@ public class Zipper {
     }
 
     /**
-     * Comprime n file in un file zip
+     * Comprime una lista di file in un file zip
      * @param files ArrayList di file
      * @param baseName Nome del file.zip
      * @return File.zip
@@ -150,7 +150,9 @@ public class Zipper {
      */
     public static String extractFileExstension(File zipFile) throws IOException, IllegalExtensionException {
         List<File> files = unzip(zipFile);
+        //Prende l'estensione del primo file
         String ext = Utility.getExtension(files.get(0));
+        //Controlla se sono tutte uguali
         for(File f : files){
             if(!Utility.getExtension(f).equals(ext)){
                 throw new IllegalExtensionException("I file non sono tutti dello stesso formato");
