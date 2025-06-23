@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
  * Questa classe si occupa della conversione di email in formato .eml in documenti PDF.
  * Estrae intestazioni, corpo (HTML o testo) e li organizza in un file PDF.
  */
-public class EMLtoPDFconverter implements Converter {
+public class EMLtoPDFconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(EMLtoPDFconverter.class);
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 
-public class TXTtoDOCXconverter implements Converter {
+public class TXTtoDOCXconverter extends Converter {
     private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
     @Override
     public File convert(File srcFile) throws IOException {

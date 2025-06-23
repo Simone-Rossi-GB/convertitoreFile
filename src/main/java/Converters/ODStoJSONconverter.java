@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
  * Classe responsabile della conversione di file ODS (OpenDocument Spreadsheet)
  * in formato JSON.
  */
-public class ODStoJSONconverter implements Converter {
+public class ODStoJSONconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(ODStoJSONconverter.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();

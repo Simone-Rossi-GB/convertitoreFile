@@ -1,8 +1,10 @@
 package gui;
 
 import configuration.configHandlers.config.ConfigReader;
+import Converters.exception.IllegalExtensionException;
 import converter.DirectoryWatcher;
 import converter.Log;
+import Converters.Zipper;
 import converter.Utility;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -349,7 +351,6 @@ public class MainViewController {
     }
 
     public void launchDialogConversion(File srcFile) {
-        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
         if (srcFile == null || engine == null) {
             Log.addMessage("ERRORE: File sorgente o Engine non valido.");
             launchAlertError("File sorgente o Engine non valido.");
@@ -357,8 +358,21 @@ public class MainViewController {
         }
 
         Platform.runLater(() -> fileRicevuti++);
+        String srcExtension;
+        srcExtension = Utility.getExtension(srcFile);
 
-        String srcExtension = Utility.getExtension(srcFile);
+        //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
+        if(Utility.getExtension(srcFile).equals("zip"))
+            try{
+                srcExtension = Zipper.extractFileExstension(srcFile);
+        } catch (IOException e) {
+            logger.error("Impossibile decomprimere il file");
+            launchAlertError("Impossibile decomprimere il file");
+        }catch (IllegalExtensionException e){
+            logger.error("I file hanno formati diversi");
+            launchAlertError("I file hanno formati diversi");
+        }
+
         List<String> formats;
         try {
             // Prova prima il webservice per ottenere i formati
@@ -393,54 +407,21 @@ public class MainViewController {
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat)).start();
+                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
             });
         });
     }
 
-    private void performConversionWithFallback(File srcFile, String targetFormat) {
+    private void performConversionWithFallback(File srcFile, String targetFormat, String srcExtension) {
         List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
-        String srcExtension = Utility.getExtension(srcFile);
+
+
         String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
 
-        // Variabili per gestire i dialoghi PDF
-        String password = null;
-        boolean mergeImages = false;
+        try {
 
-        try {/*
 
-            // CORREZIONE: Gestione dialoghi per PDF (eseguiti nel thread JavaFX)
-            if (srcExtension.equals("pdf")) {
-                // Usa CountDownLatch per sincronizzare i thread
-                java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
-                java.util.concurrent.atomic.AtomicReference<String> passwordRef = new java.util.concurrent.atomic.AtomicReference<>();
-                java.util.concurrent.atomic.AtomicBoolean mergeImagesRef = new java.util.concurrent.atomic.AtomicBoolean(false);
-
-                Platform.runLater(() -> {
-                    try {
-                        // Chiedi la password nel thread JavaFX
-                        passwordRef.set(launchDialogPdfSync());
-
-                        // Se il target è JPG, chiedi se unire le immagini
-                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
-                            mergeImagesRef.set(launchDialogUnisciSync());
-                        }
-                    } finally {
-                        latch.countDown();
-                    }
-                });
-
-                // Aspetta che i dialoghi siano completati
-                try {
-                    latch.await();
-                    password = passwordRef.get();
-                    mergeImages = mergeImagesRef.get();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new Exception("Operazione interrotta dall'utente");
-                }
-            }*/
 
             // PRIMO TENTATIVO: USA WEBSERVICE
             boolean webServiceSuccess = false;
@@ -483,25 +464,7 @@ public class MainViewController {
                 addLogMessage("Fallback: uso engine locale per conversione...");
 
                 try {
-                    engine.conversione(srcExtension, targetFormat, srcFile, targetFormat);
-                    /*// L'engine locale gestisce automaticamente il salvataggio nelle cartelle configurate
-                    if (password != null) {
-                        if (targetFormat.equals("jpg")) {
-                            engine.conversione(srcExtension, targetFormat, srcFile, password, mergeImages);
-                        } else {
-                            engine.conversione(srcExtension, targetFormat, srcFile, password);
-                        }
-                    } else {
-                        if (targetFormat.equals("jpg") && srcExtension.equals("pdf")) {
-                            engine.conversione(srcExtension, targetFormat, srcFile, mergeImages);
-                        } else {
-                            if(formatiImmagini.contains(srcExtension)){
-                                engine.conversione(srcExtension, targetFormat, srcFile, targetFormat);
-                            }else {
-                                engine.conversione(srcExtension, targetFormat, srcFile);
-                            }
-                        }
-                    }*/
+                    engine.conversione(srcExtension, targetFormat, srcFile);
 
                     addLogMessage("Conversione ENGINE LOCALE riuscita");
 
