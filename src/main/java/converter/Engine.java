@@ -127,10 +127,10 @@ public class Engine {
      * @throws UnsupportedConversionException conversione non supportata
      */
     public void conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException,UnsupportedConversionException  {
-        File outFile = null;
+        File outFile;
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(Utility.getExtension(srcFile).equals("zip"))
+            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
                 outFile = conversioneMultipla(srcExt, outExt, srcFile);
             else
                 outFile = conversioneSingola(srcExt, outExt, srcFile);

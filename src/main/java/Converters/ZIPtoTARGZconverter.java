@@ -1,5 +1,7 @@
 package Converters;
 
+import Converters.exception.FileMoveException;
+import Converters.exception.PasswordException;
 import converter.Log;
 import converter.Utility;
 import net.lingala.zip4j.ZipFile;
@@ -28,10 +30,12 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
      * @param zipFile Il file ZIP da convertire
      * @param password Password opzionale (null o vuota se non protetto)
      * @return Lista con il file .tar.gz risultante
-     * @throws IOException In caso di problemi di lettura/scrittura o password errata
+     * @throws IOException In caso di problemi di lettura/scrittura
+     * @throws FileMoveException In caso di impossibilità nel creare una directory temporanea
+     * @throws PasswordException In caso di password errata o mancante
      */
     @Override
-    public File convertProtectedFile(File zipFile, String password) throws IOException {
+    public File convertProtectedFile(File zipFile, String password) throws FileMoveException, PasswordException, IOException {
 
         logger.info("Conversione iniziata con parametri:\n | zipFile.getPath() = {}", zipFile.getAbsolutePath());
         File outputTarGz = null;
@@ -40,21 +44,21 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
         File tempDir = new File(System.getProperty("java.io.tmpdir"), "unzip_temp_" + System.nanoTime());
         if (!tempDir.exists() && !tempDir.mkdirs()) {
             logger.error("Impossibile creare la directory temporanea: {}", tempDir.getAbsolutePath());
-            throw new IOException("Impossibile creare la directory temporanea.");
+            throw new FileMoveException("Impossibile creare la directory temporanea.");
         }
 
         try {
             // Usa zip4j per apertura e estrazione ZIP
             ZipFile zip = new ZipFile(zipFile);
 
+            //Controlla se il file è protetto
             if (zip.isEncrypted()) {
                 if (password != null && !password.trim().isEmpty()) {
                     zip.setPassword(password.toCharArray());
                     logger.info("ZIP protetto: password fornita.");
                 } else {
                     logger.error("ZIP protetto ma password non fornita.");
-                    Log.addMessage("[ZIPtoTARGZ] ERRORE: file ZIP protetto da password senza password fornita.");
-                    throw new IOException("Password mancante per file ZIP protetto.");
+                    throw new PasswordException("Password mancante per file ZIP protetto.");
                 }
             } else {
                 logger.info("ZIP non protetto da password.");
@@ -80,12 +84,12 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
                 Log.addMessage("[ZIPtoTARGZ] Conversione completata: " + outputTarGz.getName());
             } catch (IOException e) {
                 logger.error("Problema durante la creazione del file .tar.gz: {}", e.getMessage());
-                throw e;
+                throw new IOException("Problema durante la creazione del file .tar.gz: " + e.getMessage());
             }
 
         } catch (ZipException e) {
-            logger.error("Errore durante l'apertura o l'estrazione del file ZIP: {}", e.getMessage());
-            throw new IOException("Errore apertura/estrazione file ZIP", e);
+            logger.error("Password errata");
+            throw new PasswordException("Password errata");
         } finally {
             // Pulisce la directory temporanea
             if (!Utility.deleteDirectory(tempDir)) {
@@ -105,6 +109,7 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
      */
     private void addFilesToTarGz(TarArchiveOutputStream tarOut, File source, String basePath) throws IOException {
         String entryName = basePath + source.getName();
+        //Controlla ricorsivamente le cartelle contenute
         if (source.isDirectory()) {
             File[] files = source.listFiles();
             if (files != null) {
@@ -113,9 +118,12 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
                 }
             }
         } else {
+            //Crea una nuova entry
             TarArchiveEntry entry = new TarArchiveEntry(source, entryName);
             entry.setSize(source.length());
+            //Aggiunge l'entry allo stream
             tarOut.putArchiveEntry(entry);
+            // Copia il contenuto del file nello stream tar.gz
             try (FileInputStream fis = new FileInputStream(source)) {
                 Utility.copy(fis, tarOut);
             }

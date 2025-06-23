@@ -3,8 +3,4 @@ CSV -> excel
 Manuale d'uso
 Commenti + eccezioni specifiche
 
-3. Chiedere se zippare a partire dal json
-
-4. più file insieme (chiedere a yassin)
-
 5.java doc

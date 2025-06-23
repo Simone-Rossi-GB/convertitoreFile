@@ -19,7 +19,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Zipper {
-    private static final Logger logger = LogManager.getLogger(PDFtoJPGconverter.class);
+    private static final Logger logger = LogManager.getLogger(Zipper.class);
 
     /**
      * Crea un file ZIP contenente tutti i file specificati.
@@ -34,17 +34,17 @@ public class Zipper {
         try (FileOutputStream fos = new FileOutputStream(outputZip);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
 
-            for (File imageFile : files) {
-                if (!imageFile.exists() || !imageFile.isFile()) {
-                    logger.warn("File non valido: {}", imageFile.getAbsolutePath());
-                    Log.addMessage("File non valido: " + imageFile.getAbsolutePath());
+            for (File f : files) {
+                if (!f.exists() || !f.isFile()) {
+                    logger.warn("File non valido: {}", f.getAbsolutePath());
+                    Log.addMessage("File non valido: " + f.getAbsolutePath());
                     continue;
                 }
-
-                try (FileInputStream fis = new FileInputStream(imageFile)) {
+                //Legge il contenuto di ciascun file
+                try (FileInputStream fis = new FileInputStream(f)) {
                     // Crea un entry con il nome del file originale
-                    zos.putNextEntry(new ZipEntry(imageFile.getName()));
-
+                    zos.putNextEntry(new ZipEntry(f.getName()));
+                    // Scrive il contenuto del file nel file ZIP usando un buffer
                     byte[] buffer = new byte[4096];
                     int len;
                     while ((len = fis.read(buffer)) > 0) {
@@ -57,6 +57,13 @@ public class Zipper {
         }
         return outputZip;
     }
+
+    /**
+     * Decomprime un file zip in un arrayList di file
+     * @param zipFile file da decomprimere
+     * @return ArrayList di file contenuti nello zip
+     * @throws IOException Errori nelle operazioni di lettura e scrittura
+     */
     public static ArrayList<File> unzip(File zipFile) throws IOException {
         ArrayList<File> extractedFiles = new ArrayList<>();
         File outputDir = new File("src/temp/");
@@ -68,6 +75,7 @@ public class Zipper {
 
         try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(zipFile.toPath()))) {
             ZipEntry entry;
+            //Per ogni entry crea un file corrispondente
             while ((entry = zis.getNextEntry()) != null) {
                 File outFile = new File(outputDir, entry.getName());
 
@@ -79,7 +87,7 @@ public class Zipper {
                     File parent = outFile.getParentFile();
                     if (!parent.exists()) parent.mkdirs();
                 }
-
+                //Scrive sul file creato il contenuto di quello compresso
                 try (FileOutputStream fos = new FileOutputStream(outFile)) {
                     byte[] buffer = new byte[4096];
                     int len;
@@ -96,7 +104,7 @@ public class Zipper {
     }
 
     /**
-     * Comprime n file in un file zip
+     * Comprime una lista di file in un file zip
      * @param files ArrayList di file
      * @param baseName Nome del file.zip
      * @return File.zip
@@ -104,20 +112,23 @@ public class Zipper {
      */
     public static File compressioneFile(ArrayList<File> files, String baseName) throws IOException {
         logger.info("Compressione dei file generati in output");
+        //Crea il file zip
         File zippedImages = zip(files);
+        //Assegna al file il nome voluto
         zippedImages = rinominaFileZip(zippedImages, baseName);
         logger.info("Compressione completata");
         return zippedImages;
     }
 
     /**
-     * Comprime n file in un file zip
+     * Comprime un singolo file in un file zip
      * @param file file singolo da zippare
      * @param baseName Nome del file.zip
      * @return File.zip
      * @throws IOException Impossibile rinominare il file
      */
     public static File compressioneFile(File file, String baseName) throws IOException {
+        //Crea una lista con un solo file
         ArrayList<File> files = new ArrayList<>();
         files.add(file);
         return compressioneFile(files, baseName);
@@ -131,8 +142,10 @@ public class Zipper {
      * @throws IOException Impossibile rinominare il file
      */
     private static File rinominaFileZip(File zipFile, String name) throws IOException {
+        //Crea un file con il nome desiderato e estensione .zip nella stessa cartella
         File renamedZip = new File(zipFile.getParent(), name + ".zip");
         try {
+            //sostituisce nel percorso indicato il file di partenza, che ora avrà il nome desiderato
             Files.move(zipFile.toPath(), renamedZip.toPath(), StandardCopyOption.REPLACE_EXISTING);
             return renamedZip;
         } catch (IOException e) {
@@ -149,8 +162,11 @@ public class Zipper {
      * @throws IllegalExtensionException estensioni diverse
      */
     public static String extractFileExstension(File zipFile) throws IOException, IllegalExtensionException {
+        logger.info("Estraggo le estensioni dei file compressi");
         List<File> files = unzip(zipFile);
+        //Prende l'estensione del primo file
         String ext = Utility.getExtension(files.get(0));
+        //Controlla se sono tutte uguali
         for(File f : files){
             if(!Utility.getExtension(f).equals(ext)){
                 throw new IllegalExtensionException("I file non sono tutti dello stesso formato");
