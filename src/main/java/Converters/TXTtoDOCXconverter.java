@@ -10,9 +10,8 @@ import org.apache.logging.log4j.LogManager;
 public class TXTtoDOCXconverter implements Converter {
     private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
     @Override
-    public ArrayList<File> convert(File srcFile) throws IOException {
+    public File convert(File srcFile) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
-        ArrayList<File> result = new ArrayList<>();
         File output = new File(srcFile.getAbsolutePath().replaceAll("\\.txt$", ".docx"));
 
         XWPFDocument doc = new XWPFDocument();
@@ -28,8 +27,6 @@ public class TXTtoDOCXconverter implements Converter {
         try (FileOutputStream out = new FileOutputStream(output)) {
             doc.write(out);
         }
-
-        result.add(output);
-        return result;
+        return output;
     }
 }

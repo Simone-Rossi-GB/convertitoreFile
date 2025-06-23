@@ -13,15 +13,13 @@ import org.apache.logging.log4j.LogManager;
 public class XLStoJSONconverter implements Converter{
     private static final Logger logger = LogManager.getLogger(XLStoJSONconverter.class);
     @Override
-    public ArrayList<File> convert(File xlsFile) throws IOException {
+    public File convert(File xlsFile) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | xlsFile.getPath() = {}", xlsFile.getPath());
-        ArrayList<File> resultFiles = new ArrayList<>();
+        File jsonFile = null;
 
         try {
-            File jsonFile = convertToJson(xlsFile);
-
+            jsonFile = convertToJson(xlsFile);
             if (jsonFile.exists()) {
-                resultFiles.add(jsonFile);
                 logger.info("File convertito aggiunto alla lista: {}", jsonFile.getName());
             } else {
                 logger.error("Conversione fallita: file JSON non creato correttamente");
@@ -31,8 +29,7 @@ public class XLStoJSONconverter implements Converter{
             logger.error("Errore durante la conversione: {}", e.getMessage());
             throw new IOException("Errore nella conversione XLS to JSON", e);
         }
-
-        return resultFiles;
+        return jsonFile;
     }
 
 

@@ -88,12 +88,9 @@ public class XLSXtoJSONconverter implements Converter {
     }
 
     @Override
-    public ArrayList<File> convert(File srcFile) throws IOException {
+    public File convert(File srcFile) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
-        ArrayList<File> resultFiles = new ArrayList<>();
-        File jsonFile = convertXlsxToJson(srcFile);
-        resultFiles.add(jsonFile);
-        return resultFiles;
+        return convertXlsxToJson(srcFile);
     }
 
 }

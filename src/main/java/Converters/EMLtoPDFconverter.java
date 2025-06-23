@@ -42,7 +42,7 @@ public class EMLtoPDFconverter implements Converter {
      * @throws NullPointerException se uno degli oggetti principali è null
      */
     @Override
-    public ArrayList<File> convert(File emlFile) throws IOException, DocumentException {
+    public File convert(File emlFile) throws IOException, DocumentException {
         if (emlFile == null) throw new NullPointerException("L'oggetto emlFile non esiste.");
         logger.info("Inizio conversione con parametri: \n | emlFile.getPath() = {}", emlFile.getPath());
         Log.addMessage("Inizio conversione eml: " + emlFile.getName() + " -> .pdf");
@@ -92,11 +92,9 @@ public class EMLtoPDFconverter implements Converter {
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
-        ArrayList<File> results = new ArrayList<>();
-        results.add(outputPdfFile);
         logger.info("Creazione file .pdf completata: {}", outputPdfFile.getName());
         Log.addMessage("Creazione file .pdf completata: " + outputPdfFile.getName());
-        return results;
+        return outputPdfFile;
     }
 
     /**

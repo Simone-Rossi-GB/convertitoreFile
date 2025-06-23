@@ -13,9 +13,8 @@ import org.apache.logging.log4j.LogManager;
 public class TXTtoPDFconverter implements Converter {
     private static final Logger logger = LogManager.getLogger(TXTtoPDFconverter.class);
     @Override
-    public ArrayList<File> convert(File srcFile) throws IOException, DocumentException {
+    public File convert(File srcFile) throws IOException, DocumentException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
-        ArrayList<File> result = new ArrayList<>();
         File output = new File(srcFile.getAbsolutePath().replaceAll("\\.txt$", ".pdf"));
 
         Document document = new Document();
@@ -29,8 +28,7 @@ public class TXTtoPDFconverter implements Converter {
             }
         }
         document.close();
-        result.add(output);
-        return result;
+        return output;
     }
 }
 

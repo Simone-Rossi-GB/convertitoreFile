@@ -22,7 +22,7 @@ public class CSVtoJSONconverter implements Converter {
      * Converte un file CSV in un file JSON con delimitatore rilevato automaticamente.
      * Ogni riga del CSV diventa un oggetto JSON.
      */
-    public ArrayList<File> convert(File srcFile) throws IOException {
+    public File convert(File srcFile) throws IOException {
         logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
         Log.addMessage("Inizio conversione CSV: " + srcFile.getName() + " → .json");
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
@@ -79,9 +79,7 @@ public class CSVtoJSONconverter implements Converter {
         }
         logger.info("File JSON creato: {}", output.getName());
         Log.addMessage("File JSON creato: " + output.getName());
-        return new ArrayList<File>() {{
-            add(output);
-        }};
+        return output;
     }
 
     /**
