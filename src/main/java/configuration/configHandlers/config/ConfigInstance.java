@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,13 +39,11 @@ public class ConfigInstance {
                 "conversions"
         );
 
-        // (Preparato per futuri controlli di valore null o altre validazioni)
-        List<String> nullFields = new ArrayList<>();
-
         this.jsonFile = jsonFile;
 
         // Esegue la validazione della struttura del JSON
         JsonUtility.validateJsonFromStringOrFile(new RecognisedFile(jsonFile), MANDATORY_FIELDS);
+        logger.info("{} validato correttamente", jsonFile.getPath());
     }
 
     /**

@@ -57,10 +57,10 @@ public interface JsonUtility {
         try {
             JsonNode root;
             try {
-                File tempFile = json.getValue();
+                File tempFile = (File) json.getValue();
                 root = mapper.readTree(tempFile);
             } catch (Exception ignored) {
-                String tempString = json.getValue();
+                String tempString = (String) json.getValue();
                 root = mapper.readTree(tempString);
             }
 
