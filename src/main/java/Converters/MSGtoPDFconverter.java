@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
  * Include intestazioni, corpo email (HTML o testo semplice) e una lista degli allegati.
  * Utilizza Apache POI HSMF per l'elaborazione del file MSG, iText per la generazione del PDF e JSoup per la pulizia HTML.
  */
-public class MSGtoPDFconverter implements Converter {
+public class MSGtoPDFconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(MSGtoPDFconverter.class);
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);

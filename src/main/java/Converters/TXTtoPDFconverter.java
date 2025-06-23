@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 
-public class TXTtoPDFconverter implements Converter {
+public class TXTtoPDFconverter extends Converter {
     private static final Logger logger = LogManager.getLogger(TXTtoPDFconverter.class);
     @Override
     public File convert(File srcFile) throws IOException, DocumentException {

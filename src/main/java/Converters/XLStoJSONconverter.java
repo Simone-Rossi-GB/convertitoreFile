@@ -10,7 +10,7 @@ import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class XLStoJSONconverter implements Converter{
+public class XLStoJSONconverter extends Converter{
     private static final Logger logger = LogManager.getLogger(XLStoJSONconverter.class);
     @Override
     public File convert(File xlsFile) throws IOException {

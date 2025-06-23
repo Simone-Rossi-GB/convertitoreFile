@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 /**
  * Convertitore che trasforma un archivio .tar.gz in un file .zip
  */
-public class TARGZtoZIPconverter implements Converter {
+public class TARGZtoZIPconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(TARGZtoZIPconverter.class);
 

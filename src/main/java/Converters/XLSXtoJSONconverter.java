@@ -10,7 +10,7 @@ import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class XLSXtoJSONconverter implements Converter {
+public class XLSXtoJSONconverter extends Converter {
     private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
     /**
      * Converte un file .xlsx in un file .json

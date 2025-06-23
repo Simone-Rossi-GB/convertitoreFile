@@ -3,12 +3,15 @@ package converter;
 import Converters.Converter;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.util.*;
 
+import Converters.Zipper;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
 import configuration.configExceptions.NullConfigValueException;
+import configuration.configHandlers.config.BaseConfigReader;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.conversionContext.ConversionContextWriter;
@@ -118,46 +121,7 @@ public class Engine {
      * @throws Exception Errore nella rinomina del file
      */
 
-    /*public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, null, null);
-    }
 
-    /**
-     * Conversione PDF protetto
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @param extraParam parametro Extra
-     * @throws Exception Errore nella rinomina del file
-     */
-    /*public void conversione(String srcExt, String outExt, File srcFile, String extraParam) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, extraParam, null);
-    }
-
-    /**
-     * Conversione PDF -> JPG unendo le pagine in un'unica immagine
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
-     * @throws Exception Errore nella rinomina del file
-     */
-    /*public void conversione(String srcExt, String outExt, File srcFile, boolean union) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, null, union);
-    }
-
-    /**Conversione PDF protetto -> JPG unendo le pagine in un'unica immagine
-     *
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @param password Password per file criptati
-     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
-     * @throws Exception Errore nella rinomina del file
-     */
-    /*public void conversione(String srcExt, String outExt, File srcFile, String password, boolean union) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, password, union);
-    }*/
 
     /**
      * Esecuzione conversione
@@ -166,27 +130,43 @@ public class Engine {
      * @param srcFile File iniziale
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile, String targetFormat/*, String parameter, Boolean union*/) throws Exception {
+    public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
+        File outFile = null;
+        try {
+            if(Utility.getExtension(srcFile).equals("zip"))
+                outFile = conversioneMultipla(srcExt, outExt, srcFile);
+            else
+                outFile = conversioneSingola(srcExt, outExt, srcFile);
+            //Sposto il file convertito nella directory corretta
+            spostaFile(config.getSuccessOutputDir(), outFile);
+        } catch (IOException e) {
+            spostaFile(config.getErrorOutputDir(), srcFile);
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws Exception{
+        ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
+        ArrayList<File> convertedFiles = new ArrayList<>();
+        for (File f : zippedFiles){
+            convertedFiles.add(conversioneSingola(srcExt, outExt, f));
+        }
+        //zippo i file convertiti
+        return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
+    }
+
+    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         File outFile;
-        File tempFile = File.createTempFile(srcFile.getName(), srcExt);
+        File tempFile = new File("src/temp", srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        try {
-            ConversionContextWriter.setDestinationFormat(targetFormat);
-            outFile = converter.convert(srcFile);
-            Files.deleteIfExists(tempFile.toPath());
-            Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
-            //Sposto il file convertito nella directory corretta
-            spostaFile(config.getSuccessOutputDir(), outFile);
-            Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
-
-        } catch (IOException e) {
-            Log.addMessage("ERRORE: Errore durante la conversione o lo spostamento del file " + srcFile.getName());
-            spostaFile(config.getErrorOutputDir(), srcFile);
-            throw new Exception(e.getMessage());
-        }
+        ConversionContextWriter.setDestinationFormat(outExt);
+        outFile = converter.conversione(tempFile);
+        Files.deleteIfExists(tempFile.toPath());
+        Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
+        return outFile;
     }
 
     /**

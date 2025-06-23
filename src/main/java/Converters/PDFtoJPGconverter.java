@@ -82,10 +82,6 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         validateInputs(pdfFile, pdfDocument);
 
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
-        Log.addMessage("Conversione iniziata con parametri:\n" +
-                "| pdfFile.getPath() = " + pdfFile.getPath() + "\n" +
-                "| union = " + union);
-
         int nPages = pdfDocument.getNumberOfPages();
 
         try {
@@ -116,7 +112,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             }
             //Altrimenti zippa le singole immagini
             else{
-                outputFile = compressioneImmagini(pages, baseName);
+                outputFile = Zipper.compressioneFile(pages, baseName);
             }
 
             pdfDocument.close();
@@ -145,36 +141,5 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         }
     }
 
-    /**
-     * Comprime n immagini in un file zip
-     * @param pages ArrayList di immagini relative alle pagine
-     * @param baseName Nome del file.zip
-     * @return File.zip
-     * @throws IOException Impossibile rinominare il file
-     */
-    private File compressioneImmagini(ArrayList<File> pages, String baseName) throws IOException {
-        Log.addMessage("Compressione delle immagini generate in output");
-        File zippedImages = Utility.zipper(pages);
-        zippedImages = rinominaFileZip(zippedImages, baseName);
-        logger.info("Conversione completata, {} file prodotti", pages.size());
-        return zippedImages;
-    }
 
-    /**
-     * Rinomina il file.zip
-     * @param zipFile file da rinominare
-     * @param name nome da assegnare
-     * @return File rinominato
-     * @throws IOException Impossibile rinominare il file
-     */
-    private File rinominaFileZip(File zipFile, String name) throws IOException {
-        File renamedZip = new File(zipFile.getParent(), name + ".zip");
-        try {
-            Files.move(zipFile.toPath(), renamedZip.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return renamedZip;
-        } catch (IOException e) {
-            logger.error("Impossibile rinominare il file ZIP: {}", e.getMessage(), e);
-            throw new IOException("Impossibile rinominare il file ZIP: " + e.getMessage(), e);
-        }
-    }
 }
