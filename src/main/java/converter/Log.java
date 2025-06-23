@@ -28,9 +28,6 @@ public class Log {
         writer.close();
     }
 
-    public static File getLogFile() {
-        return logFile;
-    }
 
     private static String getTimeOnly() {
         return new SimpleDateFormat("HH:mm:ss").format(new Date());

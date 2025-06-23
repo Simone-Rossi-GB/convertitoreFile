@@ -51,7 +51,7 @@ public class DirectoryWatcher implements Runnable {
 
         this.dir = Paths.get(directoryPath);
         if (!Files.exists(this.dir) || !Files.isDirectory(this.dir)) {
-            logger.error("percorso non valido o non directory - " + directoryPath);
+            logger.error("percorso non valido o non directory - {}", directoryPath);
             throw new IllegalArgumentException("Il percorso " + directoryPath + " è sbagliato o non è una directory");
         }
 
@@ -60,7 +60,7 @@ public class DirectoryWatcher implements Runnable {
         this.controller = controller;
         this.watchKeyToPath = new HashMap<>();
 
-        logger.info("Inizializzazione DirectoryWatcher per: " + directoryPath);
+        logger.info("Inizializzazione DirectoryWatcher per: {}", directoryPath);
         registerAll(dir);
     }
 
@@ -86,7 +86,7 @@ public class DirectoryWatcher implements Runnable {
                 //Registra nella mappa dei percorsi quello della nuova cartella
                 WatchKey key = dir.register(watchService, ENTRY_CREATE);
                 watchKeyToPath.put(key, dir);
-                logger.info("Registrata directory per il monitoraggio: " + dir.toString());
+                logger.info("Registrata directory per il monitoraggio: {}", dir.toString());
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -99,7 +99,7 @@ public class DirectoryWatcher implements Runnable {
      */
     @Override
     public void run() {
-        logger.info("DirectoryWatcher avviato per: " + dir.toString());
+        logger.info("DirectoryWatcher avviato per: {}", dir.toString());
         while (!Thread.currentThread().isInterrupted()) {
             WatchKey key;
             try {
@@ -125,6 +125,7 @@ public class DirectoryWatcher implements Runnable {
                     continue;
                 }
                 //Risalgo al percorso del file che ha generato l'evento
+                @SuppressWarnings("unchecked")
                 WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path fileName = ev.context();
                 if (fileName == null) {
@@ -133,26 +134,21 @@ public class DirectoryWatcher implements Runnable {
                 }
 
                 Path fullPath = parentDir.resolve(fileName);
-                logger.info("Nuovo file/directory rilevato: " + fullPath.toString());
+                logger.info("Nuovo file/directory rilevato: {}", fullPath.toString());
                 if (kind == ENTRY_CREATE) {
                     //Se si tratta di una directory registro lei e le sottocartelle
                     if (Files.isDirectory(fullPath)) {
                         try {
                             registerAll(fullPath);
                         } catch (IOException e) {
-                            logger.error("registrazione sottocartella fallita - " + fullPath.toString());
+                            logger.error("registrazione sottocartella fallita - {}", fullPath.toString());
                         }
                     }
                     //Se è un file esistente avvio la conversione
                     else {
                         File file = fullPath.toFile();
-                        if (file != null) {
-                            logger.info("Avvio conversione automatica per: " + file.getAbsolutePath());
-                            executor.submit(() -> startConversion(file));
-                        } else {
-                            logger.error("file nullo da convertire");
-                            Log.addMessage("ERRORE: file nullo da convertire");
-                        }
+                        logger.info("Avvio conversione automatica per: {}", file.getAbsolutePath());
+                        executor.submit(() -> startConversion(file));
                     }
                 }
             }
@@ -160,7 +156,7 @@ public class DirectoryWatcher implements Runnable {
             boolean valid = key.reset();
             if (!valid) {
                 Path removed = watchKeyToPath.remove(key);
-                logger.warn("Chiave non più valida, rimossa directory: " + (removed != null ? removed.toString() : "sconosciuta"));
+                logger.warn("Chiave non più valida, rimossa directory: {}", removed != null ? removed.toString() : "sconosciuta");
                 if (watchKeyToPath.isEmpty()) {
                     logger.warn("Nessuna directory rimanente da monitorare. Uscita DirectoryWatcher.");
                     break;
@@ -174,7 +170,6 @@ public class DirectoryWatcher implements Runnable {
     /**
      * Restituisce il percorso della directory monitorata.
      *
-     * @return directory monitorata
      */
     private void startConversion(File file){
         controller.launchDialogConversion(file);

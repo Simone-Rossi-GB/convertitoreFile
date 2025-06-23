@@ -1,12 +1,6 @@
 package converter;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -48,15 +42,6 @@ public class Utility {
             out.write(buffer, 0, bytesRead);
         }
     }
-
-    /**
-     * Crea un file ZIP contenente le immagini dell'elenco, salvate in formato PNG.
-     *
-     * @param images      Lista di immagini BufferedImage
-     * @param outputZip   File ZIP di destinazione
-     * @throws IOException in caso di errore di scrittura
-     */
-
 
 
     /**
