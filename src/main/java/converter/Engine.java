@@ -130,7 +130,7 @@ public class Engine {
         File outFile;
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(Utility.getExtension(srcFile).equals("zip"))
+            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
                 outFile = conversioneMultipla(srcExt, outExt, srcFile);
             else
                 outFile = conversioneSingola(srcExt, outExt, srcFile);

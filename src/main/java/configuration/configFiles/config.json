@@ -10,7 +10,7 @@
     "errorOutputDir": "src/output/error",
     "monitoredDir": "src/input",
     "monitorAtStart": true,
-    "multipleConversion": false,
+    "multipleConversion": true,
     "formatsWithAlphaChannel": [
       "png",
       "tiff",

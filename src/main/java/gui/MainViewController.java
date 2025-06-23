@@ -362,7 +362,8 @@ public class MainViewController {
         srcExtension = Utility.getExtension(srcFile);
 
         //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
-        if(Utility.getExtension(srcFile).equals("zip"))
+        System.out.println(ConfigReader.getIsMultipleConversionEnabled());
+        if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
             try{
                 srcExtension = Zipper.extractFileExstension(srcFile);
         } catch (IOException e) {
