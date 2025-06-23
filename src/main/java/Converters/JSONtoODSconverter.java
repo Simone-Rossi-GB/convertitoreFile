@@ -1,7 +1,7 @@
 package Converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import converter.ConvertionException;
+import Converters.exception.ConvertionException;
 import converter.Log;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;

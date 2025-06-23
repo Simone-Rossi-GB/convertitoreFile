@@ -1,7 +1,7 @@
-1. Test generale + Risolvere problemi(pdf con troppe pagine e pagine separate)
-
-JSON
-
+Fixare PDF -> DOC
+CSV -> excel
+Manuale d'uso
+Commenti + eccezioni specifiche
 
 2. Chiedere password / flag / altre opzioni nelle classi e non nel codice
 

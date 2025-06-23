@@ -1,44 +1,58 @@
 package Converters;
 
+import Converters.exception.PasswordException;
+import com.twelvemonkeys.util.convert.ConversionException;
+import converter.DirectoryWatcher;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class AbstractPDFConverter extends ConverterDocumentsStringParameter{
-
+public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword{
+    private static final Logger logger = LogManager.getLogger(DirectoryWatcher.class);
     /**
      *Prova a caricare il pdf con la password passata (se non null) e seleziona il metodo di conversione coerente con i parametri passati
      * @param pdfFile File di partenza
-     * @param password Password inserita dall'utente per accedere al PDF (può essere null)
+     * @param password Password letta dal JSON
      * @return ArrayList di file convertiti
-     * @throws Exception Pdf null o errori nel caricamento del file
+     * @throws IllegalArgumentException Pdf null
+     * @throws IOException Errori nel caricamento
+     * @throws PasswordException Errori con la password
      */
     @Override
-    public ArrayList<File> convertProtectedFile(File pdfFile, String password) throws Exception {
+    public ArrayList<File> convertProtectedFile(File pdfFile, String password) throws IllegalArgumentException, IOException, PasswordException {
         if (pdfFile == null) {
+            logger.error("File PDF nullo");
             throw new IllegalArgumentException("Il file PDF non può essere nullo");
         }
         PDDocument pdf = null;
-
+        //Prova a caricare il documento senza password
         try {
-            if (password == null || password.isEmpty()) {
-                pdf = PDDocument.load(pdfFile);
-            } else {
-                pdf = PDDocument.load(pdfFile, password);
-            }
-        } catch (Exception e) {
-            if (password == null || password.isEmpty()) {
-                throw new Exception("File protetto da password: " + e.getMessage());
-            } else {
-                throw new Exception("Password errata");
-            }
+            pdf = PDDocument.load(pdfFile);
+            logger.info("Documento PDF caricato con successo");
         }
-
+        //Se è protetto prova con la password letta dal JSON
+        catch (InvalidPasswordException e) {
+            if (password == null || password.isEmpty())
+                throw new PasswordException("Password richiesta");
+            try{
+                pdf = PDDocument.load(pdfFile, password);
+                logger.info("Documento PDF caricato con successo");
+            }catch (InvalidPasswordException ex) {
+                throw new PasswordException("Password errata");
+            }
+        }catch (IOException e){
+            throw new IOException("Errore nel caricamento del documento");
+        }
+        //Esegue la conversione
         try{
             return convertInternal(pdfFile, pdf);
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new ConversionException(e.getMessage());
         } finally {
             if (pdf != null) {
                 pdf.close();
@@ -65,5 +79,4 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsStringParam
      * @throws Exception
      */
     protected abstract ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception;
-
 }

@@ -1,13 +1,9 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
-import converter.ConvertionException;
+import Converters.exception.ConvertionException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

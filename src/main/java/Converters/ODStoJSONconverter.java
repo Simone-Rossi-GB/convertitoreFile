@@ -5,7 +5,7 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
-import converter.ConvertionException;
+import Converters.exception.ConvertionException;
 import converter.Log;
 
 import java.io.File;

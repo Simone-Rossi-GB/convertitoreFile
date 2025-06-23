@@ -1,7 +1,7 @@
 package WebService.Converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import converter.ConvertionException;
+import Converters.exception.ConvertionException;
 import converter.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
