@@ -3,7 +3,7 @@ package configuration.configHandlers.config;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import configuration.configExceptions.JsonStructureException;
-import configuration.configUtilities.JsonReader;
+import configuration.jsonUtilities.JsonReader;
 
 import java.io.File;
 import java.util.List;

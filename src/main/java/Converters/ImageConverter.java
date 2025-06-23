@@ -2,7 +2,7 @@ package Converters;
 
 import com.itextpdf.text.DocumentException;
 import configuration.configHandlers.config.ConfigReader;
-import configuration.configHandlers.conversionContext.ConversionContext;
+import configuration.configHandlers.conversionContext.ConversionContextReader;
 import converter.Log;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
@@ -27,7 +27,7 @@ public class ImageConverter implements Converter {
      */
     @Override
     public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
-        String estensione = (String) ConversionContext.get("destinationFormat");
+        String estensione = ConversionContextReader.getDestinationFormat();
         ArrayList<File> files = new ArrayList<>();
         if (estensione != null) {
             try {

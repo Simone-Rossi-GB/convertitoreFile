@@ -1,7 +1,7 @@
 package configuration.configHandlers.config;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import configuration.configUtilities.JsonWriter;
+import configuration.jsonUtilities.JsonWriter;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;

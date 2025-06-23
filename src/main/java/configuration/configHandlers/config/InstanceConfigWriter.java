@@ -1,6 +1,6 @@
 package configuration.configHandlers.config;
 
-import configuration.configUtilities.JsonWriter;
+import configuration.jsonUtilities.JsonWriter;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;

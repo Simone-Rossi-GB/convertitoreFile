@@ -11,9 +11,9 @@ import configuration.configExceptions.JsonWriteException;
 import configuration.configExceptions.NullConfigValueException;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
-import configuration.configHandlers.conversionContext.ConversionContext;
-import configuration.configUtilities.JsonReader;
-import configuration.configUtilities.JsonWriter;
+import configuration.configHandlers.conversionContext.ConversionContextWriter;
+import configuration.jsonUtilities.JsonReader;
+import configuration.jsonUtilities.JsonWriter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -174,7 +174,7 @@ public class Engine {
         File tempFile = File.createTempFile(srcFile.getName(), srcExt);
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
-            ConversionContext.set("destinationFormat", targetFormat);
+            ConversionContextWriter.setDestinationFormat(targetFormat);
             outFiles = converter.convert(srcFile);
             Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());

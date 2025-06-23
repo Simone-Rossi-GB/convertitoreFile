@@ -1,6 +1,6 @@
 package configuration.configHandlers.config;
 
-import configuration.configUtilities.JsonReader;
+import configuration.jsonUtilities.JsonReader;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;

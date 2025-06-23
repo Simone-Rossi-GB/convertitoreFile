@@ -1,4 +1,4 @@
-package configuration.configUtilities;
+package configuration.jsonUtilities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
