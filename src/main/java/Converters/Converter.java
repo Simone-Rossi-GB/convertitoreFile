@@ -12,7 +12,7 @@ public abstract class Converter {
     public File conversione(File srcFile) throws Exception {
         File outFile = convert(srcFile);
         if(ConversionContextReader.getIsZippedOutput() && !Utility.getExtension(outFile).equals("zip"))
-            return Zipper.compressioneFile(srcFile, Utility.getBaseName(srcFile));
+            return Zipper.compressioneFile(outFile, Utility.getBaseName(srcFile));
         return outFile;
     }
 

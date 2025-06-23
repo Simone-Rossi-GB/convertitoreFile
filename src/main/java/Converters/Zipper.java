@@ -1,5 +1,6 @@
 package Converters;
 
+import Converters.exception.IllegalExtensionException;
 import converter.Log;
 import converter.Utility;
 import org.apache.logging.log4j.LogManager;
@@ -56,8 +57,8 @@ public class Zipper {
         }
         return outputZip;
     }
-    public static List<File> unzip(File zipFile) throws IOException {
-        List<File> extractedFiles = new ArrayList<>();
+    public static ArrayList<File> unzip(File zipFile) throws IOException {
+        ArrayList<File> extractedFiles = new ArrayList<>();
         File outputDir = new File("src/temp/");
 
         // Crea la cartella di output se non esiste
@@ -138,5 +139,23 @@ public class Zipper {
             logger.error("Impossibile rinominare il file ZIP: {}", e.getMessage(), e);
             throw new IOException("Impossibile rinominare il file ZIP: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Ritorna le estensioni dei file contenuti nello zip se sono tutte uguali
+     * @param zipFile file compresso
+     * @return estensione comune
+     * @throws IOException impossibile decomprimere lo zip
+     * @throws IllegalExtensionException estensioni diverse
+     */
+    public static String extractFileExstension(File zipFile) throws IOException, IllegalExtensionException {
+        List<File> files = unzip(zipFile);
+        String ext = Utility.getExtension(files.get(0));
+        for(File f : files){
+            if(!Utility.getExtension(f).equals(ext)){
+                throw new IllegalExtensionException("I file non sono tutti dello stesso formato");
+            }
+        }
+        return ext;
     }
 }
