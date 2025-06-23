@@ -1,7 +1,7 @@
 package WebService.Converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import Converters.exception.ConvertionException;
+import Converters.exception.UnsupportedConversionException;
 import converter.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,13 +18,13 @@ public class JSONtoODSconverter implements Converter {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public ArrayList<File> convert(File srcFile) throws Exception, ConvertionException {
+    public ArrayList<File> convert(File srcFile) throws Exception, UnsupportedConversionException {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, null, false);
         }
         logger.error("File vuoto o corrotto: {}", srcFile.getName());
         Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
-        throw new ConvertionException("File vuoto o corrotto");
+        throw new UnsupportedConversionException("File vuoto o corrotto");
     }
 
     /**

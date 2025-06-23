@@ -1,7 +1,7 @@
 package WebService.Converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import Converters.exception.ConvertionException;
+import Converters.exception.UnsupportedConversionException;
 import converter.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,16 +32,16 @@ public class ODStoJSONconverter implements Converter {
      * @param srcFile File ODS da convertire
      * @return Lista contenente il file JSON generato
      * @throws Exception           In caso di errori generici
-     * @throws ConvertionException Se il file è nullo, vuoto o non valido
+     * @throws UnsupportedConversionException Se il file è nullo, vuoto o non valido
      */
     @Override
-    public ArrayList<File> convert(File srcFile) throws Exception, ConvertionException {
+    public ArrayList<File> convert(File srcFile) throws Exception, UnsupportedConversionException {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile);
         }
         logger.error("File nullo o vuoto con password specificata: {}", srcFile);
         Log.addMessage("[ODS→JSON] ERRORE: file nullo o vuoto.");
-        throw new ConvertionException("L'oggetto srcFile non esiste o è vuoto.");
+        throw new UnsupportedConversionException("L'oggetto srcFile non esiste o è vuoto.");
     }
 
 
@@ -81,14 +81,14 @@ public class ODStoJSONconverter implements Converter {
         } catch (Exception e) {
             logger.error("Errore apertura documento ODS: {}", e.getMessage());
             Log.addMessage("[ODS→JSON] ERRORE: apertura documento fallita.");
-            throw new ConvertionException("Errore nel caricamento del file ODS.");
+            throw new UnsupportedConversionException("Errore nel caricamento del file ODS.");
         }
 
         Table table = spreadsheet.getSheetByIndex(0);
         if (table == null) {
             logger.error("Nessuna tabella trovata nel documento");
             Log.addMessage("[ODS→JSON] ERRORE: nessuna tabella presente nel file.");
-            throw new ConvertionException("L'oggetto table non esiste nel file ODS.");
+            throw new UnsupportedConversionException("L'oggetto table non esiste nel file ODS.");
         }
 
         List<String> headers = new ArrayList<>();
@@ -132,7 +132,7 @@ public class ODStoJSONconverter implements Converter {
         } catch (Exception e) {
             logger.error("Scrittura file JSON fallita: {}", e.getMessage());
             Log.addMessage("[ODS→JSON] ERRORE: scrittura del file JSON fallita.");
-            throw new ConvertionException("Errore durante la scrittura del file JSON.");
+            throw new UnsupportedConversionException("Errore durante la scrittura del file JSON.");
         }
 
         logger.info("Conversione completata: {}", outFile.getAbsolutePath());
