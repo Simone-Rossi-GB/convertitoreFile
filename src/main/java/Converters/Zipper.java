@@ -19,7 +19,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Zipper {
-    private static final Logger logger = LogManager.getLogger(PDFtoJPGconverter.class);
+    private static final Logger logger = LogManager.getLogger(Zipper.class);
 
     /**
      * Crea un file ZIP contenente tutti i file specificati.

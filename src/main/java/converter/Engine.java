@@ -103,16 +103,16 @@ public class Engine {
             throw new IllegalArgumentException("L'oggetto extension non esiste");
         }
 
-        if (config == null || config.getConversions() == null) {
+        if (config == null || ConfigReader.getConversions() == null) {
             logger.error("Configurazione mancante");
             throw new NullPointerException("Config mancante");
         }
-        if(!config.getConversions().containsKey(extension)) {
+        if(!ConfigReader.getConversions().containsKey(extension)) {
             logger.error("Conversione non supportata");
             throw new ConversionException("Formato di partenza non supportato");
         }
         logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
-        return new ArrayList<>(config.getConversions().get(extension).keySet());
+        return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
     }
 
 
@@ -130,20 +130,24 @@ public class Engine {
         File outFile = null;
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(Utility.getExtension(srcFile).equals("zip"))
+            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
                 outFile = conversioneMultipla(srcExt, outExt, srcFile);
+            }
             else
+            {
                 outFile = conversioneSingola(srcExt, outExt, srcFile);
+            }
             //Sposta il file convertito nella directory corretta
-            spostaFile(config.getSuccessOutputDir(), outFile);
+            spostaFile(ConfigReader.getSuccessOutputDir(), outFile);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |InstantiationException e) {
-            spostaFile(config.getErrorOutputDir(), srcFile);
+            spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
             throw new ConversionException("Errore nel caricamento del convertitore");
         }catch (IOException e){
-            spostaFile(config.getErrorOutputDir(), srcFile);
+            spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
+            e.printStackTrace();
             throw new FileMoveException("Errore nella gestione del file temporaneo");
         } catch (FormatsException e){
-            spostaFile(config.getErrorOutputDir(), srcFile);
+            spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
             throw new UnsupportedConversionException(e.getMessage());
         }
     }

@@ -1,7 +1,7 @@
 package Converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import Converters.exception.ConvertionException;
+import Converters.exception.ConversionException;
 import converter.Log;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
@@ -18,13 +18,13 @@ public class JSONtoODSconverter extends Converter {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public File convert(File srcFile) throws Exception, ConvertionException {
+    public File convert(File srcFile) throws Exception, ConversionException {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, null, false);
         }
         logger.error("File vuoto o corrotto: {}", srcFile.getName());
         Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
-        throw new ConvertionException("File vuoto o corrotto");
+        throw new ConversionException("File vuoto o corrotto");
     }
 
     /**

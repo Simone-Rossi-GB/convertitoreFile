@@ -1,6 +1,6 @@
 package Converters;
 
-import Converters.exception.ConvertionException;
+import Converters.exception.ConversionException;
 //import converter.ConvertionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +15,7 @@ public class JSONtoXLSconverter extends Converter {
     public static final Logger logger = LogManager.getLogger(JSONtoXLSconverter.class);
 
     @Override
-    public File convert(File srcFile) throws Exception, ConvertionException {
+    public File convert(File srcFile) throws Exception, ConversionException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
 
         if (controlloFileNonVuoto(srcFile)) {
@@ -24,7 +24,7 @@ public class JSONtoXLSconverter extends Converter {
             return convertJSONtoXLS(validJsonFile, srcFile);
         } else {
             logger.error("File convertito alla lista: {}", srcFile.getPath());
-            throw new ConvertionException("File vuoto o corrotto");
+            throw new ConversionException("File vuoto o corrotto");
         }
     }
 
