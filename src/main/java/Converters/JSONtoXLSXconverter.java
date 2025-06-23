@@ -1,7 +1,7 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
-import Converters.exception.ConvertionException;
+import Converters.exception.ConversionException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
@@ -14,12 +14,12 @@ import java.util.*;
 public class JSONtoXLSXconverter extends Converter {
 
     @Override
-    public File convert(File srcFile) throws IOException, DocumentException, ConvertionException {
+    public File convert(File srcFile) throws IOException, DocumentException, ConversionException {
         if(controlloFileNonVuoto(srcFile)){
             File validJsonFile = ensureJSONArrayFormat(srcFile);
             return convertJSONtoXLS(validJsonFile);
         }
-        throw new ConvertionException("File vuoto o corrotto");
+        throw new ConversionException("File vuoto o corrotto");
     }
 
     private boolean controlloFileNonVuoto(File srcFile) {
