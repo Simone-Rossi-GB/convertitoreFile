@@ -334,8 +334,10 @@ public class MainViewController {
     public void interruptWatcher() {
         addLogMessage("Chiusura applicazione...");
         if (watcherThread != null) {
+            //Interrompe il watcher
             watcherThread.interrupt();
             try {
+                //Attende che il watcher abbia eseguito tutte le operazioni di chiusura (evita interruzioni anomale)
                 watcherThread.join();
             } catch (InterruptedException e) {
                 String msg = "Thread in background interrotto in maniera anomala";
@@ -345,11 +347,18 @@ public class MainViewController {
         }
     }
 
+    /**
+     * Termina l'applicazione
+     */
     private void exitApplication() {
         interruptWatcher();
         Platform.exit();
     }
 
+    /**
+     * Fa comparire il dialog per selezionare il formato nel quale convertire il/i file
+     * @param srcFile file di partenza
+     */
     public void launchDialogConversion(File srcFile) {
         if (srcFile == null || engine == null) {
             Log.addMessage("ERRORE: File sorgente o Engine non valido.");
@@ -362,15 +371,12 @@ public class MainViewController {
         srcExtension = Utility.getExtension(srcFile);
 
         //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
-        System.out.println(ConfigReader.getIsMultipleConversionEnabled());
         if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
             try{
                 srcExtension = Zipper.extractFileExstension(srcFile);
         } catch (IOException e) {
-            logger.error("Impossibile decomprimere il file");
             launchAlertError("Impossibile decomprimere il file");
         }catch (IllegalExtensionException e){
-            logger.error("I file hanno formati diversi");
             launchAlertError("I file hanno formati diversi");
         }
 
@@ -407,6 +413,7 @@ public class MainViewController {
             dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
             dialog.setContentText("Formato desiderato:");
             Optional<String> result = dialog.showAndWait();
+            //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
             result.ifPresent(chosenFormat -> {
                 new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
             });
@@ -414,8 +421,6 @@ public class MainViewController {
     }
 
     private void performConversionWithFallback(File srcFile, String targetFormat, String srcExtension) {
-        List<String> formatiImmagini = Arrays.asList("png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "jpeg", "bmp", "jpg", "pnm", "pgm", "pgm", "ppm", "xwd");
-
 
         String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
@@ -534,17 +539,31 @@ public class MainViewController {
         }
     }
 
+    /**
+     * Lancia un alert di errore col messaggio desiderato e aggiunge la relativa voce al log
+     * @param message
+     */
     public void launchAlertError(String message) {
-        Log.addMessage("ERRORE: " + message);
+        logger.error(message);
         showAlert("Errore", message, Alert.AlertType.ERROR);
     }
 
+    /**
+     * Lancia un alert di info col messaggio di conversione riuscita e aggiunge la relativa voce al log
+     * @param file File da convertire
+     */
     public void launchAlertSuccess(File file) {
         String message = "Conversione di " + file.getName() + " riuscita";
-        Log.addMessage(message);
+        logger.info(message);
         showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
     }
 
+    /**
+     * Mostra un alert
+     * @param title titolo scelto
+     * @param message messaggio scelto
+     * @param tipo tipo di alert scelto
+     */
     private void showAlert(String title, String message, Alert.AlertType tipo) {
         Platform.runLater(() -> {
             Alert alert = new Alert(tipo);
