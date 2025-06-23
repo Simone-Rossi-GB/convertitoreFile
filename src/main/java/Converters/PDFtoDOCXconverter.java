@@ -2,78 +2,118 @@ package Converters;
 
 import converter.Log;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.apache.pdfbox.text.TextPosition;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.*;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.util.*;
 
-/**
- * Convertitore da PDF a DOCX.
- * Estrae il testo da un PDF e lo inserisce in un documento Word .docx.
- */
+import javax.imageio.ImageIO;
+
 public class PDFtoDOCXconverter extends AbstractPDFConverter {
 
-    private static final Logger logger = LogManager.getLogger(PDFtoDOCXconverter.class);
-
-    /**
-     * Conversione PDF -> DOCX
-     *
-     * @param pdfFile     File PDF di partenza
-     * @param pdfDocument Documento PDF caricato
-     * @return ArrayList contenente il file DOCX generato
-     * @throws Exception in caso di errore durante la conversione
-     */
     @Override
-    protected ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
-        validateInputs(pdfFile, pdfDocument);
-        logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
-        ArrayList<File> files = new ArrayList<>();
-        String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
-        File outputFile = new File(pdfFile.getParent(), baseName + ".docx");
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+        XWPFDocument docx = new XWPFDocument();
 
         try {
-            logger.info("Estrazione testo dal file PDF: {}", pdfFile.getName());
-            Log.addMessage("[PDF→DOCX] Estrazione testo da: " + pdfFile.getName());
+            // 1. Estrai il testo con formattazione base
+            PDFTextStripper stripper = new PDFTextStripper() {
 
-            PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(pdfDocument);
+                @Override
+                protected void writeString(String string, List<TextPosition> textPositions) throws IOException {
+                    XWPFParagraph para = docx.createParagraph();
+                    XWPFRun run = para.createRun();
 
-            try (XWPFDocument docx = new XWPFDocument();
-                 FileOutputStream out = new FileOutputStream(outputFile)) {
+                    for (TextPosition text : textPositions) {
+                        String c = text.getUnicode();
+                        run = para.createRun();
+                        run.setText(c);
 
-                logger.info("Creazione documento DOCX: {}", outputFile.getName());
-                Log.addMessage("[PDF→DOCX] Creazione documento DOCX: " + outputFile.getName());
+                        run.setFontSize((int) text.getFontSizeInPt());
 
-                String[] lines = text.split("\\r?\\n");
-                for (String line : lines) {
-                    XWPFParagraph paragraph = docx.createParagraph();
-                    XWPFRun run = paragraph.createRun();
-                    run.setText(line);
+                        String fontName = text.getFont().getName().toLowerCase();
+                        run.setFontFamily(text.getFont().getName());
+
+                        if (fontName.contains("bold")) run.setBold(true);
+                        if (fontName.contains("italic") || fontName.contains("oblique")) run.setItalic(true);
+                    }
+
+                    docx.createParagraph(); // a capo dopo ogni blocco
                 }
+            };
 
+            stripper.setSortByPosition(true);
+            stripper.setStartPage(1);
+            stripper.setEndPage(pdfDocument.getNumberOfPages());
+            stripper.writeText(pdfDocument, null);
+
+            // 2. Estrai e inserisci immagini convertite
+            for (PDPage page : pdfDocument.getPages()) {
+                PDResources resources = page.getResources();
+                for (org.apache.pdfbox.cos.COSName name : resources.getXObjectNames()) {
+                    if (resources.isImageXObject(name)) {
+                        PDImageXObject image = (PDImageXObject) resources.getXObject(name);
+                        BufferedImage bimg = image.getImage();
+
+                        File tempImage = File.createTempFile("pdfimg_", ".png");
+                        ImageIO.write(bimg, "png", tempImage);
+
+                        ImageConverter imageConverter = new ImageConverter();
+                        File convertedImage = imageConverter.convert(tempImage); // usa il tuo metodo
+
+                        try (InputStream imgInput = Files.newInputStream(convertedImage.toPath())) {
+                            XWPFParagraph imgPara = docx.createParagraph();
+                            XWPFRun imgRun = imgPara.createRun();
+
+                            imgRun.addPicture(imgInput,
+                                    XWPFDocument.PICTURE_TYPE_PNG,
+                                    convertedImage.getName(),
+                                    Units.toEMU(300),
+                                    Units.toEMU(200));
+                        } catch (Exception e) {
+                            Log.addMessage("ERRORE: inserimento immagine fallito - " + e.getMessage());
+                        }
+
+                        tempImage.delete();
+                        convertedImage.delete();
+                    }
+                }
+            }
+
+            // 3. Salva il file DOCX finale
+            File outputFile = new File(getTempFileName(pdfFile));
+            try (FileOutputStream out = new FileOutputStream(outputFile)) {
                 docx.write(out);
             }
 
-            files.add(outputFile);
-            logger.info("Creazione file .docx completata: {}", outputFile.getName());
-            Log.addMessage("[PDF→DOCX] Creazione completata: " + outputFile.getName());
-
-            return files;
-
-        } catch (IOException e) {
-            logger.error("Errore I/O durante la conversione: {}", e.getMessage());
-            Log.addMessage("[PDF→DOCX] ERRORE: problema I/O - " + e.getMessage());
-            throw new IOException("Errore I/O durante la conversione del file " + pdfFile.getName(), e);
+            return outputFile;
 
         } catch (Exception e) {
-            logger.error("Eccezione durante la conversione: {}", e.getMessage());
-            Log.addMessage("[PDF→DOCX] ERRORE: eccezione durante la conversione - " + e.getMessage());
-            throw new Exception("Errore durante la conversione del file " + pdfFile.getName(), e);
+            Log.addMessage("ERRORE: conversione PDF->DOCX fallita - " + e.getMessage());
+            throw e;
+        } finally {
+            pdfDocument.close();
+            docx.close();
         }
     }
+
+    protected String getTempFileName(File inputFile) {
+        String baseName = inputFile.getName();
+        int dotIndex = baseName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            baseName = baseName.substring(0, dotIndex);
+        }
+        String unique = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
+        return new File(tempDir, baseName + "_" + unique + ".docx").getAbsolutePath();
+    }
 }
+

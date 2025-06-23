@@ -27,9 +27,7 @@ public class TARGZtoZIPconverter implements Converter {
      * @throws IOException In caso di errore durante la lettura o scrittura
      */
     @Override
-    public ArrayList<File> convert(File tarGzFile) throws IOException {
-        ArrayList<File> outputFiles = new ArrayList<>();
-
+    public File convert(File tarGzFile) throws IOException {
         logger.info("Inizio conversione con parametri: \n | tarGz.getPath() = {}", tarGzFile.getPath());
         Log.addMessage("Inizio conversione tarGz: " + tarGzFile.getName() + " -> .zip");
 
@@ -67,7 +65,6 @@ public class TARGZtoZIPconverter implements Converter {
 
             logger.info("Creazione file .zip completata: {}", zipFile.getName());
             Log.addMessage("Creazione file .zip completata: " + zipFile.getName());
-            outputFiles.add(zipFile);
 
         } catch (IOException e) {
             logger.error("Errore durante la conversione del file tar.gz: {}", e.getMessage(), e);
@@ -75,6 +72,6 @@ public class TARGZtoZIPconverter implements Converter {
             throw e;
         }
 
-        return outputFiles;
+        return zipFile;
     }
 }

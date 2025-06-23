@@ -38,7 +38,7 @@ public class MSGtoPDFconverter implements Converter {
      * @throws NullPointerException se uno degli oggetti critici è null
      */
     @Override
-    public ArrayList<File> convert(File msgFile) throws IOException, DocumentException {
+    public File convert(File msgFile) throws IOException, DocumentException {
         if (msgFile == null) {
             logger.error("File MSG nullo");
             Log.addMessage("[MSG→PDF] ERRORE: il file fornito è nullo.");
@@ -94,9 +94,7 @@ public class MSGtoPDFconverter implements Converter {
         logger.info("Conversione completata con successo: {}", outputPdfFile.getName());
         Log.addMessage("[MSG→PDF] Conversione completata: " + outputPdfFile.getName());
 
-        ArrayList<File> result = new ArrayList<>();
-        result.add(outputPdfFile);
-        return result;
+        return outputPdfFile;
     }
 
     /**

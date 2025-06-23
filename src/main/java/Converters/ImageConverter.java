@@ -26,13 +26,12 @@ public class ImageConverter implements Converter {
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
     @Override
-    public ArrayList<File> convert(File imgFile) throws IOException, DocumentException {
+    public File convert(File imgFile) throws IOException, DocumentException {
         String estensione = ConversionContextReader.getDestinationFormat();
-        ArrayList<File> files = new ArrayList<>();
+        File outputFile = null;
         if (estensione != null) {
             try {
-                File result = imageConversion(imgFile, estensione);
-                files.add(result);
+                outputFile = imageConversion(imgFile, estensione);
             } catch (IOException e) {
                 logger.error("Conversione immagine fallita per:{}", imgFile.getName());
                 Log.addMessage("[IMG] ERRORE: conversione immagine fallita per " + imgFile.getName());
@@ -43,7 +42,7 @@ public class ImageConverter implements Converter {
             Log.addMessage("[IMG] ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
         }
 
-        return files;
+        return outputFile;
     }
 
     /**

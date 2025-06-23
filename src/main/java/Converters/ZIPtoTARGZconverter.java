@@ -19,7 +19,7 @@ import java.util.List;
  * Questa classe si occupa della conversione di file .zip in .tar.gz,
  * con supporto per file ZIP protetti da password.
  */
-public class ZIPtoTARGZconverter extends ConverterDocumentsStringParameter {
+public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
 
     private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
 
@@ -31,10 +31,10 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsStringParameter {
      * @throws IOException In caso di problemi di lettura/scrittura o password errata
      */
     @Override
-    public ArrayList<File> convertProtectedFile(File zipFile, String password) throws IOException {
-        ArrayList<File> outputFiles = new ArrayList<>();
+    public File convertProtectedFile(File zipFile, String password) throws IOException {
 
         logger.info("Conversione iniziata con parametri:\n | zipFile.getPath() = {}", zipFile.getAbsolutePath());
+        File outputTarGz = null;
 
         // Crea directory temporanea per estrazione
         File tempDir = new File(System.getProperty("java.io.tmpdir"), "unzip_temp_" + System.nanoTime());
@@ -65,7 +65,7 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsStringParameter {
 
             // Prepara file output tar.gz
             String baseName = zipFile.getName().replaceFirst("\\.zip$", "");
-            File outputTarGz = new File("src/temp", baseName + ".tar.gz");
+            outputTarGz = new File("src/temp", baseName + ".tar.gz");
 
             try (FileOutputStream fos = new FileOutputStream(outputTarGz);
                  GzipCompressorOutputStream gcos = new GzipCompressorOutputStream(fos);
@@ -78,7 +78,6 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsStringParameter {
 
                 logger.info("Creazione file .tar.gz completata: {}", outputTarGz.getAbsolutePath());
                 Log.addMessage("[ZIPtoTARGZ] Conversione completata: " + outputTarGz.getName());
-                outputFiles.add(outputTarGz);
             } catch (IOException e) {
                 logger.error("Problema durante la creazione del file .tar.gz: {}", e.getMessage());
                 throw e;
@@ -94,7 +93,7 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsStringParameter {
             }
         }
 
-        return outputFiles;
+        return outputTarGz;
     }
 
     /**
