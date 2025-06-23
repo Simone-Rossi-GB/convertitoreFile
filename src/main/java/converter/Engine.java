@@ -11,6 +11,7 @@ import configuration.configExceptions.JsonWriteException;
 import configuration.configExceptions.NullConfigValueException;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
+import configuration.configHandlers.config.ConfigReader;
 import configuration.configHandlers.conversionContext.ConversionContextWriter;
 import configuration.jsonUtilities.JsonReader;
 import configuration.jsonUtilities.JsonWriter;
@@ -99,7 +100,7 @@ public class Engine {
             throw new NullPointerException("L'oggetto extension non esiste");
         }
 
-        if (config == null || config.getConversions() == null || !config.getConversions().containsKey(extension)) {
+        if (config == null || ConfigReader.getConversions() == null || !ConfigReader.getConversions().containsKey(extension)) {
             logger.error("Configurazione mancante o conversione non supportata per: {}", extension);
             Log.addMessage("ERRORE: Configurazione mancante o conversione non supportata per: " + extension);
             throw new Exception("Config assente o conversione non supportata");
@@ -107,7 +108,7 @@ public class Engine {
 
         logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
         Log.addMessage("Formati disponibili per la conversione da " + extension + " ottenuti con successo");
-        return new ArrayList<>(config.getConversions().get(extension).keySet());
+        return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
     }
 
     /**
@@ -179,12 +180,12 @@ public class Engine {
             Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
             //Sposto il file convertito nella directory corretta
-            spostaFile(config.getSuccessOutputDir(), outFile);
+            spostaFile(ConfigReader.getSuccessOutputDir(), outFile);
             Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
 
         } catch (IOException e) {
             Log.addMessage("ERRORE: Errore durante la conversione o lo spostamento del file " + srcFile.getName());
-            spostaFile(config.getErrorOutputDir(), srcFile);
+            spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
             throw new Exception(e.getMessage());
         }
     }
@@ -210,7 +211,7 @@ public class Engine {
             throw new NullPointerException("L'oggetto srcFile non esiste");
         }
 
-        Map<String, Map<String, String>> conversions = config.getConversions();
+        Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
             Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
             throw new Exception("Conversione non supportata");

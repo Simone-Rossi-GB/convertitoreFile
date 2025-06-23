@@ -7,6 +7,7 @@ import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
 import configuration.configHandlers.config.ConfigReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import configuration.jsonUtilities.RecognisedWrappers.RecognisedString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-public interface JsonWriter extends JsonUtility {
+public interface JsonWriter {
     // Logger per il tracciamento di errori ed eventi
     Logger logger = LogManager.getLogger(JsonWriter.class);
 
@@ -42,9 +43,9 @@ public interface JsonWriter extends JsonUtility {
         }
     }
 
-    static void overwriteJsonFromString(String jsonText, File jsonFile) throws JsonStructureException, IOException {
-        // Prima valida che il JSON sia corretto
-        JsonUtility.validateJsonFromString(jsonText, ConfigReader.getSingleton().readMandatoryEntries());
+    static void overwriteJsonFromString(String jsonText, File jsonFile) throws JsonStructureException {
+        // Prima valida che il JSON sia corretto, commentato perche altrimenti avvengono 2 controlli
+        // JsonUtility.validateJsonFromStringOrFile(new RecognisedString(jsonText), ConfigReader.getMandatoryEntries());
         try (FileWriter writer = new FileWriter(jsonFile)) {
             writer.write(jsonText);
             writer.flush(); // Assicurati che i dati siano scritti
