@@ -5,7 +5,7 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
-import converter.ConvertionException;
+import Converters.exception.ConvertionException;
 import converter.Log;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class ODStoJSONconverter implements Converter {
      * @throws ConvertionException Se il file è nullo, vuoto o non valido
      */
     @Override
-    public ArrayList<File> convert(File srcFile) throws Exception, ConvertionException {
+    public File convert(File srcFile) throws Exception, ConvertionException {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile);
         }
@@ -61,7 +61,7 @@ public class ODStoJSONconverter implements Converter {
      * @return Lista contenente un singolo file JSON generato
      * @throws Exception In caso di errori nella lettura o scrittura file
      */
-    private ArrayList<File> convertInternal(File odsFile) throws Exception {
+    private File convertInternal(File odsFile) throws Exception {
         if (odsFile == null) {
             logger.error("File ODS nullo");
             Log.addMessage("[ODS→JSON] ERRORE: oggetto file nullo.");
@@ -136,8 +136,6 @@ public class ODStoJSONconverter implements Converter {
         logger.info("Conversione completata: {}", outFile.getAbsolutePath());
         Log.addMessage("[ODS→JSON] Creazione file .json completata: " + outFile.getName());
 
-        ArrayList<File> output = new ArrayList<>();
-        output.add(outFile);
-        return output;
+        return outFile;
     }
 }
