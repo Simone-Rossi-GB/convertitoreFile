@@ -119,7 +119,7 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
 
     private void insertImageInDocx(XWPFDocument docx, BufferedImage image) throws IOException {
         // Definisci larghezza massima desiderata in pixel
-        int maxWidthPx = 500;
+        final int maxWidthPx = 500;
 
         int width = image.getWidth();
         int height = image.getHeight();
