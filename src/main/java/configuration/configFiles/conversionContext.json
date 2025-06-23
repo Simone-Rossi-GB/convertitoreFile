@@ -3,6 +3,6 @@
     "destinationFormat" : "png",
     "password" : "samplefile",
     "union" : false,
-    "zippedOutput" : true
+    "zippedOutput" : false
   }
 }

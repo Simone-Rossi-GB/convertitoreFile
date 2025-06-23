@@ -130,13 +130,10 @@ public class Engine {
         File outFile = null;
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
+            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
                 outFile = conversioneMultipla(srcExt, outExt, srcFile);
-            }
             else
-            {
                 outFile = conversioneSingola(srcExt, outExt, srcFile);
-            }
             //Sposta il file convertito nella directory corretta
             spostaFile(ConfigReader.getSuccessOutputDir(), outFile);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |InstantiationException e) {
@@ -144,7 +141,6 @@ public class Engine {
             throw new ConversionException("Errore nel caricamento del convertitore");
         }catch (IOException e){
             spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
-            e.printStackTrace();
             throw new FileMoveException("Errore nella gestione del file temporaneo");
         } catch (FormatsException e){
             spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
