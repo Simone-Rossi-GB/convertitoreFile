@@ -25,7 +25,7 @@ PantheraConverter/
 │   │   │   │   ├── Utility.java
 │   │   │   │   └── Log.java                     
 │   │   │   │
-│   │   │   ├── Converters/          
+│   │   │   ├── converters/          
 │   │   │   │   ├── AbstractPDFConverter.java             
 │   │   │   │   ├── Converter.java     (Interface)           
 │   │   │   │   └── [altri converter...]          

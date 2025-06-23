@@ -1,8 +1,7 @@
 package configuration.configHandlers.config;
 
-import configuration.configExceptions.NullConfigValueException;
 import configuration.jsonUtilities.JsonUtility;
-import configuration.jsonUtilities.RecognisedWrappers.RecognisedFile;
+import configuration.jsonUtilities.recognisedWrappers.RecognisedFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,10 +1,10 @@
 package gui;
 
 import configuration.configHandlers.config.ConfigReader;
-import Converters.exception.IllegalExtensionException;
+import converters.exception.IllegalExtensionException;
 import converter.DirectoryWatcher;
 import converter.Log;
-import Converters.Zipper;
+import converters.Zipper;
 import converter.Utility;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -32,8 +32,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.nio.file.StandardCopyOption;
 
-import WebService.client.ConverterWebServiceClient;
-import WebService.client.ConversionResult;
+import webService.client.ConverterWebServiceClient;
+import webService.client.ConversionResult;
 
 /**
  * Controller principale della UI per la gestione del monitoraggio cartelle e conversione file.

@@ -327,7 +327,7 @@ file-converter-project/
 │   │   │   │   ├── ConverterConfig.java
 │   │   │   │   ├── DirectoryWatcher.java
 │   │   │   │   └── Log.java
-│   │   │   ├── Converters/
+│   │   │   ├── converters/
 │   │   │   │   └── Converter.java (interface)
 │   │   │   │   └── [altre classi converter...]
 │   │   │   └── webservice/

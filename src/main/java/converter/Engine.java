@@ -1,14 +1,14 @@
 package converter;
 
-import Converters.Converter;
-import Converters.exception.*;
+import converters.Converter;
+import converters.exception.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.util.*;
 
-import Converters.Zipper;
+import converters.Zipper;
 import com.twelvemonkeys.util.convert.ConversionException;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;

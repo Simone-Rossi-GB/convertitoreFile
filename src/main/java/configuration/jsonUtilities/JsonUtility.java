@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import configuration.configExceptions.JsonFileNotFoundException;
 import configuration.configExceptions.JsonStructureException;
-import configuration.jsonUtilities.RecognisedWrappers.RecognisedInput;
+import configuration.jsonUtilities.recognisedWrappers.RecognisedInput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
