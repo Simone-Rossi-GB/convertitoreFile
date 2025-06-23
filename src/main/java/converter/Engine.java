@@ -118,46 +118,7 @@ public class Engine {
      * @throws Exception Errore nella rinomina del file
      */
 
-    /*public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, null, null);
-    }
 
-    /**
-     * Conversione PDF protetto
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @param extraParam parametro Extra
-     * @throws Exception Errore nella rinomina del file
-     */
-    /*public void conversione(String srcExt, String outExt, File srcFile, String extraParam) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, extraParam, null);
-    }
-
-    /**
-     * Conversione PDF -> JPG unendo le pagine in un'unica immagine
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
-     * @throws Exception Errore nella rinomina del file
-     */
-    /*public void conversione(String srcExt, String outExt, File srcFile, boolean union) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, null, union);
-    }
-
-    /**Conversione PDF protetto -> JPG unendo le pagine in un'unica immagine
-     *
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @param password Password per file criptati
-     * @param union Flag che indica l'unione o meno delle immagini estratte dal PDF
-     * @throws Exception Errore nella rinomina del file
-     */
-    /*public void conversione(String srcExt, String outExt, File srcFile, String password, boolean union) throws Exception {
-        executeConversion(srcExt, outExt, srcFile, password, union);
-    }*/
 
     /**
      * Esecuzione conversione
@@ -166,16 +127,16 @@ public class Engine {
      * @param srcFile File iniziale
      * @throws Exception Errore nella rinomina del file
      */
-    public void conversione(String srcExt, String outExt, File srcFile, String targetFormat/*, String parameter, Boolean union*/) throws Exception {
+    public void conversione(String srcExt, String outExt, File srcFile, String targetFormat) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         File outFile;
-        File tempFile = File.createTempFile(srcFile.getName(), srcExt);
+        File tempFile = new File("src/temp", srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
             ConversionContextWriter.setDestinationFormat(targetFormat);
-            outFile = converter.convert(srcFile);
+            outFile = converter.conversione(tempFile);
             Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
             //Sposto il file convertito nella directory corretta

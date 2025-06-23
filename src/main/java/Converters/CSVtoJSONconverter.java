@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class CSVtoJSONconverter implements Converter {
+public class CSVtoJSONconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(CSVtoJSONconverter.class);
     /**

@@ -1,5 +1,6 @@
 package WebService.Converters;
 
+import Converters.Zipper;
 import converter.Log;
 import converter.Utility;
 import gui.MainViewController;
@@ -109,7 +110,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
 
             if (outputFiles.size() > 1) {
                 Log.addMessage("Compressione delle immagini generate in output");
-                File zippedImages = Utility.zipper(outputFiles);
+                File zippedImages = Zipper.zip(outputFiles);
                 zippedImages = rinominaFileZip(zippedImages, baseName);
                 outputFiles.clear();
                 outputFiles.add(zippedImages);

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.ArrayList;
 
-public abstract class ConverterDocumentsWithPasword implements Converter{
+public abstract class ConverterDocumentsWithPasword extends Converter{
     private static final Logger logger = LogManager.getLogger(DirectoryWatcher.class);
     /**
      * Metodo che prende il parametro Password dal JSON per tutti quei formati che la possono richiedere

@@ -1,22 +1,20 @@
 package Converters;
 
 import com.itextpdf.text.DocumentException;
-
+import configuration.configHandlers.conversionContext.ConversionContextReader;
+import converter.Utility;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public interface Converter {
-    File convert(File srcFile) throws Exception;
-    /*default ArrayList<File> convert(File srcFile, String parameter) throws Exception {
-        return null;
-    }
-    default ArrayList<File> convert(File srcFile, boolean opzioni) throws Exception{
-        return null;
+public abstract class Converter {
+
+    public File conversione(File srcFile) throws Exception {
+        File outFile = convert(srcFile);
+        if(ConversionContextReader.getIsZippedOutput() && !Utility.getExtension(outFile).equals("zip"))
+            return Zipper.compressioneFile(srcFile, Utility.getBaseName(srcFile));
+        return outFile;
     }
 
-    default ArrayList<File> convert(File srcFile, String password, boolean opzioni) throws Exception{
-        return null;
-    }*/
-
+    public abstract File convert(File srcFile) throws Exception;
 }
