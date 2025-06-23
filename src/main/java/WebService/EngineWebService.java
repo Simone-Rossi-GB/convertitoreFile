@@ -117,7 +117,7 @@ public class EngineWebService {
             System.out.println("WebService: File input: " + tempFile.getAbsolutePath());
             System.out.println("WebService: Directory temp: " + conversionTempDir.toAbsolutePath());
 
-            List<File> outFiles;
+            List<File> outFiles = Collections.emptyList();
 
             // Soluzione: Salva i percorsi originali e li ripristina dopo
             String originalSuccessDir = config.getSuccessOutputDir();
@@ -129,7 +129,7 @@ public class EngineWebService {
                 Files.createDirectories(tempOutputDir);
 
                 System.setProperty("webservice.temp.output", tempOutputDir.toString());
-                outFiles = converter.convert(tempFile);
+                outFiles.add(converter.convert(tempFile));
 
 
                 // Se il converter non ha prodotto file, proviamo a cercarli nella directory di successo dell'engine
@@ -263,7 +263,7 @@ public class EngineWebService {
             System.out.println("WebService: File input: " + tempFile.getAbsolutePath());
             System.out.println("WebService: Directory temp: " + conversionTempDir.toAbsolutePath());
 
-            List<File> outFiles;
+            List<File> outFiles = null;
 
             // Soluzione: Salva i percorsi originali e li ripristina dopo
             String originalSuccessDir = config.getSuccessOutputDir();
@@ -276,7 +276,7 @@ public class EngineWebService {
 
                 System.setProperty("webservice.temp.output", tempOutputDir.toString());
 
-                outFiles = converter.convert(tempFile);
+                outFiles.add(converter.convert(tempFile));
 
                 System.out.println("WebService: File di output dal converter: " + outFiles);
 

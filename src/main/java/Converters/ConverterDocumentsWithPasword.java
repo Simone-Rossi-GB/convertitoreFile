@@ -1,5 +1,5 @@
 package Converters;
-import configuration.configHandlers.conversionContext.ConversionContext;
+import configuration.configHandlers.conversionContext.ConversionContextReader;
 import converter.DirectoryWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +17,7 @@ public abstract class ConverterDocumentsWithPasword implements Converter{
      */
     @Override
     public File convert(File srcFile) throws Exception{
-        String extraParameter = (String) ConversionContext.get("password");
+        String extraParameter = ConversionContextReader.getPassword();
         logger.info("Password rilevata: " + extraParameter);
         return convertProtectedFile(srcFile, extraParameter);
     }

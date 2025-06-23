@@ -170,19 +170,16 @@ public class Engine {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-        List<File> outFiles;
+        File outFile;
         File tempFile = File.createTempFile(srcFile.getName(), srcExt);
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         try {
             ConversionContextWriter.setDestinationFormat(targetFormat);
-            outFiles = converter.convert(srcFile);
+            outFile = converter.convert(srcFile);
             Files.deleteIfExists(tempFile.toPath());
             Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
-
-            for (File f : outFiles) {
-                //Sposto il file convertito nella directory corretta
-                spostaFile(config.getSuccessOutputDir(), f);
-            }
+            //Sposto il file convertito nella directory corretta
+            spostaFile(config.getSuccessOutputDir(), outFile);
             Log.addMessage("Conversione completata con successo: " + srcFile.getName() + " -> " + outExt);
 
         } catch (IOException e) {

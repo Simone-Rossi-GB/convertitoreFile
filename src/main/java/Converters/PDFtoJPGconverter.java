@@ -1,7 +1,7 @@
 package Converters;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
-import configuration.configHandlers.conversionContext.ConversionContext;
+import configuration.configHandlers.conversionContext.ConversionContextReader;
 import converter.Log;
 import converter.Utility;
 import gui.MainViewController;
@@ -27,7 +27,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
     private static final Logger logger = LogManager.getLogger(PDFtoJPGconverter.class);
 
     private static final int DPI = 300; // DPI dell'immagine renderizzata
-    private static final int MAX_PAGES = 3; // numero massimo di pagine
+    private static final int MAX_PAGES = 50; // numero massimo di pagine
 
     /**
      * Metodo per unire le pagine del pdf una sotto l'altra in un'unica immagine
@@ -78,7 +78,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
     @Override
     public File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
         //Ottiene il boolean di unione dal JSON
-        boolean union = (Boolean) ConversionContext.get("union");
+        boolean union = ConversionContextReader.getIsUnion();
         validateInputs(pdfFile, pdfDocument);
 
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
