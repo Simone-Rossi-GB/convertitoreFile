@@ -1,4 +1,4 @@
-package configuration.jsonUtilities.RecognisedWrappers;
+package configuration.jsonUtilities.recognisedWrappers;
 
 import java.io.File;
 

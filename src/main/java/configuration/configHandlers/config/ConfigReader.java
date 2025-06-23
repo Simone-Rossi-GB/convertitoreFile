@@ -18,6 +18,7 @@ public class ConfigReader extends ConfigData {
      * @return lista di formati con canale alfa
      * @throws JsonStructureException se la mappa dei dati non è disponibile o malformata
      */
+    @SuppressWarnings("unchecked")
     public static List<String> getFormatsWithAlphaChannel() throws JsonStructureException {
         return (List<String>) configDataMap.get("formatsWithAlphaChannel");
     }
@@ -28,6 +29,7 @@ public class ConfigReader extends ConfigData {
      * @return lista di formati che richiedono una doppia conversione
      * @throws JsonStructureException se il valore è mancante o corrotto
      */
+    @SuppressWarnings("unchecked")
     public static List<String> getFormatsRequiringIntermediateConversion() throws JsonStructureException {
         return (List<String>) configDataMap.get("formatsRequiringIntermediateConversion");
     }
@@ -38,6 +40,7 @@ public class ConfigReader extends ConfigData {
      * @return mappa con chiavi di formato sorgente, ognuna associata a un'altra mappa di formati destinazione
      * @throws JsonStructureException se il nodo è mancante o non mappabile
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Map<String, String>> getConversions() throws JsonStructureException {
         return (Map<String, Map<String, String>>) configDataMap.get("conversions");
     }
@@ -48,6 +51,7 @@ public class ConfigReader extends ConfigData {
      * @return lista di chiavi richieste nel file di configurazione
      * @throws JsonStructureException se il campo non è presente
      */
+    @SuppressWarnings("unchecked")
     public static List<String> getMandatoryEntries() throws JsonStructureException {
         return (List<String>) configDataMap.get("mandatoryEntries");
     }

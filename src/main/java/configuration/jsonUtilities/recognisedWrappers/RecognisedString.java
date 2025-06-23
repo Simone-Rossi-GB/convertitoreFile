@@ -1,4 +1,4 @@
-package configuration.jsonUtilities.RecognisedWrappers;
+package configuration.jsonUtilities.recognisedWrappers;
 
 /**
  * Wrapper per rappresentare una {@link String} come input riconosciuto

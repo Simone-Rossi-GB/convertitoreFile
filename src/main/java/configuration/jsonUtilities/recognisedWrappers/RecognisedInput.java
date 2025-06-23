@@ -1,4 +1,4 @@
-package configuration.jsonUtilities.RecognisedWrappers;
+package configuration.jsonUtilities.recognisedWrappers;
 
 /**
  * Interfaccia marker per rappresentare un tipo di input riconosciuto
@@ -13,8 +13,7 @@ public interface RecognisedInput {
      * Restituisce il valore contenuto nell'input riconosciuto.
      * Il tipo restituito è generico per consentire flessibilità a livello di implementazione.
      *
-     * @param <T> tipo del valore contenuto
      * @return valore non elaborato associato all’input
      */
-    <T> T getValue();
+    Object getValue();
 }
