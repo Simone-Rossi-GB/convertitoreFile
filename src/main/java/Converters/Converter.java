@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public interface Converter {
-    public ArrayList<File> convert(File srcFile) throws Exception;
+    File convert(File srcFile) throws Exception;
     /*default ArrayList<File> convert(File srcFile, String parameter) throws Exception {
         return null;
     }

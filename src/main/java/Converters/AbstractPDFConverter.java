@@ -24,7 +24,7 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
      * @throws PasswordException Errori con la password
      */
     @Override
-    public ArrayList<File> convertProtectedFile(File pdfFile, String password) throws IllegalArgumentException, IOException, PasswordException {
+    public File convertProtectedFile(File pdfFile, String password) throws IllegalArgumentException, IOException, PasswordException {
         if (pdfFile == null) {
             logger.error("File PDF nullo");
             throw new IllegalArgumentException("Il file PDF non può essere nullo");
@@ -78,5 +78,5 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
      * @return ArrayList di file convertiti
      * @throws Exception
      */
-    protected abstract ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception;
+    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception;
 }

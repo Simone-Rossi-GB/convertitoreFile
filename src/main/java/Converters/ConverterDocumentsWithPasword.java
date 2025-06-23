@@ -12,11 +12,11 @@ public abstract class ConverterDocumentsWithPasword implements Converter{
     /**
      * Metodo che prende il parametro Password dal JSON per tutti quei formati che la possono richiedere
      * @param srcFile File di partenza
-     * @return ArrayList di file convertiti
+     * @return file convertito
      * @throws Exception
      */
     @Override
-    public ArrayList<File> convert(File srcFile) throws Exception{
+    public File convert(File srcFile) throws Exception{
         String extraParameter = (String) ConversionContext.get("password");
         logger.info("Password rilevata: " + extraParameter);
         return convertProtectedFile(srcFile, extraParameter);
@@ -26,8 +26,8 @@ public abstract class ConverterDocumentsWithPasword implements Converter{
      * Metodo astratto che si occupa di caricare i documenti dei vari formati con o senza password, a seconda del contesto
      * @param srcFile File di partenza
      * @param password Password letta dal JSON
-     * @return ArrayList di file convertiti
+     * @return file convertito
      * @throws Exception
      */
-    public abstract ArrayList<File> convertProtectedFile(File srcFile, String password) throws Exception;
+    public abstract File convertProtectedFile(File srcFile, String password) throws Exception;
 }
