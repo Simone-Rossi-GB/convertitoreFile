@@ -10,23 +10,52 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Rappresenta un'istanza di configurazione associata a un file JSON.
+ * <p>
+ * Durante la creazione, esegue una validazione strutturale sul contenuto del file,
+ * assicurandosi che tutti i campi richiesti siano presenti.
+ */
 public class ConfigInstance {
+
+    /** Logger utilizzato per messaggi di debug e tracciamento errori. */
     private static final Logger logger = LogManager.getLogger(ConfigInstance.class);
 
-    // Percorso del file di configurazione da cui vengono lette tutte le impostazioni
+    /** Riferimento al file JSON da cui leggere i parametri di configurazione. */
     protected final File jsonFile;
 
+    /**
+     * Costruttore che inizializza l'istanza di configurazione e valida il contenuto del file JSON.
+     *
+     * @param jsonFile file di configurazione da validare
+     * @throws configuration.configExceptions.JsonStructureException se il file non contiene tutti i campi obbligatori
+     */
     public ConfigInstance(File jsonFile) {
-        List<String> MANDATORY_FIELDS = Arrays.asList("successOutputDir", "errorOutputDir", "monitoredDir", "monitorAtStart", "conversions");
+        // Elenco dei campi obbligatori che devono essere presenti nel file di configurazione
+        List<String> MANDATORY_FIELDS = Arrays.asList(
+                "successOutputDir",
+                "errorOutputDir",
+                "monitoredDir",
+                "monitorAtStart",
+                "conversions"
+        );
+
+        // (Preparato per futuri controlli di valore null o altre validazioni)
         List<String> nullFields = new ArrayList<>();
+
         this.jsonFile = jsonFile;
 
+        // Esegue la validazione della struttura del JSON
         JsonUtility.validateJsonFromStringOrFile(new RecognisedFile(jsonFile), MANDATORY_FIELDS);
     }
 
-    public File getJsonFile(){
+    /**
+     * Restituisce il file JSON attualmente associato a questa istanza di configurazione.
+     *
+     * @return il file di configurazione
+     */
+    public File getJsonFile() {
         return jsonFile;
     }
 }
