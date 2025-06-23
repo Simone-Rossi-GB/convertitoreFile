@@ -1,6 +1,7 @@
 package converter;
 
 import Converters.Converter;
+import Converters.exception.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +9,7 @@ import java.nio.file.*;
 import java.util.*;
 
 import Converters.Zipper;
+import com.twelvemonkeys.util.convert.ConversionException;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
 import configuration.configExceptions.NullConfigValueException;
@@ -38,7 +40,6 @@ public class Engine {
      */
     public void setConfig() {
         try {
-            // Forse dovremmo controllare che il config iniziale sia strutturalmente corretto
             config = new ConfigInstance(jsonFile);
             ConfigData.update(config);
             logger.info("Configurazione caricata correttamente da config.json");
@@ -93,34 +94,26 @@ public class Engine {
      * @param extension Estensione di cui controllare i formati convertibili possibili
      * @return Lista contenente tutti i formati in cui si puo convertire il file
      * @throws NullPointerException Se viene passata una stringa nulla
-     * @throws Exception Il file config non esiste oppure la conversione non e supportata
+     * @throws IllegalArgumentException Non viene passata un'estensione
+     * @throws NullPointerException Configurazione mancante
      */
-    public List<String> getPossibleConversions(String extension) throws Exception {
+    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException {
         if (extension == null) {
             logger.error("Parametro extension nullo");
-            Log.addMessage("ERRORE: Parametro extension nullo");
-            throw new NullPointerException("L'oggetto extension non esiste");
+            throw new IllegalArgumentException("L'oggetto extension non esiste");
         }
 
-        if (config == null || ConfigReader.getConversions() == null || !ConfigReader.getConversions().containsKey(extension)) {
-            logger.error("Configurazione mancante o conversione non supportata per: {}", extension);
-            Log.addMessage("ERRORE: Configurazione mancante o conversione non supportata per: " + extension);
-            throw new Exception("Config assente o conversione non supportata");
+        if (config == null || config.getConversions() == null) {
+            logger.error("Configurazione mancante");
+            throw new NullPointerException("Config mancante");
         }
-
+        if(!config.getConversions().containsKey(extension)) {
+            logger.error("Conversione non supportata");
+            throw new ConversionException("Formato di partenza non supportato");
+        }
         logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
-        Log.addMessage("Formati disponibili per la conversione da " + extension + " ottenuti con successo");
-        return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
+        return new ArrayList<>(config.getConversions().get(extension).keySet());
     }
-
-    /**
-     * Conversione base
-     * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
-     * @param srcFile File iniziale
-     * @throws Exception Errore nella rinomina del file
-     */
-
 
 
     /**
@@ -128,24 +121,47 @@ public class Engine {
      * @param srcExt Estensione file iniziale
      * @param outExt Estensione file finale
      * @param srcFile File iniziale
-     * @throws Exception Errore nella rinomina del file
+     * @throws IOException Errore nello spostamento dei file convertiti
+     * @throws ConversionException Errore nella conversione o nel caricamento del convertitore
+     * @throws FileMoveException Errore nella gestione del file temporaneo
+     * @throws UnsupportedConversionException conversione non supportata
      */
-    public void conversione(String srcExt, String outExt, File srcFile) throws Exception {
+    public void conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException,UnsupportedConversionException  {
         File outFile = null;
         try {
+            //Controlla se deve eseguire una conversione multipla
             if(Utility.getExtension(srcFile).equals("zip"))
                 outFile = conversioneMultipla(srcExt, outExt, srcFile);
             else
                 outFile = conversioneSingola(srcExt, outExt, srcFile);
-            //Sposto il file convertito nella directory corretta
-            spostaFile(ConfigReader.getSuccessOutputDir(), outFile);
-        } catch (IOException e) {
-            spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
-            throw new IOException(e.getMessage());
+            //Sposta il file convertito nella directory corretta
+            spostaFile(config.getSuccessOutputDir(), outFile);
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |InstantiationException e) {
+            spostaFile(config.getErrorOutputDir(), srcFile);
+            throw new ConversionException("Errore nel caricamento del convertitore");
+        }catch (IOException e){
+            spostaFile(config.getErrorOutputDir(), srcFile);
+            throw new FileMoveException("Errore nella gestione del file temporaneo");
+        } catch (FormatsException e){
+            spostaFile(config.getErrorOutputDir(), srcFile);
+            throw new UnsupportedConversionException(e.getMessage());
         }
     }
 
-    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws Exception{
+    /**
+     *
+     * @param srcExt formato di partenza
+     * @param outExt formato di output
+     * @param srcFile file di partenza
+     * @return file convertiti zippati
+     * @throws ClassNotFoundException convertitore non trovato
+     * @throws NoSuchMethodException metodo di conversione non trovato
+     * @throws InvocationTargetException impossibile istanziare il convertitore
+     * @throws InstantiationException classe astratta
+     * @throws IllegalAccessException costruttore del convertitore non accessibile
+     * @throws IOException errore nella gestione del file temp o dello zip
+     */
+    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
         ArrayList<File> convertedFiles = new ArrayList<>();
         for (File f : zippedFiles){
@@ -155,17 +171,35 @@ public class Engine {
         return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
     }
 
-    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws Exception {
+    /**
+     * Effettua la conversione del singolo file
+     * @param srcExt formato di partenza
+     * @param outExt formato di output
+     * @param srcFile file di partenza
+     * @return file convertito
+     * @throws ClassNotFoundException convertitore non trovato
+     * @throws NoSuchMethodException metodo di conversione non trovato
+     * @throws InvocationTargetException impossibile istanziare il convertitore
+     * @throws InstantiationException classe astratta
+     * @throws IllegalAccessException costruttore del convertitore non accessibile
+     * @throws IOException errore nella gestione del file temp
+     */
+    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+        //Istanzia il convertitore adatto
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
         Class<?> clazz = Class.forName(converterClassName);
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         File outFile;
+        //Crea un file temp per la conversione
         File tempFile = new File("src/temp", srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         ConversionContextWriter.setDestinationFormat(outExt);
-        outFile = converter.conversione(tempFile);
+        try {
+            outFile = converter.conversione(tempFile);
+        } catch (Exception e) {
+            throw new ConversionException(e.getMessage());
+        }
         Files.deleteIfExists(tempFile.toPath());
-        Log.addMessage("File temporaneo eliminato: " + srcFile.getPath());
         return outFile;
     }
 
@@ -174,33 +208,34 @@ public class Engine {
      * @param srcExt Estensione file iniziale
      * @param outExt Estensione file finale
      * @param srcFile File iniziale
-     * @throws NullPointerException Ritorna il primo parametro inesistente trovato
+     * @throws IllegalArgumentException Parametri null
+     * @throws UnsupportedConversionException conversione non supportata
      */
-    private String checkParameters(String srcExt, String outExt, File srcFile) throws Exception {
+    private String checkParameters(String srcExt, String outExt, File srcFile) throws IllegalArgumentException, UnsupportedConversionException {
         if (srcExt == null) {
             Log.addMessage("ERRORE: srcExt nullo");
-            throw new NullPointerException("L'oggetto srcExt non esiste");
+            throw new IllegalArgumentException("L'oggetto srcExt non esiste");
         }
         if (outExt == null) {
             Log.addMessage("ERRORE: outExt nullo");
-            throw new NullPointerException("L'oggetto outExt non esiste");
+            throw new IllegalArgumentException("L'oggetto outExt non esiste");
         }
         if (srcFile == null) {
             Log.addMessage("ERRORE: srcFile nullo");
-            throw new NullPointerException("L'oggetto srcFile non esiste");
+            throw new IllegalArgumentException("L'oggetto srcFile non esiste");
         }
 
         Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
             Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
-            throw new Exception("Conversione non supportata");
+            throw new UnsupportedConversionException(srcExt + " non supportato per la conversione");
         }
 
         Map<String, String> possibleConversions = conversions.get(srcExt);
         String converterClassName = possibleConversions.get(outExt);
         if (converterClassName == null) {
             Log.addMessage("ERRORE: Conversione da " + srcExt + " a " + outExt + " non supportata");
-            throw new Exception("Conversione non supportata");
+            throw new UnsupportedConversionException("Impossibile convertire un file " + srcExt + " in uno " + outExt);
         }
 
         Log.addMessage("Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
@@ -213,9 +248,9 @@ public class Engine {
      * @param file File da spostare
      * @throws IOException Errore sull'istruzione Files.move()
      */
-    private void spostaFile(String outPath, File file) throws IOException {
-        if (file == null) throw new NullPointerException("L'oggetto file non esiste");
-        if (outPath == null) throw new NullPointerException("L'oggetto outPath non esiste");
+    private void spostaFile(String outPath, File file) throws IOException, IllegalArgumentException{
+        if (file == null) throw new IllegalArgumentException("L'oggetto file non esiste");
+        if (outPath == null) throw new IllegalArgumentException("L'oggetto outPath non esiste");
         Path dest = Paths.get(outPath, file.getName());
         Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
         Log.addMessage("File spostato in: " + dest);
