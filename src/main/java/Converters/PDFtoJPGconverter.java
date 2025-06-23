@@ -1,5 +1,7 @@
 package Converters;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import configuration.configHandlers.conversionContext.ConversionContext;
 import converter.Log;
 import converter.Utility;
 import gui.MainViewController;
@@ -69,7 +71,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      */
     @Override
     public ArrayList<File> convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
-        boolean union = MainViewController.launchDialogUnisci();
+        boolean union = (Boolean) ConversionContext.get("union");
         validateInputs(pdfFile, pdfDocument);
 
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
