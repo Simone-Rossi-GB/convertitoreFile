@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * utilizzando Jackson. Supporta la deserializzazione di valori generici (inclusi array)
  * tramite TypeReference, mantenendo il root JSON condiviso attraverso una AtomicReference.
  */
-public interface JsonReader extends JsonUtility {
+public interface JsonReader {
     // Logger per il tracciamento di errori ed eventi
     Logger logger = LogManager.getLogger(JsonReader.class);
 

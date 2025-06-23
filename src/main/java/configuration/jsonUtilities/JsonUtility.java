@@ -1,11 +1,11 @@
 package configuration.jsonUtilities;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configuration.configExceptions.JsonFileNotFoundException;
 import configuration.configExceptions.JsonStructureException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import configuration.jsonUtilities.RecognisedWrappers.RecognisedInput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,23 +17,28 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public interface JsonUtility {
     Logger logger = LogManager.getLogger(JsonUtility.class);
-
     ObjectMapper mapper = new ObjectMapper();
 
-    static void validateJsonFromString(String jsonText) {
-        validateJsonFromString(jsonText, null);
+    static <T extends RecognisedInput> void validateJsonFromStringOrFile(T jsonText) {
+        validateJsonFromStringOrFile(jsonText, null);
     }
 
-    static void validateJsonFromString(String jsonText, List<String> mandatoryEntries) throws JsonStructureException {
-        ObjectMapper mapper = new ObjectMapper();
+    static <T extends RecognisedInput> void validateJsonFromStringOrFile(T json, List<String> mandatoryEntries) throws JsonStructureException {
         if (mandatoryEntries == null){
             mandatoryEntries = new ArrayList<>();
         }
         try {
-            JsonNode root = mapper.readTree(jsonText); // verifica che sia JSON valido
+            JsonNode root;
+            try {
+                File tempFile = json.getValue();
+                root = mapper.readTree(tempFile); // verifica che sia JSON valido
+            } catch (Exception ignored){
+                File tempString = json.getValue();
+                root = mapper.readTree(tempString); // verifica che sia JSON valido
+            }
             List<String> missingEntries = new ArrayList<>();
             for (String entry : mandatoryEntries){
-                if (!root.has(entry)) {
+                if (!root.get("data").has(entry)) {
                     missingEntries.add(entry);
                 }
             }
@@ -41,7 +46,7 @@ public interface JsonUtility {
                 throw new JsonStructureException("JSON mancante di campi obbligatori: "+String.join(", ", missingEntries));
             }
             logger.info("JSON valido");
-        } catch (JsonProcessingException | JsonStructureException e) {
+        } catch (JsonStructureException | IOException e) {
             logger.error("JSON non valido: {}", e.getMessage());
             throw new JsonStructureException("JSON non valido: "+e.getMessage());
         }

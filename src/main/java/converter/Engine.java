@@ -15,6 +15,7 @@ import configuration.configExceptions.JsonWriteException;
 import configuration.configExceptions.NullConfigValueException;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
+import configuration.configHandlers.config.ConfigReader;
 import configuration.configHandlers.conversionContext.ConversionContextWriter;
 import configuration.jsonUtilities.JsonReader;
 import configuration.jsonUtilities.JsonWriter;
@@ -224,7 +225,7 @@ public class Engine {
             throw new IllegalArgumentException("L'oggetto srcFile non esiste");
         }
 
-        Map<String, Map<String, String>> conversions = config.getConversions();
+        Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
             Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
             throw new UnsupportedConversionException(srcExt + " non supportato per la conversione");

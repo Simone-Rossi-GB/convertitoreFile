@@ -1,5 +1,6 @@
 package gui;
 
+import configuration.configHandlers.config.ConfigReader;
 import converter.Engine;
 import converter.Log;
 import org.apache.logging.log4j.Logger;
@@ -128,11 +129,11 @@ public class ConfigWindowController {
     private void loadCurrentConfiguration() {
         try {
             // Carica i campi principali dalla configurazione
-            monitoredDirField.setText(engine.getConverterConfig().getMonitoredDir());
-            successDirField.setText(engine.getConverterConfig().getSuccessOutputDir());
-            errorDirField.setText(engine.getConverterConfig().getErrorOutputDir());
+            monitoredDirField.setText(ConfigReader.getMonitoredDir());
+            successDirField.setText(ConfigReader.getSuccessOutputDir());
+            errorDirField.setText(ConfigReader.getErrorOutputDir());
 
-            monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
+            monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
             monitorAtStartField.setText(String.valueOf(monitorAtStart));
             updateMonitorToggleButton();
 
@@ -382,10 +383,10 @@ public class ConfigWindowController {
     private boolean hasUnsavedChanges() {
         try {
             // Controlla i campi directory
-            String currentMonitored = engine.getConverterConfig().getMonitoredDir();
-            String currentSuccess = engine.getConverterConfig().getSuccessOutputDir();
-            String currentError = engine.getConverterConfig().getErrorOutputDir();
-            boolean currentMonitorAtStart = engine.getConverterConfig().getMonitorAtStart();
+            String currentMonitored = ConfigReader.getMonitoredDir();
+            String currentSuccess = ConfigReader.getSuccessOutputDir();
+            String currentError = ConfigReader.getErrorOutputDir();
+            boolean currentMonitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
             return !currentMonitored.equals(monitoredDirField.getText().trim()) ||
                     !currentSuccess.equals(successDirField.getText().trim()) ||

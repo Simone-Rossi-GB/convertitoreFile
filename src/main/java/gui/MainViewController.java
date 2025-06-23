@@ -1,5 +1,6 @@
 package gui;
 
+import configuration.configHandlers.config.ConfigReader;
 import Converters.exception.IllegalExtensionException;
 import converter.DirectoryWatcher;
 import converter.Log;
@@ -209,14 +210,14 @@ public class MainViewController {
                 launchAlertError("Configurazione non trovata.");
                 return;
             }
-            monitoredFolderPath = engine.getConverterConfig().getMonitoredDir();
+            monitoredFolderPath = ConfigReader.getMonitoredDir();
             checkAndCreateFolder(monitoredFolderPath);
-            convertedFolderPath = engine.getConverterConfig().getSuccessOutputDir();
+            convertedFolderPath = ConfigReader.getSuccessOutputDir();
             checkAndCreateFolder(convertedFolderPath);
-            failedFolderPath = engine.getConverterConfig().getErrorOutputDir();
+            failedFolderPath = ConfigReader.getErrorOutputDir();
             checkAndCreateFolder(failedFolderPath);
             checkAndCreateFolder("src/temp");
-            monitorAtStart = engine.getConverterConfig().getMonitorAtStart();
+            monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
             addLogMessage("Configurazione caricata da config.json");
             addLogMessage("Cartella monitorata: " + monitoredFolderPath);
@@ -404,7 +405,6 @@ public class MainViewController {
             dialog.setTitle("Seleziona Formato");
             dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
             dialog.setContentText("Formato desiderato:");
-
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(chosenFormat -> {
                 new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();

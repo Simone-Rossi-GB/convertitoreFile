@@ -53,8 +53,8 @@ public class ImageConverter extends Converter {
         Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
                 imgFile.getName() + " -> ." + targetFormat);
 
-        List<String> formatsWithAlpha = ConfigReader.getSingleton().readFormatsWithAlphaChannel();
-        List<String> formatsRequiringIntermediate = ConfigReader.getSingleton().readFormatsRequiringIntermediateConversion();
+        List<String> formatsWithAlpha = ConfigReader.getFormatsWithAlphaChannel();
+        List<String> formatsRequiringIntermediate = ConfigReader.getFormatsRequiringIntermediateConversion();
 
         String originalExtension = getExtension(imgFile);
         File outFile;

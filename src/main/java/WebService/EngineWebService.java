@@ -2,6 +2,7 @@ package WebService;
 
 import Converters.Converter;
 import configuration.configHandlers.config.ConfigInstance;
+import configuration.configHandlers.config.ConfigReader;
 import converter.Log;
 import com.google.gson.Gson;
 import java.io.*;
@@ -72,7 +73,7 @@ public class EngineWebService {
             throw new NullPointerException("L'oggetto extension non esiste");
         }
 
-        if (config == null || config.getConversions() == null || !config.getConversions().containsKey(extension)) {
+        if (config == null || ConfigReader.getConversions() == null || !ConfigReader.getConversions().containsKey(extension)) {
             logger.error("WebService: Configurazione mancante o conversione non supportata per: {}", extension);
             Log.addMessage("ERRORE WebService: Configurazione mancante o conversione non supportata per: " + extension);
             throw new Exception("Config assente o conversione non supportata");
@@ -80,7 +81,7 @@ public class EngineWebService {
 
         logger.info("WebService: Formati disponibili per la conversione da {} ottenuti con successo", extension);
         Log.addMessage("WebService: Formati disponibili per la conversione da " + extension + " ottenuti con successo");
-        return new ArrayList<>(config.getConversions().get(extension).keySet());
+        return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
     }
 
 
@@ -120,8 +121,8 @@ public class EngineWebService {
             List<File> outFiles = Collections.emptyList();
 
             // Soluzione: Salva i percorsi originali e li ripristina dopo
-            String originalSuccessDir = config.getSuccessOutputDir();
-            String originalErrorDir = config.getErrorOutputDir();
+            String originalSuccessDir = ConfigReader.getSuccessOutputDir();
+            String originalErrorDir = ConfigReader.getErrorOutputDir();
 
             try {
                 // Crea una sottodirectory per i file convertiti
@@ -266,8 +267,8 @@ public class EngineWebService {
             List<File> outFiles = null;
 
             // Soluzione: Salva i percorsi originali e li ripristina dopo
-            String originalSuccessDir = config.getSuccessOutputDir();
-            String originalErrorDir = config.getErrorOutputDir();
+            String originalSuccessDir = ConfigReader.getSuccessOutputDir();
+            String originalErrorDir = ConfigReader.getErrorOutputDir();
 
             try {
                 // Crea una sottodirectory per i file convertiti
@@ -413,7 +414,7 @@ public class EngineWebService {
             throw new NullPointerException("L'oggetto srcFile non esiste");
         }
 
-        Map<String, Map<String, String>> conversions = config.getConversions();
+        Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
             logger.error("WebService: Conversione da {} non supportata", srcExt);
             Log.addMessage("ERRORE WebService: Conversione da " + srcExt + " non supportata");
