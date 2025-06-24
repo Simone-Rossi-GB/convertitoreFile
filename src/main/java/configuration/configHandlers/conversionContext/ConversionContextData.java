@@ -1,6 +1,7 @@
 package configuration.configHandlers.conversionContext;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import configuration.configHandlers.config.ConfigInstance;
 import configuration.jsonUtilities.JsonData;
 
 import java.io.File;
@@ -20,7 +21,7 @@ public abstract class ConversionContextData implements JsonData {
      * File JSON contenente la configurazione base del contesto di conversione.
      * Viene letto una sola volta all'avvio.
      */
-    private static final File jsonFile = new File("src/main/java/configuration/configFiles/conversionContext.json");
+    private static File jsonFile = new File("src/main/java/configuration/configFiles/conversionContext.json");
 
     /**
      * Nodo radice JSON in cui viene caricato il contenuto del file,
@@ -38,6 +39,14 @@ public abstract class ConversionContextData implements JsonData {
      * Contesto locale per ciascun thread.
      * Ogni thread riceve una copia del template iniziale, garantendo isolamento e integrità dei dati.
      */
-    protected static final ThreadLocal<HashMap<String, Object>> context =
+    protected static ThreadLocal<HashMap<String, Object>> context =
             ThreadLocal.withInitial(() -> new HashMap<>(baseTemplate));
+
+    public static void update(ConversionContextInstance conversionContextInstance) {
+        jsonFile = conversionContextInstance.getJsonFile();
+        context = ThreadLocal.withInitial(() -> JsonData.readData(jsonFile, rootReference));
+    }
+    public static File getJsonFile() {
+        return jsonFile;
+    }
 }
