@@ -100,7 +100,12 @@ public class Engine {
             convertedFiles.add(conversioneSingola(srcExt, outExt, f));
         }
         //zippo i file convertiti
-        return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
+        try {
+            return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
+        } catch (FileMoveException e) {
+            logger.error("Impossibile comprimere i file");
+            throw new IOException(e);
+        }
     }
 
     /**
