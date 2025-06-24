@@ -1,77 +1,51 @@
 {
-  "data": {
-    "mandatoryEntries": [
-      "successOutputDir",
-      "errorOutputDir",
-      "monitoredDir",
-      "monitorAtStart"
-    ],
-    "successOutputDir": "src/output/success",
-    "errorOutputDir": "src/output/error",
-    "monitoredDir": "src/input",
-    "monitorAtStart": true,
-    "multipleConversion": true,
-    "formatsWithAlphaChannel": [
-      "png",
-      "tiff",
-      "gif",
-      "webp",
-      "psd",
-      "icns",
-      "ico",
-      "tga",
-      "iff"
-    ],
-    "formatsRequiringIntermediateConversion": [
-      "webp",
-      "pbm",
-      "pgm",
-      "ppm",
-      "pam",
-      "tga",
-      "iff",
-      "xwd",
-      "icns",
-      "pnm"
-    ],
-    "conversions": {
-      "pdf": {
-        "doc": "converters.pdfConverters.PDFtoDOCconverter",
-        "docx": "converters.pdfConverters.PDFtoDOCXconverter",
-        "jpg": "converters.pdfConverters.PDFtoJPGconverter"
+  "data" : {
+    "mandatoryEntries" : [ "successOutputDir", "errorOutputDir", "monitoredDir", "monitorAtStart" ],
+    "successOutputDir" : "src/output/",
+    "errorOutputDir" : "src/output/error",
+    "monitoredDir" : "src/input",
+    "monitorAtStart" : true,
+    "multipleConversion" : true,
+    "formatsWithAlphaChannel" : [ "png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff" ],
+    "formatsRequiringIntermediateConversion" : [ "webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm" ],
+    "conversions" : {
+      "pdf" : {
+        "doc" : "converters.pdfConverters.PDFtoDOCconverter",
+        "docx" : "converters.pdfConverters.PDFtoDOCXconverter",
+        "jpg" : "converters.pdfConverters.PDFtoJPGconverter"
       },
-      "xls": {
-        "json": "converters.spreadsheetConverters.XLStoJSONconverter"
+      "xls" : {
+        "json" : "converters.spreadsheetConverters.XLStoJSONconverter"
       },
-      "xlsx": {
-        "json": "converters.spreadsheetConverters.XLSXtoJSONconverter"
+      "xlsx" : {
+        "json" : "converters.spreadsheetConverters.XLSXtoJSONconverter"
       },
-      "ods": {
-        "json": "converters.spreadsheetConverters.ODStoJSONconverter"
+      "ods" : {
+        "json" : "converters.spreadsheetConverters.ODStoJSONconverter"
       },
-      "json": {
-        "xls": "converters.jsonCsvConverters.JSONtoXLSconverter",
-        "xlsx": "converters.jsonCsvConverters.JSONtoXLSXconverter",
-        "ods": "converters.jsonCsvConverters.JSONtoODSconverter"
+      "json" : {
+        "xls" : "converters.jsonCsvConverters.JSONtoXLSconverter",
+        "xlsx" : "converters.jsonCsvConverters.JSONtoXLSXconverter",
+        "ods" : "converters.jsonCsvConverters.JSONtoODSconverter"
       },
-      "csv": {
-        "json": "converters.jsonCsvConverters.CSVtoJSONconverter"
+      "csv" : {
+        "json" : "converters.jsonCsvConverters.CSVtoJSONconverter"
       },
-      "eml": {
-        "pdf": "converters.mailConverters.EMLtoPDFconverter"
+      "eml" : {
+        "pdf" : "converters.mailConverters.EMLtoPDFconverter"
       },
-      "txt": {
-        "docx": "converters.txtConverters.TXTtoDOCXconverter",
-        "pdf": "converters.txtConverters.TXTtoPDFconverter"
+      "txt" : {
+        "docx" : "converters.txtConverters.TXTtoDOCXconverter",
+        "pdf" : "converters.txtConverters.TXTtoPDFconverter"
       },
-      "zip": {
-        "tar.gz": "converters.compressedFilesConverters.ZIPtoTARGZconverter"
+      "zip" : {
+        "tar.gz" : "converters.compressedFilesConverters.ZIPtoTARGZconverter"
       },
-      "gz": {
-        "zip": "converters.compressedFilesConverters.TARGZtoZIPconverter"
+      "gz" : {
+        "zip" : "converters.compressedFilesConverters.TARGZtoZIPconverter"
       },
-      "msg": {
-        "pdf": "converters.mailConvertersMSGtoPDFconverter"
+      "msg" : {
+        "pdf" : "converters.mailConvertersMSGtoPDFconverter"
       },
       "bmp": {
         "gif": "converters.imageConverters.GenericImageConverter",
@@ -158,14 +132,14 @@
         "tiff": "converters.imageConverters.GenericImageConverter",
         "webp": "converters.imageConverters.GenericImageConverter"
       },
-      "psd": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "psd" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
       "tiff": {
         "bmp": "converters.imageConverters.GenericImageConverter",
