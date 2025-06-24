@@ -1,13 +1,23 @@
 package webService;
 
+import com.twelvemonkeys.util.convert.ConversionException;
+import configuration.configHandlers.config.ConfigData;
+import configuration.configHandlers.conversionContext.ConversionContextWriter;
+import converter.Utility;
 import converters.Converter;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
 import converter.Log;
 import com.google.gson.Gson;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.util.*;
+
+import converters.Zipper;
+import converters.exception.FileMoveException;
+import converters.exception.FormatsException;
+import converters.exception.UnsupportedConversionException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -16,440 +26,158 @@ import org.apache.logging.log4j.LogManager;
  * Gestisce le conversioni senza spostare automaticamente i file
  */
 public class EngineWebService {
-    private ConfigInstance config;
-    private static final String CONFIG_FILE_PATH = "src/main/java/converter/config/config.json";
     private static final Logger logger = LogManager.getLogger(EngineWebService.class);
 
-    /**
-     * Costruttore: carica il file config.json
-     */
-    public EngineWebService() {
-        setConfig();
-    }
-
-    /**
-     * Carica il file config.json
-     */
-    public void setConfig() {
-        try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
-            Gson gson = new Gson();
-            config = gson.fromJson(reader, ConfigInstance.class);
-            if (config == null) {
-                logger.error("WebService: l'oggetto config non esiste");
-                Log.addMessage("ERRORE WebService: l'oggetto config non esiste");
-                throw new NullPointerException("L'oggetto config non esiste");
-            }
-            logger.info("WebService: Configurazione caricata correttamente da config.json");
-            Log.addMessage("WebService: Configurazione caricata correttamente da config.json");
-        } catch (Exception e) {
-            logger.error("WebService: Lettura del file di configurazione fallita");
-            Log.addMessage("ERRORE WebService: Lettura del file di configurazione fallita");
-            throw new RuntimeException("Errore nella lettura del file di configurazione", e);
-        }
-    }
-
-    /**
-     * Ritorna la stringa che rappresenta il contenuto del json
-     */
-    public String getConfigAsJson() throws Exception {
-        try {
-            logger.info("WebService: Lettura del contenuto di config.json eseguita con successo");
-            Log.addMessage("WebService: Lettura del contenuto di config.json eseguita con successo");
-            return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)));
-        } catch (IOException e) {
-            logger.error("WebService: Lettura del file di configurazione non riuscita");
-            Log.addMessage("ERRORE WebService: Lettura del file di configurazione non riuscita");
-            throw new Exception("Errore nella lettura del file di configurazione: " + e.getMessage(), e);
-        }
-    }
 
     /**
      * Ritorna i formati in cui un file può essere convertito
+     * @param extension Estensione di cui controllare i formati convertibili possibili
+     * @return Lista contenente tutti i formati in cui si puo convertire il file
+     * @throws NullPointerException Se viene passata una stringa nulla o non esiste il config
+     * @throws IllegalArgumentException Non viene passata un'estensione
      */
-    public List<String> getPossibleConversions(String extension) throws Exception {
+    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException, UnsupportedConversionException {
         if (extension == null) {
-            logger.error("WebService: Parametro extension nullo");
-            Log.addMessage("ERRORE WebService: Parametro extension nullo");
-            throw new NullPointerException("L'oggetto extension non esiste");
+            logger.error("Parametro extension nullo");
+            throw new IllegalArgumentException("L'oggetto extension non esiste");
         }
-
-        if (config == null || ConfigReader.getConversions() == null || !ConfigReader.getConversions().containsKey(extension)) {
-            logger.error("WebService: Configurazione mancante o conversione non supportata per: {}", extension);
-            Log.addMessage("ERRORE WebService: Configurazione mancante o conversione non supportata per: " + extension);
-            throw new Exception("Config assente o conversione non supportata");
+        ConfigInstance ci = new ConfigInstance(new File("src/main/java/configuration/configFiles/config.json"));
+        ConfigData.update(ci);
+        if (ConfigReader.getConversions() == null) {
+            logger.error("Configurazione mancante");
+            throw new NullPointerException("Config mancante");
         }
-
-        logger.info("WebService: Formati disponibili per la conversione da {} ottenuti con successo", extension);
-        Log.addMessage("WebService: Formati disponibili per la conversione da " + extension + " ottenuti con successo");
+        if(!ConfigReader.getConversions().containsKey(extension)) {
+            logger.error("Conversione non supportata");
+            throw new UnsupportedConversionException("Formato di partenza non supportato");
+        }
+        logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
         return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
     }
 
 
     /**
-     * Esecuzione conversione per WebService - NON sposta i file automaticamente
+     * Esecuzione conversione
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @throws IOException Errore nello spostamento dei file convertiti
+     * @throws ConversionException Errore nella conversione o nel caricamento del convertitore
+     * @throws FileMoveException Errore nella gestione del file temporaneo
+     * @throws UnsupportedConversionException conversione non supportata
      */
-    // SOSTITUISCI IL METODO executeConversionWebService con questa versione corretta:
-    public File conversione(String srcExt, String outExt, File srcFile, File outputDirectory) throws Exception {
-        String converterClassName = checkParameters(srcExt, outExt, srcFile);
-
-        Class<?> clazz = Class.forName(converterClassName);
-        Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-
-        // Crea directory temporanea per questa conversione specifica
-        Path conversionTempDir = Files.createTempDirectory("webservice_conversion_");
-        logger.info("WebService: Creata directory temporanea: {}", conversionTempDir);
-        Log.addMessage("WebService: Creata directory temporanea: " + conversionTempDir);
-
+    public File conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException,UnsupportedConversionException  {
+        File outFile;
         try {
-            // Copia il file nella directory temporanea
-            Path tempPath = conversionTempDir.resolve(srcFile.getName());
-            Files.copy(srcFile.toPath(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("WebService: Copia del file nella cartella temporanea: {}", tempPath);
-            Log.addMessage("WebService: Copia del file nella cartella temporanea: " + tempPath);
-            File tempFile = tempPath.toFile();
-
-            // Rinomina il file con suffisso per evitare conflitti
-
-            // SALVA IL NOME DEL FILE TEMPORANEO PER USO NELLA LAMBDA (FINAL)
-            final String tempFileName = tempFile.getName();
-
-            logger.info("WebService: Avvio conversione con: {}", converterClassName);
-            Log.addMessage("WebService: Avvio conversione con: " + converterClassName);
-            System.out.println("WebService: File input: " + tempFile.getAbsolutePath());
-            System.out.println("WebService: Directory temp: " + conversionTempDir.toAbsolutePath());
-
-            List<File> outFiles = Collections.emptyList();
-
-            // Soluzione: Salva i percorsi originali e li ripristina dopo
-            String originalSuccessDir = ConfigReader.getSuccessOutputDir();
-            String originalErrorDir = ConfigReader.getErrorOutputDir();
-
-            try {
-                // Crea una sottodirectory per i file convertiti
-                Path tempOutputDir = conversionTempDir.resolve("output");
-                Files.createDirectories(tempOutputDir);
-
-                System.setProperty("webservice.temp.output", tempOutputDir.toString());
-                outFiles.add(converter.convert(tempFile));
-
-
-                // Se il converter non ha prodotto file, proviamo a cercarli nella directory di successo dell'engine
-                if (outFiles == null || outFiles.isEmpty()) {
-                    logger.warn("WebService: Il converter non ha restituito file, cerco nella directory di successo...");
-                    Log.addMessage("WebService: Il converter non ha restituito file, cerco nella directory di successo...");
-
-                    // Cerca i file nella directory di successo dell'engine
-                    File successDir = new File(originalSuccessDir);
-                    if (successDir.exists() && successDir.isDirectory()) {
-                        File[] potentialFiles = successDir.listFiles((dir, name) ->
-                                name.toLowerCase().endsWith("." + outExt.toLowerCase())
-                        );
-
-                        if (potentialFiles != null && potentialFiles.length > 0) {
-                            // Ordina per data di modifica (più recente prima)
-                            Arrays.sort(potentialFiles, (a, b) ->
-                                    Long.compare(b.lastModified(), a.lastModified())
-                            );
-
-                            outFiles = Arrays.asList(potentialFiles);
-                            logger.info("WebService: Trovati {} file nella directory di successo", outFiles.size());
-                            Log.addMessage("WebService: Trovati " + outFiles.size() + " file nella directory di successo");
-                        }
-                    }
-
-                    // Se ancora non troviamo file, cerca nella directory temporanea
-                    if (outFiles == null || outFiles.isEmpty()) {
-                        logger.warn("WebService: Cerco file nella directory temporanea...");
-                        Log.addMessage("WebService: Cerco file nella directory temporanea...");
-
-                        // USA LA VARIABILE FINAL tempFileName INVECE DI tempFile.getName()
-                        File[] tempFiles = conversionTempDir.toFile().listFiles((dir, name) ->
-                                name.toLowerCase().endsWith("." + outExt.toLowerCase()) &&
-                                        !name.equals(tempFileName)  // ← CORRETTO: usa tempFileName (final)
-                        );
-
-                        if (tempFiles != null && tempFiles.length > 0) {
-                            outFiles = Arrays.asList(tempFiles);
-                            logger.info("WebService: Trovati {} file nella directory temporanea", outFiles.size());
-                            Log.addMessage("WebService: Trovati " + outFiles.size() + " file nella directory temporanea");
-                        }
-                    }
-                }
-
-            } finally {
-                // Ripristina le directory originali (se fossero state modificate)
-                System.clearProperty("webservice.temp.output");
-            }
-
-            // Elimina il file temporaneo di input
-            Files.deleteIfExists(tempFile.toPath());
-            logger.info("WebService: File temporaneo di input eliminato: {}", tempFile.getPath());
-            Log.addMessage("WebService: File temporaneo di input eliminato: " + tempFile.getPath());
-
-            // Verifica che abbiamo almeno un file di output
-            if (outFiles == null || outFiles.isEmpty()) {
-                throw new Exception("Il converter non ha prodotto file di output validi");
-            }
-
-            // Prende il primo file convertito (o l'unico nel caso di merge)
-            File convertedFile = outFiles.get(0);
-            logger.info("WebService: File convertito trovato: {}", convertedFile.getAbsolutePath());
-            Log.addMessage("WebService: File convertito trovato: " + convertedFile.getAbsolutePath());
-
-            // Rimuove il suffisso dal nome se presente
-            String cleanName = convertedFile.getName().replaceAll("-\\$\\$.*?\\$\\$-", "");
-            File finalOutputFile = new File(outputDirectory, cleanName);
-
-            // Sposta il file convertito nella directory di output specificata
-            Files.move(convertedFile.toPath(), finalOutputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            logger.info("WebService: File convertito spostato in: {}", finalOutputFile.getAbsolutePath());
-            Log.addMessage("WebService: File convertito spostato in: " + finalOutputFile.getAbsolutePath());
-
-            // Pulizia: elimina eventuali altri file di output
-            for (int i = 1; i < outFiles.size(); i++) {
-                try {
-                    Files.deleteIfExists(outFiles.get(i).toPath());
-                } catch (Exception e) {
-                    logger.error("WebService: Errore eliminazione file extra: {}", e.getMessage());
-                    Log.addMessage("WebService: Errore eliminazione file extra: " + e.getMessage());
-                }
-            }
-
-            logger.info("WebService: Conversione completata con successo: " + srcFile.getName() + " -> " + finalOutputFile.getName());
-            Log.addMessage("WebService: Conversione completata con successo: " + srcFile.getName() + " -> " + finalOutputFile.getName());
-            return finalOutputFile;
-
-        } catch (Exception e) {
-            logger.error("ERRORE WebService: Errore durante la conversione del file {}: {}", srcFile.getName(), e.getMessage());
-            Log.addMessage("ERRORE WebService: Errore durante la conversione del file " + srcFile.getName() + ": " + e.getMessage());
-            throw new Exception("Errore durante la conversione: " + e.getMessage(), e);
-        } finally {
-            // Pulizia finale: elimina la directory temporanea e tutto il suo contenuto
-            try {
-                deleteDirectoryRecursively(conversionTempDir);
-                logger.info("WebService: Directory temporanea eliminata: {}", conversionTempDir);
-                Log.addMessage("WebService: Directory temporanea eliminata: " + conversionTempDir);
-            } catch (Exception e) {
-                logger.error("WebService: Errore eliminazione directory temporanea: {}", e.getMessage());
-                Log.addMessage("WebService: Errore eliminazione directory temporanea: " + e.getMessage());
-            }
-        }
-    }
-
-    private File executeConversionWebService(String srcExt, String outExt, File srcFile, String extraParam, Boolean union) throws Exception {
-        String converterClassName = checkParameters(srcExt, outExt, srcFile);
-
-        Class<?> clazz = Class.forName(converterClassName);
-        Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
-
-        // Crea directory temporanea per questa conversione specifica
-        Path conversionTempDir = Files.createTempDirectory("webservice_conversion_");
-        logger.info("WebService: Creata directory temporanea: {}", conversionTempDir);
-        Log.addMessage("WebService: Creata directory temporanea: " + conversionTempDir);
-
-        try {
-            // Copia il file nella directory temporanea
-            Path tempPath = conversionTempDir.resolve(srcFile.getName());
-            Files.copy(srcFile.toPath(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("WebService: Copia del file nella cartella temporanea: {}", tempPath);
-            Log.addMessage("WebService: Copia del file nella cartella temporanea: " + tempPath);
-            File tempFile = tempPath.toFile();
-
-            // Rinomina il file con suffisso per evitare conflitti
-            // SALVA IL NOME DEL FILE TEMPORANEO PER USO NELLA LAMBDA (FINAL)
-            final String tempFileName = tempFile.getName();
-
-            logger.info("WebService: Avvio conversione con: {}", converterClassName);
-            Log.addMessage("WebService: Avvio conversione con: " + converterClassName);
-            System.out.println("WebService: File input: " + tempFile.getAbsolutePath());
-            System.out.println("WebService: Directory temp: " + conversionTempDir.toAbsolutePath());
-
-            List<File> outFiles = null;
-
-            // Soluzione: Salva i percorsi originali e li ripristina dopo
-            String originalSuccessDir = ConfigReader.getSuccessOutputDir();
-            String originalErrorDir = ConfigReader.getErrorOutputDir();
-
-            try {
-                // Crea una sottodirectory per i file convertiti
-                Path tempOutputDir = conversionTempDir.resolve("output");
-                Files.createDirectories(tempOutputDir);
-
-                System.setProperty("webservice.temp.output", tempOutputDir.toString());
-
-                outFiles.add(converter.convert(tempFile));
-
-                System.out.println("WebService: File di output dal converter: " + outFiles);
-
-                // Se il converter non ha prodotto file, proviamo a cercarli nella directory di successo dell'engine
-                if (outFiles == null || outFiles.isEmpty()) {
-                    logger.warn("WebService: Il converter non ha restituito file, cerco nella directory di successo...");
-                    Log.addMessage("WebService: Il converter non ha restituito file, cerco nella directory di successo...");
-
-                    // Cerca i file nella directory di successo dell'engine
-                    File successDir = new File(originalSuccessDir);
-                    if (successDir.exists() && successDir.isDirectory()) {
-                        File[] potentialFiles = successDir.listFiles((dir, name) ->
-                                name.toLowerCase().endsWith("." + outExt.toLowerCase())
-                        );
-
-                        if (potentialFiles != null && potentialFiles.length > 0) {
-                            // Ordina per data di modifica (più recente prima)
-                            Arrays.sort(potentialFiles, (a, b) ->
-                                    Long.compare(b.lastModified(), a.lastModified())
-                            );
-
-                            outFiles = Arrays.asList(potentialFiles);
-                            logger.info("WebService: Trovati {} file nella directory di successo", outFiles.size());
-                            Log.addMessage("WebService: Trovati " + outFiles.size() + " file nella directory di successo");
-                        }
-                    }
-
-                    // Se ancora non troviamo file, cerca nella directory temporanea
-                    if (outFiles == null || outFiles.isEmpty()) {
-                        logger.info("WebService: Cerco file nella directory temporanea...");
-                        Log.addMessage("WebService: Cerco file nella directory temporanea...");
-
-                        // USA LA VARIABILE FINAL tempFileName INVECE DI tempFile.getName()
-                        File[] tempFiles = conversionTempDir.toFile().listFiles((dir, name) ->
-                                name.toLowerCase().endsWith("." + outExt.toLowerCase()) &&
-                                        !name.equals(tempFileName)  // ← CORRETTO: usa tempFileName (final)
-                        );
-
-                        if (tempFiles != null && tempFiles.length > 0) {
-                            outFiles = Arrays.asList(tempFiles);
-                            logger.info("WebService: Trovati {} file nella directory temporanea", outFiles.size());
-                            Log.addMessage("WebService: Trovati " + outFiles.size() + " file nella directory temporanea");
-                        }
-                    }
-                }
-
-            } finally {
-                // Ripristina le directory originali (se fossero state modificate)
-                System.clearProperty("webservice.temp.output");
-            }
-
-            // Elimina il file temporaneo di input
-            Files.deleteIfExists(tempFile.toPath());
-            logger.info("WebService: File temporaneo di input eliminato: {}", tempFile.getPath());
-            Log.addMessage("WebService: File temporaneo di input eliminato: " + tempFile.getPath());
-
-            // Verifica che abbiamo almeno un file di output
-            if (outFiles == null || outFiles.isEmpty()) {
-                throw new Exception("Il converter non ha prodotto file di output validi");
-            }
-
-            // Prende il primo file convertito (o l'unico nel caso di merge)
-            File convertedFile = outFiles.get(0);
-            logger.info("WebService: File convertito trovato: {}", convertedFile.getAbsolutePath());
-            Log.addMessage("WebService: File convertito trovato: " + convertedFile.getAbsolutePath());
-
-            // Rimuove il suffisso dal nome se presente
-
-            // Sposta il file convertito nella directory di output specificata
-            Files.move(convertedFile.toPath(), convertedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            logger.info("WebService: File convertito spostato in: {}", convertedFile.getAbsolutePath());
-            Log.addMessage("WebService: File convertito spostato in: " + convertedFile.getAbsolutePath());
-
-            // Pulizia: elimina eventuali altri file di output
-            for (int i = 1; i < outFiles.size(); i++) {
-                try {
-                    Files.deleteIfExists(outFiles.get(i).toPath());
-                } catch (Exception e) {
-                    logger.error("WebService: Errore eliminazione file extra: {}", e.getMessage());
-                    Log.addMessage("WebService: Errore eliminazione file extra: " + e.getMessage());
-                }
-            }
-
-            logger.info("WebService: Conversione completata con successo: {} -> {}", srcFile.getName(), convertedFile.getName());
-            Log.addMessage("WebService: Conversione completata con successo: " + srcFile.getName() + " -> " + convertedFile.getName());
-            return convertedFile;
-
-        } catch (Exception e) {
-            logger.error("WebService: Errore durante la conversione del file {}: {}", srcFile.getName(), e.getMessage());
-            Log.addMessage("ERRORE WebService: Errore durante la conversione del file " + srcFile.getName() + ": " + e.getMessage());
-            throw new Exception("Errore durante la conversione: " + e.getMessage(), e);
-        } finally {
-            // Pulizia finale: elimina la directory temporanea e tutto il suo contenuto
-            try {
-                deleteDirectoryRecursively(conversionTempDir);
-                logger.info("WebService: Directory temporanea eliminata: {}", conversionTempDir);
-                Log.addMessage("WebService: Directory temporanea eliminata: " + conversionTempDir);
-            } catch (Exception e) {
-                logger.error("WebService: Errore eliminazione directory temporanea: {}", e.getMessage());
-                Log.addMessage("WebService: Errore eliminazione directory temporanea: " + e.getMessage());
-            }
+            //Controlla se deve eseguire una conversione multipla
+            if(ConfigReader.getIsMultipleConversionEnabled() && converter.Utility.getExtension(srcFile).equals("zip"))
+                outFile = conversioneMultipla(srcExt, outExt, srcFile);
+            else
+                outFile = conversioneSingola(srcExt, outExt, srcFile);
+            return outFile;
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            throw new ConversionException("Errore nel caricamento del convertitore");
+        }catch (IOException e){
+            throw new FileMoveException("Errore nella gestione del file temporaneo");
+        } catch (FormatsException e){
+            throw new UnsupportedConversionException(e.getMessage());
         }
     }
 
     /**
-     * Elimina ricorsivamente una directory e tutto il suo contenuto
+     *
+     * @param srcExt formato di partenza
+     * @param outExt formato di output
+     * @param srcFile file di partenza
+     * @return file convertiti zippati
+     * @throws ClassNotFoundException convertitore non trovato
+     * @throws NoSuchMethodException metodo di conversione non trovato
+     * @throws InvocationTargetException impossibile istanziare il convertitore
+     * @throws InstantiationException classe astratta
+     * @throws IllegalAccessException costruttore del convertitore non accessibile
+     * @throws IOException errore nella gestione del file temp o dello zip
      */
-    private void deleteDirectoryRecursively(Path directory) throws IOException {
-        if (Files.exists(directory)) {
-            Files.walk(directory)
-                    .sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
+        ArrayList<File> convertedFiles = new ArrayList<>();
+        for (File f : zippedFiles){
+            convertedFiles.add(conversioneSingola(srcExt, outExt, f));
         }
+        //zippo i file convertiti
+        return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
+    }
+
+    /**
+     * Effettua la conversione del singolo file
+     * @param srcExt formato di partenza
+     * @param outExt formato di output
+     * @param srcFile file di partenza
+     * @return file convertito
+     * @throws ClassNotFoundException convertitore non trovato
+     * @throws NoSuchMethodException metodo di conversione non trovato
+     * @throws InvocationTargetException impossibile istanziare il convertitore
+     * @throws InstantiationException classe astratta
+     * @throws IllegalAccessException costruttore del convertitore non accessibile
+     * @throws IOException errore nella gestione del file temp
+     */
+    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+        //Istanzia il convertitore adatto
+        String converterClassName = checkParameters(srcExt, outExt, srcFile);
+        Class<?> clazz = Class.forName(converterClassName);
+        Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
+        File outFile;
+        //Crea un file temp per la conversione
+        File tempFile = new File("src/temp", srcFile.getName());
+        System.out.println("Oggetto temp creato");
+        Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        //Elimina il file temp al termine del'applicazione
+        tempFile.deleteOnExit();
+        ConversionContextWriter.setDestinationFormat(outExt);
+        try {
+            outFile = converter.conversione(tempFile);
+        } catch (Exception e) {
+            throw new ConversionException(e.getMessage());
+        }
+        Files.deleteIfExists(tempFile.toPath());
+        return outFile;
     }
 
     /**
      * Controllo dell'esistenza dei parametri
+     * @param srcExt Estensione file iniziale
+     * @param outExt Estensione file finale
+     * @param srcFile File iniziale
+     * @throws IllegalArgumentException Parametri null
+     * @throws UnsupportedConversionException conversione non supportata
      */
-    private String checkParameters(String srcExt, String outExt, File srcFile) throws Exception {
+    private String checkParameters(String srcExt, String outExt, File srcFile) throws IllegalArgumentException, UnsupportedConversionException {
         if (srcExt == null) {
-            logger.error("WebService: srcExt nullo");
-            Log.addMessage("ERRORE WebService: srcExt nullo");
-            throw new NullPointerException("L'oggetto srcExt non esiste");
+            Log.addMessage("ERRORE: srcExt nullo");
+            throw new IllegalArgumentException("L'oggetto srcExt non esiste");
         }
         if (outExt == null) {
-            logger.error("WebService: outExt nullo");
-            Log.addMessage("ERRORE WebService: outExt nullo");
-            throw new NullPointerException("L'oggetto outExt non esiste");
+            Log.addMessage("ERRORE: outExt nullo");
+            throw new IllegalArgumentException("L'oggetto outExt non esiste");
         }
         if (srcFile == null) {
-            logger.error("WebService: srcFile nullo");
-            Log.addMessage("ERRORE WebService: srcFile nullo");
-            throw new NullPointerException("L'oggetto srcFile non esiste");
+            Log.addMessage("ERRORE: srcFile nullo");
+            throw new IllegalArgumentException("L'oggetto srcFile non esiste");
         }
 
         Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
-            logger.error("WebService: Conversione da {} non supportata", srcExt);
-            Log.addMessage("ERRORE WebService: Conversione da " + srcExt + " non supportata");
-            throw new Exception("Conversione non supportata");
+            Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
+            throw new UnsupportedConversionException(srcExt + " non supportato per la conversione");
         }
 
         Map<String, String> possibleConversions = conversions.get(srcExt);
         String converterClassName = possibleConversions.get(outExt);
         if (converterClassName == null) {
-            logger.error("WebService: Conversione da {} a {} non supportata", srcExt, outExt);
-            Log.addMessage("ERRORE WebService: Conversione da " + srcExt + " a " + outExt + " non supportata");
-            throw new Exception("Conversione non supportata");
+            Log.addMessage("ERRORE: Conversione da " + srcExt + " a " + outExt + " non supportata");
+            throw new UnsupportedConversionException("Impossibile convertire un file " + srcExt + " in uno " + outExt);
         }
 
-        logger.info("WebService: Parametri validi. Conversione da {} a {} tramite {}", srcExt, outExt, converterClassName);
-        Log.addMessage("WebService: Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
+        Log.addMessage("Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
         return converterClassName;
     }
-
-
-    /**
-     * Rinomina il file passato a quello di destinazione
-     */
-    public static void rinominaFile(File startFile, File destFile) throws Exception {
-        if (!startFile.renameTo(destFile)) {
-            logger.error("WebService: Rinomina file pre-convert fallita: {} -> {}", startFile.getName(), destFile.getName());
-            Log.addMessage("ERRORE WebService: Rinomina file pre-convert fallita: " + startFile.getName() + " -> " + destFile.getName());
-            throw new Exception("Rinomina file pre-convert fallita");
-        }
-
-        logger.info("WebService: Rinomina file: {} -> {}", startFile.getName(), destFile.getName());
-        Log.addMessage("WebService: Rinomina file: " + startFile.getName() + " -> " + destFile.getName());
-    }
-
-//    public boolean canBeConverted(String extension, String password) {
-//
-//    }
 }

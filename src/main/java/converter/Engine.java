@@ -24,7 +24,6 @@ import org.apache.logging.log4j.LogManager;
 
 
 public class Engine {
-    private ConfigInstance config;
     private static final Logger logger = LogManager.getLogger(Engine.class);
 
     /**
@@ -78,6 +77,7 @@ public class Engine {
             spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
             throw new ConversionException("Errore nel caricamento del convertitore");
         }catch (IOException e){
+            e.printStackTrace();
             spostaFile(ConfigReader.getErrorOutputDir(), srcFile);
             throw new FileMoveException("Errore nella gestione del file temporaneo");
         } catch (FormatsException e){
@@ -140,6 +140,7 @@ public class Engine {
             throw new ConversionException(e.getMessage());
         }
         Files.deleteIfExists(tempFile.toPath());
+
         return outFile;
     }
 

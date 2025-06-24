@@ -66,7 +66,7 @@ public class Zipper {
      */
     public static ArrayList<File> unzip(File zipFile) throws IOException {
         ArrayList<File> extractedFiles = new ArrayList<>();
-        File outputDir = new File("src/temp/");
+        File outputDir = new File(zipFile.getParent());
 
         // Crea la cartella di output se non esiste
         if (!outputDir.exists()) {
@@ -113,11 +113,10 @@ public class Zipper {
     public static File compressioneFile(ArrayList<File> files, String baseName) throws IOException {
         logger.info("Compressione dei file generati in output");
         //Crea il file zip
-        File zippedImages = zip(files);
+        File zippedFiles = zip(files);
         //Assegna al file il nome voluto
-        zippedImages = rinominaFileZip(zippedImages, baseName);
-        logger.info("Compressione completata");
-        return zippedImages;
+        zippedFiles = rinominaFileZip(zippedFiles, baseName);
+        return zippedFiles;
     }
 
     /**
@@ -147,6 +146,7 @@ public class Zipper {
         try {
             //sostituisce nel percorso indicato il file di partenza, che ora avrà il nome desiderato
             Files.move(zipFile.toPath(), renamedZip.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println(renamedZip.getName());
             return renamedZip;
         } catch (IOException e) {
             logger.error("Impossibile rinominare il file ZIP: {}", e.getMessage(), e);

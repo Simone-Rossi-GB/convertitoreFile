@@ -16,7 +16,6 @@ public class WebServiceApplication {
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
             logger.trace("Web Service: Web Service avviato su porta 8080");
-            System.out.println("Web Service avviato su porta 8080");
         }
     }
 
@@ -24,7 +23,6 @@ public class WebServiceApplication {
         if (context != null && context.isActive()) {
             context.close();
             logger.trace("Web Service: Web Service fermato");
-            System.out.println("Web Service fermato");
         }
     }
 

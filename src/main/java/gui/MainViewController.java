@@ -3,6 +3,7 @@ package gui;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
+import configuration.configHandlers.conversionContext.ConversionContextReader;
 import converters.exception.IllegalExtensionException;
 import converter.DirectoryWatcher;
 import converter.Log;
@@ -38,6 +39,8 @@ import java.nio.file.StandardCopyOption;
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
 
+import javax.xml.ws.WebServiceException;
+
 /**
  * Controller principale della UI per la gestione del monitoraggio cartelle e conversione file.
  */
@@ -71,7 +74,6 @@ public class MainViewController {
     private Button conversioniFalliteBtn;
 
     // Riferimento all'applicazione principale
-    private MainApp mainApp;
     private static final Logger logger = LogManager.getLogger(MainViewController.class);
 
     // Variabili di stato
@@ -90,6 +92,7 @@ public class MainViewController {
     private Engine engine;
     private Thread watcherThread;
     private final String configFile = "src/main/java/configuration/configFiles/config.json";
+    private MainApp mainApp;
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -107,9 +110,9 @@ public class MainViewController {
         Log.addMessage("Caricamento configurazione...");
 
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
-
+        ConfigInstance ci = new ConfigInstance(new File(configFile));
+        ConfigData.update(ci);
         loadConfiguration();
-
         if (monitorAtStart) {
             toggleMonitoring();
         }
@@ -209,8 +212,6 @@ public class MainViewController {
             launchAlertError("Engine non inizializzato.");
             return;
         }
-        ConfigInstance ci = new ConfigInstance(new File(configFile));
-        ConfigData.update(ci);
         monitoredFolderPath = ConfigReader.getMonitoredDir();
         checkAndCreateFolder(monitoredFolderPath);
         convertedFolderPath = ConfigReader.getSuccessOutputDir();
@@ -407,16 +408,16 @@ public class MainViewController {
             if (webServiceClient.isServiceAvailable()) {
                 try {
                     formats = webServiceClient.getPossibleConversions(srcExtension);
-                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
-                } catch (Exception wsError) {
-                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
+                    logger.info("Formati ottenuti da web service per " + srcFile.getName());
+                } catch (WebServiceException wsError) {
+                    logger.error(wsError.getMessage());
                     formats = engine.getPossibleConversions(srcExtension);
                 }
             } else {
-                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
+                logger.warn("Web service non disponibile, uso engine locale per " + srcFile.getName());
                 formats = engine.getPossibleConversions(srcExtension);
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             launchAlertError(e.getMessage());
             Platform.runLater(() -> {
                 fileScartati++;
@@ -442,58 +443,43 @@ public class MainViewController {
     }
 
     private void performConversionWithFallback(File srcFile, String targetFormat, String srcExtension) {
+        String outputFileName;
+        if(ConversionContextReader.getIsZippedOutput())
+            outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + ".zip";
+        else
+            outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
 
-        String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
 
         try {
-
-
-
             // PRIMO TENTATIVO: USA WEBSERVICE
             boolean webServiceSuccess = false;
             if (webServiceClient.isServiceAvailable()) {
-                try {
-                    addLogMessage("Tentativo conversione tramite web service...");
-                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile/*, password, mergeImages*/);
+                logger.info("Tentativo conversione tramite web service...");
+                ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
 
-                    if (result.isSuccess()) {
-                        // Verifica che il file convertito sia stato effettivamente salvato
-                        if (outputDestinationFile.exists()) {
-                            addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
-                            webServiceSuccess = true;
-                        } else {
-                            throw new Exception("Il file convertito non è stato salvato correttamente dal web service");
-                        }
-                    } else {
-                        throw new Exception("Web service ha restituito errore: " + result.getError());
-                    }
-                } catch (Exception wsError) {
-                    addLogMessage("Web service fallito: " + wsError.getMessage());
-                    webServiceSuccess = false;
-
-                    // Pulisci eventuale file parzialmente creato
+                if (result.isSuccess()) {
+                    // Verifica che il file convertito sia stato effettivamente salvato
                     if (outputDestinationFile.exists()) {
-                        try {
-                            Files.delete(outputDestinationFile.toPath());
-                            addLogMessage("File parziale eliminato per retry con engine locale");
-                        } catch (Exception cleanupError) {
-                            addLogMessage("Errore pulizia file parziale: " + cleanupError.getMessage());
-                        }
+                        addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                        webServiceSuccess = true;
+                    } else {
+                        launchAlertError("Il file convertito non è stato salvato correttamente dal web service");
                     }
+                } else {
+                    launchAlertError("Web service ha restituito errore: " + result.getError());
                 }
             } else {
-                addLogMessage("Web service non disponibile, passo direttamente a engine locale");
+                logger.warn("Web service non disponibile, passo direttamente a engine locale");
             }
 
             // SECONDO TENTATIVO: USA ENGINE LOCALE (solo se webservice fallito)
             if (!webServiceSuccess) {
-                addLogMessage("Fallback: uso engine locale per conversione...");
+                logger.warn("Fallback: uso engine locale per conversione...");
 
                 try {
                     engine.conversione(srcExtension, targetFormat, srcFile);
-
-                    addLogMessage("Conversione ENGINE LOCALE riuscita");
+                    logger.info("Conversione ENGINE LOCALE riuscita");
 
                     // Per l'engine locale, il file originale è già stato gestito automaticamente
                     Platform.runLater(() -> {
@@ -538,10 +524,10 @@ public class MainViewController {
             if (originalFile.exists()) {
                 // Elimina il file originale dalla cartella monitorata
                 Files.delete(originalFile.toPath());
-                addLogMessage("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
+                logger.info("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
             }
         } catch (Exception e) {
-            addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
+            logger.error("Errore nella gestione del file originale: " + e.getMessage());
         }
     }
 
@@ -552,10 +538,10 @@ public class MainViewController {
                 Path srcPath = originalMonitoredFile.toPath();
                 Path destPath = Paths.get(failedFolderPath, originalMonitoredFile.getName());
                 Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                addLogMessage("File originale spostato in cartella errori: " + destPath);
+                logger.info("File originale spostato in cartella errori: " + destPath);
             }
         } catch (Exception e) {
-            addLogMessage("Errore nello spostamento file originale in cartella errori: " + e.getMessage());
+            logger.error("Errore nello spostamento file originale in cartella errori: " + e.getMessage());
         }
     }
 

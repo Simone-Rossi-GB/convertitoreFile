@@ -447,7 +447,26 @@
             <artifactId>xercesImpl</artifactId>
             <version>2.12.2</version>
         </dependency>
+        <!-- Core parser library -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.28.5</version>
+        </dependency>
 
+        <!-- General content detection and parsing -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.28.5</version>
+        </dependency>
+
+        <!-- (Facoltativo) App per eseguire Tika CLI -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-app</artifactId>
+            <version>1.28.5</version>
+        </dependency>
     </dependencies>
 
     <build>
