@@ -1,268 +1,201 @@
 package converters.jsonCsvConverters;
 
 import converters.Converter;
-import converters.exception.ConversionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
+import java.util.*;
 
 public class JSONtoXLSconverter extends Converter {
     public static final Logger logger = LogManager.getLogger(JSONtoXLSconverter.class);
+    private final TreeMap<String, Short> coloriCelle = new TreeMap<>();
+
+    private boolean reverseOrder = true; // Flag per determinare la direzione
+    private String mapFollower; // Contatore per l'indice dei colori
+    private boolean[] flagElementi; // Array di flag per controllare gli elementi
+
+    private void colorBuilding() {
+        // Popola la mappa coloriCelle con i valori forniti
+        coloriCelle.put("06065D", IndexedColors.BLUE.getIndex());
+        coloriCelle.put("0504AA", IndexedColors.INDIGO.getIndex());
+        coloriCelle.put("2337C6", IndexedColors.BLUE_GREY.getIndex());
+        coloriCelle.put("395A7F", IndexedColors.GREY_40_PERCENT.getIndex());
+        coloriCelle.put("4169E1", IndexedColors.ROYAL_BLUE.getIndex());
+        coloriCelle.put("0A9396", IndexedColors.TEAL.getIndex());
+        coloriCelle.put("90E0EF", IndexedColors.LIGHT_BLUE.getIndex());
+        coloriCelle.put("C4C4DF", IndexedColors.LAVENDER.getIndex());
+        coloriCelle.put("FFFFFF", IndexedColors.WHITE.getIndex());
+    }
+
 
     @Override
-    public File convert(File srcFile) throws Exception, ConversionException {
-        logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
-
-        if (controlloFileNonVuoto(srcFile)) {
-            File validJsonFile = ensureJSONArrayFormat(srcFile);
-            logger.info("File convertito correttamente");
-            return convertJSONtoXLS(validJsonFile, srcFile);
-        } else {
-            logger.error("File convertito alla lista: {}", srcFile.getPath());
-            throw new ConversionException("File vuoto o corrotto");
-        }
-    }
-
-
-    //controlla che il file non sia vuoto
-    private boolean controlloFileNonVuoto(File srcFile) {
-        return srcFile.length() > 0;
-    }
-
-    //va a controllare nel caso il json non abbia le quadre, gliele aggiunge e gestisce come array json
-    private File ensureJSONArrayFormat(File jsonFile) throws IOException {
-        String content = new String(java.nio.file.Files.readAllBytes(jsonFile.toPath())).trim();
-        boolean startsWithBracket = content.startsWith("[");
-        boolean endsWithBracket = content.endsWith("]");
-
-        if (!startsWithBracket || !endsWithBracket) {
-            content = "[" + content;
-            if (!endsWithBracket) {
-                content += "]";
-            }
-            File tempFile = File.createTempFile("fixed-json-", ".json");
-            try (FileWriter fw = new FileWriter(tempFile)) {
-                fw.write(content);
-            }
-            return tempFile;
-        }
-        return jsonFile;
-    }
-
-    //conversione del file, richiama il metodo writeJSONObject per la scrittura sul foglio
-    private File convertJSONtoXLS(File jsonFile, File srcFile) throws IOException {
-        File result;
-        String content = new String(java.nio.file.Files.readAllBytes(jsonFile.toPath()));
-        JSONArray jsonArray = new JSONArray(content);
-
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("JSON");
-
-        CellStyle blueStyle = createStyle(workbook, IndexedColors.BLUE, true, true); // chiavi oggetti annidati
-        short customColorIndex = IndexedColors.LAVENDER.getIndex();
-        ((HSSFWorkbook) workbook).getCustomPalette().setColorAtIndex(customColorIndex, (byte) 0x50, (byte) 0x4A, (byte) 0xAB);
-        CellStyle lightBlueStyle = createStyle(workbook, IndexedColors.LAVENDER, false, true); // valori
-        CellStyle datiStyle = createStyle(workbook, IndexedColors.GREY_25_PERCENT, true, true);
-        CellStyle objectKeyStyle = createStyle(workbook, IndexedColors.WHITE, true, true); // oggetti contenitori
-
-        int rowIndex = 0;
-        boolean useBlue = true;
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Object entry = jsonArray.get(i);
-
-            if (entry instanceof JSONObject) {
-                JSONObject obj = (JSONObject) entry;
-
-                if (obj.isEmpty()) {
-                    Row row = sheet.createRow(rowIndex);
-                    Cell cell = row.createCell(0);
-                    cell.setCellValue("DATI");
-                    cell.setCellStyle(datiStyle);
-                    CellRangeAddress newRegion = new CellRangeAddress(rowIndex, rowIndex, 0, 1);
-                    if (!isOverlappingMergedRegion(sheet, newRegion)) {
-                        sheet.addMergedRegion(newRegion);
-                    }
-                    rowIndex++;
-                    continue;
-                }
-
-                rowIndex = writeJSONObject(obj, sheet, rowIndex, lightBlueStyle, objectKeyStyle, blueStyle, lightBlueStyle);
-                rowIndex += 2; // spazio tra oggetti
-                useBlue = !useBlue; // alterna colore
-            }
+    public File convert(File srcFile) throws IOException {
+        colorBuilding();
+        if (!srcFile.exists() || !srcFile.isFile()) {
+            logger.error("File non valido");
+            throw new IOException("Il file JSON non esiste o non è valido.");
         }
 
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
+        // Leggi il file JSON
+        String jsonContent = readJsonFile(srcFile);
+        JSONArray jsonArray = new JSONArray(jsonContent);
 
-        File outDir = new File("output");
-        if (!outDir.exists()) outDir.mkdirs();
-        // Usa il nome del file sorgente, cambiando solo estensione
-        String baseName = srcFile.getName().replaceFirst("(?i)\\.json$", "");
-        File xlsFile = new File(outDir, baseName + ".xls");
-        try (FileOutputStream fos = new FileOutputStream(xlsFile)) {
-            workbook.write(fos);
+        // Inizializza i flagElementi in base al numero di colonne della prima posizione
+        JSONObject firstObject = jsonArray.getJSONObject(0);
+        flagElementi = new boolean[firstObject.keySet().size()];
+        // Tutti i flag inizializzati a true
+        Arrays.fill(flagElementi, true);
+
+        // Crea il file Excel
+        Workbook workbook = new HSSFWorkbook(); // Formato .xls
+        Sheet sheet = workbook.createSheet("Dati");
+
+        // Determina il numero massimo di colonne
+        Set<String> colonne = getMaxColumns(jsonArray);
+
+        // Scrivi i dati nel file Excel
+        writeJsonToSheet(jsonArray, sheet, workbook, colonne);
+
+        // Adatta automaticamente la larghezza delle colonne
+        autoSizeColumns(sheet, colonne.size());
+
+        // Genera il nome del file di output con la stessa base del file JSON
+        String outputFileName = srcFile.getName().replaceAll("\\.json$", "") + ".xls";
+        File outputFile = new File(srcFile.getParent(), outputFileName);
+
+        // Salva il file Excel
+        try (FileOutputStream fileOut = new FileOutputStream(outputFile)) {
+            workbook.write(fileOut);
         }
         workbook.close();
 
-        result = xlsFile;
-        return result;
+        logger.info("Conversione completata con successo");
+        return outputFile;
     }
 
-    //scrittura sul foglio
-    private int writeJSONObject(JSONObject obj, Sheet sheet, int rowIndex, CellStyle valueStyle, CellStyle keyStyle, CellStyle nestedKeyStyle, CellStyle nestedValueStyle) {
-        int startRow = rowIndex;
-        for (String key : obj.keySet()) {
-            Object value = obj.get(key);
-
-            if (value instanceof JSONObject) {
-                int subStart = rowIndex;
-
-                // Scrive chiave dell'oggetto contenitore
-                Row row = sheet.createRow(rowIndex);
-                Cell keyCell = row.createCell(0);
-                keyCell.setCellValue(key);
-                keyCell.setCellStyle(keyStyle);
-
-                int localRowStart = rowIndex;
-                int nestedRowIndex = rowIndex;
-                int currentCol = 1;
-
-                JSONObject nestedObj = (JSONObject) value;
-                for (String nestedKey : nestedObj.keySet()) {
-                    Object nestedVal = nestedObj.get(nestedKey);
-
-                    if (nestedVal instanceof JSONObject) {
-                        int deepStart = ++nestedRowIndex;
-                        // Rimozione duplicato: la variabile 'deepObj' è già stata dichiarata sopra.
-                        // Rimuoviamo il blocco duplicato
-
-                        Row innerTitle = sheet.createRow(nestedRowIndex);
-                        Cell innerKeyCell = innerTitle.createCell(currentCol);
-                        innerKeyCell.setCellValue(nestedKey);
-                        innerKeyCell.setCellStyle(keyStyle);
-
-                        JSONObject deepObj = (JSONObject) nestedVal;
-                        for (String deepKey : deepObj.keySet()) {
-                            Row dataRow = sheet.createRow(++nestedRowIndex);
-                            Cell k = dataRow.createCell(currentCol);
-                            k.setCellValue(deepKey);
-                            k.setCellStyle(nestedKeyStyle);
-
-                            Cell v = dataRow.createCell(currentCol + 1);
-                            v.setCellValue(String.valueOf(deepObj.get(deepKey)));
-                            v.setCellStyle(nestedValueStyle);
-                        }
-                    } else {
-                        Row dataRow = sheet.createRow(++nestedRowIndex);
-                        Cell k = dataRow.createCell(currentCol);
-                        k.setCellValue(nestedKey);
-                        k.setCellStyle(valueStyle);
-
-                        Cell v = dataRow.createCell(currentCol + 1);
-                        v.setCellValue(String.valueOf(nestedVal));
-                        v.setCellStyle(valueStyle);
-                    }
-                }
-
-                // Unione verticale della cella contenente il nome dell'oggetto contenitore
-                if (nestedRowIndex > localRowStart) {
-                    CellRangeAddress mergeRegion = new CellRangeAddress(localRowStart, nestedRowIndex, 0, 0);
-                    if (!isOverlappingMergedRegion(sheet, mergeRegion)) {
-                        sheet.addMergedRegion(mergeRegion);
-                    }
-                }
-
-                rowIndex = nestedRowIndex + 1;
-
-            } else if (value instanceof JSONArray) {
-                Row row = sheet.createRow(rowIndex);
-                Cell keyCell = row.createCell(0);
-                keyCell.setCellValue(key);
-                keyCell.setCellStyle(keyStyle);
-                rowIndex++;
-
-                JSONArray arr = (JSONArray) value;
-                for (int i = 0; i < arr.length(); i++) {
-                    Object item = arr.get(i);
-                    if (item instanceof JSONObject) {
-                        rowIndex = writeJSONObject((JSONObject) item, sheet, rowIndex, valueStyle, keyStyle, keyCell.getCellStyle(), keyCell.getCellStyle());
-                    } else {
-                        Row r = sheet.createRow(rowIndex);
-                        Cell valCell = r.createCell(1);
-                        valCell.setCellValue(String.valueOf(item));
-                        valCell.setCellStyle(valueStyle);
-                        rowIndex++;
-                    }
-                }
-
-            } else {
-                Row row = sheet.createRow(rowIndex);
-                Cell keyCell = row.createCell(0);
-                keyCell.setCellValue(key);
-                keyCell.setCellStyle(keyStyle);
-
-                Cell valCell = row.createCell(1);
-                valCell.setCellValue(String.valueOf(value));
-                valCell.setCellStyle(valueStyle);
-                rowIndex++;
+    private String readJsonFile(File file) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
             }
         }
-        return rowIndex;
+        return content.toString();
     }
 
-    private int countJsonPairs(JSONObject obj) {
-        int count = 0;
-        for (String k : obj.keySet()) {
-            Object val = obj.get(k);
-            if (val instanceof JSONObject) count += countJsonPairs((JSONObject) val);
-            else if (val instanceof JSONArray) count += ((JSONArray) val).length();
-            else count++;
+    private Set<String> getMaxColumns(JSONArray jsonArray) {
+        Set<String> colonne = new HashSet<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            colonne.addAll(jsonObject.keySet());
         }
-        return Math.max(count, 1);
+        return colonne;
     }
 
-    private boolean isOverlappingMergedRegion(Sheet sheet, CellRangeAddress newRegion) {
-        for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
-            CellRangeAddress existing = sheet.getMergedRegion(i);
-            if (existing.intersects(newRegion)) {
-                return true;
+    private void writeJsonToSheet(JSONArray jsonArray, Sheet sheet, Workbook workbook, Set<String> colonne) throws IOException {
+        if (jsonArray.isEmpty()) {
+            logger.error("Il file JSON è vuoto");
+            throw new IOException("Il file è vuoto o corrotto");
+        }
+
+        // Creazione dell'intestazione
+        Row headerRow = sheet.createRow(0);
+        int colNum = 0;
+        for (String key : colonne) {
+            Cell cell = headerRow.createCell(colNum++);
+            cell.setCellValue(key);
+            cell.setCellStyle(createStyle(workbook, true)); // Stile per l'intestazione
+        }
+
+        // Scrittura dei dati
+        int rowNum = 1;
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Row row = sheet.createRow(rowNum);
+            colNum = 0;
+
+            // Incrementa arrayFollower solo all'inizio di ogni nuova riga
+            updateMapFollower();
+
+            CellStyle rowStyle = createStyle(workbook, false); // Stile uniforme per tutta la riga
+
+            for (String key : colonne) {
+                // Controlla il flag prima di scrivere nella cella
+                if (flagElementi[colNum]) {
+                    String value = jsonObject.optString(key, null);
+                    if (value != null && !value.isEmpty()) {
+                        Cell cell = row.createCell(colNum);
+                        cell.setCellValue(value);
+                        cell.setCellStyle(rowStyle); // Applica lo stesso stile a tutte le celle della riga
+                    } else {
+                        // Se il valore è vuoto, aggiorna il flag a false
+                        flagElementi[colNum] = false;
+                    }
+                }
+                colNum++;
+            }
+            rowNum++;
+        }
+    }
+
+    private void autoSizeColumns(Sheet sheet, int columnCount) {
+        for (int colNum = 0; colNum < columnCount; colNum++) {
+            sheet.autoSizeColumn(colNum);
+        }
+    }
+
+    private void updateMapFollower() {
+        // Ottieni l'insieme ordinato delle chiavi
+        Set<String> keys = coloriCelle.keySet();
+        List<String> keyList = new ArrayList<>(keys); // Converti in una lista per accedere agli indici
+
+        // Trova l'indice corrente di mapFollower
+        int currentIndex = keyList.indexOf(mapFollower);
+
+        // Determina il prossimo indice in base alla direzione
+        if (reverseOrder) {
+            currentIndex++; // Vai avanti
+            if (currentIndex >= keyList.size()) {
+                // Se superi l'ultima chiave, inverti la direzione
+                reverseOrder = false;
+                currentIndex = keyList.size() - 2; // Torna indietro di uno
+            }
+        } else {
+            currentIndex--; // Vai indietro
+            if (currentIndex < 0) {
+                // Se superi la prima chiave, inverti la direzione
+                reverseOrder = true;
+                currentIndex = 1; // Vai avanti di uno
             }
         }
-        return false;
+
+        // Aggiorna mapFollower con la nuova chiave
+        mapFollower = keyList.get(currentIndex);
     }
 
-    private CellStyle createStyle(Workbook wb, IndexedColors bgColor, boolean bold, boolean border) {
-        CellStyle style = wb.createCellStyle();
-        style.setFillForegroundColor(bgColor.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    private CellStyle createStyle(Workbook workbook, boolean isHeader) {
+        CellStyle style = workbook.createCellStyle();
+
+        // Allineamento orizzontale e verticale
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
 
-        if (border) {
-            style.setBorderTop(BorderStyle.THIN);
-            style.setBorderBottom(BorderStyle.THIN);
-            style.setBorderLeft(BorderStyle.THIN);
-            style.setBorderRight(BorderStyle.THIN);
-            style.setTopBorderColor(IndexedColors.WHITE.getIndex());
-            style.setBottomBorderColor(IndexedColors.WHITE.getIndex());
-            style.setLeftBorderColor(IndexedColors.WHITE.getIndex());
-            style.setRightBorderColor(IndexedColors.WHITE.getIndex());
+        if (isHeader) {
+            // Stile speciale per l'intestazione
+            style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        } else {
+            // Applica il colore corrispondente
+            short colorIndex = coloriCelle.get(mapFollower);
+            style.setFillForegroundColor(colorIndex);
         }
 
-        Font font = wb.createFont();
-        font.setBold(bold);
-        font.setColor((bgColor == IndexedColors.BLUE) ? IndexedColors.WHITE.getIndex() : IndexedColors.BLACK.getIndex());
-        style.setFont(font);
-
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
 }
-
