@@ -12,7 +12,7 @@ import converters.Zipper;
 import com.twelvemonkeys.util.convert.ConversionException;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
-import configuration.configExceptions.NullConfigValueException;
+import configuration.configExceptions.NullJsonValueException;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
