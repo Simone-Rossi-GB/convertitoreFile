@@ -33,7 +33,7 @@ public interface JsonData {
             throws JsonStructureException {
         return JsonReader.read(
                 new TypeReference<HashMap<String, Object>>() {},
-                "data",
+                "",
                 jsonFile,
                 rootReference
         );

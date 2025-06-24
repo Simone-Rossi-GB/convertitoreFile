@@ -2,6 +2,7 @@ package converters.imageConverters;
 
 import configuration.configExceptions.NullJsonValueException;
 import configuration.configHandlers.config.ConfigReader;
+import converters.Converter;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,9 +16,9 @@ import java.util.List;
 import static converter.Utility.getBaseName;
 import static converters.imageConverters.ImageConverterUtility.removeAlphaChannel;
 
-public class ToICOImageConverter implements  ImageConverterUtility{
+public class ToICOimageConverter extends Converter {
 
-    private static final Logger logger = LogManager.getLogger(ToICOImageConverter.class);
+    private static final Logger logger = LogManager.getLogger(ToICOimageConverter.class);
 
     @Override
     public File convert(File imgFile) throws NullJsonValueException, IOException {

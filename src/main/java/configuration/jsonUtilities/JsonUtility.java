@@ -91,10 +91,15 @@ public interface JsonUtility {
      * @param rootReference riferimento atomico al nodo radice che verrà popolato
      * @throws JsonFileNotFoundException se il file non esiste sul file system
      */
-    static void checkBuild(File jsonFile, AtomicReference<ObjectNode> rootReference) throws JsonFileNotFoundException {
+    static void checkBuild(File jsonFile, AtomicReference<ObjectNode> rootReference) throws JsonFileNotFoundException, JsonStructureException {
         if (jsonFile.exists()) {
-            if (rootReference.get() == null) {
-                loadJson(jsonFile, rootReference);
+            try {
+                if (rootReference.get() == null || !rootReference.get().equals(mapper.readTree(jsonFile))) {
+                    loadJson(jsonFile, rootReference);
+                }
+            } catch (IOException e) {
+                logger.error("Mappatura di {} fallita", jsonFile.getName());
+                throw new JsonStructureException("Mappatura di "+jsonFile.getName()+" fallita");
             }
         } else {
             logger.error("File {} non trovato", jsonFile.getPath());

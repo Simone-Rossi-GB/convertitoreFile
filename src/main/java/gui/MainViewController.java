@@ -108,6 +108,8 @@ public class MainViewController {
 
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
 
+        ConfigInstance ci = new ConfigInstance(new File(configFile));
+        ConfigData.update(ci);
         loadConfiguration();
 
         if (monitorAtStart) {
@@ -209,8 +211,6 @@ public class MainViewController {
             launchAlertError("Engine non inizializzato.");
             return;
         }
-        ConfigInstance ci = new ConfigInstance(new File(configFile));
-        ConfigData.update(ci);
         monitoredFolderPath = ConfigReader.getMonitoredDir();
         checkAndCreateFolder(monitoredFolderPath);
         convertedFolderPath = ConfigReader.getSuccessOutputDir();
@@ -221,9 +221,9 @@ public class MainViewController {
         monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
         logger.info("Configurazione caricata da config.json");
-        logger.info("Cartella monitorata: " + monitoredFolderPath);
-        logger.info("Cartella file convertiti: " + convertedFolderPath);
-        logger.info("Cartella file falliti: " + failedFolderPath);
+        logger.info("Cartella monitorata: {}", monitoredFolderPath);
+        logger.info("Cartella file convertiti: {}", convertedFolderPath);
+        logger.info("Cartella file falliti: {}", failedFolderPath);
 
     }
 

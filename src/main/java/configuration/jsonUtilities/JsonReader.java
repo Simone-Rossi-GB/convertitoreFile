@@ -43,7 +43,13 @@ public interface JsonReader {
     static <T> T read(TypeReference<T> typeRef, String key, File jsonFile, AtomicReference<ObjectNode> rootReference) {
         try {
             JsonUtility.checkBuild(jsonFile, rootReference);
-            JsonNode value = rootReference.get().get(key);
+            JsonNode value;
+            if (key.isEmpty()){
+                value = rootReference.get().get("data");
+                key = "data"; // Metto a "data" per il logger piu avanti
+            } else {
+                value = rootReference.get().get("data").get(key);
+            }
 
             if (value == null) {
                 logger.error("Lettura del campo \"{}\" da {} fallita (chiave non trovata)", key, jsonFile.getName());
