@@ -1,11 +1,14 @@
 package gui;
 
+import configuration.configHandlers.config.ConfigData;
+import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
 import converters.exception.IllegalExtensionException;
 import converter.DirectoryWatcher;
 import converter.Log;
 import converters.Zipper;
 import converter.Utility;
+import converters.exception.UnsupportedConversionException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import converter.Engine;
@@ -57,6 +60,8 @@ public class MainViewController {
     @FXML
     private Button configBtn;
     @FXML
+    public Button conversionConfigBtn;
+    @FXML
     private Button exitBtn;
     @FXML
     private Button caricaFileBtn;
@@ -76,7 +81,6 @@ public class MainViewController {
     private int fileScartati = 0;
 
     private ConverterWebServiceClient webServiceClient;
-    private boolean useWebService = false;
 
     private String monitoredFolderPath = "Non configurata";
     private String convertedFolderPath = "Non configurata";
@@ -85,6 +89,7 @@ public class MainViewController {
 
     private Engine engine;
     private Thread watcherThread;
+    private final String configFile = "src/main/java/configuration/configFiles/config.json";
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -130,6 +135,7 @@ public class MainViewController {
         exitBtn.setOnAction(e -> exitApplication());
         stage.setOnCloseRequest(e -> interruptWatcher());
         configBtn.setOnAction(e -> openConfigurationWindow());
+        conversionConfigBtn.setOnAction(e -> openConversionConfigurationWindow());
         caricaFileBtn.setOnAction(e -> openFolder(monitoredFolderPath));
         fileConvertitiBtn.setOnAction(e -> openFolder(convertedFolderPath));
         conversioniFalliteBtn.setOnAction(e -> openFolder(failedFolderPath));
@@ -200,39 +206,27 @@ public class MainViewController {
 
     private void loadConfiguration() {
         if (engine == null) {
-            Log.addMessage("ERRORE: Engine non inizializzato.");
             launchAlertError("Engine non inizializzato.");
             return;
         }
-        try {
-            if (engine.getConverterConfig() == null) {
-                Log.addMessage("ERRORE: Configurazione non trovata.");
-                launchAlertError("Configurazione non trovata.");
-                return;
-            }
-            monitoredFolderPath = ConfigReader.getMonitoredDir();
-            checkAndCreateFolder(monitoredFolderPath);
-            convertedFolderPath = ConfigReader.getSuccessOutputDir();
-            checkAndCreateFolder(convertedFolderPath);
-            failedFolderPath = ConfigReader.getErrorOutputDir();
-            checkAndCreateFolder(failedFolderPath);
-            checkAndCreateFolder("src/temp");
-            monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
+        ConfigInstance ci = new ConfigInstance(new File(configFile));
+        ConfigData.update(ci);
+        monitoredFolderPath = ConfigReader.getMonitoredDir();
+        checkAndCreateFolder(monitoredFolderPath);
+        convertedFolderPath = ConfigReader.getSuccessOutputDir();
+        checkAndCreateFolder(convertedFolderPath);
+        failedFolderPath = ConfigReader.getErrorOutputDir();
+        checkAndCreateFolder(failedFolderPath);
+        checkAndCreateFolder("src/temp");
+        monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
-            addLogMessage("Configurazione caricata da config.json");
-            addLogMessage("Cartella monitorata: " + monitoredFolderPath);
-            addLogMessage("Cartella file convertiti: " + convertedFolderPath);
-            addLogMessage("Cartella file falliti: " + failedFolderPath);
-            Log.addMessage("Configurazione caricata da config.json");
-            Log.addMessage("Cartella monitorata: " + monitoredFolderPath);
-            Log.addMessage("Cartella file convertiti: " + convertedFolderPath);
-            Log.addMessage("Cartella file falliti: " + failedFolderPath);
-        } catch (Exception e) {
-            Log.addMessage("ERRORE: caricamento della configurazione fallita:" + e.getMessage());
-            addLogMessage("Errore nel caricamento configurazione: " + e.getMessage());
-            launchAlertError("Impossibile caricare la configurazione: " + e.getMessage());
-        }
+        logger.info("Configurazione caricata da config.json");
+        logger.info("Cartella monitorata: " + monitoredFolderPath);
+        logger.info("Cartella file convertiti: " + convertedFolderPath);
+        logger.info("Cartella file falliti: " + failedFolderPath);
+
     }
+
     // Metodo che controlla l'esistenza di una directory e se non esiste la crea
     private void checkAndCreateFolder(String path) {
         File folder = new File(path);
@@ -273,8 +267,6 @@ public class MainViewController {
             // Ottieni il controller e passa i riferimenti necessari
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
-            controller.setEngine(engine, this);
-
             // Mostra la finestra e attendi la chiusura
             addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
@@ -282,14 +274,43 @@ public class MainViewController {
             // Ricarica la configurazione dopo la chiusura della finestra
             addLogMessage("Editor configurazione chiuso");
             loadConfiguration();
-            if (watcherThread != null && watcherThread.isAlive()) {
-                watcherThread.interrupt();
-                watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
-                watcherThread.start();
-            }
-
+            interruptWatcher();
+            watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
+            watcherThread.start();
         } catch (IOException e) {
-            Log.addMessage("ERRORE: Impossibile aprire l'editor di configurazione: " + e.getMessage());
+            launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
+        }
+    }
+
+    private void openConversionConfigurationWindow() {
+        if (engine == null) {
+            launchAlertError("Engine non inizializzato.");
+            return;
+        }
+        try {
+            addLogMessage("Apertura editor configurazione della conversione...");
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/ConversionConfigWindow.fxml"));
+            Parent configWindow = loader.load();
+
+            // Crea lo stage per la finestra di configurazione
+            Stage configStage = new Stage();
+            configStage.setTitle("Editor Configurazione Conversione");
+            configStage.initModality(Modality.WINDOW_MODAL);
+            configStage.initOwner(MainApp.getPrimaryStage());
+            configStage.setResizable(true);
+            configStage.setMinWidth(700);
+            configStage.setMinHeight(600);
+            configStage.setScene(new Scene(configWindow));
+
+            // Ottiene il controller e passa i riferimenti necessari
+            ConversionConfigWindowController controller = loader.getController();
+            controller.setDialogStage(configStage);
+            // Mostra la finestra e attendi la chiusura
+            logger.info("Editor configurazione conversione aperto");
+            configStage.showAndWait();
+        } catch (IOException e) {
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
     }
@@ -332,7 +353,7 @@ public class MainViewController {
     }
 
     public void interruptWatcher() {
-        addLogMessage("Chiusura applicazione...");
+        addLogMessage("Terminazione del watcher...");
         if (watcherThread != null) {
             //Interrompe il watcher
             watcherThread.interrupt();
@@ -342,7 +363,6 @@ public class MainViewController {
             } catch (InterruptedException e) {
                 String msg = "Thread in background interrotto in maniera anomala";
                 launchAlertError(msg);
-                Log.addMessage(msg);
             }
         }
     }
@@ -351,6 +371,7 @@ public class MainViewController {
      * Termina l'applicazione
      */
     private void exitApplication() {
+        addLogMessage("Chiusura dell'applicazione...");
         interruptWatcher();
         Platform.exit();
     }
@@ -396,8 +417,7 @@ public class MainViewController {
                 formats = engine.getPossibleConversions(srcExtension);
             }
         } catch (Exception e) {
-            Log.addMessage("ERRORE: Conversione non supportata per il file " + srcFile.getName() + " (" + srcExtension + ")");
-            launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
+            launchAlertError(e.getMessage());
             Platform.runLater(() -> {
                 fileScartati++;
                 stampaRisultati();
@@ -407,6 +427,7 @@ public class MainViewController {
 
         List<String> finalFormats = formats;
         String finalSrcExtension = srcExtension;
+        //Mostra il dialog per selezionare il formato di output
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
@@ -483,8 +504,7 @@ public class MainViewController {
                     return; // Esci qui se engine locale ha successo
 
                 } catch (Exception engineError) {
-                    addLogMessage("Anche engine locale fallito: " + engineError.getMessage());
-                    throw new Exception("Entrambi i metodi di conversione falliti. Web service: fallito. Engine locale: " + engineError.getMessage());
+                    launchAlertError(engineError.getMessage());
                 }
             }
 

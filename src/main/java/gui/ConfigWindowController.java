@@ -1,6 +1,6 @@
 package gui;
 
-import configuration.configHandlers.config.ConfigReader;
+import configuration.configHandlers.config.*;
 import converter.Engine;
 import converter.Log;
 import org.apache.logging.log4j.Logger;
@@ -54,9 +54,7 @@ public class ConfigWindowController {
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
-    private Engine engine;
     private Stage dialogStage;
-    private MainViewController mainController;
     private boolean monitorAtStart = false;
     private static final Logger logger = LogManager.getLogger(ConfigWindowController.class);
 
@@ -75,6 +73,7 @@ public class ConfigWindowController {
 
         // Configura i campi di testo per le directory
         setupDirectoryFields();
+        loadCurrentConfiguration();
     }
 
     /**
@@ -107,14 +106,6 @@ public class ConfigWindowController {
         }
     }
 
-    /**
-     * Imposta l'istanza dell'engine e il controller principale.
-     */
-    public void setEngine(Engine engine, MainViewController mainController) {
-        this.engine = engine;
-        this.mainController = mainController;
-        loadCurrentConfiguration();
-    }
 
     /**
      * Imposta lo stage per la finestra.
@@ -127,36 +118,17 @@ public class ConfigWindowController {
      * Carica e mostra la configurazione corrente nei campi dell'interfaccia.
      */
     private void loadCurrentConfiguration() {
-        try {
-            // Carica i campi principali dalla configurazione
-            monitoredDirField.setText(ConfigReader.getMonitoredDir());
-            successDirField.setText(ConfigReader.getSuccessOutputDir());
-            errorDirField.setText(ConfigReader.getErrorOutputDir());
+        // Carica i campi principali dalla configurazione
+        monitoredDirField.setText(ConfigReader.getMonitoredDir());
+        successDirField.setText(ConfigReader.getSuccessOutputDir());
+        errorDirField.setText(ConfigReader.getErrorOutputDir());
 
-            monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
-            monitorAtStartField.setText(String.valueOf(monitorAtStart));
-            updateMonitorToggleButton();
+        monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
+        monitorAtStartField.setText(String.valueOf(monitorAtStart));
+        updateMonitorToggleButton();
 
-            // Carica solo la sezione conversions nel TextArea
-            String fullConfig = engine.getConfigAsString();
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonObject configJson = JsonParser.parseString(fullConfig).getAsJsonObject();
-
-            if (configJson.has("conversions")) {
-                JsonObject conversions = configJson.getAsJsonObject("conversions");
-                String conversionsString = gson.toJson(conversions);
-                conversionsTextArea.setText(conversionsString);
-            }
-
-            updateStatus("Configurazione caricata", false);
-            logger.info("Configurazione caricata correttamente");
-            Log.addMessage("Configurazione caricata correttamente");
-        } catch (Exception e) {
-            updateStatus("Errore nel caricamento: " + e.getMessage(), true);
-            logger.error("impossibile caricare la configurazione - {}", e.getMessage());
-            Log.addMessage("ERRORE: impossibile caricare la configurazione - " + e.getMessage());
-            showAlert("Errore", "Impossibile caricare la configurazione: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
+        updateStatus("Configurazione caricata", false);
+        logger.info("Configurazione caricata correttamente");
     }
 
     /**
@@ -202,7 +174,6 @@ public class ConfigWindowController {
         File selectedDirectory = directoryChooser.showDialog(dialogStage);
         if (selectedDirectory != null) {
             logger.info("Selezionata directory: {}", selectedDirectory.getAbsolutePath());
-            Log.addMessage("Selezionata directory: " + selectedDirectory.getAbsolutePath());
             targetField.setText(selectedDirectory.getAbsolutePath());
         }
     }
@@ -235,7 +206,7 @@ public class ConfigWindowController {
     /**
      * Verifica che tutte le directory siano valide o tenti di crearle se mancanti.
      */
-    private boolean validateDirectories() {
+    private boolean validateDirectories() throws IOException {
         String[] directories = {
                 monitoredDirField.getText().trim(),
                 successDirField.getText().trim(),
@@ -252,7 +223,6 @@ public class ConfigWindowController {
             if (directories[i].isEmpty()) {
                 updateStatus(labels[i] + " non specificata!", true);
                 logger.error("{} non specificata", labels[i]);
-                Log.addMessage("ERRORE: " + labels[i] + " non specificata");
                 showAlert("Errore di validazione", labels[i] + " deve essere specificata.", Alert.AlertType.ERROR);
                 return false;
             }
@@ -263,16 +233,10 @@ public class ConfigWindowController {
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
                     logger.warn("Creata directory mancante: {}", path);
-                    Log.addMessage("Creata directory mancante: " + path);
                     updateStatus("Creata directory: " + directories[i], false);
                 }
             } catch (IOException e) {
-                logger.error("impossibile creare la directory {} - {}", directories[i], e.getMessage());
-                logger.error("impossibile creare la directory " + directories[i] + " - " + e.getMessage());
-                Log.addMessage("ERRORE: impossibile creare la directory " + directories[i] + " - " + e.getMessage());
-                updateStatus("Impossibile creare directory: " + directories[i], true);
-                showAlert("Errore", "Impossibile creare la directory: " + directories[i], Alert.AlertType.ERROR);
-                return false;
+                throw new IOException("Impossibile creare la cartella");
             }
         }
         return true;
@@ -282,54 +246,23 @@ public class ConfigWindowController {
      * Salva la configurazione modificata.
      */
     @FXML
-    private void saveConfiguration(ActionEvent event) {
-        try {
-            // Valida le directory prima di salvare
-            if (!validateDirectories()) {
-                return;
-            }
-
-            // Costruisci il JSON completo mantenendo le conversioni originali
-            String originalConfig = engine.getConfigAsString();
-            JsonObject originalConfigJson = JsonParser.parseString(originalConfig).getAsJsonObject();
-
-            // Aggiorna solo i campi modificabili
-            originalConfigJson.addProperty("successOutputDir", successDirField.getText().trim());
-            originalConfigJson.addProperty("errorOutputDir", errorDirField.getText().trim());
-            originalConfigJson.addProperty("monitoredDir", monitoredDirField.getText().trim());
-            originalConfigJson.addProperty("monitorAtStart", monitorAtStart);
-
-            // Formatta e salva
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            String configJson = gson.toJson(originalConfigJson);
-
-            engine.setConfigFromString(configJson);
-            logger.info("Configurazione salvata con successo");
-            Log.addMessage("Configurazione salvata con successo");
-            updateStatus("Configurazione salvata con successo!", false);
-
-            if (mainController != null) {
-                mainController.addLogMessage("Configurazione aggiornata dall'editor");
-            }
-
-            showAlert("Successo", "Configurazione salvata con successo!", Alert.AlertType.INFORMATION);
-
-            // Chiudi la finestra dopo un breve delay
-            Platform.runLater(() -> {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                dialogStage.close();
-            });
-
-        } catch (Exception e) {
-            updateStatus("Errore nel salvataggio: " + e.getMessage(), true);
-            logger.error("salvataggio configurazione fallito - {}", e.getMessage());
-            Log.addMessage("ERRORE: salvataggio configurazione fallito - " + e.getMessage());
-            showAlert("Errore", "Impossibile salvare: " + e.getMessage(), Alert.AlertType.ERROR);
+    private void saveConfiguration(ActionEvent event) throws IOException {
+        // Valida le directory prima di salvare
+        if (!validateDirectories()) {
+            return;
         }
+
+        InstanceConfigWriter wr = new InstanceConfigWriter(ConfigData.getJsonFile());
+        wr.writeMonitoredDir(monitoredDirField.getText());
+        wr.writeErrorOutputDir(errorDirField.getText());
+        wr.writeSuccessOutputDir(errorDirField.getText());
+        wr.writeIsMonitoringEnabledAtStart(monitorAtStart);
+        ConfigData.update(new ConfigInstance(ConfigData.getJsonFile()));
+
+        logger.info("Configurazione salvata con successo");
+        updateStatus("Configurazione salvata con successo!", false);
+        dialogStage.close();
+
     }
 
     /**

@@ -26,68 +26,6 @@ import org.apache.logging.log4j.LogManager;
 public class Engine {
     private ConfigInstance config;
     private static final Logger logger = LogManager.getLogger(Engine.class);
-    private static final File jsonFile = new File("src/main/java/configuration/configFiles/config.json");
-
-    /**
-     * Costruttore: carica il file config.json
-     */
-    public Engine() {
-        setConfig();
-    }
-
-    /**
-     * Carica il file config.json
-     */
-    public void setConfig() {
-        try {
-            config = new ConfigInstance(jsonFile);
-            ConfigData.update(config);
-            logger.info("Configurazione caricata correttamente da config.json");
-        } catch (NullJsonValueException e) {
-            logger.error("Caricamento di una o piu variabili del config fallito");
-            throw new RuntimeException("Caricamento di una o piu variabili del config fallito", e);
-        } catch (JsonStructureException e) {
-            logger.error("Caricamento del file json fallito");
-            throw new RuntimeException("Caricamento del file json fallito", e);
-        }
-    }
-
-    /**
-     * Ritorna la stringa che rappresenta il contenuto del json
-     * @return contenuto del json di ritorno
-     */
-    public String getConfigAsString() {
-        String jsonAsString;
-        if ((jsonAsString = JsonReader.returnJsonAsString(ConfigData.getJsonFile())) != null){
-            logger.info("config.json convertito in String con successo");
-            return jsonAsString;
-        } else {
-            logger.error("Impossibile convertire il file in una String");
-            throw new RuntimeException("Impossibile convertire il file in una String");
-        }
-    }
-
-    /**
-     * @param jsonText testo da aggiungere a config.json
-     * @throws Exception Errore scrittura sul file di configurazione
-     */
-    public void setConfigFromString(String jsonText) throws Exception {
-        try{
-            JsonWriter.overwriteJsonFromString(jsonText, jsonFile);
-        } catch (JsonStructureException | JsonWriteException e){
-            logger.error(e.getMessage());
-            throw new Exception(e.getMessage());
-        }
-        // Ricarica la configurazione
-        try {
-            setConfig();
-            logger.info("Configurazione ricaricata con successo");
-        } catch (Exception e) {
-            logger.error("Caricamento della nuova configurazione fallito");
-            throw new Exception("Errore nel caricamento della nuova configurazione: " + e.getMessage(), e);
-        }
-    }
-
 
     /**
      * Ritorna i formati in cui un file può essere convertito
@@ -97,19 +35,19 @@ public class Engine {
      * @throws IllegalArgumentException Non viene passata un'estensione
      * @throws NullPointerException Configurazione mancante
      */
-    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException {
+    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException, UnsupportedConversionException   {
         if (extension == null) {
             logger.error("Parametro extension nullo");
             throw new IllegalArgumentException("L'oggetto extension non esiste");
         }
 
-        if (config == null || ConfigReader.getConversions() == null) {
+        if (ConfigReader.getConversions() == null) {
             logger.error("Configurazione mancante");
             throw new NullPointerException("Config mancante");
         }
         if(!ConfigReader.getConversions().containsKey(extension)) {
             logger.error("Conversione non supportata");
-            throw new ConversionException("Formato di partenza non supportato");
+            throw new UnsupportedConversionException("Formato di partenza non supportato");
         }
         logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
         return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
@@ -193,6 +131,8 @@ public class Engine {
         //Crea un file temp per la conversione
         File tempFile = new File("src/temp", srcFile.getName());
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        //Elimina il file temp al termine del'applicazione
+        tempFile.deleteOnExit();
         ConversionContextWriter.setDestinationFormat(outExt);
         try {
             outFile = converter.conversione(tempFile);
@@ -257,15 +197,4 @@ public class Engine {
     }
 
 
-    /**
-     * Ritorna la configurazione ottenuta da config.json
-     * @return Configurazione estratta dal file json
-     * @throws NullPointerException Variabile config nulla
-     */
-    public ConfigInstance getConverterConfig() throws NullPointerException{
-        if (config == null) {
-            throw new NullPointerException("L'oggetto config non esiste");
-        }
-        return config;
-    }
 }
