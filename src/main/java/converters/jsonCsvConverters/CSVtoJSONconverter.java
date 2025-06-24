@@ -30,7 +30,6 @@ public class CSVtoJSONconverter extends Converter {
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {
             logger.error("Il file CSV è vuoto → {}", srcFile.getName());
-            Log.addMessage("Errore: Il file CSV è vuoto → " + srcFile.getName());
             throw new IOException("Il file CSV è vuoto: " + srcFile.getName());
         }
 
