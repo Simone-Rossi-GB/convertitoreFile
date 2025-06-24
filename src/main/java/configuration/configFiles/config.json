@@ -24,7 +24,7 @@
         "json" : "converters.spreadsheetConverters.ODStoJSONconverter"
       },
       "json" : {
-        "xls" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverterr",
+        "xls" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
         "xlsx" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
         "ods" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter"
       },
