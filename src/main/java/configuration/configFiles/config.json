@@ -24,9 +24,9 @@
         "json" : "converters.spreadsheetConverters.ODStoJSONconverter"
       },
       "json" : {
-        "xls" : "converters.jsonCsvConverters.JSONtoXLSconverter",
-        "xlsx" : "converters.jsonCsvConverters.JSONtoXLSXconverter",
-        "ods" : "converters.jsonCsvConverters.JSONtoODSconverter"
+        "xls" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverterr",
+        "xlsx" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
+        "ods" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter"
       },
       "csv" : {
         "json" : "converters.jsonCsvConverters.CSVtoJSONconverter"

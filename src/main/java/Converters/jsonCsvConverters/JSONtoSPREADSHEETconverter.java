@@ -1,6 +1,7 @@
-package Converters;
+package converters.jsonCsvConverters;
 
-import Converters.exception.ConvertionException;
+import configuration.configHandlers.conversionContext.ConversionContextReader;
+import converters.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -11,8 +12,8 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.*;
 
-public class JSONtoXLSconverter extends Converter {
-    public static final Logger logger = LogManager.getLogger(JSONtoXLSconverter.class);
+public abstract class JSONtoSPREADSHEETconverter extends Converter {
+    public static final Logger logger = LogManager.getLogger(JSONtoSPREADSHEETconverter.class);
     private final TreeMap<String, Short> coloriCelle = new TreeMap<>();
 
     private boolean reverseOrder = true; // Flag per determinare la direzione
@@ -34,11 +35,11 @@ public class JSONtoXLSconverter extends Converter {
 
 
     @Override
-    public File convert(File srcFile) throws IOException, ConvertionException {
+    public File convert(File srcFile) throws IOException {
         colorBuilding();
         if (!srcFile.exists() || !srcFile.isFile()) {
             logger.error("File non valido");
-            throw new ConvertionException("Il file JSON non esiste o non è valido.");
+            throw new IOException("Il file JSON non esiste o non è valido.");
         }
 
         // Leggi il file JSON
@@ -65,7 +66,7 @@ public class JSONtoXLSconverter extends Converter {
         autoSizeColumns(sheet, colonne.size());
 
         // Genera il nome del file di output con la stessa base del file JSON
-        String outputFileName = srcFile.getName().replaceAll("\\.json$", "") + ".xls";
+        String outputFileName = srcFile.getName().replaceAll("\\.json$", "") + "." + ConversionContextReader.getDestinationFormat();
         File outputFile = new File(srcFile.getParent(), outputFileName);
 
         // Salva il file Excel
@@ -98,10 +99,10 @@ public class JSONtoXLSconverter extends Converter {
         return colonne;
     }
 
-    private void writeJsonToSheet(JSONArray jsonArray, Sheet sheet, Workbook workbook, Set<String> colonne) throws ConvertionException {
+    private void writeJsonToSheet(JSONArray jsonArray, Sheet sheet, Workbook workbook, Set<String> colonne) throws IOException {
         if (jsonArray.isEmpty()) {
             logger.error("Il file JSON è vuoto");
-            throw new ConvertionException("Il file è vuoto o corrotto");
+            throw new IOException("Il file è vuoto o corrotto");
         }
 
         // Creazione dell'intestazione
