@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.*;
 
-public abstract class JSONtoSPREADSHEETconverter extends Converter {
+public class JSONtoSPREADSHEETconverter extends Converter {
     public static final Logger logger = LogManager.getLogger(JSONtoSPREADSHEETconverter.class);
     private final TreeMap<String, Short> coloriCelle = new TreeMap<>();
 
