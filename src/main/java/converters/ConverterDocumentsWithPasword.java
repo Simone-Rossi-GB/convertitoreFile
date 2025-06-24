@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 public abstract class ConverterDocumentsWithPasword extends Converter{
-    private static final Logger logger = LogManager.getLogger(DirectoryWatcher.class);
+    private static final Logger logger = LogManager.getLogger(ConverterDocumentsWithPasword.class);
     /**
      * Metodo che prende il parametro Password dal JSON per tutti quei formati che la possono richiedere
      * @param srcFile File di partenza
@@ -17,7 +17,7 @@ public abstract class ConverterDocumentsWithPasword extends Converter{
     @Override
     public File convert(File srcFile) throws Exception{
         String extraParameter = ConversionContextReader.getPassword();
-        logger.info("Password rilevata: " + extraParameter);
+        logger.info("Password rilevata: {}", extraParameter);
         return convertProtectedFile(srcFile, extraParameter);
     }
 

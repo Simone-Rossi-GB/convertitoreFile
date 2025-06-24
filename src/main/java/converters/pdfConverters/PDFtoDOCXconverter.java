@@ -122,7 +122,6 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
                     Units.toEMU(width),
                     Units.toEMU(height));
         } catch (Exception e) {
-            Log.addMessage("ERRORE: inserimento immagine fallito - " + e.getMessage());
             logger.error("Inserimento immagine fallito: {}", e.getMessage());
         } finally {
             is.close();

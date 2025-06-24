@@ -7,12 +7,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class XLSXtoJSONconverter extends Converter {
-    private static final Logger logger = LogManager.getLogger(ZIPtoTARGZconverter.class);
+    private static final Logger logger = LogManager.getLogger(XLSXtoJSONconverter.class);
     /**
      * Converte un file .xlsx in un file .json
      * @param excelFile il file Excel (.xlsx) in input
@@ -21,7 +22,7 @@ public class XLSXtoJSONconverter extends Converter {
      */
     public File convertXlsxToJson(File excelFile) throws IOException {
         // Carica il file Excel
-        try (InputStream inputStream = new FileInputStream(excelFile);
+        try (InputStream inputStream = Files.newInputStream(excelFile.toPath());
              Workbook workbook = new XSSFWorkbook(inputStream)) {
 
             Sheet sheet = workbook.getSheetAt(0); // Primo foglio
@@ -58,6 +59,7 @@ public class XLSXtoJSONconverter extends Converter {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, jsonData);
 
+            logger.info("File .doc creato con successo: {}", jsonFile.getAbsolutePath());
             return jsonFile;
         }
     }

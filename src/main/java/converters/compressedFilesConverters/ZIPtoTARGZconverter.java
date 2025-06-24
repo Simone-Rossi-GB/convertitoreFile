@@ -3,7 +3,6 @@ package converters.compressedFilesConverters;
 import converters.ConverterDocumentsWithPasword;
 import converters.exception.FileMoveException;
 import converters.exception.PasswordException;
-import converter.Log;
 import converter.Utility;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -79,7 +78,6 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
                 addFilesToTarGz(tarOut, tempDir, "");
 
                 logger.info("Creazione file .tar.gz completata: {}", outputTarGz.getAbsolutePath());
-                Log.addMessage("[ZIPtoTARGZ] Conversione completata: " + outputTarGz.getName());
             } catch (IOException e) {
                 logger.error("Problema durante la creazione del file .tar.gz: {}", e.getMessage());
                 throw new IOException("Problema durante la creazione del file .tar.gz: " + e.getMessage());

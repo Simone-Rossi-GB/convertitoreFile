@@ -39,7 +39,6 @@ public class ODStoJSONconverter extends Converter {
             return convertInternal(srcFile);
         }
         logger.error("File nullo o vuoto con password specificata: {}", srcFile);
-        Log.addMessage("[ODS→JSON] ERRORE: file nullo o vuoto.");
         throw new UnsupportedConversionException("L'oggetto srcFile non esiste o è vuoto.");
     }
 
@@ -65,13 +64,10 @@ public class ODStoJSONconverter extends Converter {
     private File convertInternal(File odsFile) throws Exception {
         if (odsFile == null) {
             logger.error("File ODS nullo");
-            Log.addMessage("[ODS→JSON] ERRORE: oggetto file nullo.");
             throw new IllegalArgumentException("L'oggetto odsFile non esiste.");
         }
 
         logger.info("Inizio conversione con parametri: \n | odsFile.getPath() = {}", odsFile.getPath());
-        Log.addMessage("[ODS→JSON] Inizio conversione file: " + odsFile.getName());
-
         List<Map<String, Object>> jsonData = new ArrayList<>();
         SpreadsheetDocument spreadsheet;
 
@@ -79,14 +75,12 @@ public class ODStoJSONconverter extends Converter {
             spreadsheet = SpreadsheetDocument.loadDocument(odsFile);
         } catch (Exception e) {
             logger.error("Errore apertura documento ODS: {}", e.getMessage());
-            Log.addMessage("[ODS→JSON] ERRORE: apertura documento fallita.");
             throw new UnsupportedConversionException("Errore nel caricamento del file ODS.");
         }
 
         Table table = spreadsheet.getSheetByIndex(0);
         if (table == null) {
             logger.error("Nessuna tabella trovata nel documento");
-            Log.addMessage("[ODS→JSON] ERRORE: nessuna tabella presente nel file.");
             throw new UnsupportedConversionException("L'oggetto table non esiste nel file ODS.");
         }
 
@@ -130,12 +124,10 @@ public class ODStoJSONconverter extends Converter {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(fos, jsonData);
         } catch (Exception e) {
             logger.error("Scrittura file JSON fallita: {}", e.getMessage());
-            Log.addMessage("[ODS→JSON] ERRORE: scrittura del file JSON fallita.");
             throw new UnsupportedConversionException("Errore durante la scrittura del file JSON.");
         }
 
         logger.info("Conversione completata: {}", outFile.getAbsolutePath());
-        Log.addMessage("[ODS→JSON] Creazione file .json completata: " + outFile.getName());
 
         return outFile;
     }
