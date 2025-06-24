@@ -124,7 +124,9 @@ public class Engine {
     private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
         //Istanzia il convertitore adatto
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
+        System.out.println("BANANA");
         Class<?> clazz = Class.forName(converterClassName);
+        System.out.println("PAOLO");
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
         File outFile;
         //Crea un file temp per la conversione
@@ -134,6 +136,7 @@ public class Engine {
         tempFile.deleteOnExit();
         ConversionContextWriter.setDestinationFormat(outExt);
         try {
+            System.out.println("TEST");
             outFile = converter.conversione(tempFile);
         } catch (Exception e) { // Exception ammessa nel programma
             throw new ConversionException(e.getMessage());
