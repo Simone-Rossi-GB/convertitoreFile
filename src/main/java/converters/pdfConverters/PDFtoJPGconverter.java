@@ -70,7 +70,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      *
      */
     @Override
-    public File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException, FileMoveException {
+    public File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
         //Ottiene il boolean di unione dal JSON
         boolean union = ConversionContextReader.getIsUnion();
         validateInputs(pdfFile, pdfDocument);
@@ -118,7 +118,9 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         catch (IllegalArgumentException e) {
             logger.error(e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
-        }finally {
+        } catch (FileMoveException e) {
+            throw new RuntimeException(e);
+        } finally {
             pdfDocument.close();
         }
     }

@@ -19,7 +19,7 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
     private static final Logger logger = LogManager.getLogger(PDFtoDOCconverter.class);
 
     @Override
-    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
         logger.info("Inizio conversione PDF → DOC: {}", pdfFile.getName());
 
         // Estrai testo dal PDF
