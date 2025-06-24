@@ -19,7 +19,7 @@ public class XLStoJSONconverter extends Converter {
     @Override
     public File convert(File xlsFile) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | xlsFile.getPath() = {}", xlsFile.getPath());
-        File jsonFile = null;
+        File jsonFile;
 
         try {
             jsonFile = convertToJson(xlsFile);
@@ -42,26 +42,15 @@ public class XLStoJSONconverter extends Converter {
         String baseName = xlsFile.getName().replaceFirst("[.][^.]+$", "");
         File outputDir = new File("src/temp");
         if (!outputDir.exists()) {
-            outputDir.mkdirs();
+            if(!outputDir.mkdirs()){
+                throw new IOException("Creazione cartella fallita");
+            }
         }
 
         File outputFile = new File(outputDir, baseName + ".json");
         return convertXlsToJson(xlsFile, outputFile.getAbsolutePath());
     }
 
-
-    /**
-     * Converte un file XLS in JSON
-     *
-     * @param xlsFile File XLS da convertire
-     * @return File JSON creato
-     * @throws IOException Se si verificano errori durante la conversione
-     */
-    private File convertXlsToJson(File xlsFile) throws IOException {
-        // Genera automaticamente il percorso del file JSON
-        String outputPath = generateJsonPath(xlsFile);
-        return convertXlsToJson(xlsFile, outputPath);
-    }
 
     /**
      * Converte un file XLS in JSON con percorso personalizzato
@@ -92,7 +81,6 @@ public class XLStoJSONconverter extends Converter {
             }
 
             // Elabora i dati
-            int rowCount = 0;
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
 
@@ -107,7 +95,6 @@ public class XLStoJSONconverter extends Converter {
                 }
 
                 dataList.add(rowData);
-                rowCount++;
             }
 
             // Crea la cartella di output se necessario
@@ -136,17 +123,9 @@ public class XLStoJSONconverter extends Converter {
     }
 
     /**
-     * Genera il percorso del file JSON sostituendo l'estensione
-     */
-    private String generateJsonPath(File inputFile) {
-        String inputPath = inputFile.getAbsolutePath();
-        return inputPath.replaceAll("\\.[^.]+$", ".json");
-    }
-
-    /**
      * Crea la cartella di output se non esiste
      */
-    private void createOutputDirectory(File outputFile) throws IOException {
+    private void createOutputDirectory(File outputFile) {
         File parentDir = outputFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             boolean created = parentDir.mkdirs();
@@ -266,17 +245,6 @@ public class XLStoJSONconverter extends Converter {
             }
         }
         return true;
-    }
-
-    /**
-     * Metodo di utilità per verificare se un file è supportato
-     */
-    public boolean isFileSupported(File file) {
-        if (file == null || !file.exists() || !file.isFile()) {
-            return false;
-        }
-        String fileName = file.getName().toLowerCase();
-        return fileName.endsWith(".xls");
     }
 
 }

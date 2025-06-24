@@ -19,7 +19,7 @@ public class JSONtoODSconverter extends Converter {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public File convert(File srcFile) throws Exception, ConversionException {
+    public File convert(File srcFile) throws Exception {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, null, false);
         }
@@ -38,7 +38,7 @@ public class JSONtoODSconverter extends Converter {
     }
 
     private File convertInternal(File jsonFile, String password, boolean opzioni) throws Exception {
-        //logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
+        logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", jsonFile.getPath());
         Log.addMessage("[JSON→ODS] Inizio conversione file: " + jsonFile.getName());
 
         List<LinkedHashMap<String, Object>> data;
