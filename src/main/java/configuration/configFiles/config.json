@@ -1,7 +1,7 @@
 {
   "data" : {
     "mandatoryEntries" : [ "successOutputDir", "errorOutputDir", "monitoredDir", "monitorAtStart" ],
-    "successOutputDir" : "src/output/",
+    "successOutputDir" : "src/output/success",
     "errorOutputDir" : "src/output/error",
     "monitoredDir" : "src/input",
     "monitorAtStart" : true,

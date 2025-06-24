@@ -14,9 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Utilizza {@link JsonWriter} per aggiornare i singoli campi e mantiene un riferimento
  * condiviso al nodo radice per evitare parsing multipli.
  */
-public class InstanceConfigWriter extends ConfigData {
-
-    private static final Logger log = LoggerFactory.getLogger(InstanceConfigWriter.class);
+public class InstanceConfigWriter {
     /** Riferimento atomico al nodo radice del file JSON, utile per aggiornamenti puntuali. */
     private final AtomicReference<ObjectNode> rootReference = new AtomicReference<>(null);
 
