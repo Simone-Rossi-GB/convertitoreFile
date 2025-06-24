@@ -2,7 +2,7 @@ package converters.imageConverters;
 
 import configuration.configExceptions.NullJsonValueException;
 import configuration.configHandlers.config.ConfigReader;
-import converters.Converter;
+import net.ifok.image.image4j.codec.ico.ICOEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,8 +15,10 @@ import java.util.List;
 import static converter.Utility.getBaseName;
 import static converters.imageConverters.ImageConverterUtility.removeAlphaChannel;
 
-public class GenericImageConverter extends Converter {
-    private static final Logger logger = LogManager.getLogger(GenericImageConverter.class);
+public class ToICOImageConverter implements  ImageConverterUtility{
+
+    private static final Logger logger = LogManager.getLogger(ToICOImageConverter.class);
+
     @Override
     public File convert(File imgFile) throws NullJsonValueException, IOException {
         String outputExtension = ImageConverterUtility.getAndCheckOutputExtension();
@@ -38,10 +40,11 @@ public class GenericImageConverter extends Converter {
         if (formatsWithAlpha.contains(originalExtension) ^ formatsWithAlpha.contains(outputExtension.toLowerCase())) {
             image = removeAlphaChannel(image);
         }
+
         outFile = new File("src/temp", getBaseName(imgFile) + "." + outputExtension);
         logger.info("File temporaneo creato correttamente");
 
-        ImageIO.write(image, outputExtension, outFile);
+        ICOEncoder.write(image, outFile);
         logger.info("File in uscita scritto correttamente");
 
         logger.info("Creazione file .{} completata: {}", outputExtension, outFile.getName());
