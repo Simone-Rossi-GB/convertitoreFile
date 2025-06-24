@@ -2,6 +2,8 @@ package configuration.configHandlers.config;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import configuration.jsonUtilities.JsonWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class InstanceConfigWriter extends ConfigData {
 
+    private static final Logger log = LoggerFactory.getLogger(InstanceConfigWriter.class);
     /** Riferimento atomico al nodo radice del file JSON, utile per aggiornamenti puntuali. */
     private final AtomicReference<ObjectNode> rootReference = new AtomicReference<>(null);
 

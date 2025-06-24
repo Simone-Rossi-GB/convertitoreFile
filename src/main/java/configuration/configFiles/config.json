@@ -1,267 +1,246 @@
 {
-  "data": {
-    "mandatoryEntries": [
-      "successOutputDir",
-      "errorOutputDir",
-      "monitoredDir",
-      "monitorAtStart"
-    ],
-    "successOutputDir": "src/output/success",
-    "errorOutputDir": "src/output/error",
-    "monitoredDir": "src/input",
-    "monitorAtStart": true,
-    "multipleConversion": true,
-    "formatsWithAlphaChannel": [
-      "png",
-      "tiff",
-      "gif",
-      "webp",
-      "psd",
-      "icns",
-      "ico",
-      "tga",
-      "iff"
-    ],
-    "formatsRequiringIntermediateConversion": [
-      "webp",
-      "pbm",
-      "pgm",
-      "ppm",
-      "pam",
-      "tga",
-      "iff",
-      "xwd",
-      "icns",
-      "pnm"
-    ],
-    "conversions": {
-      "pdf": {
-        "doc": "converters.pdfConverters.PDFtoDOCconverter",
-        "docx": "converters.pdfConverters.PDFtoDOCXconverter",
-        "jpg": "converters.pdfConverters.PDFtoJPGconverter"
+  "data" : {
+    "mandatoryEntries" : [ "successOutputDir", "errorOutputDir", "monitoredDir", "monitorAtStart" ],
+    "successOutputDir" : "src/output/",
+    "errorOutputDir" : "src/output/error",
+    "monitoredDir" : "src/input",
+    "monitorAtStart" : true,
+    "multipleConversion" : true,
+    "formatsWithAlphaChannel" : [ "png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff" ],
+    "formatsRequiringIntermediateConversion" : [ "webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm" ],
+    "conversions" : {
+      "pdf" : {
+        "doc" : "converters.pdfConverters.PDFtoDOCconverter",
+        "docx" : "converters.pdfConverters.PDFtoDOCXconverter",
+        "jpg" : "converters.pdfConverters.PDFtoJPGconverter"
       },
-      "xls": {
-        "json": "converters.spreadsheetConverters.XLStoJSONconverter"
+      "xls" : {
+        "json" : "converters.spreadsheetConverters.XLStoJSONconverter"
       },
-      "xlsx": {
-        "json": "converters.spreadsheetConverters.XLSXtoJSONconverter"
+      "xlsx" : {
+        "json" : "converters.spreadsheetConverters.XLSXtoJSONconverter"
       },
-      "ods": {
-        "json": "converters.spreadsheetConverters.ODStoJSONconverter"
+      "ods" : {
+        "json" : "converters.spreadsheetConverters.ODStoJSONconverter"
       },
-      "json": {
-        "xls": "converters.jsonCsvConverters.JSONtoXLSconverter",
-        "xlsx": "converters.jsonCsvConverters.JSONtoXLSXconverter",
-        "ods": "converters.jsonCsvConverters.JSONtoODSconverter"
+      "json" : {
+        "xls" : "converters.jsonCsvConverters.JSONtoXLSconverter",
+        "xlsx" : "converters.jsonCsvConverters.JSONtoXLSXconverter",
+        "ods" : "converters.jsonCsvConverters.JSONtoODSconverter"
       },
-      "csv": {
-        "json": "converters.jsonCsvConverters.CSVtoJSONconverter"
+      "csv" : {
+        "json" : "converters.jsonCsvConverters.CSVtoJSONconverter"
       },
-      "eml": {
-        "pdf": "converters.mailConverters.EMLtoPDFconverter"
+      "eml" : {
+        "pdf" : "converters.mailConverters.EMLtoPDFconverter"
       },
-      "txt": {
-        "docx": "converters.txtConverters.TXTtoDOCXconverter",
-        "pdf": "converters.txtConverters.TXTtoPDFconverter"
+      "txt" : {
+        "docx" : "converters.txtConverters.TXTtoDOCXconverter",
+        "pdf" : "converters.txtConverters.TXTtoPDFconverter"
       },
-      "zip": {
-        "tar.gz": "converters.compressedFilesConverters.ZIPtoTARGZconverter"
+      "zip" : {
+        "tar.gz" : "converters.compressedFilesConverters.ZIPtoTARGZconverter"
       },
-      "gz": {
-        "zip": "converters.compressedFilesConverters.TARGZtoZIPconverter"
+      "gz" : {
+        "zip" : "converters.compressedFilesConverters.TARGZtoZIPconverter"
       },
-      "msg": {
-        "pdf": "converters.mailConvertersMSGtoPDFconverter"
+      "msg" : {
+        "pdf" : "converters.mailConvertersMSGtoPDFconverter"
       },
-      "bmp": {
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "bmp" : {
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "gif": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "gif" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "jpeg": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "jpeg" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "jpg": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "jpg" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "png": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "png" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "psd": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "psd" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "tiff": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "webp": "converters.imageConverters.GenericImageConverter"
+      "tiff" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "webp" : "converters.imageConverters.GenericImageConverter"
       },
-      "webp": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "gif": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "icns": "converters.imageConverters.GenericImageConverter",
-        "iff": "converters.imageConverters.GenericImageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "pam": "converters.imageConverters.GenericImageConverter",
-        "pbm": "converters.imageConverters.GenericImageConverter",
-        "pgm": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter",
-        "pnm": "converters.imageConverters.GenericImageConverter",
-        "ppm": "converters.imageConverters.GenericImageConverter",
-        "tga": "converters.imageConverters.GenericImageConverter",
-        "tiff": "converters.imageConverters.GenericImageConverter"
+      "webp" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "gif" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "icns" : "converters.imageConverters.GenericImageConverter",
+        "iff" : "converters.imageConverters.GenericImageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "pam" : "converters.imageConverters.GenericImageConverter",
+        "pbm" : "converters.imageConverters.GenericImageConverter",
+        "pgm" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter",
+        "pnm" : "converters.imageConverters.GenericImageConverter",
+        "ppm" : "converters.imageConverters.GenericImageConverter",
+        "tga" : "converters.imageConverters.GenericImageConverter",
+        "tiff" : "converters.imageConverters.GenericImageConverter"
       },
-      "ico": {
-        "icns": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.ICOimageConverter",
-        "jpg": "converters.imageConverters.ICOimageConverter",
-        "png": "converters.imageConverters.ICOimageConverter"
+      "ico" : {
+        "icns" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.ICOimageConverter",
+        "jpg" : "converters.imageConverters.ICOimageConverter",
+        "png" : "converters.imageConverters.ICOimageConverter"
       },
-      "icns": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "icns" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "iff": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "iff" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "pam": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "pam" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "pbm": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "pbm" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "pgm": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "pgm" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "pnm": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "pnm" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "ppm": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "ppm" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "tga": {
-        "bmp": "converters.imageConverters.GenericImageConverter",
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "tga" : {
+        "bmp" : "converters.imageConverters.GenericImageConverter",
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       },
-      "xwd": {
-        "ico": "converters.imageConverters.ICOimageConverter",
-        "jpeg": "converters.imageConverters.GenericImageConverter",
-        "jpg": "converters.imageConverters.GenericImageConverter",
-        "png": "converters.imageConverters.GenericImageConverter"
+      "xwd" : {
+        "ico" : "converters.imageConverters.ICOimageConverter",
+        "jpeg" : "converters.imageConverters.GenericImageConverter",
+        "jpg" : "converters.imageConverters.GenericImageConverter",
+        "png" : "converters.imageConverters.GenericImageConverter"
       }
-    }
-  }
+    },
+    "monitoredOutputDir" : "src/input"
+  },
+  "monitoredOutputDir" : "src/input",
+  "errorOutputDir" : "src/output/error",
+  "successOutputDir" : "src/output/",
+  "monitorAtStart" : true
 }

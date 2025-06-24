@@ -6,6 +6,7 @@ import configuration.configExceptions.JsonFileNotFoundException;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import configuration.configHandlers.config.InstanceConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,14 +43,15 @@ public interface JsonWriter {
         try {
             JsonUtility.checkBuild(jsonFile, rootReference);
             JsonNode valueNode = mapper.valueToTree(updatedEntry);
-            rootReference.get().set(key, valueNode);
+            ObjectNode node = (ObjectNode) rootReference.get().get("data");
+            node.set(key, valueNode);
         } catch (JsonFileNotFoundException | JsonStructureException e) {
             logger.error("Scrittura della variabile {} su {} fallita", key, jsonFile.getName());
             throw new JsonWriteException(e.getMessage());
         }
 
         // Salvataggio su file
-        try (FileWriter writer = new FileWriter(jsonFile)) {
+        try (FileWriter writer = new FileWriter(jsonFile, false)) {
             mapper.writerWithDefaultPrettyPrinter().writeValue(writer, rootReference.get());
             logger.info("Chiave '{}' aggiornata correttamente", key);
         } catch (IOException e) {

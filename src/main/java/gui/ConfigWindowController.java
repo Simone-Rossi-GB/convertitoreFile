@@ -253,10 +253,13 @@ public class ConfigWindowController {
         }
 
         InstanceConfigWriter wr = new InstanceConfigWriter(ConfigData.getJsonFile());
+        logger.info("INIZIO SCRITTURE");
         wr.writeMonitoredDir(monitoredDirField.getText());
         wr.writeErrorOutputDir(errorDirField.getText());
-        wr.writeSuccessOutputDir(errorDirField.getText());
+        wr.writeSuccessOutputDir(successDirField.getText());
         wr.writeIsMonitoringEnabledAtStart(monitorAtStart);
+        logger.info("FINE SCRITTURE");
+
         ConfigData.update(new ConfigInstance(ConfigData.getJsonFile()));
 
         logger.info("Configurazione salvata con successo");
