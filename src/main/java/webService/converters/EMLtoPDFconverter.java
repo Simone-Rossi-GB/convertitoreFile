@@ -74,7 +74,7 @@ public class EMLtoPDFconverter implements Converter {
         }
 
         Document document = new Document();
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
+        PdfWriter writer = PdfWriter.getInstance(document, Files.newOutputStream(outputPdfFile.toPath()));
 
         try {
             document.open();
@@ -157,7 +157,7 @@ public class EMLtoPDFconverter implements Converter {
         }
         if (fieldValue == null) return;
 
-        String valueString = "";
+        String valueString;
         if (fieldValue instanceof List) {
             @SuppressWarnings("unchecked")
             List<Mailbox> mailboxList = (List<Mailbox>) fieldValue;
