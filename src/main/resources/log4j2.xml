@@ -15,8 +15,12 @@
             <PatternLayout pattern="%d{HH:mm:ss} %-5level %c{1} - %msg%n"/>
         </Console>
     </Appenders>
-
     <Loggers>
+        <Logger name="org.apache.poi.util.XMLHelper" level="error" additivity="false">
+            <AppenderRef ref="DailyFileAppender"/>
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+
         <Root level="info">
             <AppenderRef ref="DailyFileAppender"/>
             <AppenderRef ref="ConsoleAppender"/>
