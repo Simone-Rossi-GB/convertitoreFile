@@ -12,7 +12,7 @@ import converters.Zipper;
 import com.twelvemonkeys.util.convert.ConversionException;
 import configuration.configExceptions.JsonStructureException;
 import configuration.configExceptions.JsonWriteException;
-import configuration.configExceptions.NullConfigValueException;
+import configuration.configExceptions.NullJsonValueException;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
@@ -43,7 +43,7 @@ public class Engine {
             config = new ConfigInstance(jsonFile);
             ConfigData.update(config);
             logger.info("Configurazione caricata correttamente da config.json");
-        } catch (NullConfigValueException e) {
+        } catch (NullJsonValueException e) {
             logger.error("Caricamento di una o piu variabili del config fallito");
             throw new RuntimeException("Caricamento di una o piu variabili del config fallito", e);
         } catch (JsonStructureException e) {
