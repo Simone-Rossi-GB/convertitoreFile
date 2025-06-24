@@ -59,7 +59,7 @@ public interface JsonUtility {
             try {
                 File tempFile = (File) json.getValue();
                 root = mapper.readTree(tempFile);
-            } catch (Exception ignored) {
+            } catch (IOException ignored) {
                 String tempString = (String) json.getValue();
                 root = mapper.readTree(tempString);
             }

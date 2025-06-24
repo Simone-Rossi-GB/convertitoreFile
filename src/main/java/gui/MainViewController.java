@@ -3,6 +3,8 @@ package gui;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
+import converters.exception.ConversionException;
+import converters.exception.FileCreationException;
 import converters.exception.IllegalExtensionException;
 import objects.DirectoryWatcher;
 import objects.Log;
@@ -406,7 +408,7 @@ public class MainViewController {
                 try {
                     formats = webServiceClient.getPossibleConversions(srcExtension);
                     addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
-                } catch (Exception wsError) {
+                } catch (Exception wsError) { // TOFIX
                     addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
                     formats = engine.getPossibleConversions(srcExtension);
                 }
@@ -414,7 +416,7 @@ public class MainViewController {
                 addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
                 formats = engine.getPossibleConversions(srcExtension);
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             launchAlertError(e.getMessage());
             Platform.runLater(() -> {
                 fileScartati++;
@@ -443,90 +445,74 @@ public class MainViewController {
 
         String outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
+        // PRIMO TENTATIVO: USA WEBSERVICE
+        boolean webServiceSuccess = false;
+        if (webServiceClient.isServiceAvailable()) {
+            try {
+                addLogMessage("Tentativo conversione tramite web service...");
+                ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile/*, password, mergeImages*/);
 
-        try {
-
-
-
-            // PRIMO TENTATIVO: USA WEBSERVICE
-            boolean webServiceSuccess = false;
-            if (webServiceClient.isServiceAvailable()) {
-                try {
-                    addLogMessage("Tentativo conversione tramite web service...");
-                    ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile/*, password, mergeImages*/);
-
-                    if (result.isSuccess()) {
-                        // Verifica che il file convertito sia stato effettivamente salvato
-                        if (outputDestinationFile.exists()) {
-                            addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
-                            webServiceSuccess = true;
-                        } else {
-                            throw new Exception("Il file convertito non è stato salvato correttamente dal web service");
-                        }
-                    } else {
-                        throw new Exception("Web service ha restituito errore: " + result.getError());
-                    }
-                } catch (Exception wsError) {
-                    addLogMessage("Web service fallito: " + wsError.getMessage());
-                    webServiceSuccess = false;
-
-                    // Pulisci eventuale file parzialmente creato
+                if (result.isSuccess()) {
+                    // Verifica che il file convertito sia stato effettivamente salvato
                     if (outputDestinationFile.exists()) {
-                        try {
-                            Files.delete(outputDestinationFile.toPath());
-                            addLogMessage("File parziale eliminato per retry con engine locale");
-                        } catch (Exception cleanupError) {
-                            addLogMessage("Errore pulizia file parziale: " + cleanupError.getMessage());
-                        }
+                        addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                        webServiceSuccess = true;
+                    } else {
+                        throw new FileCreationException("Il file convertito non è stato salvato correttamente dal web service");
+                    }
+                } else {
+                    throw new ConversionException("Web service ha restituito errore: " + result.getError());
+                }
+            } catch (Exception wsError) { // TOFIX
+                addLogMessage("Web service fallito: " + wsError.getMessage());
+
+                // Pulisci eventuale file parzialmente creato
+                if (outputDestinationFile.exists()) {
+                    try {
+                        Files.delete(outputDestinationFile.toPath());
+                        addLogMessage("File parziale eliminato per retry con engine locale");
+                    } catch (IOException cleanupError) {
+                        addLogMessage("Errore pulizia file parziale: " + cleanupError.getMessage());
                     }
                 }
-            } else {
-                addLogMessage("Web service non disponibile, passo direttamente a engine locale");
             }
+        } else {
+            addLogMessage("Web service non disponibile, passo direttamente a engine locale");
+        }
 
-            // SECONDO TENTATIVO: USA ENGINE LOCALE (solo se webservice fallito)
-            if (!webServiceSuccess) {
-                addLogMessage("Fallback: uso engine locale per conversione...");
+        // SECONDO TENTATIVO: USA ENGINE LOCALE (solo se webservice fallito)
+        if (!webServiceSuccess) {
+            addLogMessage("Fallback: uso engine locale per conversione...");
 
-                try {
-                    engine.conversione(srcExtension, targetFormat, srcFile);
+            try {
+                engine.conversione(srcExtension, targetFormat, srcFile);
 
-                    addLogMessage("Conversione ENGINE LOCALE riuscita");
+                addLogMessage("Conversione ENGINE LOCALE riuscita");
 
-                    // Per l'engine locale, il file originale è già stato gestito automaticamente
-                    Platform.runLater(() -> {
-                        fileConvertiti++;
-                        stampaRisultati();
-                        launchAlertSuccess(srcFile);
-                    });
-                    return; // Esci qui se engine locale ha successo
-
-                } catch (Exception engineError) {
-                    launchAlertError(engineError.getMessage());
-                }
-            }
-
-            // Se arriviamo qui, il web service ha avuto successo
-            if (webServiceSuccess) {
-                addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
-
-                // Gestisci il file originale dopo successo web service
-                moveOriginalFileAfterSuccess(srcFile);
-
+                // Per l'engine locale, il file originale è già stato gestito automaticamente
                 Platform.runLater(() -> {
                     fileConvertiti++;
                     stampaRisultati();
-                    launchAlertSuccess(outputDestinationFile);
+                    launchAlertSuccess(srcFile);
                 });
-            }
+                return; // Esci qui se engine locale ha successo
 
-        } catch (Exception e) {
-            addLogMessage("ERRORE FINALE: " + e.getMessage());
-            moveFileToErrorFolder(srcFile);
+            } catch (Exception engineError) { // Exception ammessa nel programma
+                launchAlertError(engineError.getMessage());
+            }
+        }
+
+        // Se arriviamo qui, il web service ha avuto successo
+        if (webServiceSuccess) {
+            addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
+
+            // Gestisci il file originale dopo successo web service
+            moveOriginalFileAfterSuccess(srcFile);
+
             Platform.runLater(() -> {
-                fileScartati++;
+                fileConvertiti++;
                 stampaRisultati();
-                launchAlertError("Conversione fallita: " + e.getMessage());
+                launchAlertSuccess(outputDestinationFile);
             });
         }
     }
@@ -538,22 +524,8 @@ public class MainViewController {
                 Files.delete(originalFile.toPath());
                 addLogMessage("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
-        }
-    }
-
-    private void moveFileToErrorFolder(File originalMonitoredFile) {
-        try {
-            // Solo se il file esiste ancora nella cartella monitorata, spostalo
-            if (originalMonitoredFile.exists()) {
-                Path srcPath = originalMonitoredFile.toPath();
-                Path destPath = Paths.get(failedFolderPath, originalMonitoredFile.getName());
-                Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                addLogMessage("File originale spostato in cartella errori: " + destPath);
-            }
-        } catch (Exception e) {
-            addLogMessage("Errore nello spostamento file originale in cartella errori: " + e.getMessage());
         }
     }
 
@@ -614,7 +586,7 @@ public class MainViewController {
 
         try {
             return union.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             throw new Exception("Impossibile ottenere il parametro Boolean");
         }
     }
@@ -636,7 +608,7 @@ public class MainViewController {
         });
         try {
             return extraParameter.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             throw new Exception("Impossibile ottenere il parametro String");
         }
     }

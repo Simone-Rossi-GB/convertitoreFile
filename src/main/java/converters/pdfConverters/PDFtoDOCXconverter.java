@@ -7,6 +7,7 @@ import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.*;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -31,10 +32,10 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
      * @param pdfFile      il file PDF di input
      * @param pdfDocument  documento PDFBox già caricato
      * @return file DOCX temporaneo generato
-     * @throws Exception in caso di errore nella conversione
+     * @throws IOException in caso di errore nella conversione
      */
     @Override
-    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
 
         XWPFDocument docx = new XWPFDocument();
@@ -120,7 +121,7 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
                     "image.png",
                     Units.toEMU(width),
                     Units.toEMU(height));
-        } catch (Exception e) {
+        } catch (InvalidFormatException e) {
             logger.error("Inserimento immagine fallito: {}", e.getMessage());
         } finally {
             is.close();

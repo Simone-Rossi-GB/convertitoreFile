@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword {
-    private static final Logger logger = LogManager.getLogger(DirectoryWatcher.class);
+    private static final Logger logger = LogManager.getLogger(AbstractPDFConverter.class);
     /**
      *Prova a caricare il pdf con la password passata (se non null) e seleziona il metodo di conversione coerente con i parametri passati
      * @param pdfFile File di partenza
@@ -51,7 +51,7 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
         //Esegue la conversione
         try{
             return convertInternal(pdfFile, pdf);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ConversionException(e.getMessage());
         } finally {
             if (pdf != null) {
@@ -76,7 +76,6 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
      * @param pdfFile File di partenza
      * @param pdfDocument Documento pdf caricato
      * @return ArrayList di file convertiti
-     * @throws Exception
      */
-    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception;
+    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException;
 }

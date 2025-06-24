@@ -27,7 +27,7 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
      * @throws Exception Errore durante il processo di conversione
      */
     @Override
-    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
         // Validazione degli input
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
         validateInputs(pdfFile, pdfDocument);
@@ -68,10 +68,6 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
         } catch (IOException e) {
             logger.error("Errore I/O durante la conversione: {}", e.getMessage());
             throw new ConversionException("Errore I/O durante la conversione del file " + pdfFile.getName());
-
-        } catch (Exception e) {
-            logger.error("Errore generico nella conversione: {}", e.getMessage());
-            throw new ConversionException("Errore generico durante la conversione del file");
         }
     }
 }

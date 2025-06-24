@@ -135,7 +135,7 @@ public class Engine {
         ConversionContextWriter.setDestinationFormat(outExt);
         try {
             outFile = converter.conversione(tempFile);
-        } catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             throw new ConversionException(e.getMessage());
         }
         Files.deleteIfExists(tempFile.toPath());
