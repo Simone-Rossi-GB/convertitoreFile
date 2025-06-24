@@ -1,6 +1,6 @@
 package converters.pdfConverters;
 
-import converter.Log;
+import converters.exception.ConversionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.cos.COSName;
@@ -14,6 +14,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.ConnectException;
 import java.util.*;
 
 /**
@@ -41,34 +42,50 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
         XWPFDocument docx = new XWPFDocument();
 
         // Estrai solo il testo
-        PDFTextStripper stripper = new LineAwareStripper(docx);
-        stripper.setSortByPosition(true);
-        stripper.setStartPage(1);
-        stripper.setEndPage(pdfDocument.getNumberOfPages());
+        try {
+            PDFTextStripper stripper = new LineAwareStripper(docx);
+            stripper.setSortByPosition(true);
+            stripper.setStartPage(1);
+            stripper.setEndPage(pdfDocument.getNumberOfPages());
 
-        stripper.writeText(pdfDocument, new OutputStreamWriter(new ByteArrayOutputStream()));
+            stripper.writeText(pdfDocument, new OutputStreamWriter(new ByteArrayOutputStream()));
+        } catch (Exception e) {
+            logger.error("Errore durante l'estrazione del testo: {}", e.getMessage(), e);
+            throw new ConversionException("Errore durante l'estrazione del testo dal PDF");
+        }
 
         // Estrai immagini da ogni pagina
-        for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
-            PDPage page = pdfDocument.getPage(i);
-            PDResources resources = page.getResources();
+        try {
+            for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
+                PDPage page = pdfDocument.getPage(i);
+                PDResources resources = page.getResources();
+                if (resources == null) continue;
 
-            if (resources == null) continue;
-
-            for (COSName xObjectName : resources.getXObjectNames()) {
-                PDXObject xObject = resources.getXObject(xObjectName);
-                if (xObject instanceof PDImageXObject) {
-                    PDImageXObject image = (PDImageXObject) xObject;
-                    BufferedImage bImage = image.getImage();
-                    insertImageInDocx(docx, bImage);
-                    logger.info("Immagine inserita dalla pagina {}", i + 1);
+                for (COSName xObjectName : resources.getXObjectNames()) {
+                    try {
+                        PDXObject xObject = resources.getXObject(xObjectName);
+                        if (xObject instanceof PDImageXObject) {
+                            PDImageXObject image = (PDImageXObject) xObject;
+                            BufferedImage bImage = image.getImage();
+                            insertImageInDocx(docx, bImage);
+                            logger.info("Immagine inserita dalla pagina {}", i + 1);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Errore nel recuperare un'immagine dalla pagina {}: {}", i + 1, e.getMessage());
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("Errore durante l'estrazione delle immagini: {}", e.getMessage(), e);
+            throw new ConversionException("Errore durante l'estrazione delle immagini dal PDF");
         }
 
         File outputFile = new File(getTempFileName(pdfFile));
         try (FileOutputStream out = new FileOutputStream(outputFile)) {
             docx.write(out);
+        } catch (Exception e) {
+            logger.error("Errore nella scrittura del file DOCX: {}", e.getMessage(), e);
+            throw new ConversionException("Errore nella scrittura del file DOCX");
         }
 
         logger.info("Conversione completata: {}", outputFile.getAbsolutePath());
@@ -108,24 +125,21 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
             height = (int) (height * scale);
         }
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", os);
-        InputStream is = new ByteArrayInputStream(os.toByteArray());
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+             InputStream is = new ByteArrayInputStream(os.toByteArray())) {
+            ImageIO.write(image, "png", os);
 
-        XWPFParagraph paragraph = docx.createParagraph();
-        XWPFRun run = paragraph.createRun();
+            XWPFParagraph paragraph = docx.createParagraph();
+            XWPFRun run = paragraph.createRun();
 
-        try {
             run.addPicture(is,
                     XWPFDocument.PICTURE_TYPE_PNG,
                     "image.png",
                     Units.toEMU(width),
                     Units.toEMU(height));
         } catch (Exception e) {
-            Log.addMessage("ERRORE: inserimento immagine fallito - " + e.getMessage());
-            logger.error("Inserimento immagine fallito: {}", e.getMessage());
-        } finally {
-            is.close();
+            logger.error("Inserimento immagine fallito: {}", e.getMessage(), e);
+            throw new ConnectException("Errore durante l'inserimento immagine nel DOCX");
         }
     }
 
@@ -149,30 +163,31 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
 
             float currentY = positions.get(0).getYDirAdj();
 
-            // Crea un nuovo paragrafo se il salto verticale è sufficiente
-            if (currentParagraph == null || Math.abs(currentY - lastY) > 2.5f) {
-                currentParagraph = docx.createParagraph();
-                currentRun = currentParagraph.createRun();
+            try {
+                if (currentParagraph == null || Math.abs(currentY - lastY) > 2.5f) {
+                    currentParagraph = docx.createParagraph();
+                    currentRun = currentParagraph.createRun();
 
-                TextPosition first = positions.get(0);
-                String rawFontName = first.getFont().getName();
-                String fontName = rawFontName.toLowerCase();
+                    TextPosition first = positions.get(0);
+                    String rawFontName = first.getFont().getName();
+                    String fontName = rawFontName.toLowerCase();
 
-                // Evita font decorativi
-                if (fontName.contains("symbol") || fontName.contains("zapfdingbats")) {
-                    currentRun.setFontFamily("Calibri");
-                } else {
-                    currentRun.setFontFamily(rawFontName);
+                    if (fontName.contains("symbol") || fontName.contains("zapfdingbats")) {
+                        currentRun.setFontFamily("Calibri");
+                    } else {
+                        currentRun.setFontFamily(rawFontName);
+                    }
+
+                    currentRun.setFontSize((int) first.getFontSizeInPt());
+                    if (fontName.contains("bold")) currentRun.setBold(true);
+                    if (fontName.contains("italic") || fontName.contains("oblique")) currentRun.setItalic(true);
                 }
 
-                currentRun.setFontSize((int) first.getFontSizeInPt());
-                if (fontName.contains("bold")) currentRun.setBold(true);
-                if (fontName.contains("italic") || fontName.contains("oblique")) currentRun.setItalic(true);
+                currentRun.setText(text, currentRun.getTextPosition() == 0 ? 0 : currentRun.getTextPosition());
+                lastY = currentY;
+            } catch (Exception e) {
+                logger.warn("Errore durante la scrittura del testo: {}", e.getMessage());
             }
-
-            // Aggiunge il testo al run corrente
-            currentRun.setText(text, currentRun.getTextPosition() == 0 ? 0 : currentRun.getTextPosition());
-            lastY = currentY;
         }
 
         @Override

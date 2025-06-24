@@ -1,8 +1,8 @@
 package converters.compressedFilesConverters;
 
-import converter.Log;
 import converter.Utility;
 import converters.Converter;
+import converters.exception.ConversionException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -30,7 +30,6 @@ public class TARGZtoZIPconverter extends Converter {
     @Override
     public File convert(File tarGzFile) throws IOException {
         logger.info("Inizio conversione con parametri: \n | tarGz.getPath() = {}", tarGzFile.getPath());
-        Log.addMessage("Inizio conversione tarGz: " + tarGzFile.getName() + " -> .zip");
 
         String directoryPath = "src/temp/";
         String name = tarGzFile.getName();
@@ -56,7 +55,6 @@ public class TARGZtoZIPconverter extends Converter {
                         Utility.copy(tarIn, zipOut);
                     } catch (IOException e) {
                         logger.error("Impossibile copiare l'entry {} nell'archivio zip: {}", entry.getName(), e.getMessage(), e);
-                        Log.addMessage("ERRORE: impossibile copiare l'entry " + entry.getName() + " nell'archivio zip.");
                         throw e;
                     }
                 }
@@ -65,12 +63,10 @@ public class TARGZtoZIPconverter extends Converter {
             }
 
             logger.info("Creazione file .zip completata: {}", zipFile.getName());
-            Log.addMessage("Creazione file .zip completata: " + zipFile.getName());
 
         } catch (IOException e) {
             logger.error("Errore durante la conversione del file tar.gz: {}", e.getMessage(), e);
-            Log.addMessage("ERRORE: problema durante la conversione del file tar.gz.");
-            throw e;
+            throw new ConversionException("Errore durante la conversione del file tar.gz");
         }
 
         return zipFile;

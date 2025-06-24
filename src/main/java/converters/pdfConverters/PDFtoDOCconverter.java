@@ -1,6 +1,7 @@
 package converters.pdfConverters;
 
 import converter.Log;
+import converters.exception.ConversionException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
@@ -39,11 +40,9 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
         try {
             if (!template.exists()) {
                 logger.error("Template mancante: {}", template.getAbsolutePath());
-                Log.addMessage("[PDF→DOC] ERRORE: file template 'themplate.doc' non trovato.");
                 throw new FileNotFoundException("Template mancante");
             }
 
-            Log.addMessage("[PDF→DOC] Estrazione testo dal file: " + pdfFile.getName());
             logger.info("Estrazione testo da PDF: {}", pdfFile.getName());
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(pdfDocument);
@@ -53,7 +52,6 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
                  FileOutputStream out = new FileOutputStream(outputFile)) {
 
                 logger.info("Scrittura contenuto nel file DOC: {}", outputFile.getName());
-                Log.addMessage("[PDF→DOC] Scrittura nel file DOC: " + outputFile.getName());
 
                 Range range = doc.getRange();
                 range.replaceText(range.text(), text);
@@ -61,24 +59,20 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
 
 
                 logger.info("File .doc creato con successo: {}", outputFile.getAbsolutePath());
-                Log.addMessage("[PDF→DOC] Creazione completata: " + outputFile.getName());
                 return outputFile;
             }
 
         } catch (FileNotFoundException e) {
             logger.error("File non trovato: {}", e.getMessage());
-            Log.addMessage("[PDF→DOC] ERRORE: file non trovato - " + e.getMessage());
-            throw e;
+            throw new FileNotFoundException("File non trovato: " + pdfFile.getName());
 
         } catch (IOException e) {
             logger.error("Errore I/O durante la conversione: {}", e.getMessage());
-            Log.addMessage("[PDF→DOC] ERRORE: problema I/O - " + e.getMessage());
-            throw new IOException("Errore I/O durante la conversione del file " + pdfFile.getName(), e);
+            throw new ConversionException("Errore I/O durante la conversione del file " + pdfFile.getName());
 
         } catch (Exception e) {
             logger.error("Errore generico nella conversione: {}", e.getMessage());
-            Log.addMessage("[PDF→DOC] ERRORE: eccezione durante la conversione - " + e.getMessage());
-            throw new Exception("Errore generico durante la conversione del file " + pdfFile.getName(), e);
+            throw new ConversionException("Errore generico durante la conversione del file");
         }
     }
 }
