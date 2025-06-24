@@ -34,12 +34,10 @@ public class ImageConverter extends Converter {
                 outputFile = imageConversion(imgFile, estensione);
             } catch (IOException e) {
                 logger.error("Conversione immagine fallita per:{}", imgFile.getName());
-                Log.addMessage("[IMG] ERRORE: conversione immagine fallita per " + imgFile.getName());
                 throw e;
             }
         } else {
             logger.error("Formato immagine non riconosciuto nel nome del file {}", imgFile.getName());
-            Log.addMessage("[IMG] ERRORE: formato immagine non riconosciuto nel nome del file " + imgFile.getName());
         }
 
         return outputFile;
@@ -50,8 +48,6 @@ public class ImageConverter extends Converter {
      */
     public static File imageConversion(File imgFile, String targetFormat) throws IOException {
         logger.info("Inizio conversione immagine:\n | {} -> .{}", imgFile.getName(), targetFormat);
-        Log.addMessage("[IMG] Inizio conversione immagine:\n| " +
-                imgFile.getName() + " -> ." + targetFormat);
 
         List<String> formatsWithAlpha = ConfigReader.getFormatsWithAlphaChannel();
         List<String> formatsRequiringIntermediate = ConfigReader.getFormatsRequiringIntermediateConversion();
@@ -65,7 +61,6 @@ public class ImageConverter extends Converter {
             List<BufferedImage> images = ICODecoder.read(imgFile);
             if (images.isEmpty()) {
                 logger.error("Nessuna immagine valida trovata nel file ICO.");
-                Log.addMessage("ERRORE: nessuna immagine valida trovata nel file ICO.");
                 throw new IOException("File ICO non valido: " + imgFile.getName());
             }
 
@@ -81,14 +76,12 @@ public class ImageConverter extends Converter {
             outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
             ICOEncoder.write(largest, outFile);
             logger.info("Creazione file .{} completata: {}", targetFormat, outFile.getName());
-            Log.addMessage("Creazione file ." + targetFormat + " completata: " + outFile.getName());
             return outFile;
 
         } else {
             image = ImageIO.read(imgFile);
             if (image == null) {
                 logger.error("Lettura immagine fallita - formato non supportato o file corrotto.");
-                Log.addMessage("ERRORE: lettura immagine fallita - formato non supportato o file corrotto.");
                 throw new IOException("Immagine non valida: " + imgFile.getName());
             }
         }
@@ -101,18 +94,15 @@ public class ImageConverter extends Converter {
 
         outFile = new File("src/temp", getBaseName(imgFile) + "." + targetFormat);
         logger.info("File temporaneo creato correttamente");
-        Log.addMessage("[IMG] File temporaneo creato correttamente");
 
         if (targetFormat.equalsIgnoreCase("ico")) {
             ICOEncoder.write(image, outFile);
         } else {
             ImageIO.write(image, targetFormat, outFile);
             logger.info("File in uscita scritto correttamente");
-            Log.addMessage("[IMG] File in uscita scritto correttamente");
         }
 
         logger.info("Creazione file .{} completata: {}", targetFormat, outFile.getName());
-        Log.addMessage("[IMG] Creazione file ." + targetFormat + " completata: " + outFile.getName());
         return outFile;
     }
 
@@ -139,7 +129,6 @@ public class ImageConverter extends Converter {
      */
     private static BufferedImage removeAlphaChannel(BufferedImage inImage) {
         logger.info("Rimozione canale alpha da immagine");
-        Log.addMessage("[IMG] Rimozione canale alpha da immagine");
 
         BufferedImage copy = new BufferedImage(
                 inImage.getWidth(), inImage.getHeight(),
