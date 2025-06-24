@@ -18,8 +18,8 @@ import org.apache.logging.log4j.LogManager;
 /**
  * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
  */
-/*public class ImageConverter implements Converter {
-    private static final Logger logger = LogManager.getLogger(ImageConverter.class);
+/*public class palle implements Converter {
+    private static final Logger logger = LogManager.getLogger(palle.class);
     /**
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */

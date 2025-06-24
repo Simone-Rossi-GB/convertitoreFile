@@ -1,9 +1,8 @@
-package converters;
+package converters.imageConverters;
 
-import com.itextpdf.text.DocumentException;
 import configuration.configHandlers.config.ConfigReader;
 import configuration.configHandlers.conversionContext.ConversionContextReader;
-import converter.Log;
+import converters.Converter;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
 
@@ -20,13 +19,13 @@ import org.apache.logging.log4j.LogManager;
 /**
  * Convertitore per immagini tra vari formati (png, jpg, ico, webp, ecc.)
  */
-public class ImageConverter extends Converter {
-    private static final Logger logger = LogManager.getLogger(ImageConverter.class);
+public class palle extends Converter {
+    private static final Logger logger = LogManager.getLogger(palle.class);
     /**
      * Converte un'immagine nel formato desiderato, dedotto dal nome del file
      */
     @Override
-    public File convert(File imgFile) throws IOException, DocumentException {
+    public File convert(File imgFile) throws IOException {
         String estensione = ConversionContextReader.getDestinationFormat();
         File outputFile = null;
         if (estensione != null) {
