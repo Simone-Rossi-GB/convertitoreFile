@@ -1,7 +1,6 @@
 package converters.spreadsheetConverters;
 
 import converters.Converter;
-import converters.compressedFilesConverters.ZIPtoTARGZconverter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,8 +82,6 @@ public class XLSXtoJSONconverter extends Converter {
                 return Boolean.toString(cell.getBooleanCellValue());
             case FORMULA:
                 return cell.getCellFormula();
-            case BLANK:
-                return "";
             default:
                 return "";
         }
