@@ -36,7 +36,7 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
      */
     @Override
     protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
-        logger.info("Inizio conversione PDF → DOCX: {}", pdfFile.getName());
+        logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
 
         XWPFDocument docx = new XWPFDocument();
 
@@ -122,7 +122,6 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
                     Units.toEMU(width),
                     Units.toEMU(height));
         } catch (Exception e) {
-            Log.addMessage("ERRORE: inserimento immagine fallito - " + e.getMessage());
             logger.error("Inserimento immagine fallito: {}", e.getMessage());
         } finally {
             is.close();

@@ -1,11 +1,14 @@
 package converters.spreadsheetConverters;
 
 import converters.Converter;
+import converters.exception.ConversionException;
+import converters.exception.FileCreationException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.nio.file.Files;
 import java.util.*;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +31,7 @@ public class XLStoJSONconverter extends Converter {
 
         } catch (Exception e) {
             logger.error("Errore durante la conversione: {}", e.getMessage());
-            throw new IOException("Errore nella conversione XLS to JSON", e);
+            throw new ConversionException("Errore nella conversione XLS to JSON");
         }
         return jsonFile;
     }
@@ -121,39 +124,14 @@ public class XLStoJSONconverter extends Converter {
                 return outputFile;
             } else {
                 logger.error("Il file JSON non è stato creato correttamente");
-                throw new IOException("Il file JSON non è stato creato correttamente");
+                throw new FileCreationException("Il file JSON non è stato creato correttamente");
             }
 
         } catch (Exception e) {
             // Pulizia in caso di errore
             cleanupFailedConversion(outputFile);
             logger.error("Errore durante la conversione XLS: {}", e.getMessage(), e);
-            throw new IOException("Errore durante la conversione XLS: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Valida il file di input
-     */
-    private void validateInputFile(File inputFile) throws IOException {
-        if (inputFile == null) {
-            throw new IllegalArgumentException("Il file di input non può essere null");
-        }
-
-        if (!inputFile.exists()) {
-            throw new FileNotFoundException("File non trovato: " + inputFile.getAbsolutePath());
-        }
-
-        if (!inputFile.isFile()) {
-            throw new IllegalArgumentException("Il percorso non punta a un file: " + inputFile.getAbsolutePath());
-        }
-
-        if (!inputFile.canRead()) {
-            throw new IOException("File non leggibile: " + inputFile.getAbsolutePath());
-        }
-
-        if (inputFile.length() == 0) {
-            throw new IOException("Il file è vuoto: " + inputFile.getAbsolutePath());
+            throw new ConnectException("Errore durante la conversione XLS: " + e.getMessage());
         }
     }
 
@@ -173,7 +151,7 @@ public class XLStoJSONconverter extends Converter {
         if (parentDir != null && !parentDir.exists()) {
             boolean created = parentDir.mkdirs();
             if (!created) {
-                throw new IOException("Impossibile creare la cartella: " + parentDir.getAbsolutePath());
+                throw new FileCreationException("Impossibile creare la cartella: " + parentDir.getAbsolutePath());
             }
             System.out.println("  Cartella creata: " + parentDir.getAbsolutePath());
         }
@@ -187,6 +165,7 @@ public class XLStoJSONconverter extends Converter {
             boolean deleted = outputFile.delete();
             if (deleted) {
                 System.out.println("  File parziale eliminato: " + outputFile.getName());
+                logger.info("File parziale eliminato{}", outputFile.getName());
             }
         }
     }
@@ -296,24 +275,8 @@ public class XLStoJSONconverter extends Converter {
         if (file == null || !file.exists() || !file.isFile()) {
             return false;
         }
-
         String fileName = file.getName().toLowerCase();
         return fileName.endsWith(".xls");
     }
 
-    /**
-     * Ottiene informazioni sul file di input
-     */
-    public String getFileInfo(File file) {
-        if (file == null || !file.exists()) {
-            return "File non valido";
-        }
-
-        return "Nome: " + file.getName() + "\n" +
-                "Percorso: " + file.getAbsolutePath() + "\n" +
-                "Dimensione: " + file.length() + " bytes\n" +
-                "Leggibile: " + file.canRead() + "\n" +
-                "Modificabile: " + file.canWrite() + "\n" +
-                "Supportato: " + isFileSupported(file);
-    }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import converters.Converter;
+import converters.exception.EmptyFileException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -24,14 +25,13 @@ public class CSVtoJSONconverter extends Converter {
      * Converte un file CSV in un file JSON con delimitatore rilevato automaticamente.
      * Ogni riga del CSV diventa un oggetto JSON.
      */
-    public File convert(File srcFile) throws IOException {
+    public File convert(File srcFile) throws IOException, EmptyFileException {
         logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
         Log.addMessage("Inizio conversione CSV: " + srcFile.getName() + " → .json");
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {
             logger.error("Il file CSV è vuoto → {}", srcFile.getName());
-            Log.addMessage("Errore: Il file CSV è vuoto → " + srcFile.getName());
-            throw new IOException("Il file CSV è vuoto: " + srcFile.getName());
+            throw new EmptyFileException("Il file CSV è vuoto: " + srcFile.getName());
         }
 
         String headerLine = removeBOM(lines.get(0));
@@ -76,11 +76,9 @@ public class CSVtoJSONconverter extends Converter {
             mapper.writerWithDefaultPrettyPrinter().writeValue(output, jsonArray);
         } catch (IOException e) {
             logger.error("Durante la scrittura del file JSON: {}", output.getName());
-            Log.addMessage("Errore durante la scrittura del file JSON: " + output.getName());
             throw e;
         }
         logger.info("File JSON creato: {}", output.getName());
-        Log.addMessage("File JSON creato: " + output.getName());
         return output;
     }
 

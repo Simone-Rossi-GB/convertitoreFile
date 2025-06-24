@@ -20,7 +20,8 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
 
         Log.addMessage("");
-        logger.info("Applicazione avviata");
+        logger.info("");
+        logger.info("======== APPLICAZIONE AVVIATA ========");
         Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("File Converter Manager");
