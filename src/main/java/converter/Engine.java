@@ -36,19 +36,19 @@ public class Engine {
      * @throws IllegalArgumentException Non viene passata un'estensione
      * @throws NullPointerException Configurazione mancante
      */
-    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException {
+    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException, UnsupportedConversionException   {
         if (extension == null) {
             logger.error("Parametro extension nullo");
             throw new IllegalArgumentException("L'oggetto extension non esiste");
         }
 
-        if (config == null || ConfigReader.getConversions() == null) {
+        if (ConfigReader.getConversions() == null) {
             logger.error("Configurazione mancante");
             throw new NullPointerException("Config mancante");
         }
         if(!ConfigReader.getConversions().containsKey(extension)) {
             logger.error("Conversione non supportata");
-            throw new ConversionException("Formato di partenza non supportato");
+            throw new UnsupportedConversionException("Formato di partenza non supportato");
         }
         logger.info("Formati disponibili per la conversione da {} ottenuti con successo", extension);
         return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());

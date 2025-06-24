@@ -6,6 +6,7 @@ import converter.DirectoryWatcher;
 import converter.Log;
 import converters.Zipper;
 import converter.Utility;
+import converters.exception.UnsupportedConversionException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import converter.Engine;
@@ -419,8 +420,7 @@ public class MainViewController {
                 formats = engine.getPossibleConversions(srcExtension);
             }
         } catch (Exception e) {
-            Log.addMessage("ERRORE: Conversione non supportata per il file " + srcFile.getName() + " (" + srcExtension + ")");
-            launchAlertError("Conversione di " + srcFile.getName() + " non supportata");
+            launchAlertError(e.getMessage());
             Platform.runLater(() -> {
                 fileScartati++;
                 stampaRisultati();
@@ -430,6 +430,7 @@ public class MainViewController {
 
         List<String> finalFormats = formats;
         String finalSrcExtension = srcExtension;
+        //Mostra il dialog per selezionare il formato di output
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
             dialog.setTitle("Seleziona Formato");
@@ -506,8 +507,7 @@ public class MainViewController {
                     return; // Esci qui se engine locale ha successo
 
                 } catch (Exception engineError) {
-                    addLogMessage("Anche engine locale fallito: " + engineError.getMessage());
-                    throw new Exception("Entrambi i metodi di conversione falliti. Web service: fallito. Engine locale: " + engineError.getMessage());
+                    launchAlertError(engineError.getMessage());
                 }
             }
 
