@@ -283,7 +283,6 @@ public class ConfigWindowController {
             // Controlla se ci sono modifiche non salvate
             if (hasUnsavedChanges()) {
                 logger.info("Tentativo di chiusura con modifiche non salvate");
-                Log.addMessage("Tentativo di chiusura con modifiche non salvate");
                 Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmAlert.setTitle("Modifiche non salvate");
                 confirmAlert.setHeaderText("Ci sono modifiche non salvate");
@@ -296,7 +295,6 @@ public class ConfigWindowController {
                 });
             } else {
                 logger.info("Finestra di configurazione chiusa senza modifiche");
-                Log.addMessage("Finestra di configurazione chiusa senza modifiche");
                 dialogStage.close();
             }
         } catch (Exception e) {

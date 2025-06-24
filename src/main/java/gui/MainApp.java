@@ -19,10 +19,8 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Log.addMessage("");
         logger.info("");
         logger.info("======== APPLICAZIONE AVVIATA ========");
-        Log.addMessage("Applicazione avviata");
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("File Converter Manager");
         this.primaryStage.setResizable(false); // Opzionale: impedisce il ridimensionamento
@@ -52,8 +50,6 @@ public class MainApp extends Application {
 
             primaryStage.setOnCloseRequest(event -> {
                 logger.info("Applicazione chiusa.");
-                Log.addMessage("Applicazione chiusa.");
-                Log.close();
             });
 
         } catch (IOException e) {

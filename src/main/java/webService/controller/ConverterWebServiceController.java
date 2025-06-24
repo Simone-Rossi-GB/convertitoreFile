@@ -28,7 +28,6 @@ public class ConverterWebServiceController {
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
-        Log.addMessage("WebService: Richiesta stato ricevuta");
         logger.info("WebService: Richiesta stato ricevuta");
         return ResponseEntity.ok(Collections.singletonMap("status", "active"));
     }
@@ -36,13 +35,11 @@ public class ConverterWebServiceController {
     @GetMapping("/conversions/{extension}")
     public ResponseEntity<List<String>> getPossibleConversions(@PathVariable String extension) {
         try {
-            Log.addMessage("WebService: Richiesta conversioni possibili per estensione: " + extension);
             logger.info("WebService: Richiesta conversioni possibili per estensione: {}", extension);
             List<String> conversions = engineWebService.getPossibleConversions(extension);
             return ResponseEntity.ok(conversions);
         } catch (Exception e) {
             logger.error("ERRORE WebService: Impossibile ottenere conversioni per {}: {}", extension, e.getMessage());
-            Log.addMessage("ERRORE WebService: Impossibile ottenere conversioni per " + extension + ": " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
@@ -61,12 +58,10 @@ public class ConverterWebServiceController {
 
         try {
             logger.info("WebService: Inizio conversione file: {} -> {}", file.getOriginalFilename(), targetFormat);
-            Log.addMessage("WebService: Inizio conversione file: " + file.getOriginalFilename() + " -> " + targetFormat);
 
             // 1. Crea una directory temporanea univoca per questa conversione
             conversionTempDir = Files.createTempDirectory("conversion-" + UUID.randomUUID().toString() + "-");
             logger.info("WebService: Creata directory temporanea: {}", conversionTempDir);
-            Log.addMessage("WebService: Creata directory temporanea: " + conversionTempDir);
 
             // 2. Salva il file caricato nella directory temporanea
             String originalFilename = file.getOriginalFilename();
@@ -74,7 +69,6 @@ public class ConverterWebServiceController {
             tempInputFilePath = conversionTempDir.resolve(originalFilename);
             file.transferTo(tempInputFilePath);
             logger.info("WebService: File salvato in: {}", tempInputFilePath);
-            Log.addMessage("WebService: File salvato in: " + tempInputFilePath);
 
             // 3. Chiama EngineWebService per la conversione
             File inputFileForEngine = tempInputFilePath.toFile();
@@ -98,7 +92,6 @@ public class ConverterWebServiceController {
             // 5. Leggi i byte del file convertito
             byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
             logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
-            Log.addMessage("WebService: File convertito letto, dimensione: " + fileBytes.length + " bytes");
 
             // 6. Determina il Content-Type corretto per la risposta HTTP
             MediaType contentType = determineMediaType(targetFormat);
@@ -110,12 +103,10 @@ public class ConverterWebServiceController {
             headers.setContentLength(fileBytes.length);
 
             logger.info("WebService: Conversione completata con successo per: {}", originalFilename);
-            Log.addMessage("WebService: Conversione completata con successo per: " + originalFilename);
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("WebService: Errore durante conversione: {}", e.getMessage());
-            Log.addMessage("ERRORE WebService: Errore durante conversione: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -127,22 +118,18 @@ public class ConverterWebServiceController {
                 if (tempInputFilePath != null && Files.exists(tempInputFilePath)) {
                     Files.delete(tempInputFilePath);
                     logger.info("WebService: File temporaneo di input eliminato");
-                    Log.addMessage("WebService: File temporaneo di input eliminato");
                 }
                 if (convertedOutputFile != null && Files.exists(convertedOutputFile.toPath())) {
                     Files.delete(convertedOutputFile.toPath());
                     logger.info("WebService: File temporaneo di output eliminato");
-                    Log.addMessage("WebService: File temporaneo di output eliminato");
                 }
                 // Elimina la directory temporanea se vuota
                 if (conversionTempDir != null && Files.exists(conversionTempDir)) {
                     Files.delete(conversionTempDir);
                     logger.info("WebService: Directory temporanea eliminata");
-                    Log.addMessage("WebService: Directory temporanea eliminata");
                 }
             } catch (IOException cleanupException) {
                 logger.error("WebService: Errore durante la pulizia dei file temporanei: " + cleanupException.getMessage());
-                Log.addMessage("ERRORE WebService: Errore durante la pulizia dei file temporanei: " + cleanupException.getMessage());
                 cleanupException.printStackTrace();
             }
         }

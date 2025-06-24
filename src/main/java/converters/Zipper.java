@@ -38,7 +38,6 @@ public class Zipper {
             for (File f : files) {
                 if (!f.exists() || !f.isFile()) {
                     logger.warn("File non valido: {}", f.getAbsolutePath());
-                    Log.addMessage("File non valido: " + f.getAbsolutePath());
                     continue;
                 }
                 //Legge il contenuto di ciascun file

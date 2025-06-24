@@ -152,32 +152,32 @@ public class Engine {
      */
     private String checkParameters(String srcExt, String outExt, File srcFile) throws IllegalArgumentException, UnsupportedConversionException {
         if (srcExt == null) {
-            Log.addMessage("ERRORE: srcExt nullo");
+            logger.error("L'oggetto srcExt non esiste");
             throw new IllegalArgumentException("L'oggetto srcExt non esiste");
         }
         if (outExt == null) {
-            Log.addMessage("ERRORE: outExt nullo");
+            logger.error("outExt nullo");
             throw new IllegalArgumentException("L'oggetto outExt non esiste");
         }
         if (srcFile == null) {
-            Log.addMessage("ERRORE: srcFile nullo");
+            logger.error("srcFile nullo");
             throw new IllegalArgumentException("L'oggetto srcFile non esiste");
         }
 
         Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
         if (conversions == null || !conversions.containsKey(srcExt)) {
-            Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
+            logger.error("Conversione da {} non supportata", srcExt);
             throw new UnsupportedConversionException(srcExt + " non supportato per la conversione");
         }
 
         Map<String, String> possibleConversions = conversions.get(srcExt);
         String converterClassName = possibleConversions.get(outExt);
         if (converterClassName == null) {
-            Log.addMessage("ERRORE: Conversione da " + srcExt + " a " + outExt + " non supportata");
+            logger.error("Conversione da {} a {} non supportata", srcExt, outExt);
             throw new UnsupportedConversionException("Impossibile convertire un file " + srcExt + " in uno " + outExt);
         }
 
-        Log.addMessage("Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
+        logger.info("Parametri validi. Conversione da {} a {} tramite {}", srcExt, outExt, converterClassName);
         return converterClassName;
     }
 
@@ -192,7 +192,7 @@ public class Engine {
         if (outPath == null) throw new IllegalArgumentException("L'oggetto outPath non esiste");
         Path dest = Paths.get(outPath, file.getName());
         Files.move(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-        Log.addMessage("File spostato in: " + dest);
+        logger.info("File spostato in: {}", dest);
     }
 
 

@@ -24,7 +24,6 @@ public class JSONtoODSconverter extends Converter {
             return convertInternal(srcFile, null, false);
         }
         logger.error("File vuoto o corrotto: {}", srcFile.getName());
-        Log.addMessage("[JSON→ODS] ERRORE: file vuoto o corrotto - " + srcFile.getName());
         throw new ConversionException("File vuoto o corrotto");
     }
 
@@ -39,7 +38,6 @@ public class JSONtoODSconverter extends Converter {
 
     private File convertInternal(File jsonFile, String password, boolean opzioni) throws Exception {
         logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", jsonFile.getPath());
-        Log.addMessage("[JSON→ODS] Inizio conversione file: " + jsonFile.getName());
 
         List<LinkedHashMap<String, Object>> data;
         try {
@@ -49,7 +47,6 @@ public class JSONtoODSconverter extends Converter {
             );
         } catch (Exception e) {
             logger.error("Parsing JSON fallito: {}", e.getMessage());
-            Log.addMessage("[JSON→ODS] ERRORE: parsing del file JSON fallito.");
             throw e;
         }
 
@@ -88,12 +85,10 @@ public class JSONtoODSconverter extends Converter {
             }
         } catch (Exception e) {
             logger.error("Generazione del file ODS fallita: {}", e.getMessage());
-            Log.addMessage("[JSON→ODS] ERRORE: generazione del file ODS fallita.");
             throw e;
         }
 
         logger.info("Conversione completata: {}", outFile.getName());
-        Log.addMessage("[JSON→ODS] Conversione completata con successo: " + outFile.getName());
 
         return outFile;
     }

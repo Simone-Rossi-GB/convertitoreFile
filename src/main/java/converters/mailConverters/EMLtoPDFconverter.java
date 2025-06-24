@@ -46,11 +46,9 @@ public class EMLtoPDFconverter extends Converter {
     public File convert(File emlFile) throws IOException, DocumentException {
         if (emlFile == null) throw new NullPointerException("L'oggetto emlFile non esiste.");
         logger.info("Inizio conversione con parametri: \n | emlFile.getPath() = {}", emlFile.getPath());
-        Log.addMessage("Inizio conversione eml: " + emlFile.getName() + " -> .pdf");
 
         if (!emlFile.exists()) {
             logger.error("File EML non trovato: {}", emlFile);
-            Log.addMessage("ERRORE: File EML non trovato " + emlFile);
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }
 
@@ -89,12 +87,10 @@ public class EMLtoPDFconverter extends Converter {
 
         if (!outputPdfFile.exists()) {
             logger.error("ERRORE: creazione del file PDF fallita: {}", outputPdfFile.getAbsolutePath());
-            Log.addMessage("ERRORE: creazione del file PDF fallita: " + outputPdfFile.getAbsolutePath());
-            throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
+            throw new IOException("Errore nella creazione del file PDF " + outputPdfFile.getAbsolutePath());
         }
 
         logger.info("Creazione file .pdf completata: {}", outputPdfFile.getName());
-        Log.addMessage("Creazione file .pdf completata: " + outputPdfFile.getName());
         return outputPdfFile;
     }
 
