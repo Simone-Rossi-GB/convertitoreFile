@@ -26,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 public class Engine {
     private ConfigInstance config;
     private static final Logger logger = LogManager.getLogger(Engine.class);
-    private static final File jsonFile = new File("src/main/java/configuration/configFiles/config.json");
 
     /**
      * Ritorna i formati in cui un file può essere convertito
@@ -198,15 +197,4 @@ public class Engine {
     }
 
 
-    /**
-     * Ritorna la configurazione ottenuta da config.json
-     * @return Configurazione estratta dal file json
-     * @throws NullPointerException Variabile config nulla
-     */
-    public ConfigInstance getConverterConfig() throws NullPointerException{
-        if (config == null) {
-            throw new NullPointerException("L'oggetto config non esiste");
-        }
-        return config;
-    }
 }

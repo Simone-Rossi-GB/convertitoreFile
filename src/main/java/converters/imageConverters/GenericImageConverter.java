@@ -20,12 +20,13 @@ public class GenericImageConverter extends Converter {
         logger.info("Inizio conversione immagine:\n | {} -> .{}", imgFile.getName(), outputExtension);
 
         String originalExtension = ImageConverterUtility.getExtension(imgFile);
-        File outFile;
+        File outFile = null;
         BufferedImage image;
 
         // Rimuove trasparenza se necessario
-        if (formatsWithAlpha.contains(originalExtension) ^ formatsWithAlpha.contains(targetFormat.toLowerCase())) {
+        /*if (formatsWithAlpha.contains(originalExtension) ^ formatsWithAlpha.contains(targetFormat.toLowerCase())) {
             image = removeAlphaChannel(image);
-        }
+        }*/
+        return outFile;
     }
 }

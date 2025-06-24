@@ -23,5 +23,6 @@ public class ICOimageConverter extends Converter {
         String originalExtension = ImageConverterUtility.getExtension(imgFile);
         File outFile;
         BufferedImage image;
+        return null;
     }
 }

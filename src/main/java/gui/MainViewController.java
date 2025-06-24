@@ -1,5 +1,7 @@
 package gui;
 
+import configuration.configHandlers.config.ConfigData;
+import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
 import converters.exception.IllegalExtensionException;
 import converter.DirectoryWatcher;
@@ -79,7 +81,6 @@ public class MainViewController {
     private int fileScartati = 0;
 
     private ConverterWebServiceClient webServiceClient;
-    private boolean useWebService = false;
 
     private String monitoredFolderPath = "Non configurata";
     private String convertedFolderPath = "Non configurata";
@@ -88,6 +89,7 @@ public class MainViewController {
 
     private Engine engine;
     private Thread watcherThread;
+    private final String configFile = "src/main/java/configuration/configFiles/config.json";
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -207,27 +209,22 @@ public class MainViewController {
             launchAlertError("Engine non inizializzato.");
             return;
         }
-        try {
-            if (engine.getConverterConfig() == null) {
-                launchAlertError("Configurazione non trovata.");
-                return;
-            }
-            monitoredFolderPath = ConfigReader.getMonitoredDir();
-            checkAndCreateFolder(monitoredFolderPath);
-            convertedFolderPath = ConfigReader.getSuccessOutputDir();
-            checkAndCreateFolder(convertedFolderPath);
-            failedFolderPath = ConfigReader.getErrorOutputDir();
-            checkAndCreateFolder(failedFolderPath);
-            checkAndCreateFolder("src/temp");
-            monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
+        ConfigInstance ci = new ConfigInstance(new File(configFile));
+        ConfigData.update(ci);
+        monitoredFolderPath = ConfigReader.getMonitoredDir();
+        checkAndCreateFolder(monitoredFolderPath);
+        convertedFolderPath = ConfigReader.getSuccessOutputDir();
+        checkAndCreateFolder(convertedFolderPath);
+        failedFolderPath = ConfigReader.getErrorOutputDir();
+        checkAndCreateFolder(failedFolderPath);
+        checkAndCreateFolder("src/temp");
+        monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
-            logger.info("Configurazione caricata da config.json");
-            logger.info("Cartella monitorata: " + monitoredFolderPath);
-            logger.info("Cartella file convertiti: " + convertedFolderPath);
-            logger.info("Cartella file falliti: " + failedFolderPath);
-        } catch (Exception e) {
-            launchAlertError("Impossibile caricare la configurazione: " + e.getMessage());
-        }
+        logger.info("Configurazione caricata da config.json");
+        logger.info("Cartella monitorata: " + monitoredFolderPath);
+        logger.info("Cartella file convertiti: " + convertedFolderPath);
+        logger.info("Cartella file falliti: " + failedFolderPath);
+
     }
 
     // Metodo che controlla l'esistenza di una directory e se non esiste la crea
