@@ -23,10 +23,10 @@ import org.apache.logging.log4j.LogManager;
  */
 public class DirectoryWatcher implements Runnable {
 
-    private final Path dir;
+    private Path dir;
     private final WatchService watchService;
     private final ExecutorService executor;
-    private final Map<WatchKey, Path> watchKeyToPath;
+    private Map<WatchKey, Path> watchKeyToPath;
     private final MainViewController controller;
     private static final Logger logger = LogManager.getLogger(DirectoryWatcher.class);
 
@@ -174,4 +174,5 @@ public class DirectoryWatcher implements Runnable {
     private void startConversion(File file){
         controller.launchDialogConversion(file);
     }
+
 }

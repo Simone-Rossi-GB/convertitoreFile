@@ -108,6 +108,11 @@
                                                         <Font name="System Bold" size="13.2" />
                                                     </font>
                                                 </Button>
+                                                <Button fx:id="conversionConfigBtn" mnemonicParsing="false"  prefHeight="44.0" prefWidth="110.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Conversion Config">
+                                                    <font>
+                                                        <Font name="System Bold" size="13.2" />
+                                                    </font>
+                                                </Button>
                                             </children>
                                         </HBox>
                                     </children>
