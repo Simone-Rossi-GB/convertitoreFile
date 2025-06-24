@@ -2,7 +2,7 @@ package webService.converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import converters.exception.UnsupportedConversionException;
-import converter.Log;
+import objects.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.odftoolkit.simple.SpreadsheetDocument;

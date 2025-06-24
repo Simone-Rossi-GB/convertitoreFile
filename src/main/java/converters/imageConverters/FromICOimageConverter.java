@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static converter.Utility.getBaseName;
+import static objects.Utility.getBaseName;
 import static converters.imageConverters.ImageConverterUtility.removeAlphaChannel;
 
 public class FromICOimageConverter extends Converter {

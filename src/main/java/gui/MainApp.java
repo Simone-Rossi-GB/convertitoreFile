@@ -1,6 +1,6 @@
 package gui;
 
-import converter.Log;
+import objects.Log;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.application.Application;

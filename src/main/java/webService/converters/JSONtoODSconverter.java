@@ -2,7 +2,7 @@ package webService.converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import converters.exception.UnsupportedConversionException;
-import converter.Log;
+import objects.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.odftoolkit.simple.SpreadsheetDocument;
@@ -18,7 +18,7 @@ public class JSONtoODSconverter implements Converter {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public ArrayList<File> convert(File srcFile) throws Exception, UnsupportedConversionException {
+    public ArrayList<File> convert(File srcFile) throws Exception {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile, null, false);
         }

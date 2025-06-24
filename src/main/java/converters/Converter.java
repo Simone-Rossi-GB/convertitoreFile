@@ -1,7 +1,7 @@
 package converters;
 
 import configuration.configHandlers.conversionContext.ConversionContextReader;
-import converter.Utility;
+import objects.Utility;
 import java.io.File;
 
 public abstract class Converter {

@@ -1,6 +1,5 @@
 package converters.pdfConverters;
 
-import converter.Log;
 import converters.exception.ConversionException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;

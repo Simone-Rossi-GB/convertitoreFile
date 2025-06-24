@@ -3,7 +3,7 @@ package webService.converters;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import converter.Log;
+import objects.Log;
 import org.apache.james.mime4j.dom.Header;
 import org.apache.james.mime4j.dom.*;
 import org.apache.james.mime4j.dom.address.Mailbox;

@@ -7,7 +7,6 @@ import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 import converters.exception.UnsupportedConversionException;
-import converter.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;

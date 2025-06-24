@@ -3,7 +3,7 @@ package converters.jsonCsvConverters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import converters.Converter;
 import converters.exception.ConversionException;
-import converter.Log;
+import objects.Log;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 

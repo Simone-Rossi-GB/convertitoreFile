@@ -1,25 +1,13 @@
 package gui;
 
-import com.google.gson.*;
-import configuration.configHandlers.config.ConfigReader;
 import configuration.configHandlers.conversionContext.ConversionContextReader;
 import configuration.configHandlers.conversionContext.ConversionContextWriter;
-import converter.Engine;
-import converter.Log;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 /**

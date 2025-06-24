@@ -1,7 +1,7 @@
 package webService.converters;
 
 import converters.Zipper;
-import converter.Log;
+import objects.Log;
 import gui.MainViewController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,8 +1,8 @@
 package converters;
 
 import converters.exception.IllegalExtensionException;
-import converter.Log;
-import converter.Utility;
+import objects.Log;
+import objects.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

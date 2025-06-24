@@ -1,7 +1,7 @@
 package webService.controller;
 
 import webService.EngineWebService;
-import converter.Log;
+import objects.Log;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.web.bind.annotation.*;

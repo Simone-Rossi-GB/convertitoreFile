@@ -3,7 +3,7 @@ package converters.pdfConverters;
 import converters.ConverterDocumentsWithPasword;
 import converters.exception.PasswordException;
 import com.twelvemonkeys.util.convert.ConversionException;
-import converter.DirectoryWatcher;
+import objects.DirectoryWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;

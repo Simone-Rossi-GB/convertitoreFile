@@ -1,6 +1,5 @@
 package converters;
 import configuration.configHandlers.conversionContext.ConversionContextReader;
-import converter.DirectoryWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

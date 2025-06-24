@@ -1,7 +1,7 @@
 package webService.converters;
 
-import converter.Log;
-import converter.Utility;
+import objects.Log;
+import objects.Utility;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;

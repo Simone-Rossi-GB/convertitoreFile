@@ -3,7 +3,7 @@ package webService;
 import converters.Converter;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
-import converter.Log;
+import objects.Log;
 import com.google.gson.Gson;
 import java.io.*;
 import java.nio.file.*;
