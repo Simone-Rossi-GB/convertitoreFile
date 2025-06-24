@@ -50,7 +50,7 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
         //Esegue la conversione
         try{
             return convertInternal(pdfFile, pdf);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ConversionException(e.getMessage());
         } finally {
             if (pdf != null) {
@@ -76,5 +76,5 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
      * @param pdfDocument Documento pdf caricato
      * @return ArrayList di file convertiti
      */
-    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception;
+    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException;
 }

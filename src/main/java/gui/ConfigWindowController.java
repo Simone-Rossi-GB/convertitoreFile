@@ -1,5 +1,6 @@
 package gui;
 
+import configuration.configExceptions.JsonStructureException;
 import configuration.configHandlers.config.*;
 import objects.Log;
 import org.apache.logging.log4j.Logger;
@@ -297,7 +298,7 @@ public class ConfigWindowController {
                 logger.info("Finestra di configurazione chiusa senza modifiche");
                 dialogStage.close();
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             dialogStage.close();
             showAlert("Attenzione", "Impossibile verificare le modifiche. Chiudo la finestra.", Alert.AlertType.WARNING);
         }
@@ -319,7 +320,7 @@ public class ConfigWindowController {
                     !currentError.equals(errorDirField.getText().trim()) ||
                     currentMonitorAtStart != monitorAtStart;
 
-        } catch (Exception e) {
+        } catch (JsonStructureException e) {
             return true; // In caso di errore, assumi che ci siano modifiche
         }
     }
