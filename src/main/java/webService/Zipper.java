@@ -1,8 +1,8 @@
 package webService;
 
-import converters.exception.FileMoveException;
-import converters.exception.IllegalExtensionException;
-import objects.Utility;
+import webService.server.converters.exception.FileMoveException;
+import webService.server.converters.exception.IllegalExtensionException;
+import webService.client.objects.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

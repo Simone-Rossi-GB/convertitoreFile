@@ -1,21 +1,21 @@
 package webService.server;
 
 import com.twelvemonkeys.util.convert.ConversionException;
-import converters.exception.IllegalExtensionException;
+import webService.server.converters.exception.IllegalExtensionException;
 import webService.Utility;
-import webService.configuration.configHandlers.conversionContext.ConversionContextWriter;
-import converters.Converter;
-import webService.configuration.configHandlers.config.ConfigReader;
-import objects.Log;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
+import webService.server.converters.Converter;
+import webService.server.configuration.configHandlers.config.ConfigReader;
+import webService.client.objects.Log;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.util.*;
-import converters.Zipper;
+import webService.server.converters.Zipper;
 
-import converters.exception.FileMoveException;
-import converters.exception.FormatsException;
-import converters.exception.UnsupportedConversionException;
+import webService.server.converters.exception.FileMoveException;
+import webService.server.converters.exception.FormatsException;
+import webService.server.converters.exception.UnsupportedConversionException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

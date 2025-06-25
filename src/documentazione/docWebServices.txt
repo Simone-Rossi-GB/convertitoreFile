@@ -311,25 +311,25 @@ public User createUser(@RequestBody User user) {
 
 
 
-file-objects-project/
+file-webService.client.objects-project/
 ├── pom.xml
 ├── config/
 │   └── config.json
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   ├── gui/
+│   │   │   ├── webService.client.gui/
 │   │   │   │   ├── MainApp.java
 │   │   │   │   ├── MainViewController.java
 │   │   │   │   └── ConfigWindowController.java
-│   │   │   ├── objects/
+│   │   │   ├── webService.client.objects/
 │   │   │   │   ├── Engine.java
 │   │   │   │   ├── ConverterConfig.java
 │   │   │   │   ├── DirectoryWatcher.java
 │   │   │   │   └── Log.java
-│   │   │   ├── converters/
+│   │   │   ├── webService.server.converters/
 │   │   │   │   └── Converter.java (interface)
-│   │   │   │   └── [altre classi objects...]
+│   │   │   │   └── [altre classi webService.client.objects...]
 │   │   │   └── webservice/
 │   │   │       ├── WebServiceApplication.java
 │   │   │       ├── client/
@@ -355,7 +355,7 @@ da qui l'albero corretto:
 
 SUDDIVISIONE DEL LAVORO AGGIORNATA
 SVILUPPATORE A - FRONTEND & CLIENT (8 classi + UI)
-gui/
+webService.client.gui/
 ├── MainApp.java                          ✓ Modifica esistente
 ├── MainViewController.java               ✓ Modifica esistente
 └── ConfigWindowController.java           ✓ Esistente

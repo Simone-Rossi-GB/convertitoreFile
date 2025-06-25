@@ -10,12 +10,12 @@ PantheraConverter/
 │   ├── main/
 |   |   ├── logs/
 │   │   ├── java/
-│   │   │   ├── gui/                             
+│   │   │   ├── webService.client.gui/                             
 │   │   │   │   ├── MainApp.java                 
 │   │   │   │   ├── MainViewController.java      
 │   │   │   │   └── ConfigWindowController.java  
 │   │   │   │
-│   │   │   ├── objects/                       
+│   │   │   ├── webService.client.objects/                       
 |   |   |   |   ├── config/
 │   |	|   |   |	└── config.json
 │   │   │   │   ├── ConvertionException.java
@@ -25,10 +25,10 @@ PantheraConverter/
 │   │   │   │   ├── Utility.java
 │   │   │   │   └── Log.java                     
 │   │   │   │
-│   │   │   ├── converters/          
+│   │   │   ├── webService.server.converters/          
 │   │   │   │   ├── AbstractPDFConverter.java             
 │   │   │   │   ├── Converter.java     (Interface)           
-│   │   │   │   └── [altri objects...]          
+│   │   │   │   └── [altri webService.client.objects...]          
 │   │   │   │
 │   │   │   └── webservice/                       
 │   │   │       ├── WebServiceApplication.java    
@@ -60,20 +60,20 @@ PantheraConverter/
 
 **`getStatus()`**
 
-- **Endpoint**: GET `/api/objects/status`
+- **Endpoint**: GET `/api/webService.client.objects/status`
 - **Funzione**: Verifica che il web service sia attivo
 - **Ritorna**: JSON con `{"status": "active"}`
 
 **`getPossibleConversions(@PathVariable String extension)`**
 
-- **Endpoint**: GET `/api/objects/conversions/{extension}`
+- **Endpoint**: GET `/api/webService.client.objects/conversions/{extension}`
 - **Funzione**: Restituisce i formati di destinazione disponibili per una data estensione
 - **Input**: Estensione file (es. "pdf")
 - **Output**: Lista di estensioni supportate per la conversione
 
 **`convertFile()`**
 
-- **Endpoint**: POST `/api/objects/convert`
+- **Endpoint**: POST `/api/webService.client.objects/convert`
 - **Funzione**: Converte un file caricato nel formato richiesto
 - **Parametri**:
     - `file`: File da convertire (MultipartFile)
@@ -128,7 +128,7 @@ PantheraConverter/
 1. **Validazione**: Verifica parametri e supporto della conversione
 2. **Setup temporaneo**: Crea directory temporanea per la conversione
 3. **Preparazione file**: Copia e rinomina il file con suffisso univoco
-4. **Conversione**: Istanzia e chiama il objects appropriato
+4. **Conversione**: Istanzia e chiama il webService.client.objects appropriato
 5. **Ricerca output**: Cerca i file risultanti in multiple location (temp dir, success dir)
 6. **Finalizzazione**: Sposta il file convertito nella directory di output specificata
 7. **Pulizia**: Elimina ricorsivamente la directory temporanea
@@ -136,7 +136,7 @@ PantheraConverter/
 **Funzioni di supporto**:
 
 - `deleteDirectoryRecursively()`: Elimina directory e tutto il contenuto
-- `checkParameters()`: Valida parametri e determina il objects da usare
+- `checkParameters()`: Valida parametri e determina il webService.client.objects da usare
 - `giveBackNewFileWithNewName()`: Genera nome file con suffisso
 - `rinominaFile()`: Rinomina file con gestione errori
 
@@ -365,6 +365,6 @@ Architettura Generale del Sistema:
 2. **Layer Business**: Engine di conversione locale
 3. **Layer Web Service**: Spring Boot REST API
 4. **Layer Client**: Web service client con fallback
-5. **Layer configuration**: Gestione JSON configuration
+5. **Layer webService.client.configuration**: Gestione JSON webService.client.configuration
 
 Il sistema implementa un pattern di **fallback intelligente**: tenta prima il web service per performance migliori, poi ricade sull'engine locale per garantire affidabilità.
