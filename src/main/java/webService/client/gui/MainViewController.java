@@ -250,9 +250,7 @@ public class MainViewController {
             configStage.setTitle("Editor Configurazione");
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
-            configStage.setResizable(true);
-            configStage.setMinWidth(700);
-            configStage.setMinHeight(600);
+            configStage.setResizable(false);
             configStage.setScene(new Scene(configWindow));
 
             // Ottieni il controller e passa i riferimenti necessari
@@ -288,9 +286,7 @@ public class MainViewController {
             configStage.setTitle("Editor Configurazione Conversione");
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
-            configStage.setResizable(true);
-            configStage.setMinWidth(700);
-            configStage.setMinHeight(600);
+            configStage.setResizable(false);
             configStage.setScene(new Scene(configWindow));
 
             // Ottiene il controller e passa i riferimenti necessari
