@@ -1,5 +1,8 @@
 package gui;
 
+import javafx.scene.Parent;
+import javafx.fxml.FXML;
+import javafx.scene.control.ToggleButton;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
@@ -14,9 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import objects.Engine;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -28,12 +29,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.nio.file.StandardCopyOption;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
@@ -69,6 +67,8 @@ public class MainViewController {
     private Button fileConvertitiBtn;
     @FXML
     private Button conversioniFalliteBtn;
+    @FXML
+    private ToggleButton themeToggle;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -97,23 +97,34 @@ public class MainViewController {
      */
     @FXML
     private void initialize() throws IOException {
+        // 1) impostiamo subito l’aspetto del toggle
+        themeToggle.setSelected(false);    // false → dark di default
+        themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
+            Parent root = themeToggle.getScene().getRoot();
+            root.getStyleClass().removeAll("dark", "light");
+            root.getStyleClass().add(newV ? "light" : "dark");
+            // qui potresti salvare nelle Preferences la scelta dell’utente
+        });
+
+        // 2) inizializzo engine e client
         engine = new Engine();
-        // Inizializza l'interfaccia
+        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+
+        // 3) UI setup e configurazione
         setupEventHandlers();
         updateMonitoringStatus();
-        logger.info("Applicazione avviata.");
-        logger.info("Caricamento configurazione...");
-
-        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+        logger.info("Applicazione avviata. Caricamento configurazione...");
 
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
         loadConfiguration();
 
+        // 4) se nel config ho il monitor a start, lo avvio
         if (monitorAtStart) {
             toggleMonitoring();
         }
     }
+
 
 
 
@@ -389,11 +400,11 @@ public class MainViewController {
         if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
             try{
                 srcExtension = Zipper.extractFileExstension(srcFile);
-        } catch (IOException e) {
-            launchAlertError("Impossibile decomprimere il file");
-        }catch (IllegalExtensionException e){
-            launchAlertError("I file hanno formati diversi");
-        }
+            } catch (IOException e) {
+                launchAlertError("Impossibile decomprimere il file");
+            }catch (IllegalExtensionException e){
+                launchAlertError("I file hanno formati diversi");
+            }
 
         List<String> formats;
         try {

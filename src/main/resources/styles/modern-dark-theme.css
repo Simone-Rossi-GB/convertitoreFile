@@ -1,0 +1,495 @@
+/* modern-dark-theme.css */
+
+/* Stili per File Converter Manager - JavaFX */
+
+/* ROOT CONTAINER */
+
+.root-dark {
+
+    -fx-background-color: #2d3142;
+
+    -fx-font-family: "Inter", "Roboto", sans-serif;
+
+}
+
+.main-container {
+
+    -fx-background-color: #2d3142;
+
+    -fx-border-radius: 15px;
+
+    -fx-background-radius: 15px;
+
+}
+
+/* HEADER BAR */
+
+.header-bar {
+
+    -fx-background-color: linear-gradient(to right, #3d4252 0%, #2d3142 100%);
+
+    -fx-border-color: #404040;
+
+    -fx-border-width: 0 0 2 0;
+
+    -fx-background-radius: 15 15 0 0;
+
+}
+
+.app-title {
+
+    -fx-text-fill: #ffffff;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+
+}
+
+/* THEME TOGGLE BUTTON */
+
+.theme-toggle-btn {
+
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+
+    -fx-text-fill: white;
+
+    -fx-border-color: #4a5568;
+
+    -fx-border-radius: 8;
+
+    -fx-background-radius: 8;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+
+}
+
+.theme-toggle-btn:hover {
+
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+
+}
+
+/* SEPARATORS */
+
+.main-separator {
+
+    -fx-background-color: #404040;
+
+    -fx-pref-height: 2;
+
+}
+
+.section-separator, .section-line {
+
+    -fx-background-color: linear-gradient(to right, transparent, #4a5568, transparent);
+
+    -fx-pref-height: 1;
+
+}
+
+.vertical-separator {
+
+    -fx-background-color: #404040;
+
+    -fx-pref-width: 2;
+
+}
+
+/* CONTENT AREAS */
+
+.content-area {
+
+    -fx-background-color: #2d3142;
+
+}
+
+.left-panel, .left-main-panel {
+
+    -fx-background-color: linear-gradient(to bottom, #353847 0%, #2d3142 100%);
+
+    -fx-border-color: #404040;
+
+    -fx-border-width: 0 2 0 0;
+
+}
+
+/* SECTIONS */
+
+.directory-section, .options-section, .monitoring-section {
+
+    -fx-background-color: transparent;
+
+}
+
+.section-title, .section-header {
+
+    -fx-text-fill: #ffffff;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+
+}
+
+/* BUTTONS */
+
+/* Standard buttons (Config, Conv Cfg, Monitoraggio, Esci) */
+
+.standard-btn {
+
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+
+    -fx-text-fill: white;
+
+    -fx-border-color: #4a5568;
+
+    -fx-border-radius: 8;
+
+    -fx-background-radius: 8;
+
+    -fx-cursor: hand;
+
+    -fx-font-weight: bold;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+
+}
+
+.standard-btn:hover {
+
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+
+    -fx-translate-y: -1;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 3);
+
+}
+
+/* Accent buttons (Directory buttons) - Aquamarine */
+
+.accent-btn {
+
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+
+    -fx-text-fill: white;
+
+    -fx-border-color: #4FD1C7;
+
+    -fx-border-radius: 8;
+
+    -fx-background-radius: 8;
+
+    -fx-cursor: hand;
+
+    -fx-font-weight: bold;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+
+}
+
+.accent-btn:hover {
+
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+
+    -fx-translate-y: -1;
+
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 3);
+
+}
+
+/* Monitoring button active state */
+
+.monitoring-btn-active {
+
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+
+    -fx-border-color: #4FD1C7 !important;
+
+    -fx-text-fill: white !important;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+
+}
+
+.monitoring-btn-active:hover {
+
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%) !important;
+
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 3) !important;
+
+}
+
+/* LOG PANEL */
+
+.log-panel, .log-main-panel {
+
+    -fx-background-color: linear-gradient(to bottom, #353847 0%, #2d3142 100%);
+
+}
+
+.log-title, .log-main-header {
+
+    -fx-text-fill: #ffffff;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+
+}
+
+.log-scroll, .log-scroll-panel {
+
+    -fx-background-color: transparent;
+
+    -fx-border-color: #4a5568;
+
+    -fx-border-radius: 8;
+
+    -fx-background-radius: 8;
+
+}
+
+.log-textarea, .log-area {
+
+    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+
+    -fx-text-fill: #e2e8f0;
+
+    -fx-border-color: #4a5568;
+
+    -fx-border-radius: 8;
+
+    -fx-background-radius: 8;
+
+    -fx-font-family: "Consolas", "Monaco", monospace;
+
+    -fx-font-size: 12px;
+
+}
+
+/* STATISTICS BAR */
+
+.stats-bar {
+
+    -fx-background-color: linear-gradient(to bottom, #3d4252 0%, #2d3142 100%);
+
+    -fx-border-color: #404040;
+
+    -fx-border-width: 0 0 2 0;
+
+}
+
+.stat-label {
+
+    -fx-text-fill: #a0aec0;
+
+    -fx-font-weight: bold;
+
+}
+
+.stat-value {
+
+    -fx-text-fill: #ffffff;
+
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+
+    -fx-border-color: #4a5568;
+
+    -fx-border-radius: 4;
+
+    -fx-background-radius: 4;
+
+    -fx-padding: 3 8 3 8;
+
+    -fx-font-weight: bold;
+
+}
+
+/* FOOTER BAR */
+
+.footer-bar {
+
+    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+
+    -fx-background-radius: 0 0 15 15;
+
+}
+
+.developer-info {
+
+    -fx-text-fill: #7f8c8d;
+
+    -fx-font-style: italic;
+
+}
+
+/* SCROLLBAR STYLING */
+
+.scroll-pane .viewport {
+
+    -fx-background-color: transparent;
+
+}
+
+.scroll-pane .scroll-bar:vertical .track {
+
+    -fx-background-color: #2d3748;
+
+    -fx-background-radius: 4;
+
+}
+
+.scroll-pane .scroll-bar:vertical .thumb {
+
+    -fx-background-color: #4a5568;
+
+    -fx-background-radius: 4;
+
+}
+
+.scroll-pane .scroll-bar:vertical .thumb:hover {
+
+    -fx-background-color: #5a6578;
+
+}
+
+/* LIGHT THEME SUPPORT */
+
+.light .main-container {
+
+    -fx-background-color: #ffffff;
+
+}
+
+.light .header-bar {
+
+    -fx-background-color: linear-gradient(to right, #f7fafc 0%, #edf2f7 100%);
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .app-title {
+
+    -fx-text-fill: #2d3748;
+
+    -fx-effect: none;
+
+}
+
+.light .theme-toggle-btn {
+
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+
+    -fx-text-fill: #2d3748;
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .theme-toggle-btn:hover {
+
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+
+}
+
+.light .left-panel, .light .left-main-panel {
+
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%);
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .section-title, .light .section-header {
+
+    -fx-text-fill: #2d3748;
+
+    -fx-effect: none;
+
+}
+
+.light .standard-btn {
+
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+
+    -fx-text-fill: #2d3748;
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .standard-btn:hover {
+
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+
+}
+
+.light .log-panel, .light .log-main-panel {
+
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%);
+
+}
+
+.light .log-title, .light .log-main-header {
+
+    -fx-text-fill: #2d3748;
+
+    -fx-effect: none;
+
+}
+
+.light .log-textarea, .light .log-area {
+
+    -fx-background-color: linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%);
+
+    -fx-text-fill: #2d3748;
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .stats-bar {
+
+    -fx-background-color: linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%);
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .stat-label {
+
+    -fx-text-fill: #4a5568;
+
+}
+
+.light .stat-value {
+
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+
+    -fx-text-fill: #2d3748;
+
+    -fx-border-color: #e2e8f0;
+
+}
+
+.light .footer-bar {
+
+    -fx-background-color: linear-gradient(to bottom, #edf2f7 0%, #e2e8f0 100%);
+
+}
+
+.light .developer-info {
+
+    -fx-text-fill: #4a5568;
+
+}
+
+.light .main-separator, .light .vertical-separator {
+
+    -fx-background-color: #e2e8f0;
+
+}
+
+.light .section-separator, .light .section-line {
+
+    -fx-background-color: linear-gradient(to right, transparent, #e2e8f0, transparent);
+
+}
