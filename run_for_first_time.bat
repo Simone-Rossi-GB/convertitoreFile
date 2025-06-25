@@ -35,7 +35,7 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
 set CHROME_EXE=%TARGET_DIR%\chrome-headless-shell.exe
 
 echo    Download: Chrome Headless Shell %ARCH%
-echo    Dimensione attesa: ~30-50 MB (molto più leggero!)
+echo    Dimensione attesa: ~30-50 MB
 
 REM 2. Crea struttura directory
 echo.
