@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import webService.Utility;
 
 import javax.xml.ws.WebServiceException;
 import java.io.File;
@@ -112,15 +113,13 @@ public class ConverterWebServiceClient {
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 // Costruisce il nome corretto del file
-                String baseName = outputFile.getName().replaceFirst("\\.[^\\.]+$", "");
-                String extension = getExtensionFromMediaType(response.getHeaders().getContentType().toString());
-                File correctedFile = new File(outputFile.getParent(), baseName + extension);
-                Files.move(outputFile.toPath(), correctedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                String estensione = getExtensionFromMediaType(response.getHeaders().getContentType().toString());
+                File renamedFile = new File(outputFile.getParent(), Utility.getBaseName(outputFile) + estensione);
                 // Scrive i byte ricevuti nel file di output specificato
-                try (FileOutputStream fos = new FileOutputStream(correctedFile)) {
+                try (FileOutputStream fos = new FileOutputStream(renamedFile)) {
                     fos.write(response.getBody());
                 }
-                return new ConversionResult(true, "File convertito e salvato con successo: " + outputFile.getName());
+                return new ConversionResult(true, "File convertito e salvato con successo: " + outputFile.getName(), null, renamedFile);
             } else {
                 // Se la risposta non è 2xx OK
                 String errorMessage = "Errore durante la conversione: " + response.getStatusCode();

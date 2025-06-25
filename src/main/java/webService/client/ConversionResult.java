@@ -1,16 +1,20 @@
 package webService.client;
 
+import java.io.File;
+
 public class ConversionResult {
 
     private final boolean success;
     private final String message;
     private final String error; // Questo è il campo per gli errori
+    private final File result; //riferimento al file convertito;
 
     // Costruttore principale che accetta success, message e error
-    public ConversionResult(boolean success, String message, String error) {
+    public ConversionResult(boolean success, String message, String error, File result) {
         this.success = success;
         this.message = message;
         this.error = error;
+        this.result = result;
     }
 
     // NUOVO COSTRUTTORE con solo success e message.
@@ -18,7 +22,8 @@ public class ConversionResult {
     public ConversionResult(boolean success, String message) {
         this.success = success;
         this.message = message;
-        this.error = null; // <-- CORREZIONE QUI: Inizializza 'error' a null
+        this.error = null;
+        this.result = null;
     }
 
     public boolean isSuccess() {
@@ -41,20 +46,15 @@ public class ConversionResult {
         return success ? message : error;
     }
 
+    public File getResult() {
+        return result;
+    }
+
     @Override
     public String toString() {
         return "ConversionResult{" +
                 "success=" + success +
                 ", message='" + (success ? message : error) + "'" +
                 "}";
-    }
-
-    // Factory methods per creare risultati (questi sono già corretti)
-    public static ConversionResult success(String message) {
-        return new ConversionResult(true, message, null);
-    }
-
-    public static ConversionResult error(String error) {
-        return new ConversionResult(false, null, error);
     }
 }
