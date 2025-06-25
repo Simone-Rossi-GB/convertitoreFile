@@ -79,7 +79,7 @@
 }
 
 /* BUTTONS */
-/* Standard buttons (Config, Conv Cfg, Monitoraggio, Esci) */
+/* Standard buttons (Config, Conv Cfg, Esci) */
 .standard-btn {
     -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
     -fx-text-fill: white;
@@ -315,7 +315,7 @@
 }
 
 .light .footer-bar {
-    -fx-background-color: linear-gradient(to bottom, #edf2f7 0%, #e2e8f0 100%);
+    -fx-background-color: linear-gradient(to right, #f7fafc 0%, #edf2f7 100%);
 }
 
 .light .developer-info {

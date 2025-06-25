@@ -49,7 +49,7 @@ public class MainApp extends Application {
         stage.setResizable(false);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setWidth(900);       // Larghezza esatta
-        stage.setHeight(650);
+        stage.setHeight(655);
         stage.setScene(scene);
         stage.show();
 

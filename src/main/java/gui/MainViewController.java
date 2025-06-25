@@ -136,12 +136,12 @@ public class MainViewController {
             // Quando monitora -> colore acquamarina come Directory
             MonitoringBtn.getStyleClass().removeAll("standard-btn");
             MonitoringBtn.getStyleClass().add("accent-btn");
-            MonitoringBtn.setText("[ Ferma Monitoraggio ]");
+            MonitoringBtn.setText("Monitoring ON");
         } else {
             // Quando non monitora -> colore grigio standard
             MonitoringBtn.getStyleClass().removeAll("accent-btn");
             MonitoringBtn.getStyleClass().add("standard-btn");
-            MonitoringBtn.setText("[ Monitoraggio ]");
+            MonitoringBtn.setText("Monitoring OFF");
         }
     }
 
