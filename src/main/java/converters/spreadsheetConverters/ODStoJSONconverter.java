@@ -28,7 +28,7 @@ public class ODStoJSONconverter extends Converter {
      * Converte un file ODS in JSON.
      *
      * @param srcFile File ODS da convertire
-     * @return Lista contenente il file JSON generato
+     * @return Il file JSON generato
      * @throws Exception           In caso di errori generici
      * @throws UnsupportedConversionException Se il file è nullo, vuoto o non valido
      */
@@ -40,7 +40,6 @@ public class ODStoJSONconverter extends Converter {
         logger.error("File nullo o vuoto con password specificata: {}", srcFile);
         throw new UnsupportedConversionException("L'oggetto srcFile non esiste o è vuoto.");
     }
-
 
     /**
      * Verifica che il file esista e non sia vuoto.
@@ -56,8 +55,7 @@ public class ODStoJSONconverter extends Converter {
      * Metodo interno che esegue la logica di conversione da ODS a JSON.
      *
      * @param odsFile  Il file sorgente ODS
-
-     * @return Lista contenente un singolo file JSON generato
+     * @return Il file JSON generato
      * @throws Exception In caso di errori nella lettura o scrittura file
      */
     private File convertInternal(File odsFile) throws Exception {
@@ -118,7 +116,10 @@ public class ODStoJSONconverter extends Converter {
             }
         }
 
-        File outFile = File.createTempFile("converted-", ".json");
+        // Genera il nome del file JSON con lo stesso nome del file ODS
+        String jsonFileName = odsFile.getName().replaceAll("\\.ods$", "") + ".json";
+        File outFile = new File(odsFile.getParent(), jsonFileName);
+
         try (FileOutputStream fos = new FileOutputStream(outFile)) {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(fos, jsonData);
         } catch (Exception e) {

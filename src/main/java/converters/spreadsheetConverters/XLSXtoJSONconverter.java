@@ -13,13 +13,19 @@ import org.apache.logging.log4j.LogManager;
 
 public class XLSXtoJSONconverter extends Converter {
     private static final Logger logger = LogManager.getLogger(XLSXtoJSONconverter.class);
+
     /**
-     * Converte un file .xlsx in un file .json
+     * Converte un file .xlsx in un file .json mantenendo lo stesso nome
      * @param excelFile il file Excel (.xlsx) in input
      * @return un file JSON generato con i dati dell'Excel
      * @throws IOException in caso di errori di lettura/scrittura
      */
     public File convertXlsxToJson(File excelFile) throws IOException {
+        if (excelFile == null || !excelFile.exists() || excelFile.length() == 0) {
+            logger.error("File nullo o vuoto: {}", excelFile);
+            throw new IOException("Il file XLSX non esiste o è vuoto.");
+        }
+
         // Carica il file Excel
         try (InputStream inputStream = Files.newInputStream(excelFile.toPath());
              Workbook workbook = new XSSFWorkbook(inputStream)) {
@@ -51,14 +57,15 @@ public class XLSXtoJSONconverter extends Converter {
                 jsonData.add(rowMap);
             }
 
-            // Crea file temporaneo per l'output JSON
-            File jsonFile = File.createTempFile("excel-to-json-", ".json");
+            // Genera il nome del file JSON con lo stesso nome del file XLSX
+            String jsonFileName = excelFile.getName().replaceAll("\\.xlsx$", "") + ".json";
+            File jsonFile = new File(excelFile.getParent(), jsonFileName);
 
             // Scrittura del JSON
             ObjectMapper mapper = new ObjectMapper();
             mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, jsonData);
 
-            logger.info("File .doc creato con successo: {}", jsonFile.getAbsolutePath());
+            logger.info("File JSON creato con successo: {}", jsonFile.getAbsolutePath());
             return jsonFile;
         }
     }
@@ -92,5 +99,4 @@ public class XLSXtoJSONconverter extends Converter {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
         return convertXlsxToJson(srcFile);
     }
-
 }
