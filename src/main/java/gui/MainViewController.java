@@ -9,6 +9,7 @@ import configuration.configHandlers.config.ConfigReader;
 import converters.exception.ConversionException;
 import converters.exception.FileCreationException;
 import converters.exception.IllegalExtensionException;
+import javafx.scene.layout.HBox;
 import objects.DirectoryWatcher;
 import objects.Log;
 import converters.Zipper;
@@ -42,6 +43,7 @@ import webService.client.ConversionResult;
  */
 public class MainViewController {
 
+    public HBox header;
     @FXML
     private Label statusIndicator;
     @FXML

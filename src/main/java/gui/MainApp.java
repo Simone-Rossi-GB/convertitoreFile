@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.scene.layout.HBox;
+import javafx.stage.StageStyle;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.application.Application;
@@ -13,6 +15,10 @@ public class MainApp extends Application {
     private static Stage primaryStage;
     private static final Logger logger = LogManager.getLogger(MainApp.class);
 
+    class Delta {
+        double x, y;
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         // Salvo lo stage primario per eventuali dialog/modal
@@ -21,6 +27,7 @@ public class MainApp extends Application {
         // Carico l'FXML principale
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GraphicalMenu.fxml"));
         Pane root = loader.load();
+        HBox header = (HBox) root.lookup("#header");
 
         // Passo l'app al controller
         MainViewController controller = loader.getController();
@@ -40,8 +47,21 @@ public class MainApp extends Application {
         // Configuro lo stage
         stage.setTitle("File Converter Manager");
         stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
         stage.show();
+
+        Delta dragDelta = new Delta();
+
+        header.setOnMousePressed(event -> {
+            dragDelta.x = event.getSceneX();
+            dragDelta.y = event.getSceneY();
+        });
+
+        header.setOnMouseDragged(event -> {
+            primaryStage.setX(event.getScreenX() - dragDelta.x);
+            primaryStage.setY(event.getScreenY() - dragDelta.y);
+        });
 
         // Log di chiusura
         stage.setOnCloseRequest(evt -> logger.info("Applicazione chiusa."));
