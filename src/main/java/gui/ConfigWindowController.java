@@ -2,7 +2,6 @@ package gui;
 
 import configuration.configExceptions.JsonStructureException;
 import configuration.configHandlers.config.*;
-import objects.Log;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.application.Platform;

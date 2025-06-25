@@ -2,6 +2,12 @@
 /* Stili per File Converter Manager - JavaFX */
 
 /* ROOT CONTAINER */
+.root {
+    -fx-background-color: rgba(30,30,30,0.95); /* o un colore opaco */
+    -fx-background-radius: 20;
+    -fx-padding: 15;
+}
+
 .root-dark {
     -fx-background-color: #2d3142;
     -fx-font-family: "Inter", "Roboto", sans-serif;
