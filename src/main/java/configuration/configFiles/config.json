@@ -15,13 +15,16 @@
         "jpg" : "converters.pdfConverters.PDFtoJPGconverter"
       },
       "xls" : {
-        "json" : "converters.spreadsheetConverters.SPREADSHEETtoJSONconverter"
+        "json" : "converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
+        "csv" : "converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
       },
       "xlsx" : {
-        "json" : "converters.spreadsheetConverters.SPREADSHEETtoJSONconverter"
+        "json" : "converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
+        "csv" : "converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
       },
       "ods" : {
-        "json" : "converters.spreadsheetConverters.SPREADSHEETtoJSONconverter"
+        "json" : "converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
+        "csv" : "converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
       },
       "json" : {
         "xls" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
