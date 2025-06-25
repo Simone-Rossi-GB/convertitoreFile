@@ -1,4 +1,4 @@
-package converters.mailConverters;
+package Converters.mailConverters;
 
 import converters.Converter;
 import org.apache.james.mime4j.dom.*;
