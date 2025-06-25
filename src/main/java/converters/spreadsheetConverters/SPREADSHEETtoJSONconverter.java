@@ -1,30 +1,32 @@
 package converters.spreadsheetConverters;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import converters.Converter;
 import converters.exception.ConversionException;
 import converters.exception.FileCreationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.nio.file.Files;
 import java.util.*;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
-public class XLStoJSONconverter extends Converter {
-    private static final Logger logger = LogManager.getLogger(XLStoJSONconverter.class);
+public class SPREADSHEETtoJSONconverter extends Converter {
+    private static final Logger logger = LogManager.getLogger(SPREADSHEETtoJSONconverter.class);
     @Override
-    public File convert(File xlsFile) throws IOException {
-        logger.info("Conversione iniziata con parametri:\n | xlsFile.getPath() = {}", xlsFile.getPath());
-        File jsonFile = null;
+    public File convert(File jsonFile) throws IOException {
+        logger.info("Conversione iniziata con parametri:\n | outputFile.getPath() = {}", jsonFile.getPath());
+        File outputFile;
 
         try {
-            jsonFile = convertToJson(xlsFile);
-            if (jsonFile.exists()) {
-                logger.info("File convertito aggiunto alla lista: {}", jsonFile.getName());
+            outputFile = convertToJson(jsonFile);
+            if (outputFile.exists()) {
+                logger.info("File convertito aggiunto alla lista: {}", outputFile.getName());
             } else {
                 logger.error("Conversione fallita: file JSON non creato correttamente");
             }
@@ -33,48 +35,35 @@ public class XLStoJSONconverter extends Converter {
             logger.error("Errore durante la conversione: {}", e.getMessage());
             throw new ConversionException("Errore nella conversione XLS to JSON");
         }
-        return jsonFile;
+        return outputFile;
     }
 
 
-    private File convertToJson(File xlsFile) throws IOException {
+    private File convertToJson(File jsonFile) throws IOException {
         // Usa nome file base e salva in src/temp/
-        String baseName = xlsFile.getName().replaceFirst("[.][^.]+$", "");
+        String baseName = jsonFile.getName().replaceFirst("[.][^.]+$", "");
         File outputDir = new File("src/temp");
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
 
         File outputFile = new File(outputDir, baseName + ".json");
-        return convertXlsToJson(xlsFile, outputFile.getAbsolutePath());
+        return convertSpreadsheetToJson(jsonFile, outputFile.getAbsolutePath());
     }
 
-
-    /**
-     * Converte un file XLS in JSON
-     *
-     * @param xlsFile File XLS da convertire
-     * @return File JSON creato
-     * @throws IOException Se si verificano errori durante la conversione
-     */
-    private File convertXlsToJson(File xlsFile) throws IOException {
-        // Genera automaticamente il percorso del file JSON
-        String outputPath = generateJsonPath(xlsFile);
-        return convertXlsToJson(xlsFile, outputPath);
-    }
 
     /**
      * Converte un file XLS in JSON con percorso personalizzato
      *
-     * @param xlsFile File XLS da convertire
+     * @param jsonFile File XLS da convertire
      * @param outputPath Percorso del file JSON di output
      * @return File JSON creato
      * @throws IOException Se si verificano errori durante la conversione
      */
-    private File convertXlsToJson(File xlsFile, String outputPath) throws IOException {
+    private File convertSpreadsheetToJson(File jsonFile, String outputPath) throws IOException {
         File outputFile = new File(outputPath);
 
-        try (InputStream fileStream = Files.newInputStream(xlsFile.toPath());
+        try (InputStream fileStream = Files.newInputStream(jsonFile.toPath());
              Workbook workbook = new HSSFWorkbook(fileStream)) {
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -92,7 +81,6 @@ public class XLStoJSONconverter extends Converter {
             }
 
             // Elabora i dati
-            int rowCount = 0;
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
 
@@ -107,7 +95,6 @@ public class XLStoJSONconverter extends Converter {
                 }
 
                 dataList.add(rowData);
-                rowCount++;
             }
 
             // Crea la cartella di output se necessario
@@ -136,17 +123,9 @@ public class XLStoJSONconverter extends Converter {
     }
 
     /**
-     * Genera il percorso del file JSON sostituendo l'estensione
-     */
-    private String generateJsonPath(File inputFile) {
-        String inputPath = inputFile.getAbsolutePath();
-        return inputPath.replaceAll("\\.[^.]+$", ".json");
-    }
-
-    /**
      * Crea la cartella di output se non esiste
      */
-    private void createOutputDirectory(File outputFile) throws IOException {
+    private void createOutputDirectory(File outputFile) {
         File parentDir = outputFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             boolean created = parentDir.mkdirs();
@@ -268,15 +247,6 @@ public class XLStoJSONconverter extends Converter {
         return true;
     }
 
-    /**
-     * Metodo di utilità per verificare se un file è supportato
-     */
-    public boolean isFileSupported(File file) {
-        if (file == null || !file.exists() || !file.isFile()) {
-            return false;
-        }
-        String fileName = file.getName().toLowerCase();
-        return fileName.endsWith(".xls");
-    }
-
 }
+
+
