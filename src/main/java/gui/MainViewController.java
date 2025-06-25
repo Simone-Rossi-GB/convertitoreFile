@@ -26,6 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import javafx.scene.control.TextArea;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,7 +47,7 @@ public class MainViewController {
     @FXML
     private Label monitoringStatusLabel;
     @FXML
-    private Label applicationLogArea;
+    private TextArea applicationLogArea;
     @FXML
     private Label detectedFilesCounter;
     @FXML
@@ -126,6 +127,22 @@ public class MainViewController {
     }
 
 
+    /**
+     * Aggiorna lo stile del pulsante monitoraggio in base allo stato
+     */
+    private void updateMonitoringButtonStyle() {
+        if (isMonitoring) {
+            // Quando monitora -> colore acquamarina come Directory
+            MonitoringBtn.getStyleClass().removeAll("standard-btn");
+            MonitoringBtn.getStyleClass().add("accent-btn");
+            MonitoringBtn.setText("[ Ferma Monitoraggio ]");
+        } else {
+            // Quando non monitora -> colore grigio standard
+            MonitoringBtn.getStyleClass().removeAll("accent-btn");
+            MonitoringBtn.getStyleClass().add("standard-btn");
+            MonitoringBtn.setText("[ Monitoraggio ]");
+        }
+    }
 
 
     /**
@@ -174,7 +191,9 @@ public class MainViewController {
             watcherThread.start();
             resetCounters();
         }
+
         isMonitoring = !isMonitoring;
+        updateMonitoringButtonStyle(); // Aggiorna lo stile del pulsante
         updateMonitoringStatus();
     }
 
@@ -348,11 +367,14 @@ public class MainViewController {
     public void addLogMessage(String message) {
         Platform.runLater(() -> {
             String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
-            String logEntry = "[" + timestamp + "] " + message;
-            if ("Log dell'applicazione...".equals(applicationLogArea.getText())) {
+            String logEntry = "• [" + timestamp + "] " + message;
+
+            // Per TextArea, aggiungi alla fine del testo esistente
+            String currentText = applicationLogArea.getText();
+            if (currentText == null || currentText.isEmpty() || currentText.equals("• [hh:mm:ss] Avvio monitoraggio…\n• [hh:mm:ss] File convertiti…\n• …")) {
                 applicationLogArea.setText(logEntry);
             } else {
-                applicationLogArea.setText(applicationLogArea.getText() + "\n" + logEntry);
+                applicationLogArea.setText(currentText + "\n" + logEntry);
             }
         });
     }

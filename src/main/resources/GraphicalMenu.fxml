@@ -120,7 +120,7 @@
                             <!-- Log Area -->
                             <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="log-scroll" VBox.vgrow="ALWAYS">
                                 <content>
-                                    <TextArea editable="false" styleClass="log-area" text="• [hh:mm:ss] Avvio monitoraggio…&#10;• [hh:mm:ss] File convertiti…&#10;• …" wrapText="true">
+                                    <TextArea fx:id="applicationLogArea" editable="false" styleClass="log-area" text=" " wrapText="true">
                                         <font><Font name="Consolas" size="12.0" /></font>
                                     </TextArea>
                                 </content>
