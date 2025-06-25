@@ -406,7 +406,7 @@ public class MainViewController {
             launchAlertError("I file hanno formati diversi");
         }
 
-        List<String> formats;
+        List<String> formats = null;
         try {
             // Prova prima il webservice per ottenere i formati
             if (webServiceClient.isServiceAvailable()) {
@@ -415,14 +415,16 @@ public class MainViewController {
                     formats = webServiceClient.getPossibleConversions(srcExtension);
                     addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
                 } catch (WebServiceException wsError) {
-                    logger.error(wsError.getMessage());
-                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
-                    formats = engine.getPossibleConversions(srcExtension);
+                    launchAlertError(wsError.getMessage());
+                    return;
                 }
             } else {
-                logger.warn("Web service non disponibile, uso engine locale per {}", srcFile.getName());
-                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
-                formats = engine.getPossibleConversions(srcExtension);
+                launchAlertError("Il web service non è disponibile");
+                Platform.runLater(() -> {
+                    fileScartati++;
+                    stampaRisultati();
+                });
+                return;
             }
         } catch (Exception e) { // Exception ammessa nel programma
             launchAlertError(e.getMessage());
@@ -444,12 +446,12 @@ public class MainViewController {
             Optional<String> result = dialog.showAndWait();
             //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
             result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
+                new Thread(() -> performConversion(srcFile, chosenFormat, finalSrcExtension)).start();
             });
         });
     }
 
-    private void performConversionWithFallback(File srcFile, String targetFormat, String srcExtension) {
+    private void performConversion(File srcFile, String targetFormat, String srcExtension) {
         String outputFileName;
         if(ConversionContextReader.getIsZippedOutput() || ConfigReader.getIsMultipleConversionEnabled() || ConversionContextReader.getIsUnion())
             outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + ".zip";
@@ -459,7 +461,6 @@ public class MainViewController {
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
         boolean webServiceSuccess = false;
         try {
-            // PRIMO TENTATIVO: USA WEBSERVICE
             if (webServiceClient.isServiceAvailable()) {
                 logger.info("Tentativo conversione tramite web service...");
                 ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
@@ -470,36 +471,20 @@ public class MainViewController {
                         addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
                         webServiceSuccess = true;
                     } else {
-                        launchAlertError("Il file convertito non è stato salvato correttamente dal web service");
+                        throw new ConversionException("Il file convertito non è stato salvato correttamente dal web service");
                     }
                 } else {
-                    launchAlertError("Web service ha restituito errore: " + result.getError());
+                    throw new ConversionException("Web service ha restituito errore: " + result.getError());
                 }
             } else {
-                logger.warn("Web service non disponibile, passo direttamente a engine locale");
-            }
-
-            // SECONDO TENTATIVO: USA ENGINE LOCALE (solo se webservice fallito)
-            if (!webServiceSuccess) {
-                logger.warn("Fallback: uso engine locale per conversione...");
-
-                try {
-                    engine.conversione(srcExtension, targetFormat, srcFile);
-                    logger.info("Conversione ENGINE LOCALE riuscita");
-
-                    // Per l'engine locale, il file originale è già stato gestito automaticamente
-                    Platform.runLater(() -> {
-                        fileConvertiti++;
-                        stampaRisultati();
-                        launchAlertSuccess(srcFile);
-                    });
-                    return; // Esci qui se engine locale ha successo
-                } catch (Exception engineError) { // Exception ammessa nel programma
-                    launchAlertError(engineError.getMessage());
-                }
+                throw new WebServiceException("Il web service non è disponibile");
             }
         } catch (Exception e) {
             launchAlertError(e.getMessage());
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+            });
         }
 
         // Se arriviamo qui, il web service ha avuto successo

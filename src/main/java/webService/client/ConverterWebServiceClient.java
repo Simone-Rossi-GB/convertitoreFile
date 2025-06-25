@@ -60,23 +60,18 @@ public class ConverterWebServiceClient {
      *
      * @param extension L'estensione del file sorgente (es. "pdf").
      * @return Una lista di estensioni di destinazione possibili.
-     * @throws Exception Se la richiesta fallisce o il servizio non è disponibile.
      */
     public List<String> getPossibleConversions(String extension) throws WebServiceException {
         if (!isServiceAvailable()) {
             throw new WebServiceException("Servizio di conversione non disponibile.");
         }
-        try {
             String url = baseUrl + "/api/converter/conversions/" + extension;
             ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 return Arrays.asList(response.getBody());
             } else {
-                throw new WebServiceException("Errore nel recupero delle conversioni possibili: " + response.getStatusCode());
+                throw new WebServiceException(response.getBody()[0]);
             }
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new WebServiceException("Errore HTTP durante il recupero delle conversioni: " + e.getResponseBodyAsString(), e);
-        }
     }
 
     /**

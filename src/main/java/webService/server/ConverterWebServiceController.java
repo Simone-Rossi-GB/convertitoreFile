@@ -59,7 +59,8 @@ public class ConverterWebServiceController {
             return ResponseEntity.ok(conversions);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonList(e.getMessage()));
         }
     }
 
@@ -156,6 +157,7 @@ public class ConverterWebServiceController {
     @PostMapping("/configUpload")
     public ResponseEntity<String> configUpload(@RequestParam("file") MultipartFile file) {
         ResponseEntity<String> response = configFilesUpload(file);
+        //Ricarica la mappa di configurazione base
         ConfigInstance ci = new ConfigInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
         ConfigData.update(ci);
         return response;
@@ -164,6 +166,7 @@ public class ConverterWebServiceController {
     @PostMapping("/conversionContextUpload")
     public ResponseEntity<String> conversionContextUpload(@RequestParam("file") MultipartFile file) {
         ResponseEntity<String> response = configFilesUpload(file);
+        //Ricarica la mappa di configurazione conversion context
         logger.info(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())).getAbsolutePath());
         ConversionContextInstance ci = new ConversionContextInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
         ConversionContextData.update(ci);

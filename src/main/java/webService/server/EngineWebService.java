@@ -1,6 +1,7 @@
 package webService.server;
 
 import com.twelvemonkeys.util.convert.ConversionException;
+import converters.exception.IllegalExtensionException;
 import webService.Utility;
 import webService.configuration.configHandlers.conversionContext.ConversionContextWriter;
 import converters.Converter;
@@ -74,7 +75,7 @@ public class EngineWebService {
             throw new ConversionException("Errore nel caricamento del convertitore");
         }catch (IOException e){
             throw new FileMoveException("Errore nella gestione del file temporaneo");
-        } catch (FormatsException e){
+        } catch (FormatsException | IllegalExtensionException e){
             throw new UnsupportedConversionException(e.getMessage());
         }
     }
@@ -92,7 +93,7 @@ public class EngineWebService {
      * @throws IllegalAccessException costruttore del convertitore non accessibile
      * @throws IOException errore nella gestione del file temp o dello zip
      */
-    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException {
+    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException, IllegalExtensionException {
         ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
         ArrayList<File> convertedFiles = new ArrayList<>();
         for (File f : zippedFiles){
