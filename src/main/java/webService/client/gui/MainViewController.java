@@ -390,105 +390,98 @@ public class MainViewController {
 
         List<String> formats = null;
         try {
-            // Prova prima il webservice per ottenere i formati
-            if (webServiceClient.isServiceAvailable()) {
-                try {
-                    logger.info("Formati ottenuti da web service per {}", srcFile.getName());
-                    formats = webServiceClient.getPossibleConversions(srcExtension);
-                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
-                } catch (WebServiceException wsError) {
-                    launchAlertError(wsError.getMessage());
-                    return;
-                }
-            } else {
-                launchAlertError("Il web service non è disponibile");
-                Platform.runLater(() -> {
-                    fileScartati++;
-                    stampaRisultati();
-                });
-                return;
-            }
-        } catch (Exception e) { // Exception ammessa nel programma
-            launchAlertError(e.getMessage());
+            //tenta di ottenere i formati dal webService
+            formats = getExtensionsFromWebService(srcExtension);
+            List<String> finalFormats = formats;
+            //Mostra il dialog per selezionare il formato di output
             Platform.runLater(() -> {
-                fileScartati++;
-                stampaRisultati();
+                ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
+                dialog.setTitle("Seleziona Formato");
+                dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
+                dialog.setContentText("Formato desiderato:");
+                Optional<String> result = dialog.showAndWait();
+                //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
+                result.ifPresent(chosenFormat -> {
+                    new Thread(() -> performConversion(srcFile, chosenFormat)).start();
+                });
             });
-            return;
+        } catch (Exception e) { //Intercetta tutte le eccezioni sollevate
+            moveFileToErrorFolder(srcFile);
+            launchAlertError(e.getMessage());
+            aggiornaCounterScartati();
         }
+    }
 
-        List<String> finalFormats = formats;
-        //Mostra il dialog per selezionare il formato di output
+    /**
+     * aggiorna il numero di conversioni fallite
+     */
+    private void aggiornaCounterScartati(){
         Platform.runLater(() -> {
-            ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
-            dialog.setTitle("Seleziona Formato");
-            dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
-            dialog.setContentText("Formato desiderato:");
-            Optional<String> result = dialog.showAndWait();
-            //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
-            result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversion(srcFile, chosenFormat)).start();
-            });
+            fileScartati++;
+            stampaRisultati();
         });
     }
 
-    private void performConversion(File srcFile, String targetFormat) {
+    /**
+     * Chiede al server i formati in cui il file può essere convertito
+     * @param srcExtension formato di partenza
+     * @return lista di formati supportati
+     * @throws Exception eccezioni generate dal webService o problemi con i formati
+     */
+    private List<String> getExtensionsFromWebService(String srcExtension) throws Exception{
+        List<String> formats = null;
+        // Controlla se il webService è attivo
+        if (webServiceClient.isServiceAvailable()) {
+            formats =  webServiceClient.getPossibleConversions(srcExtension);
+            logger.info("Formati ottenuti dal web service");
+        } else {
+            launchAlertError("Il web service non è disponibile");
+            throw new WebServiceException("Il web service non è disponibile");
+        }
+        return formats;
+    }
 
+    /**
+     * Invia il file al server e attende quello convertito
+     * @param srcFile file di partenza
+     * @param targetFormat formato di destinazione
+     */
+    private void performConversion(File srcFile, String targetFormat) throws ConversionException, WebServiceException{
         File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
         boolean webServiceSuccess = false;
-        try {
-            if (webServiceClient.isServiceAvailable()) {
-                logger.info("Tentativo conversione tramite web service...");
-                ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
-
-                if (result.isSuccess()) {
-                    // Verifica che il file convertito sia stato effettivamente salvato
-                    outputDestinationFile = result.getResult();
-                    if (outputDestinationFile.exists()) {
-                        addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
-                        webServiceSuccess = true;
-                    } else {
-                        throw new ConversionException("Il file convertito non è stato salvato correttamente dal web service");
-                    }
+        if (webServiceClient.isServiceAvailable()) {
+            logger.info("Tentativo conversione tramite web service...");
+            ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
+            if (result.isSuccess()) {
+                // Verifica che il file convertito sia stato effettivamente salvato
+                outputDestinationFile = result.getResult();
+                if (outputDestinationFile.exists()) {
+                    logger.info("Conversione tramite web service riuscita");
+                    addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                    webServiceSuccess = true;
                 } else {
-                    throw new ConversionException("Web service ha restituito errore: " + result.getMessage());
+                    throw new ConversionException("Il file convertito non è stato salvato correttamente dal web service");
                 }
             } else {
-                throw new WebServiceException("Il web service non è disponibile");
+                throw new ConversionException("Web service ha restituito errore: " + result.getMessage());
             }
-        } catch (Exception e) {
-            launchAlertError(e.getMessage());
-            Platform.runLater(() -> {
-                fileScartati++;
-                stampaRisultati();
-            });
+        } else {
+            throw new WebServiceException("Il web service non è disponibile");
         }
 
-        // Se arriviamo qui, il web service ha avuto successo
-        if (webServiceSuccess) {
-            addLogMessage("File convertito correttamente");
-            File finalOutputDestinationFile = outputDestinationFile;
-            Platform.runLater(() -> {
-                fileConvertiti++;
-                stampaRisultati();
-                launchAlertSuccess(finalOutputDestinationFile);
-            });
-        }
+        // Se arrivia qui, il web service ha avuto successo
+        File finalOutputDestinationFile = outputDestinationFile;
+        Platform.runLater(() -> {
+            fileConvertiti++;
+            stampaRisultati();
+            launchAlertSuccess(finalOutputDestinationFile);
+        });
     }
 
-    private void moveOriginalFileAfterSuccess(File originalFile) {
-        try {
-            if (originalFile.exists()) {
-                // Elimina il file originale dalla cartella monitorata
-                Files.delete(originalFile.toPath());
-                logger.info("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
-                addLogMessage("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
-            }
-        } catch (IOException e) {
-            addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
-        }
-    }
-
+    /**
+     * Viene chiamato in caso di errore di qualsiasi natura durante la conversione. Sposta il file di partenza in una cartella dedicata alle conversioni fallite
+     * @param originalMonitoredFile
+     */
     private void moveFileToErrorFolder(File originalMonitoredFile) {
         try {
             // Solo se il file esiste ancora nella cartella monitorata, spostalo
@@ -505,7 +498,7 @@ public class MainViewController {
 
     /**
      * Lancia un alert di errore col messaggio desiderato e aggiunge la relativa voce al log
-     * @param message
+     * @param message messaggio di errore
      */
     public void launchAlertError(String message) {
         logger.error(message);
@@ -538,55 +531,9 @@ public class MainViewController {
         });
     }
 
-    public static boolean launchDialogUnisci() throws Exception {
-        CompletableFuture<Boolean> union = new CompletableFuture<>();
-
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Unisci PDF");
-            alert.setHeaderText(null);
-            alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
-
-            ButtonType siBtn = new ButtonType("Si");
-            ButtonType noBtn = new ButtonType("No");
-            alert.getButtonTypes().setAll(siBtn, noBtn);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            boolean unisci = result.isPresent() && result.get() == siBtn;
-            Log.addMessage("Scelta unione JPG: " + unisci);
-
-            union.complete(unisci);
-        });
-
-        try {
-            return union.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) { // Exception ammessa nel programma
-            throw new Exception("Impossibile ottenere il parametro Boolean");
-        }
-    }
-
-    public static String launchDialogStringParameter() throws Exception {
-
-        CompletableFuture<String> extraParameter = new CompletableFuture<>();
-        Platform.runLater(() ->{
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Password PDF");
-            dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-            dialog.setContentText("Password:");
-
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
-            String parameter = result.orElse(null);
-            logger.info("Password ricevuta: {}", parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)");
-            extraParameter.complete(parameter);
-        });
-        try {
-            return extraParameter.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) { // Exception ammessa nel programma
-            throw new Exception("Impossibile ottenere il parametro String");
-        }
-    }
-
+    /**
+     * Aggiorna i counter dei file rilevati, convertiti e scartati nella GUI
+     */
     public void stampaRisultati() {
         logger.info("Stato: ricevuti={}, convertiti={}, scartati={}", fileRicevuti, fileConvertiti, fileScartati);
         Platform.runLater(() -> {
