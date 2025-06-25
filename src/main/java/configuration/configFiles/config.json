@@ -29,7 +29,10 @@
         "ods" : "converters.jsonCsvConverters.JSONtoSPREADSHEETconverter"
       },
       "csv" : {
-        "json" : "converters.jsonCsvConverters.CSVtoJSONconverter"
+        "json" : "converters.jsonCsvConverters.CSVtoJSONconverter",
+        "xls" : "converters.jsonCsvConverters.CSVtoSPREADSHEETconverter",
+        "xlsx" : "converters.jsonCsvConverters.CSVtoSPREADSHEETconverter",
+        "ods" : "converters.jsonCsvConverters.CSVtoSPREADSHEETconverter"
       },
       "eml" : {
         "pdf" : "converters.mailConverters.EMLtoPDFconverter"
