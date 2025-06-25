@@ -38,7 +38,7 @@ public class WebServiceApplication {
 
 package webservice.controller;
 
-import objects.Engine;
+import Engine;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/objects")
+@RequestMapping("/api/webService.client.objects")
 @CrossOrigin(origins = "*")
 public class ConverterController {
 
@@ -162,7 +162,7 @@ public class ConverterWebServiceClient {
     public boolean isServiceAvailable() {
         try {
             Request request = new Request.Builder()
-                    .url(baseUrl + "api/objects/status")
+                    .url(baseUrl + "api/webService.client.objects/status")
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 return response.isSuccessful();
@@ -174,7 +174,7 @@ public class ConverterWebServiceClient {
 
     public List<String> getPossibleConversions(String extension) throws Exception {
         Request request = new Request.Builder()
-                .url(baseUrl + "api/objects/conversions/" + extension)
+                .url(baseUrl + "api/webService.client.objects/conversions/" + extension)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -217,7 +217,7 @@ public class ConverterWebServiceClient {
         }
 
         Request request = new Request.Builder()
-                .url(baseUrl + "api/objects/convert")
+                .url(baseUrl + "api/webService.client.objects/convert")
                 .post(builder.build())
                 .build();
 

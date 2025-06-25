@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="990.0" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="990.0" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.MainViewController">
     <children>
         <VBox prefHeight="770.0" prefWidth="990.0" spacing="11.0">
             <children>
@@ -43,10 +43,10 @@
                 <!-- Main Content Area -->
                 <HBox prefHeight="682.0" prefWidth="990.0" spacing="16.5">
                     <children>
-                        <!-- Left Panel - configuration and Controls -->
+                        <!-- Left Panel - webService.client.configuration and Controls -->
                         <VBox prefHeight="682.0" prefWidth="484.0" spacing="16.5">
                             <children>
-                                <!-- Folder configuration Section -->
+                                <!-- Folder webService.client.configuration Section -->
                                 <VBox spacing="11.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-padding: 16.5;">
                                     <children>
                                         <Label text="Configurazione Cartelle" textFill="#2c3e50">

@@ -1,8 +1,8 @@
 package webService.server;
 
-import converters.exception.FileMoveException;
-import converters.exception.IllegalExtensionException;
-import converters.exception.UnsupportedConversionException;
+import webService.server.converters.exception.FileMoveException;
+import webService.server.converters.exception.IllegalExtensionException;
+import webService.server.converters.exception.UnsupportedConversionException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +14,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import webService.Utility;
 import org.apache.tika.Tika;
-import webService.configuration.configHandlers.config.ConfigData;
-import webService.configuration.configHandlers.config.ConfigInstance;
-import webService.configuration.configHandlers.conversionContext.ConversionContextData;
-import webService.configuration.configHandlers.conversionContext.ConversionContextInstance;
+import webService.server.configuration.configHandlers.config.ConfigData;
+import webService.server.configuration.configHandlers.config.ConfigInstance;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
 
 import java.io.File;
 import java.io.IOException;
