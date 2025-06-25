@@ -118,23 +118,38 @@ public class EngineWebService {
      */
     private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
         //Istanzia il convertitore adatto
-        String converterClassName = checkParameters(srcExt, outExt, srcFile);
-        Class<?> clazz = Class.forName(converterClassName);
+        String converterClassName = checkParameters(srcExt, outExt, srcFile); // ritorna il nome del convertitore
+        Class<?> clazz = Class.forName(converterClassName); // tramite il nome trova la classe
+
+        //tramite l'interfaccia istanziamo il convertitore adatto ottenendo l'istanza dal costruttore
         Converter converter = (Converter) clazz.getDeclaredConstructor().newInstance();
+
         File outFile;
+
         //Crea un file temp per la conversione
         File tempFile = new File("src/temp", srcFile.getName());
         System.out.println("Oggetto temp creato");
+
+        //copiamo il file originale nella destinazione del file temporaneo sostituendolo
         Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
         //Elimina il file temp al termine del'applicazione
         tempFile.deleteOnExit();
+
+        //impostiamo il formato di conversione finale
         ConversionContextWriter.setDestinationFormat(outExt);
+
         try {
+            // convertiamo il file
             outFile = converter.conversione(tempFile);
         } catch (Exception e) {
             throw new ConversionException(e.getMessage());
         }
+
+        //eliminiamo preventivamente il file temporaneo anche se viene eliminato
+        // alla chiusura della JVM
         Files.deleteIfExists(tempFile.toPath());
+
         return outFile;
     }
 
@@ -160,20 +175,30 @@ public class EngineWebService {
             throw new IllegalArgumentException("L'oggetto srcFile non esiste");
         }
 
+        // leggiamo dal config file le configurazoni ottenendo una mappa dove
+        // formato originale --> formato finale, nome convertitore
         Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
+
         if (conversions == null || !conversions.containsKey(srcExt)) {
             Log.addMessage("ERRORE: Conversione da " + srcExt + " non supportata");
             throw new UnsupportedConversionException(srcExt + " non supportato per la conversione");
         }
 
+        //otteniamo una mappa formato finale, nome convertitore tramite chiave = formato originale
         Map<String, String> possibleConversions = conversions.get(srcExt);
+
+        // otteniamo il nome della classe del convertitore per la conversione
+        // chiave = formato di destinazione - ritorno funzione: converterClassName
         String converterClassName = possibleConversions.get(outExt);
-        if (converterClassName == null) {
+
+        if (converterClassName == null) { // se non esiste un convertitore lanciamo un eccezione
             Log.addMessage("ERRORE: Conversione da " + srcExt + " a " + outExt + " non supportata");
             throw new UnsupportedConversionException("Impossibile convertire un file " + srcExt + " in uno " + outExt);
         }
 
         Log.addMessage("Parametri validi. Conversione da " + srcExt + " a " + outExt + " tramite " + converterClassName);
+
+        // ritorniamo il nome della classe del convertitore per la conversione
         return converterClassName;
     }
 }
