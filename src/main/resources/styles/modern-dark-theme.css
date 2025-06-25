@@ -130,7 +130,7 @@
 
 /* LOG PANEL */
 .log-panel, .log-main-panel {
-    -fx-background-color: linear-gradient(to bottom, #353847 0%, #2d3142 100%);
+    -fx-background-color: #353847;
 }
 
 .log-title, .log-main-header {
@@ -139,30 +139,33 @@
 }
 
 .log-scroll, .log-scroll-panel {
-    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-background-color: #1a202c;
     -fx-border-color: #4a5568;
     -fx-border-radius: 8;
     -fx-background-radius: 8;
 }
 
 .log-scroll .viewport {
-    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-background-color: #1a202c;
 }
 
 .log-scroll .content {
-    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-background-color: #1a202c;
 }
 
 .log-area {
-    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-background-color: #1a202c;
     -fx-text-fill: #e2e8f0;
     -fx-border-color: #4a5568;
     -fx-border-radius: 8;
     -fx-background-radius: 8;
     -fx-font-family: "Consolas", "Monaco", monospace;
     -fx-font-size: 12px;
-    -fx-control-inner-background: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
-    -fx-text-area-background: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-control-inner-background: #1a202c;
+    -fx-text-area-background: #1a202c;
+    -fx-highlight-fill: #4a5568;
+    -fx-highlight-text-fill: #ffffff;
+    -fx-prompt-text-fill: #718096;
 }
 
 /* STATISTICS BAR */
@@ -291,6 +294,9 @@
     -fx-border-color: #e2e8f0;
     -fx-control-inner-background: #ffffff;
     -fx-text-area-background: #ffffff;
+    -fx-highlight-fill: #e2e8f0;
+    -fx-highlight-text-fill: #2d3748;
+    -fx-prompt-text-fill: #718096;
 }
 
 .light .stats-bar {

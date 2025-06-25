@@ -113,7 +113,6 @@ public class MainViewController {
 
         // 3) UI setup e configurazione
         setupEventHandlers();
-        updateMonitoringStatus();
         logger.info("Applicazione avviata. Caricamento configurazione...");
 
         ConfigInstance ci = new ConfigInstance(new File(configFile));
@@ -194,7 +193,6 @@ public class MainViewController {
 
         isMonitoring = !isMonitoring;
         updateMonitoringButtonStyle(); // Aggiorna lo stile del pulsante
-        updateMonitoringStatus();
     }
 
     /**
@@ -211,24 +209,6 @@ public class MainViewController {
         });
     }
 
-    /**
-     * Aggiorna l'indicatore visivo dello stato di monitoraggio.
-     */
-    private void updateMonitoringStatus() {
-        Platform.runLater(() -> {
-            if (isMonitoring) {
-                monitoringStatusLabel.setText("Monitoraggio: Attivo");
-                statusIndicator.setTextFill(javafx.scene.paint.Color.web("#27ae60"));
-                MonitoringBtn.setText("Ferma Monitoraggio");
-                MonitoringBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
-            } else {
-                monitoringStatusLabel.setText("Monitoraggio: Fermo");
-                statusIndicator.setTextFill(javafx.scene.paint.Color.web("#e74c3c"));
-                MonitoringBtn.setText("Avvia Monitoraggio");
-                MonitoringBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
-            }
-        });
-    }
 
     private void loadConfiguration() {
         if (engine == null) {
