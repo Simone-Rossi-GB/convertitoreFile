@@ -28,33 +28,50 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Client per la comunicazione con il servizio web di conversione file.
+ * Gestisce tutte le operazioni di comunicazione HTTP con il server,
+ * inclusi controlli di stato, conversioni file e upload di configurazioni.
+ */
 public class ConverterWebServiceClient {
 
-    private final String baseUrl;
-    private final RestTemplate restTemplate;
+    private final String baseUrl; // URL base del servizio web
+    private final RestTemplate restTemplate; // Template per le chiamate HTTP REST
     private static final Logger logger = LogManager.getLogger(ConverterWebServiceClient.class);
 
+    /**
+     * Costruttore che inizializza il client con l'URL del webservice
+     * @param baseUrl URL base del servizio web di conversione
+     */
     public ConverterWebServiceClient(String baseUrl) {
         this.baseUrl = baseUrl;
         this.restTemplate = new RestTemplate();
     }
 
     /**
-     * Controlla la disponibilità del servizio web.
+     * Controlla la disponibilità del servizio web chiamando l'endpoint /status.
      *
-     * @return true se il servizio è disponibile, false altrimenti.
+     * @return true se il servizio è disponibile e attivo, false altrimenti
      */
     public boolean isServiceAvailable() {
         try {
+            // Costruisce l'URL per il controllo dello stato del webservice
             String url = baseUrl + "/api/converter/status";
+
+            // Effettua una chiamata GET per verificare lo stato del servizio
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-            return response.getStatusCode().is2xxSuccessful() && response.getBody() != null && "active".equals(response.getBody().get("status"));
+
+            // Verifica che la risposta sia 2xx (succesful) e contenga status="active"
+            return response.getStatusCode().is2xxSuccessful() &&
+                    response.getBody() != null &&
+                    "active".equals(response.getBody().get("status"));
+
         } catch (ResourceAccessException e) {
-            // Non riuscito a connettersi al server (e.g., server down, indirizzo errato)
+            // Errore di connessione (server down, indirizzo errato, ecc.)
             System.err.println("Servizio web non disponibile (connessione fallita): " + e.getMessage());
             return false;
         } catch (Exception e) {
-            // Altri errori (e.g., server risponde con errore HTTP)
+            // Altri errori HTTP o di parsing della risposta
             System.err.println("Errore durante il controllo dello stato del servizio web: " + e.getMessage());
             return false;
         }
@@ -62,48 +79,65 @@ public class ConverterWebServiceClient {
 
     /**
      * Recupera la lista delle conversioni possibili per una data estensione sorgente.
+     * Chiama l'endpoint /conversions/{extension} del servizio web.
      *
-     * @param extension L'estensione del file sorgente (es. "pdf").
-     * @return Una lista di estensioni di destinazione possibili.
+     * @param extension L'estensione del file originale (es. "pdf", "docx")
+     * @return Una lista di estensioni di destinazione possibili per la conversione
+     * @throws WebServiceException se il servizio non è disponibile o si verifica un errore
      */
     public List<String> getPossibleConversions(String extension) throws WebServiceException {
+        // Verifica preliminare della disponibilità del servizio
         if (!isServiceAvailable()) {
             throw new WebServiceException("Servizio di conversione non disponibile.");
         }
-            String url = baseUrl + "/api/converter/conversions/" + extension;
-            ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return Arrays.asList(response.getBody());
-            } else {
-                throw new WebServiceException(response.getBody()[0]);
-            }
+
+        // Costruisce l'URL per ottenere le conversioni possibili
+        String url = baseUrl + "/api/converter/conversions/" + extension;
+
+        // Effettua la chiamata GET e riceve un array di stringhe
+        ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            // Converte l'array in lista e lo ritorna
+            return Arrays.asList(response.getBody());
+        } else {
+            // In caso di errore, lancia un'eccezione con il messaggio di errore
+            throw new WebServiceException(response.getBody()[0]);
+        }
     }
 
     /**
      * Invia un file per la conversione al servizio web e salva il risultato localmente.
+     * Gestisce l'intero processo di upload, conversione e download del file risultante.
      *
-     * @param inputFile    Il file sorgente da convertire.
-     * @param targetFormat Il formato di destinazione desiderato.
-     * @param outputFile   Il percorso completo dove salvare il file convertito localmente.
-     * @return Un oggetto ConversionResult che indica il successo e un messaggio.
+     * @param inputFile    Il file originale da convertire
+     * @param targetFormat Il formato di destinazione desiderato (es. "pdf", "docx")
+     * @param outputFile   Il percorso completo dove salvare il file convertito localmente
+     * @return Un oggetto ConversionResult che indica successo/fallimento e dettagli dell'operazione
      */
     public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile) {
+        // Verifica preliminare della disponibilità del servizio
         if (!isServiceAvailable()) {
             return new ConversionResult(false, "Servizio di conversione non disponibile.");
         }
 
         try {
+            // Costruisce l'URL per la conversione
             String url = baseUrl + "/api/converter/convert";
 
+            // Prepara gli header HTTP per multipart/form-data
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+            // Costruisce il corpo della richiesta multipart
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new FileSystemResource(inputFile)); // Aggiunge il file
-            body.add("targetFormat", targetFormat); // Aggiunge il formato target
+            body.add("file", new FileSystemResource(inputFile)); // Aggiunge il file da convertire
+            body.add("targetFormat", targetFormat); // Aggiunge il formato target desiderato
+
+            // Crea l'entità HTTP completa con corpo e header
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Esegui la richiesta POST e aspetta un array di byte come risposta
+            // Esegue la richiesta POST e si aspetta un array di byte come risposta
             ResponseEntity<byte[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
@@ -112,82 +146,120 @@ public class ConverterWebServiceClient {
             );
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                // Costruisce il nome corretto del file
+                // Determina l'estensione corretta dal Content-Type della risposta
                 String estensione = getExtensionFromMediaType(response.getHeaders().getContentType().toString());
+
+                // Costruisce il nome del file finale con l'estensione corretta
                 File renamedFile = new File(outputFile.getParent(), Utility.getBaseName(outputFile) + estensione);
+
                 // Scrive i byte ricevuti nel file di output specificato
                 try (FileOutputStream fos = new FileOutputStream(renamedFile)) {
                     fos.write(response.getBody());
                 }
+
+                // Ritorna il risultato di successo con il file generato
                 return new ConversionResult(true, "File convertito e salvato con successo: " + outputFile.getName(), null, renamedFile);
             } else {
-                // Se la risposta non è 2xx OK
+                // Gestisce risposte HTTP non di successo
                 String errorMessage = "Errore durante la conversione: " + response.getStatusCode();
                 logger.error(errorMessage);
                 return new ConversionResult(false, errorMessage);
             }
+
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // Errori HTTP specifici (4xx, 5xx)
+            // Gestisce errori HTTP specifici (4xx, 5xx)
             return recordError("Errore del server (" + e.getStatusCode() + "): " + e.getResponseBodyAsString());
         } catch (ResourceAccessException e) {
-            // Errore di rete o connessione
+            // Gestisce errori di rete o connessione
             return recordError("Errore di connessione al servizio: " + e.getMessage());
         } catch (IOException e) {
-            // Errore nella scrittura del file locale
+            // Gestisce errori nella scrittura del file locale
             return recordError("Errore I/O durante il salvataggio del file convertito: " + e.getMessage());
         } catch (Exception e) {
-            // Qualsiasi altro errore inatteso
+            // Gestisce qualsiasi altro errore inatteso
             return recordError("Errore inatteso durante la conversione: " + e.getMessage());
         }
     }
 
+    /**
+     * Determina l'estensione del file dal MediaType utilizzando Apache Tika.
+     *
+     * @param mediaType Il tipo MIME del file (es. "application/pdf")
+     * @return L'estensione corrispondente (es. ".pdf") o ".bin" come fallback
+     */
     private String getExtensionFromMediaType(String mediaType) {
         try {
+            // Utilizza Apache Tika per mappare il MIME type all'estensione
             MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
             MimeType mimeType = allTypes.forName(mediaType);
             return mimeType.getExtension();
         } catch (Exception e) {
-            return ".bin"; // fallback
+            // Ritorna un'estensione generica in caso di errore
+            return ".bin";
         }
     }
 
+    /**
+     * Metodo di utility per registrare errori nel log e creare un ConversionResult di fallimento.
+     *
+     * @param message Il messaggio di errore da registrare
+     * @return Un ConversionResult che indica il fallimento con il messaggio specificato
+     */
     private ConversionResult recordError(String message) {
         logger.error(message);
         return new ConversionResult(false, message);
     }
 
+    /**
+     * Invia un file di configurazione JSON al servizio web.
+     * Utilizza l'endpoint /configUpload per caricare la configurazione del servizio.
+     *
+     * @param jsonFile Il file JSON di configurazione da inviare al server
+     */
     public void sendConfigFile(File jsonFile){
+        // Costruisce l'URL per l'upload della configurazione
         String url = baseUrl + "/api/converter/configUpload";
 
+        // Verifica che il file esista prima di tentare l'upload
         if (!jsonFile.exists()) {
             System.err.println("Il file non esiste: " + jsonFile.getPath());
             return;
         }
 
-        // Prepara il contenuto come multipart/form-data
+        // Prepara il contenuto come multipart/form-data per l'invio del file di configurazione
         FileSystemResource resource = new FileSystemResource(jsonFile);
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", resource);
+        body.add("file", resource); // Aggiunge il file alla richiesta
 
+        // Configura gli header per multipart/form-data
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+        // Crea l'entità HTTP completa
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        // Invia POST
+        // Invia la richiesta POST al server
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
-        // Controlla se lo status HTTP è 2xx (es. 200 OK)
+        // Controlla lo status HTTP della risposta e logga il risultato
         if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Upload riuscito: " + response.getBody());
+            logger.info("Upload della configurazione riuscito: " + response.getBody());
         } else {
-            logger.error("Upload fallito: " + response.getBody());
+            logger.error("Upload della configurazione fallito: " + response.getBody());
         }
     }
 
+    /**
+     * Invia un file di contesto per la conversione JSON al webservice.
+     * Utilizza l'endpoint /conversionContextUpload per caricare il contesto delle conversioni.
+     *
+     * @param jsonFile Il file JSON di contesto conversione da inviare al server
+     */
     public void sendConversionContextFile(File jsonFile){
+        // Costruisce l'URL per l'upload del contesto conversione
         String url = baseUrl + "/api/converter/conversionContextUpload";
 
+        // Verifica che il file esista prima di tentare l'upload
         if (!jsonFile.exists()) {
             System.err.println("Il file non esiste: " + jsonFile.getPath());
             return;
@@ -196,22 +268,23 @@ public class ConverterWebServiceClient {
         // Prepara il contenuto come multipart/form-data
         FileSystemResource resource = new FileSystemResource(jsonFile);
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", resource);
+        body.add("file", resource); // Aggiunge il file alla richiesta
 
+        // crea gli header settandoli a multipart/form-data
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+        // Crea l'entità HTTP completa
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        // Invia POST
+        // Invia la richiesta POST al server
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
-        // Controlla se lo status HTTP è 2xx (es. 200 OK)
+        // Controlla lo status HTTP della risposta ed esegue i log
         if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Upload riuscito: " + response.getBody());
+            logger.info("Upload del contesto conversione riuscito: " + response.getBody());
         } else {
-            logger.error("Upload fallito: " + response.getBody());
+            logger.error("Upload del contesto conversione fallito: " + response.getBody());
         }
     }
 }
-
