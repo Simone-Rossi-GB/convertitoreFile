@@ -9,8 +9,8 @@
 
 .main-container {
     -fx-background-color: #2d3142;
-    -fx-border-radius: 15px;
-    -fx-background-radius: 15px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
 }
 
 /* HEADER BAR */
@@ -18,7 +18,7 @@
     -fx-background-color: linear-gradient(to right, #3d4252 0%, #2d3142 100%);
     -fx-border-color: #404040;
     -fx-border-width: 0 0 2 0;
-    -fx-background-radius: 15 15 0 0;
+    -fx-background-radius: 0;
 }
 
 .app-title {
@@ -193,7 +193,7 @@
 /* FOOTER BAR */
 .footer-bar {
     -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
-    -fx-background-radius: 0 0 15 15;
+    -fx-background-radius: 0;
 }
 
 .developer-info {
