@@ -504,7 +504,8 @@ public class MainViewController {
                 launchAlertSuccess(outputDestinationFile);
             });
         }
-    }
+    } catch (Exception e) {
+            launchAlertError(e.getMessage());        }
 
     private void moveOriginalFileAfterSuccess(File originalFile) {
         try {
