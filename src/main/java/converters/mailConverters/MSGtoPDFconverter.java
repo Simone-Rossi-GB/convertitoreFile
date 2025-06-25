@@ -1,4 +1,4 @@
-package Converters.mailConverters;
+package converters.mailConverters;
 
 import converters.Converter;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +26,7 @@ public class MSGtoPDFconverter extends Converter {
     private File tempDir;
     private String originalBaseName;
 
-    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = false;
+    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
     private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
 
     @Override

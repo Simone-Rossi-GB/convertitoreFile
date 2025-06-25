@@ -1,4 +1,4 @@
-package Converters.mailConverters;
+package converters.mailConverters;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

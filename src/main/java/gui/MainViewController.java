@@ -381,7 +381,7 @@ public class MainViewController {
             return;
         }
 
-        Platform.runLater(() -> fileRicevuti++);
+        Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
         srcExtension = Utility.getExtension(srcFile);
 

@@ -1,4 +1,4 @@
-package Converters.mailConverters;
+package converters.mailConverters;
 
 import converters.Converter;
 import org.apache.james.mime4j.dom.*;
@@ -27,8 +27,8 @@ public class EMLtoPDFconverter extends Converter {
     private File tempDir;
     private String originalBaseName; // Campo per memorizzare il nome base originale del file EML
 
-    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = false;
-    private static final boolean DEBUG_KEEP_TEMP_FILES = false; // Mantenuto TRUE per debugging
+    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
+    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
 
     @Override
     public File convert(File emlFile) throws IOException {

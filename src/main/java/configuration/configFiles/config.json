@@ -45,7 +45,7 @@
         "zip" : "converters.compressedFilesConverters.TARGZtoZIPconverter"
       },
       "msg" : {
-        "pdf" : "converters.mailConvertersMSGtoPDFconverter"
+        "pdf" : "converters.mailConverters.MSGtoPDFconverter"
       },
       "bmp" : {
         "gif" : "converters.imageConverters.GenericImageConverter",
