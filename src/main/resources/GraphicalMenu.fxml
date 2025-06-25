@@ -100,7 +100,7 @@
                             <VBox alignment="CENTER" prefHeight="130.0" prefWidth="246.0" spacing="0" styleClass="monitoring-section">
                                 <children>
                                     <Button fx:id="MonitoringBtn" prefHeight="40.0" prefWidth="140.0" styleClass="standard-btn" text="Monitoring ON">
-                                        <font><Font name="System Bold" size="14.0" /></font>
+                                        <font><Font name="System Bold" size="13.0" /></font>
                                     </Button>
                                 </children>
                             </VBox>
