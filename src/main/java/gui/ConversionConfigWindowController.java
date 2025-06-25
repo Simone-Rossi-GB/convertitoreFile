@@ -1,13 +1,14 @@
 package gui;
 
-import configuration.configHandlers.conversionContext.ConversionContextReader;
-import configuration.configHandlers.conversionContext.ConversionContextWriter;
+import configuration.configHandlers.conversionContext.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 
 /**
@@ -123,9 +124,11 @@ public class ConversionConfigWindowController {
     @FXML
     private void saveConfiguration(ActionEvent event) {
         //Aggiorna le voci nel JSON
-        ConversionContextWriter.setIsUnion(union);
-        ConversionContextWriter.setIsZippedOutput(zippedOutput);
-        ConversionContextWriter.setPassword(txtPassword.getText());
+        InstanceConversionContextWriter ccw = new InstanceConversionContextWriter(new File("src/main/java/configuration/configFiles/conversionContext.json"));
+        ccw.writeIsUnionEnabled(union);
+        ccw.writeIsZippedOutput(zippedOutput);
+        ccw.writePassword(txtPassword.getText());
+        ConversionContextData.update(new ConversionContextInstance(new File("src/main/java/configuration/configFiles/conversionContext.json")));
         logger.info("Configurazione di conversione salvata");
         // Chiude la finestra
         dialogStage.close();
