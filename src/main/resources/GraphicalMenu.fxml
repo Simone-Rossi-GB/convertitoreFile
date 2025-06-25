@@ -45,7 +45,7 @@
                         <children>
 
                             <!-- Directory Section -->
-                            <VBox prefHeight="238.0" prefWidth="246.0" spacing="10.0" styleClass="directory-section">
+                            <VBox prefHeight="228.0" prefWidth="246.0" spacing="10.0" styleClass="directory-section">
                                 <children>
                                     <Label styleClass="section-title" text="Directory">
                                         <font><Font name="System Bold" size="16.0" /></font>
@@ -73,14 +73,14 @@
                             </VBox>
 
                             <!-- Opzioni Conversione Section -->
-                            <VBox prefHeight="168.0" prefWidth="246.0" spacing="10.0" styleClass="options-section">
+                            <VBox prefHeight="189.0" prefWidth="246.0" spacing="10.0" styleClass="options-section">
                                 <children>
                                     <Label styleClass="section-title" text="Conversion Settings">
                                         <font><Font name="System Bold" size="16.0" /></font>
                                     </Label>
                                     <Separator prefWidth="280.0" styleClass="section-line" />
 
-                                    <VBox alignment="CENTER" spacing="10.0">
+                                    <VBox alignment="CENTER" prefHeight="107.0" prefWidth="216.0" spacing="10.0">
                                         <children>
                                             <Button fx:id="configBtn" prefHeight="32.0" prefWidth="140.0" styleClass="standard-btn" text="Main Settings">
                                                 <font><Font name="System Bold" size="12.0" /></font>
@@ -97,12 +97,15 @@
                             </VBox>
 
                             <!-- Monitoring Button Section -->
-                            <VBox alignment="CENTER" prefHeight="130.0" prefWidth="246.0" spacing="0" styleClass="monitoring-section">
+                            <VBox alignment="TOP_CENTER" prefHeight="130.0" prefWidth="246.0" spacing="0" styleClass="monitoring-section">
                                 <children>
                                     <Button fx:id="MonitoringBtn" prefHeight="40.0" prefWidth="140.0" styleClass="standard-btn" text="Monitoring ON">
                                         <font><Font name="System Bold" size="13.0" /></font>
                                     </Button>
                                 </children>
+                        <padding>
+                           <Insets top="25.0" />
+                        </padding>
                             </VBox>
 
                         </children>
