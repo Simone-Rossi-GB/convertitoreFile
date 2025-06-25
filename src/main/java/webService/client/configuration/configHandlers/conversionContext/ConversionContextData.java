@@ -20,7 +20,7 @@ public abstract class ConversionContextData implements JsonData {
      * File JSON contenente la configurazione base del contesto di conversione.
      * Viene letto una sola volta all'avvio.
      */
-    private static File jsonFile = new File("src/main/java/webService.client.configuration/configFiles/conversionContext.json");
+    private static File jsonFile = new File("src/main/java/webService/client/configuration/configFiles/conversionContext.json");
 
     /**
      * Nodo radice JSON in cui viene caricato il contenuto del file,

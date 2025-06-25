@@ -3,6 +3,8 @@ package webService.client.gui;
 import webService.client.configuration.configHandlers.config.ConfigData;
 import webService.client.configuration.configHandlers.config.ConfigInstance;
 import webService.client.configuration.configHandlers.config.ConfigReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.client.objects.DirectoryWatcher;
@@ -29,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.nio.file.StandardCopyOption;
@@ -106,6 +109,8 @@ public class MainViewController {
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
         loadConfiguration();
+        ConversionContextInstance cci = new ConversionContextInstance(new File(conversionContextFile));
+        ConversionContextData.update(cci);
         if(webServiceClient.isServiceAvailable()){
             webServiceClient.sendConfigFile(new File(configFile));
             webServiceClient.sendConversionContextFile(new File(conversionContextFile));
@@ -297,10 +302,11 @@ public class MainViewController {
             // Ricarica la configurazione
             logger.info("Configurazione inviata al webService");
             webServiceClient.sendConversionContextFile(new File(conversionContextFile));
-        } catch (IOException e) {
+        }catch (IOException e) {
+            e.printStackTrace();
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
-    }
+       }
 
     /**
      * Apre la cartella specificata nel file explorer di sistema.

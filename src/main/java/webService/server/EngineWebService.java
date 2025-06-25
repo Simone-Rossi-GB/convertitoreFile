@@ -2,7 +2,6 @@ package webService.server;
 
 import com.twelvemonkeys.util.convert.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
-import webService.Utility;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
 import webService.server.converters.Converter;
 import webService.server.configuration.configHandlers.config.ConfigReader;

@@ -1,4 +1,4 @@
-package webService;
+package webService.server;
 
 import webService.server.converters.exception.IllegalExtensionException;
 import org.apache.logging.log4j.LogManager;

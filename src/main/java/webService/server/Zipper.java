@@ -1,4 +1,4 @@
-package webService;
+package webService.server;
 
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.IllegalExtensionException;

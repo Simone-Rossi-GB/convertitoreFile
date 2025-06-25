@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import webService.Utility;
 import org.apache.tika.Tika;
 import webService.server.configuration.configHandlers.config.ConfigData;
 import webService.server.configuration.configHandlers.config.ConfigInstance;
