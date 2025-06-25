@@ -452,13 +452,8 @@ public class MainViewController {
     }
 
     private void performConversion(File srcFile, String targetFormat, String srcExtension) {
-        String outputFileName;
-        if(ConversionContextReader.getIsZippedOutput() || ConfigReader.getIsMultipleConversionEnabled() || ConversionContextReader.getIsUnion())
-            outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + ".zip";
-        else
-            outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
 
-        File outputDestinationFile = new File(convertedFolderPath, outputFileName);
+        File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
         boolean webServiceSuccess = false;
         try {
             if (webServiceClient.isServiceAvailable()) {
@@ -489,11 +484,7 @@ public class MainViewController {
 
         // Se arriviamo qui, il web service ha avuto successo
         if (webServiceSuccess) {
-            addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
-
-            // Gestisci il file originale dopo successo web service
-            moveOriginalFileAfterSuccess(srcFile);
-
+            addLogMessage("File convertito correttamente");
             Platform.runLater(() -> {
                 fileConvertiti++;
                 stampaRisultati();

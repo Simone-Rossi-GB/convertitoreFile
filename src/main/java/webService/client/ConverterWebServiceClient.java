@@ -2,6 +2,8 @@ package webService.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypes;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,8 @@ import javax.xml.ws.WebServiceException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +111,13 @@ public class ConverterWebServiceClient {
             );
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                // Costruisce il nome corretto del file
+                String baseName = outputFile.getName().replaceFirst("\\.[^\\.]+$", "");
+                String extension = getExtensionFromMediaType(response.getHeaders().getContentType().toString());
+                File correctedFile = new File(outputFile.getParent(), baseName + extension);
+                Files.move(outputFile.toPath(), correctedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 // Scrive i byte ricevuti nel file di output specificato
-                try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                try (FileOutputStream fos = new FileOutputStream(correctedFile)) {
                     fos.write(response.getBody());
                 }
                 return new ConversionResult(true, "File convertito e salvato con successo: " + outputFile.getName());
@@ -130,6 +139,16 @@ public class ConverterWebServiceClient {
         } catch (Exception e) {
             // Qualsiasi altro errore inatteso
             return recordError("Errore inatteso durante la conversione: " + e.getMessage());
+        }
+    }
+
+    private String getExtensionFromMediaType(String mediaType) {
+        try {
+            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+            MimeType mimeType = allTypes.forName(mediaType);
+            return mimeType.getExtension();
+        } catch (Exception e) {
+            return ".bin"; // fallback
         }
     }
 
