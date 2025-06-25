@@ -12,6 +12,11 @@ public class WebServiceApplication {
     private static ConfigurableApplicationContext context;
     private static final Logger logger = LogManager.getLogger(WebServiceApplication.class);
 
+    /*
+     * funzione chiamata per controllare se c'è un webservice attivo e
+     * se non c'è istanzia e avvia il contesto di esecuzione dell'applicazione webservice
+     * context --> applicazione webservice
+     */
     public static void startWebService() {
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
@@ -19,6 +24,11 @@ public class WebServiceApplication {
         }
     }
 
+
+    /*
+     * funzione chiamata per controllare se c'è un webservice attivo e di terminarlo
+     * context --> applicazione webservice
+     */
     public static void stopWebService() {
         if (context != null && context.isActive()) {
             context.close();
