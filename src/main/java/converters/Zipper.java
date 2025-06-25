@@ -1,8 +1,9 @@
 package converters;
 
+import converters.exception.FileMoveException;
 import converters.exception.IllegalExtensionException;
-import converter.Log;
-import converter.Utility;
+import objects.Log;
+import objects.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +29,7 @@ public class Zipper {
      * @return File ZIP generato
      * @throws IOException in caso di errore di lettura/scrittura
      */
-    public static File zip(List<File> files) throws IOException {
+    public static File zip(List<File> files) throws IOException, FileMoveException {
         File outputZip = new File("src/temp/images.zip"); // nome zip più esplicito
 
         try (FileOutputStream fos = new FileOutputStream(outputZip);
@@ -37,7 +38,6 @@ public class Zipper {
             for (File f : files) {
                 if (!f.exists() || !f.isFile()) {
                     logger.warn("File non valido: {}", f.getAbsolutePath());
-                    Log.addMessage("File non valido: " + f.getAbsolutePath());
                     continue;
                 }
                 //Legge il contenuto di ciascun file
@@ -52,6 +52,9 @@ public class Zipper {
                     }
 
                     zos.closeEntry();
+                }
+                if (!f.delete()){
+                    throw new FileMoveException("Impossibile eliminare il file temporaneo");
                 }
             }
         }
@@ -110,7 +113,7 @@ public class Zipper {
      * @return File.zip
      * @throws IOException Impossibile rinominare il file
      */
-    public static File compressioneFile(ArrayList<File> files, String baseName) throws IOException {
+    public static File compressioneFile(ArrayList<File> files, String baseName) throws IOException, FileMoveException {
         logger.info("Compressione dei file generati in output");
         //Crea il file zip
         File zippedFiles = zip(files);
@@ -126,7 +129,7 @@ public class Zipper {
      * @return File.zip
      * @throws IOException Impossibile rinominare il file
      */
-    public static File compressioneFile(File file, String baseName) throws IOException {
+    public static File compressioneFile(File file, String baseName) throws IOException, FileMoveException {
         //Crea una lista con un solo file
         ArrayList<File> files = new ArrayList<>();
         files.add(file);
@@ -141,7 +144,7 @@ public class Zipper {
      * @throws IOException Impossibile rinominare il file
      */
     private static File rinominaFileZip(File zipFile, String name) throws IOException {
-        //Crea un file con il nome desiderato e estensione .zip nella stessa cartella
+        //Crea un file con il nome desiderato ed estensione .zip nella stessa cartella
         File renamedZip = new File(zipFile.getParent(), name + ".zip");
         try {
             //sostituisce nel percorso indicato il file di partenza, che ora avrà il nome desiderato

@@ -1,6 +1,5 @@
 package converters;
 import configuration.configHandlers.conversionContext.ConversionContextReader;
-import converter.DirectoryWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +11,6 @@ public abstract class ConverterDocumentsWithPasword extends Converter{
      * Metodo che prende il parametro Password dal JSON per tutti quei formati che la possono richiedere
      * @param srcFile File di partenza
      * @return file convertito
-     * @throws Exception
      */
     @Override
     public File convert(File srcFile) throws Exception{
@@ -26,7 +24,6 @@ public abstract class ConverterDocumentsWithPasword extends Converter{
      * @param srcFile File di partenza
      * @param password Password letta dal JSON
      * @return file convertito
-     * @throws Exception
      */
     public abstract File convertProtectedFile(File srcFile, String password) throws Exception;
 }

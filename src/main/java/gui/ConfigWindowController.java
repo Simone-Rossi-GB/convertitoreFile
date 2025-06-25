@@ -1,8 +1,8 @@
 package gui;
 
+import configuration.configExceptions.JsonStructureException;
 import configuration.configHandlers.config.*;
-import converter.Engine;
-import converter.Log;
+import objects.Log;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.application.Platform;
@@ -16,9 +16,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -253,15 +250,11 @@ public class ConfigWindowController {
         }
 
         InstanceConfigWriter wr = new InstanceConfigWriter(ConfigData.getJsonFile());
-        logger.info("INIZIO SCRITTURE");
         wr.writeMonitoredDir(monitoredDirField.getText());
         wr.writeErrorOutputDir(errorDirField.getText());
         wr.writeSuccessOutputDir(successDirField.getText());
         wr.writeIsMonitoringEnabledAtStart(monitorAtStart);
-        logger.info("FINE SCRITTURE");
-
         ConfigData.update(new ConfigInstance(ConfigData.getJsonFile()));
-
         logger.info("Configurazione salvata con successo");
         updateStatus("Configurazione salvata con successo!", false);
         dialogStage.close();
@@ -291,7 +284,6 @@ public class ConfigWindowController {
             // Controlla se ci sono modifiche non salvate
             if (hasUnsavedChanges()) {
                 logger.info("Tentativo di chiusura con modifiche non salvate");
-                Log.addMessage("Tentativo di chiusura con modifiche non salvate");
                 Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmAlert.setTitle("Modifiche non salvate");
                 confirmAlert.setHeaderText("Ci sono modifiche non salvate");
@@ -304,10 +296,9 @@ public class ConfigWindowController {
                 });
             } else {
                 logger.info("Finestra di configurazione chiusa senza modifiche");
-                Log.addMessage("Finestra di configurazione chiusa senza modifiche");
                 dialogStage.close();
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             dialogStage.close();
             showAlert("Attenzione", "Impossibile verificare le modifiche. Chiudo la finestra.", Alert.AlertType.WARNING);
         }
@@ -329,7 +320,7 @@ public class ConfigWindowController {
                     !currentError.equals(errorDirField.getText().trim()) ||
                     currentMonitorAtStart != monitorAtStart;
 
-        } catch (Exception e) {
+        } catch (JsonStructureException e) {
             return true; // In caso di errore, assumi che ci siano modifiche
         }
     }

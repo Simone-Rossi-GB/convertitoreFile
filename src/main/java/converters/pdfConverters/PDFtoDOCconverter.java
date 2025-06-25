@@ -1,78 +1,59 @@
 package converters.pdfConverters;
 
-import converter.Log;
-import converters.exception.ConversionException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Range;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
- * Convertitore da PDF a DOC.
- * Estrae il testo da un file PDF e lo inserisce in un file Word .doc usando un template esistente.
+ * Convertitore da PDF a DOC (.doc classico).
  */
 public class PDFtoDOCconverter extends AbstractPDFConverter {
 
     private static final Logger logger = LogManager.getLogger(PDFtoDOCconverter.class);
 
-    /**
-     * Conversione pdf -> doc
-     *
-     * @param pdfFile      File di partenza
-     * @param pdfDocument  Documento PDF caricato
-     * @return ArrayList contenente il file .doc generato
-     * @throws Exception Errore durante il processo di conversione
-     */
     @Override
-    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws Exception {
-        // Validazione degli input
-        logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
-        validateInputs(pdfFile, pdfDocument);
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
+        logger.info("Inizio conversione PDF → DOC: {}", pdfFile.getName());
 
-        String baseName = pdfFile.getName().replaceAll("(?i)\\.pdf$", "");
-        File outputFile = new File(baseName + ".doc");
-        File template = new File("themplate.doc");
+        // Estrai testo dal PDF
+        PDFTextStripper stripper = new PDFTextStripper();
+        String extractedText = stripper.getText(pdfDocument);
 
-        try {
-            if (!template.exists()) {
-                logger.error("Template mancante: {}", template.getAbsolutePath());
-                throw new FileNotFoundException("Template mancante");
-            }
+        // Crea un template DOC vuoto (se non esiste già, crea da zero)
+        File outputFile = new File(getTempFileName(pdfFile));
+        HWPFDocument doc ;
 
-            logger.info("Estrazione testo da PDF: {}", pdfFile.getName());
-            PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(pdfDocument);
-
-            try (FileInputStream fis = new FileInputStream(template);
-                 HWPFDocument doc = new HWPFDocument(fis);
-                 FileOutputStream out = new FileOutputStream(outputFile)) {
-
-                logger.info("Scrittura contenuto nel file DOC: {}", outputFile.getName());
-
-                Range range = doc.getRange();
-                range.replaceText(range.text(), text);
-                doc.write(out);
-
-
-                logger.info("File .doc creato con successo: {}", outputFile.getAbsolutePath());
-                return outputFile;
-            }
-
-        } catch (FileNotFoundException e) {
-            logger.error("File non trovato: {}", e.getMessage());
-            throw new FileNotFoundException("File non trovato: " + pdfFile.getName());
-
-        } catch (IOException e) {
-            logger.error("Errore I/O durante la conversione: {}", e.getMessage());
-            throw new ConversionException("Errore I/O durante la conversione del file " + pdfFile.getName());
-
-        } catch (Exception e) {
-            logger.error("Errore generico nella conversione: {}", e.getMessage());
-            throw new ConversionException("Errore generico durante la conversione del file");
+        try (InputStream templateStream = Files.newInputStream(Paths.get("themplate.doc"))) {
+            doc = new HWPFDocument(templateStream);
         }
+
+        // Inserisci il testo nel documento .doc
+        try (FileOutputStream out = new FileOutputStream(outputFile)) {
+            Range range = doc.getRange();
+
+            // Evita il delete, usa replaceText in modo sicuro
+            String existingText = range.text();
+            if (existingText != null && !existingText.isEmpty()) {
+                range.replaceText(existingText, extractedText);
+            } else {
+                range.insertAfter(extractedText);
+            }
+            doc.write(out);
+        }
+
+        logger.info("File DOC generato: {}", outputFile.getAbsolutePath());
+        return outputFile;
+    }
+
+    private String getTempFileName(File inputFile) {
+        String baseName = inputFile.getName().replaceAll("(?i)\\.pdf$", "");
+        return System.getProperty("java.io.tmpdir") + File.separator + baseName + ".doc";
     }
 }

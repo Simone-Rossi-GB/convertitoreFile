@@ -3,16 +3,17 @@ package gui;
 import configuration.configHandlers.config.ConfigData;
 import configuration.configHandlers.config.ConfigInstance;
 import configuration.configHandlers.config.ConfigReader;
+import converters.exception.ConversionException;
+import converters.exception.FileCreationException;
 import configuration.configHandlers.conversionContext.ConversionContextReader;
 import converters.exception.IllegalExtensionException;
-import converter.DirectoryWatcher;
-import converter.Log;
+import objects.DirectoryWatcher;
+import objects.Log;
 import converters.Zipper;
-import converter.Utility;
-import converters.exception.UnsupportedConversionException;
+import objects.Utility;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import converter.Engine;
+import objects.Engine;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +31,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -105,9 +105,7 @@ public class MainViewController {
         setupEventHandlers();
         updateMonitoringStatus();
         logger.info("Applicazione avviata.");
-        Log.addMessage("Applicazione avviata.");
         logger.info("Caricamento configurazione...");
-        Log.addMessage("Caricamento configurazione...");
 
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
         ConfigInstance ci = new ConfigInstance(new File(configFile));
@@ -129,7 +127,6 @@ public class MainViewController {
             try {
                 toggleMonitoring();
             } catch (IOException ex) {
-                Log.addMessage("ERRORE: monitoraggio fallito : " + ex.getMessage());
                 launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
@@ -150,20 +147,17 @@ public class MainViewController {
     @FXML
     private void toggleMonitoring() throws IOException {
         if (engine == null || monitoredFolderPath == null) {
-            Log.addMessage("ERRORE: Engine o cartella monitorata non inizializzati");
             launchAlertError("Engine o cartella monitorata non inizializzati.");
             return;
         }
 
         if (isMonitoring) {
-            Log.addMessage("Monitoraggio fermato");
             addLogMessage("Monitoraggio fermato.");
             resetCounters();
             if (watcherThread != null && watcherThread.isAlive()) {
                 watcherThread.interrupt();
             }
         } else {
-            Log.addMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             // Avvia DirectoryWatcher
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
@@ -222,9 +216,9 @@ public class MainViewController {
         monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
         logger.info("Configurazione caricata da config.json");
-        logger.info("Cartella monitorata: " + monitoredFolderPath);
-        logger.info("Cartella file convertiti: " + convertedFolderPath);
-        logger.info("Cartella file falliti: " + failedFolderPath);
+        logger.info("Cartella monitorata: {}", monitoredFolderPath);
+        logger.info("Cartella file convertiti: {}", convertedFolderPath);
+        logger.info("Cartella file falliti: {}", failedFolderPath);
 
     }
 
@@ -234,9 +228,9 @@ public class MainViewController {
         if (!folder.exists()) {
             boolean created = folder.mkdirs();
             if (created) {
-                Log.addMessage("Cartella mancante creata: " + path);
+                logger.info("Cartella mancante creata: {}", path);
             } else {
-                Log.addMessage("Impossibile creare la cartella: " + path);
+                logger.error("Impossibile creare la cartella: {}", path);
             }
         }
     }
@@ -244,7 +238,7 @@ public class MainViewController {
 
     private void openConfigurationWindow() {
         if (engine == null) {
-            Log.addMessage("ERRORE: Engine non inizializzato.");
+            logger.error("Engine non inizializzato.");
             launchAlertError("Engine non inizializzato.");
             return;
         }
@@ -323,20 +317,20 @@ public class MainViewController {
      */
     private void openFolder(String folderPath) {
         if (folderPath == null || "Non configurata".equals(folderPath)) {
-            Log.addMessage("ERRORE: La cartella non è stata ancora configurata.");
+            logger.error("La cartella non è stata ancora configurata.");
             launchAlertError("La cartella non è stata ancora configurata.");
             return;
         }
         File folder = new File(folderPath);
         if (!folder.exists() || !folder.isDirectory()) {
-            Log.addMessage("ERRORE: La cartella non esiste " + folderPath);
+            logger.error("La cartella non esiste {}", folderPath);
             launchAlertError("La cartella non esiste: " + folderPath);
             return;
         }
         try {
             Desktop.getDesktop().open(folder);
         } catch (IOException e) {
-            Log.addMessage("ERRORE: Impossibile aprire la cartella: " + e.getMessage());
+            logger.error("Impossibile aprire la cartella: {}", e.getMessage());
             launchAlertError("Impossibile aprire la cartella: " + e.getMessage());
         }
     }
@@ -383,7 +377,7 @@ public class MainViewController {
      */
     public void launchDialogConversion(File srcFile) {
         if (srcFile == null || engine == null) {
-            Log.addMessage("ERRORE: File sorgente o Engine non valido.");
+            logger.error("File sorgente o Engine non valido.");
             launchAlertError("File sorgente o Engine non valido.");
             return;
         }
@@ -407,17 +401,20 @@ public class MainViewController {
             // Prova prima il webservice per ottenere i formati
             if (webServiceClient.isServiceAvailable()) {
                 try {
+                    logger.info("Formati ottenuti da web service per {}", srcFile.getName());
                     formats = webServiceClient.getPossibleConversions(srcExtension);
-                    logger.info("Formati ottenuti da web service per " + srcFile.getName());
+                    addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
                 } catch (WebServiceException wsError) {
                     logger.error(wsError.getMessage());
+                    addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
                     formats = engine.getPossibleConversions(srcExtension);
                 }
             } else {
-                logger.warn("Web service non disponibile, uso engine locale per " + srcFile.getName());
+                logger.warn("Web service non disponibile, uso engine locale per {}", srcFile.getName());
+                addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
                 formats = engine.getPossibleConversions(srcExtension);
             }
-        }catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             launchAlertError(e.getMessage());
             Platform.runLater(() -> {
                 fileScartati++;
@@ -481,40 +478,30 @@ public class MainViewController {
                     engine.conversione(srcExtension, targetFormat, srcFile);
                     logger.info("Conversione ENGINE LOCALE riuscita");
 
-                    // Per l'engine locale, il file originale è già stato gestito automaticamente
-                    Platform.runLater(() -> {
-                        fileConvertiti++;
-                        stampaRisultati();
-                        launchAlertSuccess(srcFile);
-                    });
-                    return; // Esci qui se engine locale ha successo
-
-                } catch (Exception engineError) {
-                    launchAlertError(engineError.getMessage());
-                }
-            }
-
-            // Se arriviamo qui, il web service ha avuto successo
-            if (webServiceSuccess) {
-                addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
-
-                // Gestisci il file originale dopo successo web service
-                moveOriginalFileAfterSuccess(srcFile);
-
+                // Per l'engine locale, il file originale è già stato gestito automaticamente
                 Platform.runLater(() -> {
                     fileConvertiti++;
                     stampaRisultati();
-                    launchAlertSuccess(outputDestinationFile);
+                    launchAlertSuccess(srcFile);
                 });
-            }
+                return; // Esci qui se engine locale ha successo
 
-        } catch (Exception e) {
-            addLogMessage("ERRORE FINALE: " + e.getMessage());
-            moveFileToErrorFolder(srcFile);
+            } catch (Exception engineError) { // Exception ammessa nel programma
+                launchAlertError(engineError.getMessage());
+            }
+        }
+
+        // Se arriviamo qui, il web service ha avuto successo
+        if (webServiceSuccess) {
+            addLogMessage("File convertito salvato in: " + outputDestinationFile.getAbsolutePath());
+
+            // Gestisci il file originale dopo successo web service
+            moveOriginalFileAfterSuccess(srcFile);
+
             Platform.runLater(() -> {
-                fileScartati++;
+                fileConvertiti++;
                 stampaRisultati();
-                launchAlertError("Conversione fallita: " + e.getMessage());
+                launchAlertSuccess(outputDestinationFile);
             });
         }
     }
@@ -525,9 +512,10 @@ public class MainViewController {
                 // Elimina il file originale dalla cartella monitorata
                 Files.delete(originalFile.toPath());
                 logger.info("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
+                addLogMessage("File originale eliminato dalla cartella monitorata: " + originalFile.getName());
             }
-        } catch (Exception e) {
-            logger.error("Errore nella gestione del file originale: " + e.getMessage());
+        } catch (IOException e) {
+            addLogMessage("Errore nella gestione del file originale: " + e.getMessage());
         }
     }
 
@@ -602,7 +590,7 @@ public class MainViewController {
 
         try {
             return union.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             throw new Exception("Impossibile ottenere il parametro Boolean");
         }
     }
@@ -619,18 +607,18 @@ public class MainViewController {
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
             String parameter = result.orElse(null);
-            Log.addMessage("Password ricevuta: " + (parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)"));
+            logger.info("Password ricevuta: {}", parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)");
             extraParameter.complete(parameter);
         });
         try {
             return extraParameter.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) {
+        } catch (Exception e) { // Exception ammessa nel programma
             throw new Exception("Impossibile ottenere il parametro String");
         }
     }
 
     public void stampaRisultati() {
-        Log.addMessage("Stato: ricevuti=" + fileRicevuti + ", convertiti=" + fileConvertiti + ", scartati=" + fileScartati);
+        logger.info("Stato: ricevuti={}, convertiti={}, scartati={}", fileRicevuti, fileConvertiti, fileScartati);
         Platform.runLater(() -> {
             detectedFilesCounter.setText(String.valueOf(fileRicevuti));
             successfulConversionsCounter.setText(String.valueOf(fileConvertiti));

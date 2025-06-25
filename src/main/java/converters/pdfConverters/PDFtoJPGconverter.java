@@ -2,6 +2,7 @@ package converters.pdfConverters;
 
 import configuration.configHandlers.conversionContext.ConversionContextReader;
 import converters.Zipper;
+import converters.exception.FileMoveException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.logging.log4j.Logger;
@@ -90,7 +91,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
                 images.add(image);
                 //Se non devono essere unite crea un file per ciascuna
                 if (!union) {
-                    File tempFile = new File(baseName + "_page_" + (i + 1) + ".jpg");
+                    File tempFile = new File("src/temp/" + baseName + "_page_" + (i + 1) + ".jpg");
                     ImageIO.write(image, "jpg", tempFile);
                     pages.add(tempFile);
                 }
@@ -117,7 +118,9 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
         catch (IllegalArgumentException e) {
             logger.error(e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
-        }finally {
+        } catch (FileMoveException e) {
+            throw new RuntimeException(e);
+        } finally {
             pdfDocument.close();
         }
     }

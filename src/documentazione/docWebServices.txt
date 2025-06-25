@@ -311,7 +311,7 @@ public User createUser(@RequestBody User user) {
 
 
 
-file-converter-project/
+file-objects-project/
 ├── pom.xml
 ├── config/
 │   └── config.json
@@ -322,14 +322,14 @@ file-converter-project/
 │   │   │   │   ├── MainApp.java
 │   │   │   │   ├── MainViewController.java
 │   │   │   │   └── ConfigWindowController.java
-│   │   │   ├── converter/
+│   │   │   ├── objects/
 │   │   │   │   ├── Engine.java
 │   │   │   │   ├── ConverterConfig.java
 │   │   │   │   ├── DirectoryWatcher.java
 │   │   │   │   └── Log.java
 │   │   │   ├── converters/
 │   │   │   │   └── Converter.java (interface)
-│   │   │   │   └── [altre classi converter...]
+│   │   │   │   └── [altre classi objects...]
 │   │   │   └── webservice/
 │   │   │       ├── WebServiceApplication.java
 │   │   │       ├── client/

@@ -3,7 +3,7 @@ package converters.compressedFilesConverters;
 import converters.ConverterDocumentsWithPasword;
 import converters.exception.FileMoveException;
 import converters.exception.PasswordException;
-import converter.Utility;
+import objects.Utility;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

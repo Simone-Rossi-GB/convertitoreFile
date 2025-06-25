@@ -22,21 +22,22 @@ public class TXTtoDOCXconverter extends Converter {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
         File output = new File(srcFile.getAbsolutePath().replaceAll("\\.txt$", ".docx"));
         //Crea un documento word vuoto
-        XWPFDocument doc = new XWPFDocument();
-        try (BufferedReader reader = new BufferedReader(new FileReader(srcFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                //Crea un paragrafo per ogni riga
-                XWPFParagraph paragraph = doc.createParagraph();
-                XWPFRun run = paragraph.createRun();
-                run.setText(line);
+        try (XWPFDocument doc = new XWPFDocument()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(srcFile))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    //Crea un paragrafo per ogni riga
+                    XWPFParagraph paragraph = doc.createParagraph();
+                    XWPFRun run = paragraph.createRun();
+                    run.setText(line);
+                }
             }
-        }
 
-        try (FileOutputStream out = new FileOutputStream(output)) {
-            //Scrive il contenuto nel file .docx
-            doc.write(out);
+            try (FileOutputStream out = new FileOutputStream(output)) {
+                //Scrive il contenuto nel file .docx
+                doc.write(out);
+            }
+            return output;
         }
-        return output;
     }
 }

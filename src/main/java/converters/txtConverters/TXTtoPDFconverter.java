@@ -19,7 +19,6 @@ public class TXTtoPDFconverter extends Converter {
      * @param srcFile file di partenza
      * @return file convertito
      * @throws IOException errori di lettura/scrittura sul file
-     * @throws DocumentException
      */
     @Override
     public File convert(File srcFile) throws IOException, DocumentException {

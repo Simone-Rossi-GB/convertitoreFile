@@ -2,6 +2,9 @@ package configuration.configHandlers.config;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import configuration.jsonUtilities.JsonData;
+import configuration.jsonUtilities.JsonReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.HashMap;
@@ -28,6 +31,9 @@ public abstract class ConfigData implements JsonData {
      */
     private static final AtomicReference<ObjectNode> rootReference = new AtomicReference<>();
 
+    /** Logger per la gestione di messaggi diagnostici ed errori. */
+    private static Logger logger = LogManager.getLogger(ConfigData.class);
+
     /**
      * Mappa che contiene i dati estratti dal file JSON.
      * Accessibile alle sottoclassi per leggere i valori di configurazione.
@@ -43,6 +49,7 @@ public abstract class ConfigData implements JsonData {
     public static void update(ConfigInstance configInstance) {
         jsonFile = configInstance.getJsonFile();
         configDataMap = JsonData.readData(jsonFile, rootReference);
+        logger.info("Configurazione aggiornata correttamente da {}", jsonFile.getName());
     }
 
     /**

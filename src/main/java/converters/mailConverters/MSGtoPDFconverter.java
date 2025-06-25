@@ -3,7 +3,7 @@ package converters.mailConverters;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import converter.Log;
+import objects.Log;
 import converters.Converter;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
@@ -41,23 +41,19 @@ public class MSGtoPDFconverter extends Converter {
     public File convert(File msgFile) throws IOException, DocumentException {
         if (msgFile == null) {
             logger.error("File MSG nullo");
-            Log.addMessage("[MSG→PDF] ERRORE: il file fornito è nullo.");
             throw new NullPointerException("L'oggetto msgFile non esiste.");
         }
 
         if (!msgFile.exists()) {
             logger.error("File MSG non trovato: {}", msgFile.getAbsolutePath());
-            Log.addMessage("[MSG→PDF] ERRORE: file non trovato - " + msgFile.getName());
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
 
         logger.info("Inizio conversione con parametri: \n | msgFile.getPath() = {}", msgFile.getPath());
-        Log.addMessage("[MSG→PDF] Inizio conversione file: " + msgFile.getName());
 
         File outputDir = new File(System.getProperty("java.io.tmpdir"), "msg_to_pdf");
         if (!outputDir.exists() && !outputDir.mkdirs()) {
             logger.error("Impossibile creare directory output: {}", outputDir.getAbsolutePath());
-            Log.addMessage("[MSG→PDF] ERRORE: impossibile creare la directory di output.");
             throw new IOException("Impossibile creare la directory di output: " + outputDir.getAbsolutePath());
         }
 
@@ -81,18 +77,15 @@ public class MSGtoPDFconverter extends Converter {
                 msg.close();
             } catch (IOException e) {
                 logger.warn("Chiusura MAPIMessage fallita: {}", e.getMessage());
-                Log.addMessage("[MSG→PDF] WARNING: errore durante la chiusura del file MSG.");
             }
         }
 
         if (!outputPdfFile.exists()) {
             logger.error("Creazione del file PDF fallita: {}", outputPdfFile.getAbsolutePath());
-            Log.addMessage("[MSG→PDF] ERRORE: creazione del file PDF fallita.");
             throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
         }
 
         logger.info("Conversione completata con successo: {}", outputPdfFile.getName());
-        Log.addMessage("[MSG→PDF] Conversione completata: " + outputPdfFile.getName());
 
         return outputPdfFile;
     }
@@ -156,7 +149,6 @@ public class MSGtoPDFconverter extends Converter {
                         StandardCharsets.UTF_8);
             } catch (Exception e) {
                 logger.warn("Errore nel parsing HTML: {}", e.getMessage());
-                Log.addMessage("[MSG→PDF] WARNING: parsing HTML fallito, si usa il testo semplice.");
                 document.add(new Paragraph("Contenuto HTML (errore nel parsing):\n" + htmlBody, CONTENT_FONT));
             }
         } else {
@@ -186,13 +178,11 @@ public class MSGtoPDFconverter extends Converter {
                         }
                     } catch (Exception e) {
                         logger.warn("Errore nella lettura del nome dell'allegato: {}", e.getMessage());
-                        Log.addMessage("[MSG→PDF] WARNING: errore nel leggere un nome di allegato.");
                     }
                 }
             }
         } catch (Exception e) {
             logger.warn("Errore nella lettura degli allegati: {}", e.getMessage());
-            Log.addMessage("[MSG→PDF] WARNING: errore nel leggere gli allegati.");
         }
     }
 }

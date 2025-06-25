@@ -15,7 +15,7 @@ PantheraConverter/
 │   │   │   │   ├── MainViewController.java      
 │   │   │   │   └── ConfigWindowController.java  
 │   │   │   │
-│   │   │   ├── converter/                       
+│   │   │   ├── objects/                       
 |   |   |   |   ├── config/
 │   |	|   |   |	└── config.json
 │   │   │   │   ├── ConvertionException.java
@@ -28,7 +28,7 @@ PantheraConverter/
 │   │   │   ├── converters/          
 │   │   │   │   ├── AbstractPDFConverter.java             
 │   │   │   │   ├── Converter.java     (Interface)           
-│   │   │   │   └── [altri converter...]          
+│   │   │   │   └── [altri objects...]          
 │   │   │   │
 │   │   │   └── webservice/                       
 │   │   │       ├── WebServiceApplication.java    
@@ -60,20 +60,20 @@ PantheraConverter/
 
 **`getStatus()`**
 
-- **Endpoint**: GET `/api/converter/status`
+- **Endpoint**: GET `/api/objects/status`
 - **Funzione**: Verifica che il web service sia attivo
 - **Ritorna**: JSON con `{"status": "active"}`
 
 **`getPossibleConversions(@PathVariable String extension)`**
 
-- **Endpoint**: GET `/api/converter/conversions/{extension}`
+- **Endpoint**: GET `/api/objects/conversions/{extension}`
 - **Funzione**: Restituisce i formati di destinazione disponibili per una data estensione
 - **Input**: Estensione file (es. "pdf")
 - **Output**: Lista di estensioni supportate per la conversione
 
 **`convertFile()`**
 
-- **Endpoint**: POST `/api/converter/convert`
+- **Endpoint**: POST `/api/objects/convert`
 - **Funzione**: Converte un file caricato nel formato richiesto
 - **Parametri**:
     - `file`: File da convertire (MultipartFile)
@@ -128,7 +128,7 @@ PantheraConverter/
 1. **Validazione**: Verifica parametri e supporto della conversione
 2. **Setup temporaneo**: Crea directory temporanea per la conversione
 3. **Preparazione file**: Copia e rinomina il file con suffisso univoco
-4. **Conversione**: Istanzia e chiama il converter appropriato
+4. **Conversione**: Istanzia e chiama il objects appropriato
 5. **Ricerca output**: Cerca i file risultanti in multiple location (temp dir, success dir)
 6. **Finalizzazione**: Sposta il file convertito nella directory di output specificata
 7. **Pulizia**: Elimina ricorsivamente la directory temporanea
@@ -136,7 +136,7 @@ PantheraConverter/
 **Funzioni di supporto**:
 
 - `deleteDirectoryRecursively()`: Elimina directory e tutto il contenuto
-- `checkParameters()`: Valida parametri e determina il converter da usare
+- `checkParameters()`: Valida parametri e determina il objects da usare
 - `giveBackNewFileWithNewName()`: Genera nome file con suffisso
 - `rinominaFile()`: Rinomina file con gestione errori
 

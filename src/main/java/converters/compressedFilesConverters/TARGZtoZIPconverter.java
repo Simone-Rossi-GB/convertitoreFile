@@ -1,6 +1,6 @@
 package converters.compressedFilesConverters;
 
-import converter.Utility;
+import objects.Utility;
 import converters.Converter;
 import converters.exception.ConversionException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
