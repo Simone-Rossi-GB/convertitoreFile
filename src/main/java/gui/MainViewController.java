@@ -102,9 +102,7 @@ public class MainViewController {
         setupEventHandlers();
         updateMonitoringStatus();
         logger.info("Applicazione avviata.");
-        Log.addMessage("Applicazione avviata.");
         logger.info("Caricamento configurazione...");
-        Log.addMessage("Caricamento configurazione...");
 
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
 
@@ -128,7 +126,6 @@ public class MainViewController {
             try {
                 toggleMonitoring();
             } catch (IOException ex) {
-                Log.addMessage("ERRORE: monitoraggio fallito : " + ex.getMessage());
                 launchAlertError("Errore durante il monitoraggio: " + ex.getMessage());
             }
         });
@@ -149,20 +146,17 @@ public class MainViewController {
     @FXML
     private void toggleMonitoring() throws IOException {
         if (engine == null || monitoredFolderPath == null) {
-            Log.addMessage("ERRORE: Engine o cartella monitorata non inizializzati");
             launchAlertError("Engine o cartella monitorata non inizializzati.");
             return;
         }
 
         if (isMonitoring) {
-            Log.addMessage("Monitoraggio fermato");
             addLogMessage("Monitoraggio fermato.");
             resetCounters();
             if (watcherThread != null && watcherThread.isAlive()) {
                 watcherThread.interrupt();
             }
         } else {
-            Log.addMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             addLogMessage("Monitoraggio avviato per: " + monitoredFolderPath);
             // Avvia DirectoryWatcher
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
@@ -233,9 +227,9 @@ public class MainViewController {
         if (!folder.exists()) {
             boolean created = folder.mkdirs();
             if (created) {
-                Log.addMessage("Cartella mancante creata: " + path);
+                logger.info("Cartella mancante creata: {}", path);
             } else {
-                Log.addMessage("Impossibile creare la cartella: " + path);
+                logger.error("Impossibile creare la cartella: {}", path);
             }
         }
     }
@@ -243,7 +237,7 @@ public class MainViewController {
 
     private void openConfigurationWindow() {
         if (engine == null) {
-            Log.addMessage("ERRORE: Engine non inizializzato.");
+            logger.error("Engine non inizializzato.");
             launchAlertError("Engine non inizializzato.");
             return;
         }
@@ -322,20 +316,20 @@ public class MainViewController {
      */
     private void openFolder(String folderPath) {
         if (folderPath == null || "Non configurata".equals(folderPath)) {
-            Log.addMessage("ERRORE: La cartella non è stata ancora configurata.");
+            logger.error("La cartella non è stata ancora configurata.");
             launchAlertError("La cartella non è stata ancora configurata.");
             return;
         }
         File folder = new File(folderPath);
         if (!folder.exists() || !folder.isDirectory()) {
-            Log.addMessage("ERRORE: La cartella non esiste " + folderPath);
+            logger.error("La cartella non esiste {}", folderPath);
             launchAlertError("La cartella non esiste: " + folderPath);
             return;
         }
         try {
             Desktop.getDesktop().open(folder);
         } catch (IOException e) {
-            Log.addMessage("ERRORE: Impossibile aprire la cartella: " + e.getMessage());
+            logger.error("Impossibile aprire la cartella: {}", e.getMessage());
             launchAlertError("Impossibile aprire la cartella: " + e.getMessage());
         }
     }
@@ -382,12 +376,12 @@ public class MainViewController {
      */
     public void launchDialogConversion(File srcFile) {
         if (srcFile == null || engine == null) {
-            Log.addMessage("ERRORE: File sorgente o Engine non valido.");
+            logger.error("File sorgente o Engine non valido.");
             launchAlertError("File sorgente o Engine non valido.");
             return;
         }
 
-        Platform.runLater(() -> fileRicevuti++);
+        Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
         srcExtension = Utility.getExtension(srcFile);
 
@@ -406,13 +400,16 @@ public class MainViewController {
             // Prova prima il webservice per ottenere i formati
             if (webServiceClient.isServiceAvailable()) {
                 try {
+                    logger.info("Formati ottenuti da web service per {}", srcFile.getName());
                     formats = webServiceClient.getPossibleConversions(srcExtension);
                     addLogMessage("Formati ottenuti da web service per " + srcFile.getName());
                 } catch (Exception wsError) { // TOFIX
+                    logger.info("Errore web service per formati, uso engine locale: {}", wsError.getMessage());
                     addLogMessage("Errore web service per formati, uso engine locale: " + wsError.getMessage());
                     formats = engine.getPossibleConversions(srcExtension);
                 }
             } else {
+                logger.warn("Web service non disponibile, uso engine locale per {}", srcFile.getName());
                 addLogMessage("Web service non disponibile, uso engine locale per " + srcFile.getName());
                 formats = engine.getPossibleConversions(srcExtension);
             }
@@ -603,7 +600,7 @@ public class MainViewController {
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
             String parameter = result.orElse(null);
-            Log.addMessage("Password ricevuta: " + (parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)"));
+            logger.info("Password ricevuta: {}", parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)");
             extraParameter.complete(parameter);
         });
         try {
@@ -614,7 +611,7 @@ public class MainViewController {
     }
 
     public void stampaRisultati() {
-        Log.addMessage("Stato: ricevuti=" + fileRicevuti + ", convertiti=" + fileConvertiti + ", scartati=" + fileScartati);
+        logger.info("Stato: ricevuti={}, convertiti={}, scartati={}", fileRicevuti, fileConvertiti, fileScartati);
         Platform.runLater(() -> {
             detectedFilesCounter.setText(String.valueOf(fileRicevuti));
             successfulConversionsCounter.setText(String.valueOf(fileConvertiti));

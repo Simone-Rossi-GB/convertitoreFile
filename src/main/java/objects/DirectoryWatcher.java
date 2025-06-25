@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class DirectoryWatcher implements Runnable {
 
-    private Path dir;
+    private final Path dir;
     private final WatchService watchService;
     private final ExecutorService executor;
     private Map<WatchKey, Path> watchKeyToPath;

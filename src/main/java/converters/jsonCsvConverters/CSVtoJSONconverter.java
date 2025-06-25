@@ -27,7 +27,6 @@ public class CSVtoJSONconverter extends Converter {
      */
     public File convert(File srcFile) throws IOException, EmptyFileException {
         logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
-        Log.addMessage("Inizio conversione CSV: " + srcFile.getName() + " → .json");
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {
             logger.error("Il file CSV è vuoto → {}", srcFile.getName());
@@ -48,13 +47,11 @@ public class CSVtoJSONconverter extends Converter {
             String[] values = splitCsvLine(rawLine, delimiter);
             if (values.length < headers.length) {
                 logger.warn("Riga {} con celle insufficienti → Skippata", i + 1);
-                Log.addMessage("Attenzione: Riga " + (i + 1) + " con celle insufficienti → Skippata");
                 continue;
             }
 
             if (values.length > headers.length) {
                 logger.warn("Riga {} con celle extra → Verranno ignorate", i + 1);
-                Log.addMessage("Attenzione: Riga " + (i + 1) + " con celle extra → Verranno ignorate");
             }
 
             ObjectNode obj = mapper.createObjectNode();
