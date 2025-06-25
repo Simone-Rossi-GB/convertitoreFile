@@ -436,7 +436,6 @@ public class MainViewController {
         }
 
         List<String> finalFormats = formats;
-        String finalSrcExtension = srcExtension;
         //Mostra il dialog per selezionare il formato di output
         Platform.runLater(() -> {
             ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
@@ -446,12 +445,12 @@ public class MainViewController {
             Optional<String> result = dialog.showAndWait();
             //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
             result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversion(srcFile, chosenFormat, finalSrcExtension)).start();
+                new Thread(() -> performConversion(srcFile, chosenFormat)).start();
             });
         });
     }
 
-    private void performConversion(File srcFile, String targetFormat, String srcExtension) {
+    private void performConversion(File srcFile, String targetFormat) {
 
         File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
         boolean webServiceSuccess = false;
@@ -462,6 +461,7 @@ public class MainViewController {
 
                 if (result.isSuccess()) {
                     // Verifica che il file convertito sia stato effettivamente salvato
+                    outputDestinationFile = result.getResult();
                     if (outputDestinationFile.exists()) {
                         addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
                         webServiceSuccess = true;
@@ -469,7 +469,7 @@ public class MainViewController {
                         throw new ConversionException("Il file convertito non è stato salvato correttamente dal web service");
                     }
                 } else {
-                    throw new ConversionException("Web service ha restituito errore: " + result.getError());
+                    throw new ConversionException("Web service ha restituito errore: " + result.getMessage());
                 }
             } else {
                 throw new WebServiceException("Il web service non è disponibile");
@@ -485,10 +485,11 @@ public class MainViewController {
         // Se arriviamo qui, il web service ha avuto successo
         if (webServiceSuccess) {
             addLogMessage("File convertito correttamente");
+            File finalOutputDestinationFile = outputDestinationFile;
             Platform.runLater(() -> {
                 fileConvertiti++;
                 stampaRisultati();
-                launchAlertSuccess(outputDestinationFile);
+                launchAlertSuccess(finalOutputDestinationFile);
             });
         }
     }
