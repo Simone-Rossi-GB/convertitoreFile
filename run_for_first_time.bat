@@ -55,10 +55,6 @@ if not exist "%TARGET_DIR%" (
     echo ✅ Directory esistente: %TARGET_DIR%\
 )
 
-REM Crea anche altre directory per completezza
-if not exist "lib\mac" mkdir "lib\mac"
-if not exist "lib\linux" mkdir "lib\linux"
-
 REM Verifica creazione riuscita
 if not exist "%TARGET_DIR%" (
     echo ❌ Errore: impossibile creare %TARGET_DIR%\
@@ -93,7 +89,7 @@ REM 4. Download Chrome Headless Shell
 echo.
 echo ⬇️  Scaricando Chrome Headless Shell %ARCH%...
 echo    URL: %CHROME_URL%
-echo    Dimensione: ~30-50 MB (Headless Shell è molto più leggero!)
+echo    Dimensione: ~30-50 MB
 echo    Destinazione: %TARGET_DIR%\
 
 REM Elimina eventuali file precedenti
@@ -123,9 +119,9 @@ REM 5. Verifica integrità file
 echo.
 echo 🔍 Verifica integrità file scaricato...
 
-REM Controlla dimensione file (Headless Shell è più piccolo: ~20MB minimo)
+REM Controlla dimensione file (Headless Shell è più piccolo: ~10MB minimo)
 for %%I in (chrome-headless-shell.zip) do set FILE_SIZE=%%~zI
-if %FILE_SIZE% LSS 20971520 (
+if %FILE_SIZE% LSS 10971520 (
     echo ❌ File chrome-headless-shell.zip troppo piccolo ^(%FILE_SIZE% bytes^)
     echo    Il download potrebbe essere incompleto o corrotto
     echo    Riprova il download
