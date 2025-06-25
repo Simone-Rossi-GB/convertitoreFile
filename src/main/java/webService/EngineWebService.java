@@ -32,7 +32,7 @@ public class EngineWebService {
      */
     public void setConfig() {
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
-            Gson gson = new Gson();
+            Gson gson = new Gson(); // istanziamo gson per leggere il file di configurazione
             config = gson.fromJson(reader, ConfigInstance.class);
             if (config == null) {
                 logger.error("WebService: l'oggetto config non esiste");
@@ -46,7 +46,7 @@ public class EngineWebService {
     }
 
     /**
-     * Ritorna la stringa che rappresenta il contenuto del json
+     * Getter che ritorna la stringa che rappresenta il contenuto del json
      */
     public String getConfigAsJson() throws Exception {
         try {
@@ -59,7 +59,7 @@ public class EngineWebService {
     }
 
     /**
-     * Ritorna i formati in cui un file può essere convertito
+     * Ritorna i formati in cui un file può essere convertito per poi inviarli al client
      */
     public List<String> getPossibleConversions(String extension) throws Exception {
         if (extension == null) {
@@ -72,6 +72,7 @@ public class EngineWebService {
             throw new Exception("Config assente o conversione non supportata");
         }
 
+        // ritorniamo un arraylist di formati disponibili per la conversione dal formato originale.
         logger.info("WebService: Formati disponibili per la conversione da {} ottenuti con successo", extension);
         return new ArrayList<>(ConfigReader.getConversions().get(extension).keySet());
     }
@@ -80,7 +81,6 @@ public class EngineWebService {
     /**
      * Esecuzione conversione per WebService - NON sposta i file automaticamente
      */
-    // SOSTITUISCI IL METODO executeConversionWebService con questa versione corretta:
     public File conversione(String srcExt, String outExt, File srcFile, File outputDirectory) throws Exception {
         String converterClassName = checkParameters(srcExt, outExt, srcFile);
 
