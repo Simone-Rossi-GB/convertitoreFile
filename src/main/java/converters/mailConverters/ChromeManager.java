@@ -1,4 +1,4 @@
-package converters.mailConverters;
+package Converters.mailConverters;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Gestisce la localizzazione e configurazione di Chrome per la conversione PDF
+ * Gestisce la localizzazione e configurazione di Chrome Headless Shell per la conversione PDF
  */
 public class ChromeManager {
 
@@ -35,19 +35,19 @@ public class ChromeManager {
             // Carica configurazione
             Properties config = loadConfig();
 
-            // Trova Chrome
+            // Trova Chrome Headless Shell
             chromePath = findChromeExecutable(config);
 
             if (chromePath != null) {
-                logger.info("Chrome configurato: {}", chromePath);
+                logger.info("Chrome Headless Shell configurato: {}", chromePath);
             } else {
-                logger.warn("Chrome non trovato - EMLChromeHeadlessConverter non disponibile");
+                logger.warn("Chrome Headless Shell non trovato - Converter non disponibile");
             }
 
             initialized = true;
 
         } catch (Exception e) {
-            logger.error("Errore nell'inizializzazione Chrome", e);
+            logger.error("Errore nell'inizializzazione Chrome Headless Shell", e);
             initialized = true; // Evita retry infiniti
         }
     }
@@ -82,13 +82,13 @@ public class ChromeManager {
             return envPath;
         }
 
-        // 2. Prova Chrome bundled
+        // 2. Prova Chrome Headless Shell bundled
         String bundledPath = getBundledChromePath(os, config);
         if (isValidExecutable(bundledPath)) {
             return bundledPath;
         }
 
-        // 3. Prova Chrome di sistema
+        // 3. Prova Chrome di sistema (fallback)
         String systemPath = findSystemChrome(os, config);
         if (isValidExecutable(systemPath)) {
             return systemPath;
@@ -113,20 +113,34 @@ public class ChromeManager {
             File baseDir = new File(System.getProperty("user.dir"));
             File chromeFile = new File(baseDir, relativePath);
 
-            // Per macOS, verifica che sia un bundle valido
-            if (os.contains("mac") && relativePath.endsWith(".app")) {
-                File chromeExecutable = new File(chromeFile, "Contents/MacOS/Google Chrome");
-                if (chromeExecutable.exists()) {
-                    return chromeExecutable.getAbsolutePath();
-                }
-                // Prova con Chromium
-                chromeExecutable = new File(chromeFile, "Contents/MacOS/Chromium");
-                if (chromeExecutable.exists()) {
-                    return chromeExecutable.getAbsolutePath();
-                }
-            }
-
             return chromeFile.getAbsolutePath();
+        }
+
+        // Se non c'è config, prova percorsi predefiniti per Headless Shell
+        return getDefaultHeadlessShellPath(os);
+    }
+
+    private static String getDefaultHeadlessShellPath(String os) {
+        File baseDir = new File(System.getProperty("user.dir"));
+
+        if (os.contains("win")) {
+            // Windows: lib/windows/chrome-headless-shell.exe
+            File chromeExe = new File(baseDir, "lib/windows/chrome-headless-shell.exe");
+            if (chromeExe.exists()) {
+                return chromeExe.getAbsolutePath();
+            }
+        } else if (os.contains("mac")) {
+            // macOS: lib/mac/chrome-headless-shell
+            File chromeExe = new File(baseDir, "lib/mac/chrome-headless-shell");
+            if (chromeExe.exists()) {
+                return chromeExe.getAbsolutePath();
+            }
+        } else {
+            // Linux: lib/linux/chrome-headless-shell
+            File chromeExe = new File(baseDir, "lib/linux/chrome-headless-shell");
+            if (chromeExe.exists()) {
+                return chromeExe.getAbsolutePath();
+            }
         }
 
         return null;
@@ -151,7 +165,7 @@ public class ChromeManager {
             }
         }
 
-        // Prova anche PATH
+        // Prova anche PATH per Chrome Headless Shell e Chrome normale
         return findInPath(os);
     }
 
@@ -159,9 +173,45 @@ public class ChromeManager {
         try {
             String[] commands;
             if (os.contains("win")) {
-                commands = new String[]{"where", "chrome.exe"};
+                // Prova prima headless shell, poi chrome normale
+                String[] headlessCommands = {"where", "chrome-headless-shell.exe"};
+                String[] chromeCommands = {"where", "chrome.exe"};
+
+                // Prova headless shell
+                Process process = Runtime.getRuntime().exec(headlessCommands);
+                process.waitFor();
+                if (process.exitValue() == 0) {
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(process.getInputStream()))) {
+                        String path = reader.readLine();
+                        if (path != null && !path.trim().isEmpty()) {
+                            return path.trim();
+                        }
+                    }
+                }
+
+                // Fallback su chrome normale
+                commands = chromeCommands;
             } else {
-                commands = new String[]{"which", "google-chrome"};
+                // Unix: prova prima headless shell, poi chrome normale
+                String[] headlessCommands = {"which", "chrome-headless-shell"};
+                String[] chromeCommands = {"which", "google-chrome"};
+
+                // Prova headless shell
+                Process process = Runtime.getRuntime().exec(headlessCommands);
+                process.waitFor();
+                if (process.exitValue() == 0) {
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(process.getInputStream()))) {
+                        String path = reader.readLine();
+                        if (path != null && !path.trim().isEmpty()) {
+                            return path.trim();
+                        }
+                    }
+                }
+
+                // Fallback su chrome normale
+                commands = chromeCommands;
             }
 
             Process process = Runtime.getRuntime().exec(commands);
@@ -202,7 +252,7 @@ public class ChromeManager {
 
     public void validateChrome() throws IOException {
         if (!isChromeAvailable()) {
-            throw new IOException("Chrome non disponibile per conversione PDF");
+            throw new IOException("Chrome Headless Shell non disponibile per conversione PDF");
         }
 
         // Test veloce
@@ -210,11 +260,11 @@ public class ChromeManager {
             Process process = new ProcessBuilder(chromePath, "--version").start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                throw new IOException("Chrome non risponde correttamente");
+                throw new IOException("Chrome Headless Shell non risponde correttamente");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IOException("Test Chrome interrotto", e);
+            throw new IOException("Test Chrome Headless Shell interrotto", e);
         }
     }
 }
