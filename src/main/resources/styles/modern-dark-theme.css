@@ -5,6 +5,7 @@
 .root {
     -fx-background-color: rgba(30,30,30,0.95); /* o un colore opaco */
     -fx-background-radius: 20;
+        -fx-border-radius: 20;
     -fx-padding: 15;
 }
 
