@@ -1,29 +1,51 @@
 #!/bin/bash
-# setup_chrome.sh - Download Chrome/Chromium per Linux e macOS
+# setup_chrome.sh - Download Chrome Headless Shell per Linux e macOS
 
 echo ""
-echo "🚀 Chrome Setup per Email Converter"
-echo "==================================="
+echo "🚀 Chrome Headless Shell Setup per Email Converter"
+echo "================================================="
 
-# 1. Rileva sistema operativo
+# 1. Rileva sistema operativo e architettura
 OS=$(uname -s)
 ARCH=$(uname -m)
+
+echo "🔍 Rilevamento sistema..."
+echo "   OS: $OS"
+echo "   Architettura: $ARCH"
 
 case $OS in
     "Darwin")
         OS_TYPE="mac"
         TARGET_DIR="lib/mac"
-        EXECUTABLE="Google Chrome for Testing.app"
-        CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/stable/mac-x64/chrome-mac-x64.zip"
-        echo "🍎 Rilevato: macOS ($ARCH)"
+        EXECUTABLE="chrome-headless-shell"
+        
+        # Rileva architettura macOS corretta
+        if [ "$ARCH" = "arm64" ]; then
+            CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/mac-arm64/chrome-headless-shell-mac-arm64.zip"
+            EXTRACT_DIR="chrome-headless-shell-mac-arm64"
+            echo "🍎 Rilevato: macOS Apple Silicon (ARM64)"
+        else
+            CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/mac-x64/chrome-headless-shell-mac-x64.zip"
+            EXTRACT_DIR="chrome-headless-shell-mac-x64"
+            echo "🍎 Rilevato: macOS Intel (x64)"
+        fi
+        echo "   Download: Chrome Headless Shell per macOS"
+        echo "   Dimensione attesa: ~30-50 MB (molto più leggero!)"
         ;;
+        
     "Linux")
         OS_TYPE="linux"
         TARGET_DIR="lib/linux"
-        EXECUTABLE="chrome"
-        CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/stable/linux64/chrome-linux64.zip"
-        echo "🐧 Rilevato: Linux ($ARCH)"
+        EXECUTABLE="chrome-headless-shell"
+        
+        # Per Linux assumiamo sempre 64-bit (più comune)
+        CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/linux64/chrome-headless-shell-linux64.zip"
+        EXTRACT_DIR="chrome-headless-shell-linux64"
+        echo "🐧 Rilevato: Linux 64-bit"
+        echo "   Download: Chrome Headless Shell per Linux"
+        echo "   Dimensione attesa: ~30-50 MB (molto più leggero!)"
         ;;
+        
     *)
         echo "❌ Sistema operativo non supportato: $OS"
         echo "   Per Windows usa: setup_chrome.bat"
@@ -52,7 +74,7 @@ else
 fi
 
 # Crea anche le altre directory per completezza
-for dir in "lib/windows" "lib/mac"; do
+for dir in "lib/mac"; do
     if [ ! -d "$dir" ]; then
         mkdir -p "$dir"
         echo "✅ Creata directory: $dir/"
@@ -66,25 +88,19 @@ if [ ! -d "$TARGET_DIR" ]; then
     exit 1
 fi
 
-# 3. Controlla se Chrome è già presente
+# 3. Controlla se Chrome Headless Shell è già presente
 CHROME_PATH="$TARGET_DIR/$EXECUTABLE"
 
-if [ "$OS_TYPE" = "mac" ]; then
-    CHROME_EXEC="$CHROME_PATH/Contents/MacOS/Google Chrome for Testing"
-else
-    CHROME_EXEC="$CHROME_PATH"
-fi
-
-if [ -e "$CHROME_PATH" ]; then
+if [ -f "$CHROME_PATH" ]; then
     echo ""
-    echo "✅ Chrome già presente in $TARGET_DIR/"
-
-    # Test veloce di Chrome esistente
-    echo "🧪 Test Chrome esistente..."
-    if [ -x "$CHROME_EXEC" ]; then
-        VERSION=$("$CHROME_EXEC" --version 2>/dev/null | head -1)
+    echo "✅ Chrome Headless Shell già presente in $TARGET_DIR/"
+    
+    # Test veloce
+    echo "🧪 Test Chrome Headless Shell esistente..."
+    if [ -x "$CHROME_PATH" ]; then
+        VERSION=$("$CHROME_PATH" --version 2>/dev/null | head -1)
         if [ $? -eq 0 ] && [ -n "$VERSION" ]; then
-            echo "✅ Chrome funziona: $VERSION"
+            echo "✅ Chrome Headless Shell funziona: $VERSION"
             echo "🎉 Setup già completato!"
             echo ""
             echo "Per reinstallare: rm -rf $TARGET_DIR e rilancia lo script"
@@ -102,10 +118,10 @@ echo ""
 echo "🔍 Verifica strumenti necessari..."
 
 if command -v curl >/dev/null 2>&1; then
-    DOWNLOAD_CMD="curl -L --progress-bar -o chrome.zip"
+    DOWNLOAD_CMD="curl -L --progress-bar -o chrome-headless-shell.zip"
     echo "✅ Trovato: curl"
 elif command -v wget >/dev/null 2>&1; then
-    DOWNLOAD_CMD="wget --progress=bar:force -O chrome.zip"
+    DOWNLOAD_CMD="wget --progress=bar:force -O chrome-headless-shell.zip"
     echo "✅ Trovato: wget"
 else
     echo "❌ Errore: curl o wget non trovati"
@@ -127,116 +143,148 @@ fi
 
 echo "✅ Trovato: unzip"
 
-# 5. Download Chrome
+# 5. Download Chrome Headless Shell con fallback architetture
 echo ""
-echo "⬇️  Scaricando Chrome per $OS_TYPE..."
+echo "⬇️  Scaricando Chrome Headless Shell per $OS_TYPE..."
+echo "   Architettura target: $ARCH"
 echo "   URL: $CHROME_URL"
-echo "   Dimensione: ~150-200 MB"
 echo "   Destinazione: $TARGET_DIR/"
 
-$DOWNLOAD_CMD "$CHROME_URL"
+# Rimuovi file precedenti se esistono
+rm -f chrome-headless-shell.zip
 
-if [ $? -ne 0 ]; then
-    echo "❌ Errore nel download di Chrome"
-    echo "   Possibili cause:"
-    echo "   - Connessione internet assente"
-    echo "   - URL temporaneamente non disponibile"
-    echo "   - Firewall blocca il download"
-    rm -f chrome.zip
+# Lista di URL da provare (principalmente per macOS con fallback architettura)
+if [ "$OS_TYPE" = "mac" ]; then
+    if [ "$ARCH" = "arm64" ]; then
+        URLS=(
+            "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/mac-arm64/chrome-headless-shell-mac-arm64.zip"
+            "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/mac-x64/chrome-headless-shell-mac-x64.zip"
+        )
+        EXTRACT_DIRS=("chrome-headless-shell-mac-arm64" "chrome-headless-shell-mac-x64")
+    else
+        URLS=(
+            "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/mac-x64/chrome-headless-shell-mac-x64.zip"
+            "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/mac-arm64/chrome-headless-shell-mac-arm64.zip"
+        )
+        EXTRACT_DIRS=("chrome-headless-shell-mac-x64" "chrome-headless-shell-mac-arm64")
+    fi
+else
+    URLS=("$CHROME_URL")
+    EXTRACT_DIRS=("$EXTRACT_DIR")
+fi
+
+# Prova ogni URL fino a trovarne uno che funziona
+DOWNLOAD_SUCCESS=false
+for i in "${!URLS[@]}"; do
+    CURRENT_URL="${URLS[$i]}"
+    CURRENT_EXTRACT_DIR="${EXTRACT_DIRS[$i]}"
+    
+    echo "🔄 Tentativo $((i+1)): $(basename "$CURRENT_URL")"
+    
+    $DOWNLOAD_CMD "$CURRENT_URL"
+    
+    if [ $? -eq 0 ] && [ -f "chrome-headless-shell.zip" ]; then
+        # Verifica che sia un ZIP valido e di dimensione adeguata per Headless Shell
+        FILE_SIZE=$(stat -f%z "chrome-headless-shell.zip" 2>/dev/null || stat -c%s "chrome-headless-shell.zip" 2>/dev/null || echo 0)
+        
+        # Headless Shell è più piccolo: minimo 10MB
+        if [ "$FILE_SIZE" -gt 10971520 ] && unzip -t chrome-headless-shell.zip >/dev/null 2>&1; then
+            echo "✅ Download riuscito da: $CURRENT_URL"
+            echo "✅ Dimensione file: $(echo $FILE_SIZE | awk '{print int($1/1024/1024)}') MB"
+            EXTRACT_DIR="$CURRENT_EXTRACT_DIR"
+            DOWNLOAD_SUCCESS=true
+            break
+        else
+            echo "⚠️  File scaricato non valido, provo URL successivo..."
+            rm -f chrome-headless-shell.zip
+        fi
+    else
+        echo "⚠️  Download fallito, provo URL successivo..."
+        rm -f chrome-headless-shell.zip
+    fi
+done
+
+if [ "$DOWNLOAD_SUCCESS" = false ]; then
+    echo "❌ Tutti i tentativi di download sono falliti"
+    echo "   URLs provati:"
+    for url in "${URLS[@]}"; do
+        echo "   - $url"
+    done
+    echo ""
+    echo "💡 Soluzioni alternative:"
+    echo "   1. Verifica connessione internet"
+    echo "   2. Prova più tardi (server Google temporaneamente down)"
+    echo "   3. Usa Chrome di sistema se già installato"
+    echo "   4. Download manuale da: https://googlechromelabs.github.io/chrome-for-testing/"
     exit 1
 fi
 
-if [ ! -f "chrome.zip" ]; then
-    echo "❌ File chrome.zip non trovato dopo il download"
-    exit 1
-fi
-
-# 6. Estrazione Chrome
+# 6. Estrazione Chrome Headless Shell
 echo ""
-echo "📦 Estraendo Chrome..."
+echo "📦 Estraendo Chrome Headless Shell..."
 
-unzip -q chrome.zip
+unzip -q chrome-headless-shell.zip
 
 if [ $? -ne 0 ]; then
     echo "❌ Errore nell'estrazione"
-    rm -f chrome.zip
+    rm -f chrome-headless-shell.zip
     exit 1
 fi
 
 # Sposta file dalla cartella estratta alla directory target
-case $OS_TYPE in
-    "mac")
-        if [ -d "chrome-mac-x64" ]; then
-            echo "📁 Spostando Chrome app in $TARGET_DIR/..."
-            mv "chrome-mac-x64/Google Chrome for Testing.app" "$TARGET_DIR/"
-            rmdir "chrome-mac-x64"
-            echo "✅ File spostati con successo"
-        else
-            echo "❌ Cartella chrome-mac-x64 non trovata dopo estrazione"
-            rm -f chrome.zip
-            exit 1
-        fi
-        ;;
-    "linux")
-        if [ -d "chrome-linux64" ]; then
-            echo "📁 Spostando file Chrome in $TARGET_DIR/..."
-            mv chrome-linux64/* "$TARGET_DIR/"
-            rmdir "chrome-linux64"
-            echo "✅ File spostati con successo"
-        else
-            echo "❌ Cartella chrome-linux64 non trovata dopo estrazione"
-            rm -f chrome.zip
-            exit 1
-        fi
-        ;;
-esac
+if [ -d "$EXTRACT_DIR" ]; then
+    echo "📁 Spostando Chrome Headless Shell in $TARGET_DIR/..."
+    mv "$EXTRACT_DIR"/* "$TARGET_DIR/"
+    rmdir "$EXTRACT_DIR"
+    echo "✅ File spostati con successo"
+else
+    echo "❌ Cartella $EXTRACT_DIR non trovata dopo estrazione"
+    rm -f chrome-headless-shell.zip
+    exit 1
+fi
 
 # Pulisci file zip
-rm -f chrome.zip
+rm -f chrome-headless-shell.zip
 
 # 7. Configura permessi
 echo ""
 echo "🔧 Configurando permessi..."
 
-if [ "$OS_TYPE" = "mac" ]; then
-    # Per macOS: imposta permessi eseguibili e rimuovi quarantena
-    chmod +x "$CHROME_EXEC"
-    echo "✅ Permessi eseguibili impostati"
+chmod +x "$CHROME_PATH"
+echo "✅ Permessi eseguibili impostati"
 
+if [ "$OS_TYPE" = "mac" ]; then
+    # Per macOS: rimuovi quarantena
     echo "🔓 Rimuovendo quarantena macOS..."
     xattr -dr com.apple.quarantine "$CHROME_PATH" 2>/dev/null || true
     echo "✅ Quarantena rimossa"
-else
-    # Per Linux: imposta permessi eseguibili
-    chmod +x "$CHROME_EXEC"
-    echo "✅ Permessi eseguibili impostati"
 fi
 
 # 8. Verifica installazione finale
 echo ""
 echo "🔍 Verifica installazione..."
 
-if [ -e "$CHROME_PATH" ]; then
-    echo "✅ Chrome installato: $CHROME_PATH"
-
+if [ -f "$CHROME_PATH" ]; then
+    echo "✅ Chrome Headless Shell installato: $CHROME_PATH"
+    
     # Test finale
-    echo "🧪 Test funzionalità Chrome..."
-    VERSION=$("$CHROME_EXEC" --version 2>/dev/null | head -1)
-
+    echo "🧪 Test funzionalità Chrome Headless Shell..."
+    VERSION=$("$CHROME_PATH" --version 2>/dev/null | head -1)
+    
     if [ $? -eq 0 ] && [ -n "$VERSION" ]; then
-        echo "✅ Chrome funziona perfettamente: $VERSION"
+        echo "✅ Chrome Headless Shell funziona perfettamente: $VERSION"
         echo ""
         echo "🎉 Setup completato con successo!"
-        echo "📍 Chrome installato in: $(pwd)/$TARGET_DIR/"
-        echo "🚀 Il converter è pronto per l'uso!"
+        echo "📍 Chrome Headless Shell installato in: $(pwd)/$TARGET_DIR/"
+        echo "🚀 Il converter è pronto per l'uso! (versione leggera ~$(echo $FILE_SIZE | awk '{print int($1/1024/1024)}')MB)"
     else
-        echo "⚠️  Chrome installato ma test fallito"
+        echo "⚠️  Chrome Headless Shell installato ma test fallito"
         echo "   (Normale su alcuni sistemi, dovrebbe funzionare nell'applicazione)"
         echo ""
         echo "🎉 Setup completato!"
     fi
 else
-    echo "❌ Chrome non trovato dopo l'installazione"
+    echo "❌ Chrome Headless Shell non trovato dopo l'installazione"
     echo "   Qualcosa è andato storto durante l'estrazione"
     exit 1
 fi
@@ -245,7 +293,14 @@ echo ""
 echo "📋 Prossimi passi:"
 echo "   1. Compila il progetto Java"
 echo "   2. Esegui l'applicazione"
-echo "   3. Chrome verrà rilevato automaticamente"
+echo "   3. Chrome Headless Shell verrà rilevato automaticamente"
+
+echo ""
+echo "💡 Vantaggi Headless Shell:"
+echo "   - Molto più leggero (~$(echo $FILE_SIZE | awk '{print int($1/1024/1024)}')MB vs ~150MB Chrome completo)"
+echo "   - Avvio più veloce"
+echo "   - Meno RAM utilizzata"
+echo "   - Stesso risultato PDF identico"
 
 if [ "$OS_TYPE" = "mac" ]; then
     echo ""
