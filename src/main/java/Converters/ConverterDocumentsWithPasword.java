@@ -1,5 +1,5 @@
 package converters;
-import configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.configuration.configHandlers.conversionContext.ConversionContextReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

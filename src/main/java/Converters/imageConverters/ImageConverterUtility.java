@@ -1,7 +1,7 @@
 package converters.imageConverters;
 
-import configuration.configExceptions.NullJsonValueException;
-import configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.configuration.configExceptions.NullJsonValueException;
+import webService.configuration.configHandlers.conversionContext.ConversionContextReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

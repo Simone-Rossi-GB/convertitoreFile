@@ -72,10 +72,9 @@ public class MainViewController {
     private Button fileConvertitiBtn;
     @FXML
     private Button conversioniFalliteBtn;
-
-    // Riferimento all'applicazione principale
+    
     private static final Logger logger = LogManager.getLogger(MainViewController.class);
-
+    
     // Variabili di stato
     private boolean isMonitoring = false;
     private int fileRicevuti = 0;
@@ -92,6 +91,7 @@ public class MainViewController {
     private Engine engine;
     private Thread watcherThread;
     private final String configFile = "src/main/java/configuration/configFiles/config.json";
+    private final String conversionContextFile = "src/main/java/configuration/configFiles/conversionContext.json";
     private MainApp mainApp;
 
     /**
@@ -111,6 +111,11 @@ public class MainViewController {
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
         loadConfiguration();
+        if(webServiceClient.isServiceAvailable()){
+            webServiceClient.sendConfigFile(new File(configFile));
+            webServiceClient.sendConversionContextFile(new File(conversionContextFile));
+        }else
+            logger.error("Errore nell'invio iniziale dei file di configurazione");
         if (monitorAtStart) {
             toggleMonitoring();
         }
@@ -268,6 +273,8 @@ public class MainViewController {
 
             // Ricarica la configurazione dopo la chiusura della finestra
             addLogMessage("Editor configurazione chiuso");
+            logger.info("Configurazione inviata al webService");
+            webServiceClient.sendConfigFile(new File(configFile));
             loadConfiguration();
             interruptWatcher();
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
@@ -305,6 +312,9 @@ public class MainViewController {
             // Mostra la finestra e attendi la chiusura
             logger.info("Editor configurazione conversione aperto");
             configStage.showAndWait();
+            // Ricarica la configurazione
+            logger.info("Configurazione inviata al webService");
+            webServiceClient.sendConversionContextFile(new File(conversionContextFile));
         } catch (IOException e) {
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
@@ -441,16 +451,15 @@ public class MainViewController {
 
     private void performConversionWithFallback(File srcFile, String targetFormat, String srcExtension) {
         String outputFileName;
-        if(ConversionContextReader.getIsZippedOutput())
+        if(ConversionContextReader.getIsZippedOutput() || ConfigReader.getIsMultipleConversionEnabled() || ConversionContextReader.getIsUnion())
             outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + ".zip";
         else
             outputFileName = srcFile.getName().replaceFirst("\\.[^\\.]+$", "") + "." + targetFormat;
 
         File outputDestinationFile = new File(convertedFolderPath, outputFileName);
-
+        boolean webServiceSuccess = false;
         try {
             // PRIMO TENTATIVO: USA WEBSERVICE
-            boolean webServiceSuccess = false;
             if (webServiceClient.isServiceAvailable()) {
                 logger.info("Tentativo conversione tramite web service...");
                 ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
@@ -478,17 +487,19 @@ public class MainViewController {
                     engine.conversione(srcExtension, targetFormat, srcFile);
                     logger.info("Conversione ENGINE LOCALE riuscita");
 
-                // Per l'engine locale, il file originale è già stato gestito automaticamente
-                Platform.runLater(() -> {
-                    fileConvertiti++;
-                    stampaRisultati();
-                    launchAlertSuccess(srcFile);
-                });
-                return; // Esci qui se engine locale ha successo
-
-            } catch (Exception engineError) { // Exception ammessa nel programma
-                launchAlertError(engineError.getMessage());
+                    // Per l'engine locale, il file originale è già stato gestito automaticamente
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                        launchAlertSuccess(srcFile);
+                    });
+                    return; // Esci qui se engine locale ha successo
+                } catch (Exception engineError) { // Exception ammessa nel programma
+                    launchAlertError(engineError.getMessage());
+                }
             }
+        } catch (Exception e) {
+            launchAlertError(e.getMessage());
         }
 
         // Se arriviamo qui, il web service ha avuto successo
@@ -504,8 +515,7 @@ public class MainViewController {
                 launchAlertSuccess(outputDestinationFile);
             });
         }
-    } catch (Exception e) {
-            launchAlertError(e.getMessage());        }
+    }
 
     private void moveOriginalFileAfterSuccess(File originalFile) {
         try {

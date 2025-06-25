@@ -1,6 +1,6 @@
 package converters.pdfConverters;
 
-import configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.configuration.configHandlers.conversionContext.ConversionContextReader;
 import converters.Zipper;
 import converters.exception.FileMoveException;
 import org.apache.pdfbox.pdmodel.PDDocument;

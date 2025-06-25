@@ -1,7 +1,7 @@
 package converters.imageConverters;
 
-import configuration.configExceptions.NullJsonValueException;
-import configuration.configHandlers.config.ConfigReader;
+import webService.configuration.configExceptions.NullJsonValueException;
+import webService.configuration.configHandlers.config.ConfigReader;
 import converters.Converter;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;
 import org.apache.logging.log4j.LogManager;

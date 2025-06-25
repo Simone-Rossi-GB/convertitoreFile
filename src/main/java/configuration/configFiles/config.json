@@ -5,7 +5,7 @@
     "errorOutputDir" : "src/output/error",
     "monitoredDir" : "src/input",
     "monitorAtStart" : true,
-    "multipleConversion" : false,
+    "multipleConversion" : true,
     "formatsWithAlphaChannel" : [ "png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff" ],
     "formatsRequiringIntermediateConversion" : [ "webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm" ],
     "conversions" : {

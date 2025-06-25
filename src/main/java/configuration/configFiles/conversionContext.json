@@ -1,8 +1,8 @@
 {
   "data" : {
     "destinationFormat" : "png",
-    "password" : "samplefile",
+    "password" : "samplefiles",
     "union" : false,
-    "zippedOutput" : true
+    "zippedOutput" : false
   }
 }

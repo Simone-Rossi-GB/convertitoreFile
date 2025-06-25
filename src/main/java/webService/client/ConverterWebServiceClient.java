@@ -2,9 +2,6 @@ package webService.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tika.mime.MimeType;
-import org.apache.tika.mime.MimeTypes;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,19 +14,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-import webService.controller.ConversionResponse;
-import webService.controller.ConverterWebServiceController;
 
 import javax.xml.ws.WebServiceException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class ConverterWebServiceClient {
 
@@ -149,6 +141,64 @@ public class ConverterWebServiceClient {
     private ConversionResult recordError(String message) {
         logger.error(message);
         return new ConversionResult(false, message);
+    }
+
+    public void sendConfigFile(File jsonFile){
+        String url = baseUrl + "/api/converter/configUpload";
+
+        if (!jsonFile.exists()) {
+            System.err.println("Il file non esiste: " + jsonFile.getPath());
+            return;
+        }
+
+        // Prepara il contenuto come multipart/form-data
+        FileSystemResource resource = new FileSystemResource(jsonFile);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", resource);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        // Invia POST
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+        // Controlla se lo status HTTP è 2xx (es. 200 OK)
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Upload riuscito: " + response.getBody());
+        } else {
+            logger.error("Upload fallito: " + response.getBody());
+        }
+    }
+
+    public void sendConversionContextFile(File jsonFile){
+        String url = baseUrl + "/api/converter/conversionContextUpload";
+
+        if (!jsonFile.exists()) {
+            System.err.println("Il file non esiste: " + jsonFile.getPath());
+            return;
+        }
+
+        // Prepara il contenuto come multipart/form-data
+        FileSystemResource resource = new FileSystemResource(jsonFile);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", resource);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        // Invia POST
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+        // Controlla se lo status HTTP è 2xx (es. 200 OK)
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Upload riuscito: " + response.getBody());
+        } else {
+            logger.error("Upload fallito: " + response.getBody());
+        }
     }
 }
 

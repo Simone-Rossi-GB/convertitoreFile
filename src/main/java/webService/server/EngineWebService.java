@@ -1,20 +1,17 @@
-package webService;
+package webService.server;
 
 import com.twelvemonkeys.util.convert.ConversionException;
-import configuration.configHandlers.config.ConfigData;
-import configuration.configHandlers.conversionContext.ConversionContextWriter;
-import converter.Utility;
+import webService.Utility;
+import webService.configuration.configHandlers.conversionContext.ConversionContextWriter;
 import converters.Converter;
-import configuration.configHandlers.config.ConfigInstance;
-import configuration.configHandlers.config.ConfigReader;
-import converter.Log;
-import com.google.gson.Gson;
+import webService.configuration.configHandlers.config.ConfigReader;
+import objects.Log;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.util.*;
-
 import converters.Zipper;
+
 import converters.exception.FileMoveException;
 import converters.exception.FormatsException;
 import converters.exception.UnsupportedConversionException;
@@ -41,8 +38,6 @@ public class EngineWebService {
             logger.error("Parametro extension nullo");
             throw new IllegalArgumentException("L'oggetto extension non esiste");
         }
-        ConfigInstance ci = new ConfigInstance(new File("src/main/java/configuration/configFiles/config.json"));
-        ConfigData.update(ci);
         if (ConfigReader.getConversions() == null) {
             logger.error("Configurazione mancante");
             throw new NullPointerException("Config mancante");
@@ -70,8 +65,8 @@ public class EngineWebService {
         File outFile;
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(ConfigReader.getIsMultipleConversionEnabled() && converter.Utility.getExtension(srcFile).equals("zip"))
-                outFile = conversioneMultipla(srcExt, outExt, srcFile);
+            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
+                outFile = conversioneMultipla(Zipper.extractFileExstension(srcFile), outExt, srcFile);
             else
                 outFile = conversioneSingola(srcExt, outExt, srcFile);
             return outFile;
@@ -97,7 +92,7 @@ public class EngineWebService {
      * @throws IllegalAccessException costruttore del convertitore non accessibile
      * @throws IOException errore nella gestione del file temp o dello zip
      */
-    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException {
         ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
         ArrayList<File> convertedFiles = new ArrayList<>();
         for (File f : zippedFiles){
