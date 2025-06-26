@@ -10,7 +10,6 @@
     -fx-border-radius: 15;
     -fx-border-color: rgba(74,85,104,0.3);
     -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);
     -fx-font-family: "Inter", "Roboto", sans-serif;
 }
 

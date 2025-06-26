@@ -4,7 +4,9 @@ import gui.jsonHandler.ConfigManager;
 import gui.jsonHandler.JsonConfig;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,8 +28,15 @@ public class DialogHelper {
         alert.setHeaderText(null);
         alert.setContentText(message);
 
+        DialogPane pane = alert.getDialogPane();
+        pane.setStyle("-fx-background-color: transparent;");
+
         // Applica il tema al dialog
         applyThemeToDialog(alert, isLightTheme);
+        Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+        alertStage.initStyle(StageStyle.TRANSPARENT);
+        alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
+
 
         return alert;
     }
