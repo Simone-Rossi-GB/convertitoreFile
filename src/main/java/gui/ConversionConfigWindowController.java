@@ -19,9 +19,11 @@ public class ConversionConfigWindowController {
     @FXML public TextField unionField;
     @FXML public TextField zippedOutputField;
     @FXML public TextField txtPassword;
+    @FXML public TextField protectedOutputField;
 
     @FXML public Button toggleUnionBtn;
     @FXML public Button toggleZippedOutputBtn;
+    @FXML public Button toggleProtectedOutputBtn;
 
     @FXML public Button saveButton;
     @FXML public Button cancelButton;
@@ -32,6 +34,7 @@ public class ConversionConfigWindowController {
     private static final Logger logger = LogManager.getLogger(ConversionConfigWindowController.class);
     private boolean union;
     private boolean zippedOutput;
+    private boolean protectedOutput;
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -88,6 +91,8 @@ public class ConversionConfigWindowController {
         zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
 
+        // DA FINIRE PER PROTECTED OUTPUT
+
         logger.info("Configurazione conversione caricata correttamente");
     }
 
@@ -99,6 +104,13 @@ public class ConversionConfigWindowController {
         zippedOutput = !zippedOutput;
         zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
+    }
+
+    @FXML
+    public void protectedOutput(ActionEvent actionEvent) {
+        protectedOutput = !protectedOutput;
+        protectedOutputField.setText(String.valueOf(protectedOutput));
+        updateProtectedOutputToggleButton();
     }
 
     /**
@@ -162,6 +174,30 @@ public class ConversionConfigWindowController {
 
             // Campo readonly diventa normale (grigio)
             zippedOutputField.getStyleClass().removeAll("active-state");
+        }
+    }
+
+    private void updateProtectedOutputToggleButton() {
+        if (protectedOutput) {
+            // STATO ATTIVO
+            toggleProtectedOutputBtn.setText("Disabilita");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            protectedOutputField.getStyleClass().removeAll("active-state");
+            protectedOutputField.getStyleClass().add("active-state");
+
+        } else {
+            // STATO SPENTO
+            toggleProtectedOutputBtn.setText("Abilita");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            protectedOutputField.getStyleClass().removeAll("active-state");
         }
     }
 
