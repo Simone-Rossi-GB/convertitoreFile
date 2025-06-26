@@ -674,12 +674,19 @@ public class MainViewController {
             List<String> finalFormats = formats;
             //Mostra il dialog per selezionare il formato di output
             Platform.runLater(() -> {
-                ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
-                dialog.setTitle("Seleziona Formato");
-                dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
-                dialog.setContentText("Formato desiderato:");
+                // Usa il metodo helper per rilevare automaticamente il tema
+                boolean isLightTheme = DialogHelper.detectCurrentTheme();
+
+                ChoiceDialog<String> dialog = DialogHelper.createModernChoiceDialog(
+                        finalFormats.get(0),
+                        finalFormats,
+                        "Seleziona Formato",
+                        "Converti " + srcFile.getName() + " in...",
+                        "Formato desiderato:",
+                        isLightTheme
+                );
+
                 Optional<String> result = dialog.showAndWait();
-                //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
                 result.ifPresent(chosenFormat -> {
                     new Thread(() -> performConversion(srcFile, chosenFormat)).start();
                 });
@@ -692,29 +699,6 @@ public class MainViewController {
             });
             return;
         }
-
-        List<String> finalFormats = formats;
-        String finalSrcExtension = srcExtension;
-
-        //Mostra il dialog moderno per selezionare il formato di output
-        Platform.runLater(() -> {
-            // Usa il metodo helper per rilevare automaticamente il tema
-            boolean isLightTheme = DialogHelper.detectCurrentTheme();
-
-            ChoiceDialog<String> dialog = DialogHelper.createModernChoiceDialog(
-                    finalFormats.get(0),
-                    finalFormats,
-                    "Seleziona Formato",
-                    "Converti " + srcFile.getName() + " in...",
-                    "Formato desiderato:",
-                    isLightTheme
-            );
-
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversion(srcFile, chosenFormat)).start();
-            });
-        });
     }
 
     /**
