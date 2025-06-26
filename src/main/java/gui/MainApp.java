@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 public class MainApp extends Application {
 
     private static Stage primaryStage;
-    private static Locale currentLocale = new Locale("it", "IT"); // valore iniziale
+    private static Locale currentLocale; // valore iniziale
     private static final Logger logger = LogManager.getLogger(MainApp.class);
 
     @Override
