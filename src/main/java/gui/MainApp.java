@@ -1,5 +1,7 @@
 package gui;
 
+import gui.jsonHandler.ConfigManager;
+import gui.jsonHandler.JsonConfig;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -23,12 +25,12 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        JsonConfig config = ConfigManager.readConfig();
         // Salvo lo stage primario per eventuali dialog/modal
         MainApp.primaryStage = stage;
-
         // Carico l'FXML principale
-        Locale locale = new Locale("it", "IT");
-        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+        currentLocale = new Locale(config.getLang(), config.getLang().toUpperCase());
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", currentLocale);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GraphicalMenu.fxml"), bundle);
         Pane root = loader.load();
 
@@ -45,7 +47,7 @@ public class MainApp extends Application {
         );
 
         // Applico il tema di default
-        root.getStyleClass().add("root-dark");
+        root.getStyleClass().add(config.getTheme());
 
         // Configuro lo stage
         stage.setTitle("File Converter Manager");
