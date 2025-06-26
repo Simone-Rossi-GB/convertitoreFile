@@ -220,6 +220,7 @@ public class MainViewController {
 
             item.setOnAction(ev -> {
                 MainApp.setCurrentLocale(locale);
+                updateLangButtonGraphic(locale);
                 refreshUITexts(locale);
                 menu.hide();
             });

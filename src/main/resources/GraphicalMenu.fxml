@@ -148,21 +148,21 @@
                     <Label fx:id="detectedFilesLabel" styleClass="stat-label" text="Detected Files">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
-                    <Label fx:id="detectedFilesCounter" styleClass="stat-value" text="XX">
+                    <Label fx:id="detectedFilesCounter" styleClass="stat-value" text="0">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
 
                     <Label fx:id="successfulConversionsLabel" styleClass="stat-label" text="Successful Conversions">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
-                    <Label fx:id="successfulConversionsCounter" styleClass="stat-value" text="XX">
+                    <Label fx:id="successfulConversionsCounter" styleClass="stat-value" text="0">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
 
                     <Label fx:id="failedConversionsLabel" styleClass="stat-label" text="Failed Conversions">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
-                    <Label fx:id="failedConversionsCounter" styleClass="stat-value" text="XX">
+                    <Label fx:id="failedConversionsCounter" styleClass="stat-value" text="0">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
 
