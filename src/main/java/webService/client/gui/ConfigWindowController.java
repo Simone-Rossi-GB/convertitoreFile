@@ -1,5 +1,6 @@
 package webService.client.gui;
 
+import jdk.jfr.internal.tool.Main;
 import webService.client.configuration.configExceptions.JsonStructureException;
 import webService.client.configuration.configHandlers.config.*;
 import javafx.scene.Parent;
@@ -25,6 +26,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 
 /**
@@ -46,6 +49,14 @@ public class ConfigWindowController {
     @FXML private Button browseErrorBtn;
     @FXML private Button toggleMonitorBtn;
 
+    @FXML private Label configTitle;
+    @FXML private Label configTitleDesc;
+    @FXML private Label directoryLabel;
+    @FXML private Label monitoredDirectoryLabel;
+    @FXML private Label successfulDirectoryLabel;
+    @FXML private Label errorDirectoryLabel;
+    @FXML private Label startMonitoringLabel;
+
     // Area per le conversioni JSON (sola lettura)
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
@@ -55,6 +66,7 @@ public class ConfigWindowController {
     private Stage dialogStage;
     private boolean monitorAtStart = false;
     private static final Logger logger = LogManager.getLogger(ConfigWindowController.class);
+    private static Locale locale = null;
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -65,6 +77,29 @@ public class ConfigWindowController {
         // Configura i campi di testo per le directory
         setupDirectoryFields();
         loadCurrentConfiguration();
+        if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
+            locale = MainApp.getCurrentLocale();
+            refreshUITexts(locale);
+        }
+    }
+
+    public void refreshUITexts(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+
+        configTitle.setText(bundle.getString("label.configTitle"));
+        configTitleDesc.setText(bundle.getString("label.configTitleDesc"));
+        directoryLabel.setText(bundle.getString("label.directoryLabel"));
+        monitoredDirectoryLabel.setText(bundle.getString("label.monitoredDirectoryLabel"));
+        monitoredDirField.setPromptText(bundle.getString("field.monitoredDirField"));
+        successfulDirectoryLabel.setText(bundle.getString("label.successfulDirectoryLabel"));
+        successDirField.setPromptText(bundle.getString("field.successDirField"));
+        errorDirectoryLabel.setText(bundle.getString("label.errorDirectoryLabel"));
+        errorDirField.setPromptText(bundle.getString("field.errorDirField"));
+        startMonitoringLabel.setText(bundle.getString("label.startMonitoringLabel"));
+        toggleMonitorBtn.setText(bundle.getString("btn.activate"));
+        browseMonitoredBtn.setText(bundle.getString("btn.browseMonitoredBtn"));
+        saveButton.setText(bundle.getString("btn.saveButton"));
+        cancelButton.setText(bundle.getString("btn.cancelButton"));
     }
 
     /**

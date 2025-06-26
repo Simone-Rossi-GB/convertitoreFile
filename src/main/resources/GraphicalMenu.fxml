@@ -20,7 +20,7 @@
             <!-- HEADER BAR -->
             <HBox fx:id="header" alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="900.0" spacing="10" styleClass="header-bar">
                 <children>
-                    <Label styleClass="app-title" text="File Converter Manager">
+                    <Label fx:id="mainTitleLabel" styleClass="app-title" text="File Converter Manager">
                         <font><Font name="System Bold" size="22.0" /></font>
                     </Label>
                     <Region HBox.hgrow="ALWAYS" />
@@ -47,7 +47,7 @@
                             <!-- Directory Section -->
                             <VBox prefHeight="228.0" prefWidth="246.0" spacing="10.0" styleClass="directory-section">
                                 <children>
-                                    <Label styleClass="section-title" text="Directory">
+                                    <Label fx:id="directoryLabelTitle" styleClass="section-title" text="Directory">
                                         <font><Font name="System Bold" size="16.0" /></font>
                                     </Label>
                                     <Separator prefWidth="230.0" styleClass="section-line" />

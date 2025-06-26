@@ -69,9 +69,7 @@ public class MainViewController {
 
     public HBox header;
     @FXML
-    private Label statusIndicator;
-    @FXML
-    private Label monitoringStatusLabel;
+    private Label mainTitleLabel;
     @FXML
     private Label logAreaTitle;
     @FXML
@@ -108,6 +106,8 @@ public class MainViewController {
     private Label successfulConversionsLabel;
     @FXML
     private Label failedConversionsLabel;
+    @FXML
+    private Label directoryLabelTitle;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -251,10 +251,12 @@ public class MainViewController {
     public void refreshUITexts(Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
 
+        mainTitleLabel.setText(bundle.getString("label.mainTitle"));
         logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
         detectedFilesLabel.setText(bundle.getString("label.detectedFilesLabel"));
         successfulConversionsLabel.setText(bundle.getString("label.successfulConversionsLabel"));
         failedConversionsLabel.setText(bundle.getString("label.failedConversionsLabel"));
+        directoryLabelTitle.setText(bundle.getString("label.directoryLabelTitle"));
         caricaFileBtn.setText(bundle.getString("btn.caricaFileBtn"));
         fileConvertitiBtn.setText(bundle.getString("btn.fileConvertitiBtn"));
         conversioniFalliteBtn.setText(bundle.getString("btn.conversioniFalliteBtn"));
@@ -512,7 +514,7 @@ public class MainViewController {
 
             // DIMENSIONI AGGIORNATE
             configStage.setWidth(750);
-            configStage.setHeight(767);
+            configStage.setHeight(880);
 
             // Crea la scene
             Scene scene = new Scene(configWindow);

@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 /**
  * Controller modernizzato della finestra di configurazione conversione.
  * Gestisce i parametri di conversione con supporto per temi dark/light e dialog moderni.
@@ -19,6 +22,7 @@ public class ConversionConfigWindowController {
     @FXML public TextField zippedOutputField;
     @FXML public TextField txtPassword;
     @FXML public TextField protectedOutputField;
+    @FXML public TextField txtWatermark;
 
     @FXML public Button toggleUnionBtn;
     @FXML public Button toggleZippedOutputBtn;
@@ -27,6 +31,15 @@ public class ConversionConfigWindowController {
     @FXML public Button saveButton;
     @FXML public Button cancelButton;
 
+    @FXML public Label conversionContextTitle;
+    @FXML public Label conversionContextDesc;
+    @FXML public Label configurationParameters;
+    @FXML public Label passwordLabel;
+    @FXML public Label watermarkLabel;
+    @FXML public Label unionLabel;
+    @FXML public Label zippedLabel;
+    @FXML public Label protectedLabel;
+
     @FXML private VBox conversionConfigHeaderContainer;
 
     private Stage dialogStage;
@@ -34,6 +47,7 @@ public class ConversionConfigWindowController {
     private boolean union;
     private boolean zippedOutput;
     private boolean protectedOutput;
+    private static Locale locale = null;
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -42,6 +56,29 @@ public class ConversionConfigWindowController {
     private void initialize() {
         // Non più stili inline - tutto gestito da CSS
         loadCurrentConfiguration();
+        if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
+            locale = MainApp.getCurrentLocale();
+            refreshUITexts(locale);
+        }
+    }
+
+    public void refreshUITexts(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+        conversionContextTitle.setText(bundle.getString("label.conversionContextTitle"));
+        conversionContextDesc.setText(bundle.getString("label.conversionContextDesc"));
+        configurationParameters.setText(bundle.getString("label.configurationParameters"));
+        passwordLabel.setText(bundle.getString("label.passwordLabel"));
+        txtPassword.setPromptText(bundle.getString("field.txtPassword"));
+        watermarkLabel.setText(bundle.getString("label.watermarkLabel"));
+        txtWatermark.setPromptText(bundle.getString("field.txtWatermark"));
+        unionLabel.setText(bundle.getString("label.unionLabel"));
+        zippedLabel.setText(bundle.getString("label.zippedLabel"));
+        protectedLabel.setText(bundle.getString("label.protectedLabel"));
+        toggleUnionBtn.setText(bundle.getString("btn.activate"));
+        toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
+        toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
+        saveButton.setText(bundle.getString("btn.saveButton"));
+        cancelButton.setText(bundle.getString("btn.cancelButton"));
     }
 
     /**

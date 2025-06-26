@@ -16,12 +16,12 @@
         <!-- MODERN HEADER -->
         <VBox fx:id="conversionConfigHeaderContainer" prefHeight="43.0" prefWidth="750.0" spacing="5" styleClass="conversion-config-header-container">
             <children>
-                <Label alignment="CENTER" prefWidth="720.0" styleClass="conversion-config-main-title" text="Editor Configurazione Conversione" textAlignment="CENTER">
+                <Label fx:id="conversionContextTitle" alignment="CENTER" prefWidth="720.0" styleClass="conversion-config-main-title" text="Editor Configurazione Conversione" textAlignment="CENTER">
                     <font>
                         <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
-                <Label alignment="CENTER" prefWidth="720.0" styleClass="conversion-config-subtitle" text="Configura i parametri per le conversioni dei file" textAlignment="CENTER">
+                <Label fx:id="conversionContextDesc" alignment="CENTER" prefWidth="720.0" styleClass="conversion-config-subtitle" text="Configura i parametri per le conversioni dei file" textAlignment="CENTER">
                     <font>
                         <Font size="12.0" />
                     </font>
@@ -42,7 +42,7 @@
                 <!-- CONFIGURATION FIELDS SECTION -->
                 <VBox spacing="15.0" styleClass="conversion-config-fields-container">
                     <children>
-                        <Label styleClass="conversion-config-section-title" text="Configurazione Parametri">
+                        <Label fx:id="configurationParameters" styleClass="conversion-config-section-title" text="Configurazione Parametri">
                             <font>
                                 <Font name="System Bold" size="16.0" />
                             </font>
@@ -53,7 +53,7 @@
                         <!-- Password Field -->
                         <VBox spacing="6.0" styleClass="conversion-config-field-group">
                             <children>
-                                <Label styleClass="conversion-config-field-label" text="Password (usata solo se necessario)">
+                                <Label fx:id="passwordLabel" styleClass="conversion-config-field-label" text="Password (usata solo se necessario)">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
                                     </font>
@@ -65,11 +65,25 @@
                                 </HBox>
                             </children>
                         </VBox>
+                  <VBox layoutX="10.0" layoutY="69.0" spacing="6.0" styleClass="conversion-config-field-group">
+                     <children>
+                        <Label fx:id="watermarkLabel" styleClass="conversion-config-field-label" text="Watermark (usato solo se necessario)">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <TextField fx:id="txtWatermark" prefWidth="600.0" promptText="Inserisci il watermark da aggiungere ai documenti..." styleClass="conversion-config-text-field" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
 
                         <!-- Union Field -->
                         <VBox spacing="6.0" styleClass="conversion-config-field-group">
                             <children>
-                                <Label styleClass="conversion-config-field-label" text="Unione delle pagine dei documenti PDF in un'unica immagine">
+                                <Label fx:id="unionLabel" styleClass="conversion-config-field-label" text="Unione delle pagine dei documenti PDF in un'unica immagine">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
                                     </font>
@@ -91,7 +105,7 @@
                         <!-- Zipped Output Field -->
                         <VBox spacing="6.0" styleClass="conversion-config-field-group">
                             <children>
-                                <Label styleClass="conversion-config-field-label" text="File convertito zippato">
+                                <Label fx:id="zippedLabel" styleClass="conversion-config-field-label" text="File convertito zippato">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
                                     </font>
@@ -111,7 +125,7 @@
                         </VBox>
                   <VBox spacing="6.0" styleClass="conversion-config-field-group">
                      <children>
-                        <Label styleClass="conversion-config-field-label" text="Output protetto">
+                        <Label fx:id="protectedLabel" styleClass="conversion-config-field-label" text="Output protetto">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
