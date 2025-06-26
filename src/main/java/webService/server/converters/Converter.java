@@ -13,8 +13,10 @@ public abstract class Converter {
 
     public File conversione(File srcFile) throws Exception {
         logger.info(srcFile.getAbsolutePath());
+        // Conversione base
         File outFile = convert(srcFile);
         logger.info(outFile.getAbsolutePath());
+        // Controlla se il file in output deve essere zippato
         if(ConversionContextReader.getIsZippedOutput() && !Utility.getExtension(outFile).equals("zip")) {
             return Zipper.compressioneFile(outFile, Utility.getBaseName(srcFile));
         }

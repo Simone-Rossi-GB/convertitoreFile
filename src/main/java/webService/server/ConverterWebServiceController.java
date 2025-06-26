@@ -61,8 +61,7 @@ public class ConverterWebServiceController {
         try {
             logger.info("Richiesta conversioni possibili per estensione: {}", extension);
             List<String> conversions = engine.getPossibleConversions(extension);
-            // ritorno un json contenente una lista con le possibili conversioni da un determinato
-            // formato d'origine
+            // ritorno un json contenente una lista con le possibili conversioni da un determinato formato d'origine
             return ResponseEntity.ok(conversions);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -72,6 +71,13 @@ public class ConverterWebServiceController {
         }
     }
 
+    /**
+     * Effettua la conversione di un file
+     * @param file file da convertire
+     * @param targetFormat formato di destinazione
+     * @return Response entity ok, con un array di byte che rappresenta il contenuto del file convertito, il content type, il nome e la lunghezza.
+     * In caso di errori ritora un internalServerError con un messaggio di spiegazione.
+     */
     @PostMapping("/convert")
     public ResponseEntity<?> convertFile(
             @RequestParam("file") MultipartFile file, //parametri richiesti dopo il /convert/
@@ -153,36 +159,45 @@ public class ConverterWebServiceController {
             return ResponseEntity.internalServerError() // errore nella lettura del file
                     .body(Collections.singletonList(e.getMessage()));
         } finally {
-            try {
-                if (tempInputFilePath != null && Files.exists(tempInputFilePath)) {
-                    // elimina il file originale temporaneo spostato nella directory univoca
-                    Files.delete(tempInputFilePath);
-                    logger.info("File temporaneo di input eliminato");
-                }
-                if (convertedOutputFile != null && Files.exists(convertedOutputFile.toPath())) {
-                    // elimina il file convertito temporaneo
-                    Files.delete(convertedOutputFile.toPath());
-                    logger.info("File temporaneo di output eliminato");
-                }
-
-                // Elimina la directory univoca temporanea se vuota
-                if (conversionTempDir != null && Files.exists(conversionTempDir)) {
-                    //Elimina eventuali file temporanei creati nella cartella
-                    eliminaContenuto(conversionTempDir.toFile());
-                    logger.info("Directory temporanea svuotata");
-                    //Elimina la cartella
-                    Files.delete(conversionTempDir);
-                    logger.info("Directory temporanea eliminata");
-                }
-            } catch (IOException cleanupException) {
-                logger.error("Errore durante la pulizia dei file temporanei: " + cleanupException.getMessage());
-            }
+            clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
         }
     }
 
     /**
-     * Chiamata POST al server per
-     * caricare il file di configurazione json inviato dal client
+     * Elimina i vari file e directory temporanee
+     * @param tempInputFilePath file temporaneo di input
+     * @param convertedOutputFile file convertito
+     * @param conversionTempDir cartella temporanea
+     */
+    private void clearTempFiles(Path tempInputFilePath, File convertedOutputFile, Path conversionTempDir){
+        try {
+            if (tempInputFilePath != null && Files.exists(tempInputFilePath)) {
+                // elimina il file originale temporaneo spostato nella directory univoca
+                Files.delete(tempInputFilePath);
+                logger.info("File temporaneo di input eliminato");
+            }
+            if (convertedOutputFile != null && Files.exists(convertedOutputFile.toPath())) {
+                // elimina il file convertito temporaneo
+                Files.delete(convertedOutputFile.toPath());
+                logger.info("File temporaneo di output eliminato");
+            }
+
+            // Elimina la directory univoca temporanea se vuota
+            if (conversionTempDir != null && Files.exists(conversionTempDir)) {
+                //Elimina eventuali file temporanei creati nella cartella
+                eliminaContenuto(conversionTempDir.toFile());
+                logger.info("Directory temporanea svuotata");
+                //Elimina la cartella
+                Files.delete(conversionTempDir);
+                logger.info("Directory temporanea eliminata");
+            }
+        } catch (IOException cleanupException) {
+            logger.error("Errore durante la pulizia dei file temporanei: " + cleanupException.getMessage());
+        }
+    }
+
+    /**
+     * Carica il file di configurazione base json inviato dal client
      * @param file file di configurazione
      * @return
      */
@@ -200,9 +215,8 @@ public class ConverterWebServiceController {
     }
 
     /**
-     * Chiamata POST al server per
-     * caricare il file di contesto json per la conversione inviato dal client
-     * @param file file di contesto della conversione
+     * Carica il file di configurazione della conversione json inviato dal client
+     * @param file file di configurazione
      * @return
      */
     @PostMapping("/conversionContextUpload")
@@ -220,14 +234,18 @@ public class ConverterWebServiceController {
         return response;
     }
 
-
+    /**
+     * Salva il file in un'apposita cartella o lo sostituisce se esiste già
+     * @param file file di configurazione
+     * @return risposta
+     */
     private ResponseEntity<String> configFilesUpload (MultipartFile file){
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File vuoto.");
         }
 
         try {
-            // Percorso relativo alla directory di lavoro dell'app
+            // Percorso relativo alla directory di lavoro del web service
             Path uploadPath = Paths.get(uploadDir);
             Files.createDirectories(uploadPath);
 
