@@ -101,7 +101,7 @@
 
 .light.dialog-pane > .content,
 .light .dialog-pane > .content {
-    -fx-background-color: #f8f9fa !important;
+    -fx-background-color: #ffffff !important;
 }
 
 .light.dialog-pane .label,
@@ -161,4 +161,26 @@
     -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%) !important;
     -fx-text-fill: #2d3748 !important;
     -fx-border-color: #e2e8f0 !important;
+}
+
+/* Area grafica del dialog (dove c'è l'icona) */
+.dialog-pane > .graphic-container {
+    -fx-background-color: #2d3142;
+    -fx-background-radius: 15 0 0 0;
+}
+
+.dialog-pane .graphic {
+    -fx-background-color: transparent;
+}
+
+/* Per il light theme */
+.light.dialog-pane > .graphic-container,
+.light .dialog-pane > .graphic-container {
+    -fx-background-color: #ffffff !important;
+}
+
+/* Se l'icona è un ImageView o un altro nodo */
+.dialog-pane .image-view,
+.dialog-pane .icon {
+    -fx-background-color: transparent;
 }
