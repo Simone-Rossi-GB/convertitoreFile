@@ -249,8 +249,6 @@ public class MainViewController {
 
     private void updateLangButtonGraphic(Locale locale) {
         String imageFile = getFlagFileForLocale(locale);
-        System.out.println(locale);
-        System.out.println(imageFile);
 
         ImageView icon = new ImageView(getClass().getResource("/flags/" + imageFile).toExternalForm());
         icon.setFitWidth(24);
@@ -415,7 +413,7 @@ public class MainViewController {
 
             // DIMENSIONI PIÙ PICCOLE
             configStage.setWidth(598);
-            configStage.setHeight(764);
+            configStage.setHeight(780);
 
             // Crea la scene
             Scene scene = new Scene(configWindow);
@@ -496,7 +494,7 @@ public class MainViewController {
 
             // DIMENSIONI AGGIORNATE
             configStage.setWidth(750);
-            configStage.setHeight(730);
+            configStage.setHeight(767);
 
             // Crea la scene
             Scene scene = new Scene(configWindow);
