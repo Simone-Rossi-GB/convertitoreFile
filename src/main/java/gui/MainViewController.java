@@ -88,6 +88,12 @@ public class MainViewController {
     private Button conversioniFalliteBtn;
     @FXML
     private ToggleButton themeToggle;
+    @FXML
+    private Label detectedFilesLabel;
+    @FXML
+    private Label successfulConversionsLabel;
+    @FXML
+    private Label failedConversionsLabel;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -136,6 +142,7 @@ public class MainViewController {
             root.getStyleClass().add(newV ? "light" : "dark");
             // qui potresti salvare nelle Preferences la scelta dell’utente
         });
+        refreshUITexts(MainApp.getCurrentLocale());
         updateLangButtonGraphic(MainApp.getCurrentLocale());
         initializeLanguageMenu();
         Delta dragDelta = new Delta();
@@ -217,7 +224,9 @@ public class MainViewController {
         ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
 
         logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
-
+        detectedFilesLabel.setText(bundle.getString("label.detectedFilesLabel"));
+        successfulConversionsLabel.setText(bundle.getString("label.successfulConversionsLabel"));
+        failedConversionsLabel.setText(bundle.getString("label.failedConversionsLabel"));
     }
 
     private void updateLangButtonGraphic(Locale locale) {
