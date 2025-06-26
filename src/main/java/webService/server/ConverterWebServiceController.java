@@ -89,8 +89,6 @@ public class ConverterWebServiceController {
         Path tempInputFilePath = null;
         Path conversionTempDir = null;
         File convertedOutputFile = null;
-
-        try {
             logger.info("Inizio conversione file: {} -> {}", file.getOriginalFilename(), targetFormat);
 
             // Crea una directory temporanea con identificativo univoco per questa conversione
@@ -101,27 +99,8 @@ public class ConverterWebServiceController {
             String originalFilename = file.getOriginalFilename();
             String extension = null;
 
-            try {
-                // otteniamo direttamente dal file ricevuto il formato d'origine
-                extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
-            } catch (IllegalExtensionException e) {
-                logger.error(e.getMessage());
-                // gestiamo l'eccezione ritornando un InternalServerError
-                // Converti lo stacktrace in Stringa
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stackTrace = sw.toString();
-
-                // Crea il messaggio di errore personalizzato
-                ErrorResponse errorResponse = new ErrorResponse(
-                        1234,  // codice errore personalizzato (scegli tu)
-                        "Errore durante la conversione del file", // messaggio custom
-                        stackTrace
-                );
-
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(errorResponse);
-            }
+            // otteniamo direttamente dal file ricevuto il formato d'origine
+            extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
 
             assert originalFilename != null; // diciamo al JVM che il nome non è mai null
 
@@ -129,7 +108,7 @@ public class ConverterWebServiceController {
             // tempInputFilePath  percorsoTemporaneo/originalFileName.estensione
             tempInputFilePath = conversionTempDir.resolve(originalFilename);
 
-            file.transferTo(tempInputFilePath); // spostiamo il file nella directory temporanea
+            file.transferTo(tempInputFilePath); // spostiamo il file nella director y temporanea
             logger.info("File salvato in: {}", tempInputFilePath);
 
             // creiamo un oggetto file dal percorso del file
@@ -140,7 +119,8 @@ public class ConverterWebServiceController {
 
             // Verifica che il file convertito esista
             if (convertedOutputFile == null || !convertedOutputFile.exists()) {
-                throw new ConversionException("File convertito inesistente");            }
+                throw new ConversionException("File convertito inesistente");
+            }
 
             // crea un array di byte per la risposta al client leggendo i byte del file convertito
             byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
@@ -162,10 +142,9 @@ public class ConverterWebServiceController {
             headers.setContentLength(fileBytes.length);
 
             logger.info("Conversione completata con successo per: {}", originalFilename);
-            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
-        } finally {
             clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
-        }
+            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+
     }
 
 
