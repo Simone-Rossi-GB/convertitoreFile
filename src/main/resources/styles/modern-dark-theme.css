@@ -334,3 +334,63 @@
 .light .section-separator, .light .section-line {
     -fx-background-color: linear-gradient(to right, transparent, #e2e8f0, transparent);
 }
+
+.flag-icon {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.3, 0, 1);
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-padding: 2;
+}
+.flag-name {
+    -fx-text-fill: inherit;
+    -fx-font-size: 12pt;
+    -fx-padding: 0 0 0 8;
+}
+/* === CONTEXT MENU STYLING === */
+.lang-menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 6 10 6 10;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.custom-menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.context-menu {
+    -fx-background-color: #2d3142;
+    -fx-border-color: #4FD1C7;
+    -fx-background-radius: 6;
+    -fx-padding: 4;
+}
+
+.custom-menu-item:hover .lang-menu-item {
+    -fx-background-color: #353847;
+    -fx-background-radius: 4;
+}
+
+.lang-menu-item Label {
+    -fx-text-fill: #f1f1f1;
+    -fx-font-size: 12pt;
+    -fx-padding: 0 0 0 8;
+}
+
+/* === LIGHT THEME OVERRIDE === */
+.light .context-menu {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #4FD1C7;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+}
+
+.light .menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2d3748;
+}
+
+.light .menu-item:hover {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #38B2AC;
+}

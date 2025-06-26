@@ -117,7 +117,7 @@
                     <!-- RIGHT PANEL - Log Application -->
                     <VBox prefHeight="480.0" prefWidth="650.0" spacing="8.0" styleClass="log-panel">
                         <children>
-                            <Label styleClass="log-title" text="Application Log">
+                            <Label styleClass="log-title" text="%label.logAreaTitle">
                                 <font><Font name="System Bold" size="18.0" /></font>
                             </Label>
                             <Separator prefWidth="630.0" styleClass="section-line" />
@@ -183,6 +183,7 @@
                   <font>
                      <Font name="DejaVu Sans" size="13.5" />
                   </font></ToggleButton>
+                    <Button fx:id="langButton" onAction="#showLanguageMenu" styleClass="theme-toggle-btn" />
 
                     <Region HBox.hgrow="ALWAYS" />
 
