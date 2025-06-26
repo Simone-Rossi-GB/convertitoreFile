@@ -14,19 +14,19 @@ echo 🔍 Rilevamento architettura...
 REM Verifica se è un sistema 64-bit
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
     set ARCH=x64
-    set TARGET_DIR=lib\windows
+    set TARGET_DIR=src\main\java\webService\server\lib\windows
     set CHROME_URL=https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/win64/chrome-headless-shell-win64.zip
     set EXTRACT_DIR=chrome-headless-shell-win64
     echo ✅ Architettura: 64-bit (x64)
 ) else if "%PROCESSOR_ARCHITEW6432%"=="AMD64" (
     set ARCH=x64
-    set TARGET_DIR=lib\windows
+    set TARGET_DIR=src\main\java\webService\server\lib\windows
     set CHROME_URL=https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/win64/chrome-headless-shell-win64.zip
     set EXTRACT_DIR=chrome-headless-shell-win64
     echo ✅ Architettura: 64-bit (x64) - processo WOW64
 ) else (
     set ARCH=x86
-    set TARGET_DIR=lib\windows
+    set TARGET_DIR=src\main\java\webService\server\lib\windows
     set CHROME_URL=https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/win32/chrome-headless-shell-win32.zip
     set EXTRACT_DIR=chrome-headless-shell-win32
     echo ✅ Architettura: 32-bit (x86)
@@ -41,11 +41,18 @@ REM 2. Crea struttura directory
 echo.
 echo 📂 Verificando/creando struttura directory...
 
-if not exist "lib" (
-    mkdir "lib"
+if not exist "src\main\java\webService\server\lib" (
+    mkdir "src\main\java\webService\server\lib"
     echo ✅ Creata directory: lib\
 ) else (
     echo ✅ Directory esistente: lib\
+)
+
+if not exist "src\main\java\webService\server\lib\windows" (
+    mkdir "src\main\java\webService\server\lib\windows"
+    echo ✅ Creata directory: lib\windows
+) else (
+    echo ✅ Directory esistente: lib\windows
 )
 
 if not exist "%TARGET_DIR%" (

@@ -1,6 +1,6 @@
 package webService.server.converters.mailConverters;
 
-import converters.Converter;
+import webService.server.converters.Converter;
 import org.apache.james.mime4j.dom.*;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.message.DefaultMessageBuilder;
@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Convertitore EML to PDF usando Chrome/Chromium headless nativo
- * Approccio: EML → HTML → PDF tramite Chrome --headless
+ * Convertitore EML to PDF usando Chrome/Chromium headless nativo.
+ * Implementa l'approccio: EML → HTML → PDF tramite Chrome --headless.
+ * Supporta immagini embedded, diversi encoding e gestisce automaticamente
+ * la pulizia dei file temporanei.
  */
 public class EMLtoPDFconverter extends Converter {
 
@@ -30,6 +32,15 @@ public class EMLtoPDFconverter extends Converter {
     private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
     private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
 
+    /**
+     * Converte un file EML in PDF utilizzando Chrome Headless.
+     * Il processo include parsing dell'email, estrazione immagini embedded,
+     * generazione HTML e conversione finale in PDF.
+     *
+     * @param emlFile Il file EML da convertire
+     * @return Il file PDF generato
+     * @throws IOException Se si verificano errori durante la conversione
+     */
     @Override
     public File convert(File emlFile) throws IOException {
         if (emlFile == null || !emlFile.exists()) {
@@ -43,9 +54,9 @@ public class EMLtoPDFconverter extends Converter {
         try {
             Message message = parseEmailMessage(emlFile);
             extractEmbeddedImages(message.getBody());
-            File htmlFile = generateCompleteHtml(message); // generateCompleteHtml è stato modificato
+            File htmlFile = generateCompleteHtml(message);
 
-            File pdfFile = convertHtmlToPdfWithChrome(htmlFile); // convertHtmlToPdfWithChrome usa originalBaseName
+            File pdfFile = convertHtmlToPdfWithChrome(htmlFile);
 
             logger.info("Conversione completata: {}", pdfFile.getName());
 
@@ -64,6 +75,13 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Configura la directory temporanea per i file di lavoro della conversione.
+     * Crea una directory univoca basata sul nome del file e timestamp corrente.
+     *
+     * @param emlFile Il file EML di origine
+     * @throws IOException Se non è possibile creare la directory temporanea
+     */
     private void setupTempDirectory(File emlFile) throws IOException {
         // Estrai il nome base originale del file EML (senza estensione)
         originalBaseName = emlFile.getName().replaceFirst("[.][^.]+$", "");
@@ -75,6 +93,13 @@ public class EMLtoPDFconverter extends Converter {
         logger.info("Directory temporanea creata: {}", tempDir.getAbsolutePath());
     }
 
+    /**
+     * Effettua il parsing del file EML utilizzando Apache James Mime4J.
+     *
+     * @param emlFile Il file EML da analizzare
+     * @return L'oggetto Message contenente i dati parsati dell'email
+     * @throws IOException Se si verificano errori durante il parsing
+     */
     private Message parseEmailMessage(File emlFile) throws IOException {
         DefaultMessageBuilder builder = new DefaultMessageBuilder();
         try (InputStream is = Files.newInputStream(emlFile.toPath())) {
@@ -82,6 +107,16 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Converte il file HTML in PDF utilizzando Chrome Headless.
+     * Configura tutti i parametri necessari per una conversione di qualità
+     * e gestisce l'esecuzione del processo Chrome.
+     *
+     * @param htmlFile Il file HTML da convertire
+     * @return Il file PDF generato
+     * @throws IOException Se Chrome non è disponibile o la conversione fallisce
+     * @throws InterruptedException Se il processo viene interrotto
+     */
     private File convertHtmlToPdfWithChrome(File htmlFile) throws IOException, InterruptedException {
         String chromePath = ChromeManager.getInstance().getChromePath();
         if (chromePath == null) {
@@ -89,7 +124,7 @@ public class EMLtoPDFconverter extends Converter {
         }
 
         // Usa il nome base originale (del file EML) per il nome del file PDF
-        File pdfFile = new File(tempDir, originalBaseName + ".pdf"); // Questo dovrebbe risolvere il nome del PDF
+        File pdfFile = new File(tempDir, originalBaseName + ".pdf");
 
         List<String> command = new ArrayList<String>();
         command.add(chromePath);
@@ -138,8 +173,15 @@ public class EMLtoPDFconverter extends Converter {
         return pdfFile;
     }
 
+    /**
+     * Apre il file HTML generato nel browser per debug e verifica visuale.
+     * Prova prima il browser predefinito del sistema, poi Chrome esplicito.
+     * Questo metodo è chiamato solo se DEBUG_OPEN_HTML_IN_BROWSER è true.
+     *
+     * @param htmlFile Il file HTML da aprire
+     * @param chromePath Il percorso di Chrome da usare come fallback
+     */
     private void openHtmlInBrowser(File htmlFile, String chromePath) {
-        // Questo metodo non è chiamato nel flusso normale se DEBUG_OPEN_HTML_IN_BROWSER è false
         if (!htmlFile.exists()) {
             logger.warn("Impossibile aprire il file HTML, non esiste: {}", htmlFile.getAbsolutePath());
             return;
@@ -178,6 +220,15 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Genera il file HTML completo dall'email parsata.
+     * Include CSS ottimizzato per stampa, gestione responsive e
+     * il contenuto dell'email processato per la conversione PDF.
+     *
+     * @param message L'oggetto Message contenente i dati dell'email
+     * @return Il file HTML generato e pronto per la conversione
+     * @throws IOException Se si verificano errori durante la generazione
+     */
     private File generateCompleteHtml(Message message) throws IOException {
         StringBuilder html = new StringBuilder();
 
@@ -212,9 +263,6 @@ public class EMLtoPDFconverter extends Converter {
         html.append("            color: #333;\n");
         html.append("            background: white;\n");
         html.append("        }\n");
-
-        // Ho rimosso completamente il blocco .email-header dall'HTML generato.
-        // Questo è il modo più efficace per eliminare una potenziale prima pagina vuota.
 
         html.append("        .email-content {\n");
         html.append("            max-width: 100%;\n");
@@ -271,17 +319,13 @@ public class EMLtoPDFconverter extends Converter {
         html.append("</head>\n");
         html.append("<body>\n");
 
-        // Il blocco email-header (con le info Da:, A:, Oggetto:, Data:)
-        // è stato COMPLETAMENTE rimosso da qui. Non viene generato nell'HTML.
-        // Questo dovrebbe risolvere definitivamente la pagina vuota iniziale.
-
         html.append("<div class=\"email-content\">");
         appendEmailContent(html, message.getBody());
         html.append("</div>");
 
         html.append("</body></html>");
 
-        File htmlFile = new File(tempDir, "email.html"); // Il nome del file HTML temporaneo è sempre "email.html"
+        File htmlFile = new File(tempDir, "email.html");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(htmlFile), StandardCharsets.UTF_8)) {
             writer.write(html.toString());
         }
@@ -290,10 +334,14 @@ public class EMLtoPDFconverter extends Converter {
         return htmlFile;
     }
 
-    // Metodi helper
+    /**
+     * Aggiunge gli header dell'email (Da, A, Oggetto, Data) all'HTML.
+     * Metodo helper per formattare le informazioni di intestazione dell'email.
+     *
+     * @param html Il StringBuilder dove aggiungere l'HTML degli header
+     * @param message L'oggetto Message contenente i dati dell'email
+     */
     private void appendEmailHeaders(StringBuilder html, Message message) {
-        // Questo metodo non è più chiamato in generateCompleteHtml.
-        // Il suo contenuto non viene più aggiunto all'HTML finale per il PDF.
         appendHeaderField(html, "Da:", getFieldValue(message.getFrom()));
         appendHeaderField(html, "A:", getFieldValue(message.getTo()));
         if (message.getCc() != null) {
@@ -303,6 +351,13 @@ public class EMLtoPDFconverter extends Converter {
         appendHeaderField(html, "Data:", getFieldValue(message.getDate()));
     }
 
+    /**
+     * Aggiunge un singolo campo di header formattato all'HTML.
+     *
+     * @param html Il StringBuilder dove aggiungere l'HTML
+     * @param label L'etichetta del campo (es. "Da:", "A:")
+     * @param value Il valore del campo
+     */
     private void appendHeaderField(StringBuilder html, String label, String value) {
         html.append("<div class=\"header-field\">")
                 .append("<span class=\"header-label\">").append(escapeHtml(label)).append("</span>")
@@ -310,6 +365,15 @@ public class EMLtoPDFconverter extends Converter {
                 .append("</div>");
     }
 
+    /**
+     * Processa ricorsivamente il contenuto dell'email e lo converte in HTML.
+     * Gestisce sia parti testuali (HTML/plain text) che multipart,
+     * processando le immagini embedded e i riferimenti CID.
+     *
+     * @param html Il StringBuilder dove aggiungere l'HTML del contenuto
+     * @param body Il Body dell'email da processare
+     * @throws IOException Se si verificano errori durante la lettura del contenuto
+     */
     private void appendEmailContent(StringBuilder html, Body body) throws IOException {
         if (body instanceof TextBody) {
             TextBody textBody = (TextBody) body;
@@ -331,6 +395,14 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Estrae ricorsivamente le immagini embedded dall'email.
+     * Cerca parti con MIME type image/* e Content-ID, salvandole come file temporanei
+     * per il riferimento nell'HTML generato.
+     *
+     * @param body Il Body dell'email da analizzare
+     * @throws IOException Se si verificano errori durante l'estrazione
+     */
     private void extractEmbeddedImages(Body body) throws IOException {
         if (body instanceof TextBody) {
             TextBody textBody = (TextBody) body;
@@ -350,6 +422,15 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Salva un'immagine embedded decodificando il contenuto Base64.
+     * Crea un file temporaneo e mappa il Content-ID per i riferimenti HTML.
+     *
+     * @param textBody Il TextBody contenente i dati dell'immagine
+     * @param contentId Il Content-ID dell'immagine per i riferimenti CID
+     * @param mimeType Il tipo MIME dell'immagine
+     * @throws IOException Se si verificano errori durante il salvataggio
+     */
     private void saveEmbeddedImage(TextBody textBody, String contentId, String mimeType) throws IOException {
         String content = readTextContent(textBody);
 
@@ -371,6 +452,13 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Processa i riferimenti CID nell'HTML sostituendoli con percorsi file locali.
+     * Converte i riferimenti "cid:contentId" in percorsi "file:///" per Chrome.
+     *
+     * @param htmlContent Il contenuto HTML da processare
+     * @return L'HTML con i riferimenti CID sostituiti
+     */
     private String processCidReferences(String htmlContent) {
         String processed = htmlContent;
 
@@ -386,6 +474,12 @@ public class EMLtoPDFconverter extends Converter {
         return processed;
     }
 
+    /**
+     * Estrae il Content-Type dal TextBody analizzando gli header della parte.
+     *
+     * @param textBody Il TextBody da analizzare
+     * @return Il tipo MIME, o "text/plain" come default
+     */
     private String getContentType(TextBody textBody) {
         Entity parent = textBody.getParent();
         if (parent != null && parent.getHeader() != null) {
@@ -395,6 +489,12 @@ public class EMLtoPDFconverter extends Converter {
         return "text/plain";
     }
 
+    /**
+     * Estrae il Content-ID dal TextBody analizzando gli header della parte.
+     *
+     * @param textBody Il TextBody da analizzare
+     * @return Il Content-ID, o null se non presente
+     */
     private String getContentId(TextBody textBody) {
         Entity parent = textBody.getParent();
         if (parent != null && parent.getHeader() != null) {
@@ -403,7 +503,6 @@ public class EMLtoPDFconverter extends Converter {
         }
         return null;
     }
-
 
     /**
      * Legge il contenuto testuale di un TextBody rilevando automaticamente l'encoding
@@ -444,7 +543,7 @@ public class EMLtoPDFconverter extends Converter {
     }
 
     /**
-     * Rileva il charset dall'header Content-Type del TextBody
+     * Rileva il charset dall'header Content-Type del TextBody.
      *
      * @param textBody Il TextBody da analizzare
      * @return Il charset rilevato o "UTF-8" come default
@@ -466,7 +565,7 @@ public class EMLtoPDFconverter extends Converter {
     }
 
     /**
-     * Utility method per leggere da un InputStreamReader
+     * Utility method per leggere da un InputStreamReader.
      *
      * @param reader Il reader da cui leggere
      * @return Il contenuto letto come stringa
@@ -482,7 +581,12 @@ public class EMLtoPDFconverter extends Converter {
         return sb.toString();
     }
 
-
+    /**
+     * Converte un tipo MIME in estensione file appropriata.
+     *
+     * @param mimeType Il tipo MIME da convertire
+     * @return L'estensione file corrispondente
+     */
     private String getImageExtension(String mimeType) {
         String lowerType = mimeType.toLowerCase();
         if ("image/gif".equals(lowerType)) {
@@ -500,10 +604,22 @@ public class EMLtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Converte un oggetto field in stringa per la visualizzazione.
+     *
+     * @param field L'oggetto field da convertire
+     * @return La rappresentazione stringa del field, o stringa vuota se null
+     */
     private String getFieldValue(Object field) {
         return field != null ? field.toString() : "";
     }
 
+    /**
+     * Effettua l'escape dei caratteri HTML speciali per evitare problemi di rendering.
+     *
+     * @param text Il testo da processare
+     * @return Il testo con i caratteri HTML escapati
+     */
     private String escapeHtml(String text) {
         if (text == null) return "";
         return text.replace("&", "&amp;")
@@ -513,6 +629,11 @@ public class EMLtoPDFconverter extends Converter {
                 .replace("'", "&#39;");
     }
 
+    /**
+     * Pulisce i file temporanei e la directory di lavoro.
+     * Elimina tutti i file nella directory temporanea e poi la directory stessa.
+     * Viene chiamato nel blocco finally se DEBUG_KEEP_TEMP_FILES è false.
+     */
     private void cleanup() {
         if (tempDir != null && tempDir.exists()) {
             File[] files = tempDir.listFiles();

@@ -16,7 +16,7 @@ echo "   Architettura: $ARCH"
 case $OS in
     "Darwin")
         OS_TYPE="mac"
-        TARGET_DIR="lib/mac"
+        TARGET_DIR="src/main/java/webService/server/lib/mac"
         EXECUTABLE="chrome-headless-shell"
 
         # Rileva architettura macOS corretta
@@ -35,7 +35,7 @@ case $OS in
 
     "Linux")
         OS_TYPE="linux"
-        TARGET_DIR="lib/linux"
+        TARGET_DIR="src/main/java/webService/server/lib/linux"
         EXECUTABLE="chrome-headless-shell"
 
         # Per Linux assumiamo sempre 64-bit (più comune)
@@ -58,11 +58,11 @@ echo ""
 echo "📂 Verificando/creando struttura directory..."
 
 # Crea directory lib se non esiste
-if [ ! -d "lib" ]; then
-    mkdir -p "lib"
-    echo "✅ Creata directory: lib/"
+if [ ! -d "src/main/java/webService/server/lib" ]; then
+    mkdir -p "src/main/java/webService/server/lib"
+    echo "✅ Creata directory: src/main/java/webService/server/lib/"
 else
-    echo "✅ Directory esistente: lib/"
+    echo "✅ Directory esistente: src/main/java/webService/server/lib/"
 fi
 
 # Crea directory per l'OS corrente
@@ -74,7 +74,7 @@ else
 fi
 
 # Crea anche le altre directory per completezza
-for dir in "lib/mac"; do
+for dir in "src/main/java/webService/server/lib/mac"; do
     if [ ! -d "$dir" ]; then
         mkdir -p "$dir"
         echo "✅ Creata directory: $dir/"

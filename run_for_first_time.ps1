@@ -17,13 +17,13 @@ $OSArchW6432 = [Environment]::GetEnvironmentVariable("PROCESSOR_ARCHITEW6432")
 
 if ($OSArch -eq "AMD64" -or $OSArchW6432 -eq "AMD64") {
     $Arch = "x64"
-    $TargetDir = "lib\windows"
+    $TargetDir = "src\main\java\webService\server\lib\windows"
     $ChromeUrl = "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/win64/chrome-headless-shell-win64.zip"
     $ExtractDir = "chrome-headless-shell-win64"
     Write-Host "✅ Architettura: 64-bit (x64)" -ForegroundColor Green
 } else {
     $Arch = "x86"
-    $TargetDir = "lib\windows"
+    $TargetDir = "src\main\java\webService\server\lib\windows"
     $ChromeUrl = "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.6/win32/chrome-headless-shell-win32.zip"
     $ExtractDir = "chrome-headless-shell-win32"
     Write-Host "✅ Architettura: 32-bit (x86)" -ForegroundColor Green
@@ -39,7 +39,7 @@ Write-Host "   Dimensione attesa: ~30-50 MB" -ForegroundColor Gray
 Write-Host ""
 Write-Host "📂 Verificando/creando struttura directory..." -ForegroundColor Blue
 
-$directories = @("lib", "lib\windows")
+$directories = @("src\main\java\webService\server\lib", "src\main\java\webService\server\lib\windows")
 
 foreach ($dir in $directories) {
     if (!(Test-Path $dir)) {

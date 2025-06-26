@@ -72,9 +72,9 @@ public class MainViewController {
     private Button fileConvertitiBtn;
     @FXML
     private Button conversioniFalliteBtn;
-    
+
     private static final Logger logger = LogManager.getLogger(MainViewController.class);
-    
+
     // Variabili di stato
     private boolean isMonitoring = false;
     private int fileRicevuti = 0;
@@ -592,7 +592,7 @@ public class MainViewController {
             progressBar.append("[").append(timestamp).append("] ");
             progressBar.append(filename).append(": [");
 
-            // Barra con caratteri ASCII puri
+            // Barra con caratteri ASCII che funzionano meglio
             int filled = progress / 10; // 0-10
             for (int i = 0; i < 10; i++) {
                 if (i < filled) {

@@ -1,6 +1,6 @@
 package webService.server.converters.mailConverters;
 
-import converters.Converter;
+import webService.server.converters.Converter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hsmf.MAPIMessage;
@@ -16,8 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Convertitore MSG to PDF usando Chrome/Chromium headless nativo
- * Approccio: MSG → HTML → PDF tramite Chrome --headless
+ * Convertitore MSG to PDF usando Chrome/Chromium headless nativo.
+ * Implementa l'approccio: MSG → HTML → PDF tramite Chrome --headless.
+ * Utilizza Apache POI per il parsing dei file MSG di Outlook e supporta
+ * l'estrazione di immagini embedded e diversi tipi di contenuto (HTML, RTF, plain text).
  */
 public class MSGtoPDFconverter extends Converter {
 
@@ -29,6 +31,15 @@ public class MSGtoPDFconverter extends Converter {
     private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
     private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
 
+    /**
+     * Converte un file MSG in PDF utilizzando Chrome Headless.
+     * Il processo include parsing del file MSG, estrazione immagini embedded,
+     * generazione HTML e conversione finale in PDF.
+     *
+     * @param msgFile Il file MSG da convertire
+     * @return Il file PDF generato
+     * @throws IOException Se si verificano errori durante la conversione
+     */
     @Override
     public File convert(File msgFile) throws IOException {
         if (msgFile == null || !msgFile.exists()) {
@@ -68,6 +79,13 @@ public class MSGtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Configura la directory temporanea per i file di lavoro della conversione.
+     * Crea una directory univoca basata sul nome del file e timestamp corrente.
+     *
+     * @param msgFile Il file MSG di origine
+     * @throws IOException Se non è possibile creare la directory temporanea
+     */
     private void setupTempDirectory(File msgFile) throws IOException {
         originalBaseName = msgFile.getName().replaceFirst("[.][^.]+$", "");
         tempDir = new File("temp", originalBaseName + "_" + System.currentTimeMillis());
@@ -77,6 +95,13 @@ public class MSGtoPDFconverter extends Converter {
         logger.info("Directory temporanea creata: {}", tempDir.getAbsolutePath());
     }
 
+    /**
+     * Effettua il parsing del file MSG utilizzando Apache POI HSMF.
+     *
+     * @param msgFile Il file MSG da analizzare
+     * @return L'oggetto MAPIMessage contenente i dati parsati dell'email
+     * @throws IOException Se si verificano errori durante il parsing
+     */
     private MAPIMessage parseMsgMessage(File msgFile) throws IOException {
         try {
             return new MAPIMessage(msgFile.getAbsolutePath());
@@ -85,6 +110,16 @@ public class MSGtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Converte il file HTML in PDF utilizzando Chrome Headless.
+     * Configura tutti i parametri necessari per una conversione di qualità
+     * e gestisce l'esecuzione del processo Chrome.
+     *
+     * @param htmlFile Il file HTML da convertire
+     * @return Il file PDF generato
+     * @throws IOException Se Chrome non è disponibile o la conversione fallisce
+     * @throws InterruptedException Se il processo viene interrotto
+     */
     private File convertHtmlToPdfWithChrome(File htmlFile) throws IOException, InterruptedException {
         String chromePath = ChromeManager.getInstance().getChromePath();
         if (chromePath == null) {
@@ -140,8 +175,15 @@ public class MSGtoPDFconverter extends Converter {
         return pdfFile;
     }
 
+    /**
+     * Apre il file HTML generato nel browser per debug e verifica visuale.
+     * Prova prima il browser predefinito del sistema, poi Chrome esplicito.
+     * Questo metodo è chiamato solo se DEBUG_OPEN_HTML_IN_BROWSER è true.
+     *
+     * @param htmlFile Il file HTML da aprire
+     * @param chromePath Il percorso di Chrome da usare come fallback
+     */
     private void openHtmlInBrowser(File htmlFile, String chromePath) {
-        // Questo metodo non è chiamato nel flusso normale se DEBUG_OPEN_HTML_IN_BROWSER è false
         if (!htmlFile.exists()) {
             logger.warn("Impossibile aprire il file HTML, non esiste: {}", htmlFile.getAbsolutePath());
             return;
@@ -180,10 +222,19 @@ public class MSGtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Genera il file HTML completo dal messaggio MSG parsato.
+     * Include CSS ottimizzato per stampa, gestione responsive e
+     * il contenuto dell'email processato per la conversione PDF.
+     *
+     * @param message L'oggetto MAPIMessage contenente i dati dell'email
+     * @return Il file HTML generato e pronto per la conversione
+     * @throws IOException Se si verificano errori durante la generazione
+     */
     private File generateCompleteHtml(MAPIMessage message) throws IOException {
         StringBuilder html = new StringBuilder();
 
-        // Header HTML identico al tuo EML converter
+        // Header HTML identico al convertitore EML
         html.append("<!DOCTYPE html>\n");
         html.append("<html>\n");
         html.append("<head>\n");
@@ -266,7 +317,7 @@ public class MSGtoPDFconverter extends Converter {
         html.append("</head>\n");
         html.append("<body>\n");
 
-        // Contenuto email senza header (come nel tuo EML)
+        // Contenuto email senza header (come nel convertitore EML)
         html.append("<div class=\"email-content\">");
         appendMsgContent(html, message);
         html.append("</div>");
@@ -282,6 +333,15 @@ public class MSGtoPDFconverter extends Converter {
         return htmlFile;
     }
 
+    /**
+     * Estrae e formatta il contenuto del messaggio MSG nell'HTML.
+     * Prova in ordine: HTML body, RTF body convertito, text body.
+     * Gestisce automaticamente i diversi formati di contenuto supportati da Outlook.
+     *
+     * @param html Il StringBuilder dove aggiungere l'HTML del contenuto
+     * @param message L'oggetto MAPIMessage da processare
+     * @throws IOException Se si verificano errori durante l'estrazione del contenuto
+     */
     private void appendMsgContent(StringBuilder html, MAPIMessage message) throws IOException {
         try {
             // Prova prima HTML body
@@ -328,6 +388,15 @@ public class MSGtoPDFconverter extends Converter {
         html.append("<p><em>Nessun contenuto disponibile</em></p>");
     }
 
+    /**
+     * Estrae le immagini embedded dagli allegati del messaggio MSG.
+     * Analizza tutti gli allegati, identifica quelli con MIME type image/*
+     * e li salva come file temporanei per il riferimento nell'HTML.
+     *
+     * @param message L'oggetto MAPIMessage da cui estrarre le immagini
+     * @throws IOException Se si verificano errori durante l'estrazione
+     * @throws ChunkNotFoundException Se i chunks degli allegati non sono trovati
+     */
     private void extractEmbeddedImages(MAPIMessage message) throws IOException, ChunkNotFoundException {
         AttachmentChunks[] attachments = message.getAttachmentFiles();
         if (attachments == null) return;
@@ -352,6 +421,13 @@ public class MSGtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Estrae il nome del file da un allegato MSG.
+     * Prova prima il nome lungo, poi il nome corto come fallback.
+     *
+     * @param attachment L'oggetto AttachmentChunks da cui estrarre il nome
+     * @return Il nome del file, o "attachment" come default
+     */
     private String getAttachmentFileName(AttachmentChunks attachment) {
         try {
             if (attachment.getAttachLongFileName() != null) {
@@ -366,6 +442,12 @@ public class MSGtoPDFconverter extends Converter {
         return "attachment";
     }
 
+    /**
+     * Estrae il MIME type da un allegato MSG.
+     *
+     * @param attachment L'oggetto AttachmentChunks da cui estrarre il MIME type
+     * @return Il MIME type dell'allegato, o null se non disponibile
+     */
     private String getAttachmentMimeType(AttachmentChunks attachment) {
         try {
             if (attachment.getAttachMimeTag() != null) {
@@ -377,6 +459,17 @@ public class MSGtoPDFconverter extends Converter {
         return null;
     }
 
+    /**
+     * Salva un'immagine embedded da un allegato MSG.
+     * Crea un file temporaneo con nome sicuro e mappa i vari formati
+     * di Content-ID per i riferimenti HTML.
+     *
+     * @param imageData I dati binari dell'immagine
+     * @param fileName Il nome originale del file allegato
+     * @param mimeType Il MIME type dell'immagine
+     * @param index L'indice dell'allegato per creare nomi univoci
+     * @throws IOException Se si verificano errori durante il salvataggio
+     */
     private void saveEmbeddedImageFromAttachment(byte[] imageData, String fileName, String mimeType, int index) throws IOException {
         String extension = getImageExtension(mimeType);
         String safeFileName = "embedded_" + index + "." + extension;
@@ -395,6 +488,14 @@ public class MSGtoPDFconverter extends Converter {
         logger.info("Immagine MSG salvata: {} -> {}", fileName, safeFileName);
     }
 
+    /**
+     * Converte contenuto RTF in HTML usando un approccio semplificato.
+     * Rimuove i comandi RTF base e mantiene il testo leggibile,
+     * convertendo i line break in tag HTML appropriati.
+     *
+     * @param rtfBody Il contenuto RTF da convertire
+     * @return L'HTML generato dal contenuto RTF
+     */
     private String convertRtfToHtml(String rtfBody) {
         // Conversione molto semplice RTF -> HTML
         // Rimuove i comandi RTF base e mantiene il testo
@@ -416,6 +517,13 @@ public class MSGtoPDFconverter extends Converter {
         return "<div>" + escapeHtml(text) + "</div>";
     }
 
+    /**
+     * Processa i riferimenti CID nell'HTML sostituendoli con percorsi file locali.
+     * Gestisce diversi formati di riferimento CID utilizzati da Outlook.
+     *
+     * @param htmlContent Il contenuto HTML da processare
+     * @return L'HTML con i riferimenti CID sostituiti con percorsi locali
+     */
     private String processCidReferences(String htmlContent) {
         String processed = htmlContent;
 
@@ -437,7 +545,12 @@ public class MSGtoPDFconverter extends Converter {
         return processed;
     }
 
-    // Utility methods identici al tuo EML converter
+    /**
+     * Converte un tipo MIME in estensione file appropriata per le immagini.
+     *
+     * @param mimeType Il tipo MIME da convertire
+     * @return L'estensione file corrispondente, o "img" come default
+     */
     private String getImageExtension(String mimeType) {
         if (mimeType == null) return "img";
         String lowerType = mimeType.toLowerCase();
@@ -456,6 +569,12 @@ public class MSGtoPDFconverter extends Converter {
         }
     }
 
+    /**
+     * Effettua l'escape dei caratteri HTML speciali per evitare problemi di rendering.
+     *
+     * @param text Il testo da processare
+     * @return Il testo con i caratteri HTML escapati, o stringa vuota se null
+     */
     private String escapeHtml(String text) {
         if (text == null) return "";
         return text.replace("&", "&amp;")
@@ -465,6 +584,11 @@ public class MSGtoPDFconverter extends Converter {
                 .replace("'", "&#39;");
     }
 
+    /**
+     * Pulisce i file temporanei e la directory di lavoro.
+     * Elimina tutti i file nella directory temporanea e poi la directory stessa.
+     * Viene chiamato nel blocco finally se DEBUG_KEEP_TEMP_FILES è false.
+     */
     private void cleanup() {
         if (tempDir != null && tempDir.exists()) {
             File[] files = tempDir.listFiles();
