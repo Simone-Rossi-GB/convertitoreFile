@@ -216,6 +216,7 @@ public class ConfigWindowController {
         };
 
         for (int i = 0; i < directories.length; i++) {
+            //Controlla che la cartella specificata esista
             if (directories[i].isEmpty()) {
                 updateStatus(labels[i] + " non specificata!", true);
                 logger.error("{} non specificata", labels[i]);
@@ -247,7 +248,7 @@ public class ConfigWindowController {
         if (!validateDirectories()) {
             return;
         }
-
+        //Scrive nel file JSON i nuovi valori inseriti dall'utente
         InstanceConfigWriter wr = new InstanceConfigWriter(ConfigData.getJsonFile());
         wr.writeMonitoredDir(monitoredDirField.getText());
         wr.writeErrorOutputDir(errorDirField.getText());

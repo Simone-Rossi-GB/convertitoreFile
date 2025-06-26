@@ -116,8 +116,6 @@ public class ConversionConfigWindowController {
         }
     }
 
-
-
     /**
      * Salva la configurazione modificata.
      */
@@ -133,6 +131,7 @@ public class ConversionConfigWindowController {
         // Chiude la finestra
         dialogStage.close();
     }
+
     /**
      * Chiude la finestra senza salvare.
      */
@@ -171,9 +170,4 @@ public class ConversionConfigWindowController {
                 currentZippedOutput != zippedOutput;
 
     }
-
-
-
-
-
 }

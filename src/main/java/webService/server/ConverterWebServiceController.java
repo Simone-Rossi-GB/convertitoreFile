@@ -113,12 +113,13 @@ public class ConverterWebServiceController {
 
             // creiamo un oggetto file dal percorso del file
             File inputFileForEngine = tempInputFilePath.toFile();
-
+            logger.info(inputFileForEngine.getAbsolutePath());
             // Chiama EngineWebService per la conversione
             convertedOutputFile = engine.conversione(extension, targetFormat, inputFileForEngine);
 
             // Verifica che il file convertito esista
             if (convertedOutputFile == null || !convertedOutputFile.exists()) {
+                System.out.println(convertedOutputFile.getName());
                 return ResponseEntity.internalServerError()
                         .body(Collections.singletonList("Il file convertito non è stato generato correttamente"));
             }

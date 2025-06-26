@@ -9,7 +9,7 @@ public class ConversionResult {
     private final String error; // Questo è il campo per gli errori
     private final File result; //riferimento al file convertito;
 
-    // Costruttore principale che accetta success, message e error
+    // Costruttore principale che accetta success, message, error e file result
     public ConversionResult(boolean success, String message, String error, File result) {
         this.success = success;
         this.message = message;

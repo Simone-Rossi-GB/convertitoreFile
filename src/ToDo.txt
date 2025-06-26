@@ -1,6 +1,0 @@
-Fixare PDF -> DOC
-CSV -> excel
-Manuale d'uso
-Commenti + eccezioni specifiche
-
-5.java doc

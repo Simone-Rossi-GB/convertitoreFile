@@ -3,6 +3,7 @@ package webService.client.objects;
 import java.io.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import webService.server.converters.exception.IllegalExtensionException;
 
 public class Utility {
 
@@ -16,7 +17,7 @@ public class Utility {
         String name = file.getName();
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1 || lastDot == name.length() - 1) {
-            return ""; // nessuna estensione
+            throw new IllegalExtensionException("Il file non ha nessuna estensione");
         }
         return name.substring(lastDot + 1).toLowerCase();
     }
@@ -25,7 +26,7 @@ public class Utility {
         String name = file.getName();
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1 || lastDot == name.length() - 1) {
-            return ""; // nessun basename
+            return name; // Il nome è già senza estensione
         }
         return name.substring(0, lastDot);
     }

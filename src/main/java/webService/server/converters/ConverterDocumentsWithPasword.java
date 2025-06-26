@@ -14,6 +14,7 @@ public abstract class ConverterDocumentsWithPasword extends Converter{
      */
     @Override
     public File convert(File srcFile) throws Exception{
+        logger.info(srcFile.getAbsolutePath());
         String extraParameter = ConversionContextReader.getPassword();
         logger.info("Password rilevata: {}", extraParameter);
         return convertProtectedFile(srcFile, extraParameter);
