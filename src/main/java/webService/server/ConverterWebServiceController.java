@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-
 @RestController
 @RequestMapping("/api/converter")
 @CrossOrigin(origins = "*")
@@ -35,6 +34,18 @@ public class ConverterWebServiceController {
     private static final Tika tika = new Tika();
     EngineWebService engine = new EngineWebService();
     private static final Logger logger = LogManager.getLogger(ConverterWebServiceController.class);
+
+    // Classe per i codici di errore
+    private static class ErrorCode {
+        public static final String ILLEGAL_EXTENSION = "E001";
+        public static final String FILE_MOVE_ERROR = "E002";
+        public static final String UNSUPPORTED_CONVERSION = "E003";
+        public static final String IO_ERROR = "E004";
+        public static final String CONVERSION_FAILED = "E005";
+        public static final String EMPTY_FILE = "E006";
+        public static final String FILE_UPLOAD_ERROR = "E007";
+        public static final String GENERIC_ERROR = "E999";
+    }
 
     /**
      * Ogni risposta al client viene data tramite json, più precisamente con un oggetto della
@@ -57,7 +68,7 @@ public class ConverterWebServiceController {
      * @return
      */
     @GetMapping("/conversions/{extension}")
-    public ResponseEntity<List<String>> getPossibleConversions(@PathVariable String extension) {
+    public ResponseEntity<?> getPossibleConversions(@PathVariable String extension) {
         try {
             logger.info("Richiesta conversioni possibili per estensione: {}", extension);
             List<String> conversions = engine.getPossibleConversions(extension);
@@ -65,9 +76,9 @@ public class ConverterWebServiceController {
             return ResponseEntity.ok(conversions);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            //ritorno una lista immutabile con un solo elemento ovvero l'eccezione generata.
             return ResponseEntity.badRequest()
-                    .body(Collections.singletonList(e.getMessage()));
+                    .body(new ErrorResponse("failure", ErrorCode.GENERIC_ERROR,
+                            "Errore nel recupero delle conversioni possibili", e.getMessage()));
         }
     }
 
@@ -103,9 +114,10 @@ public class ConverterWebServiceController {
                 extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
             } catch (IllegalExtensionException e) {
                 logger.error(e.getMessage());
-                // gestiamo l'eccezione ritornando un InternalServerError
-                return ResponseEntity.internalServerError()
-                        .body(Collections.singletonList(e.getMessage()));
+                // gestiamo l'eccezione ritornando un BadRequest
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("failure", ErrorCode.ILLEGAL_EXTENSION,
+                                "Estensione del file non valida o non supportata", e.getMessage()));
             }
 
             assert originalFilename != null; // diciamo al JVM che il nome non è mai null
@@ -125,9 +137,10 @@ public class ConverterWebServiceController {
 
             // Verifica che il file convertito esista
             if (convertedOutputFile == null || !convertedOutputFile.exists()) {
-                System.out.println(convertedOutputFile.getName());
-                return ResponseEntity.internalServerError()
-                        .body(Collections.singletonList("Il file convertito non è stato generato correttamente"));
+                System.out.println(convertedOutputFile != null ? convertedOutputFile.getName() : "null");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ErrorResponse("failure", ErrorCode.CONVERSION_FAILED,
+                                "La conversione del file non è riuscita", "Il file convertito non è stato generato correttamente"));
             }
 
             // crea un array di byte per la risposta al client leggendo i byte del file convertito
@@ -137,27 +150,44 @@ public class ConverterWebServiceController {
             // Determina il Content-Type corretto per la risposta HTTP
             MediaType contentType = determineMediaType(convertedOutputFile);
 
-            // Costruisci la risposta con i byte del file
-            HttpHeaders headers = new HttpHeaders();
-
-            // inseriamo nell'header il tipo di contenuto della risposta
-            headers.setContentType(contentType);
-
-            // aggiungiamo all'header come allegato il nome del file convertito
-            headers.setContentDispositionFormData("attachment", convertedOutputFile.getName());
-
-            // aggiungiamo all'header la lunghezza in byte del contenuto della risposta
-            headers.setContentLength(fileBytes.length);
-
             logger.info("Conversione completata con successo per: {}", originalFilename);
-            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
 
-        } catch (IllegalExtensionException | FileMoveException | UnsupportedConversionException e) {
-            return ResponseEntity.internalServerError() // errore con la conversione
-                    .body(Collections.singletonList(e.getMessage()));
-        }catch(IOException e){
-            return ResponseEntity.internalServerError() // errore nella lettura del file
-                    .body(Collections.singletonList(e.getMessage()));
+            // Ritorna la risposta JSON strutturata con il file convertito
+            FileResponse response = new FileResponse(
+                    "success",
+                    convertedOutputFile.getName(),
+                    contentType.toString(),
+                    fileBytes.length,
+                    fileBytes
+            );
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalExtensionException e) {
+            logger.error("Errore estensione illegale: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("failure", ErrorCode.ILLEGAL_EXTENSION,
+                            "Estensione del file non valida o non supportata", e.getMessage()));
+        } catch (FileMoveException e) {
+            logger.error("Errore spostamento file: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.FILE_MOVE_ERROR,
+                            "Errore durante lo spostamento del file", e.getMessage()));
+        } catch (UnsupportedConversionException e) {
+            logger.error("Conversione non supportata: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("failure", ErrorCode.UNSUPPORTED_CONVERSION,
+                            "Tipo di conversione non supportato", e.getMessage()));
+        } catch (IOException e) {
+            logger.error("Errore I/O: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.IO_ERROR,
+                            "Errore durante la lettura/scrittura del file", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Errore generico: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.GENERIC_ERROR,
+                            "Si è verificato un errore imprevisto", e.getMessage()));
         } finally {
             clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
         }
@@ -202,16 +232,28 @@ public class ConverterWebServiceController {
      * @return
      */
     @PostMapping("/configUpload")
-    public ResponseEntity<String> configUpload(@RequestParam("file") MultipartFile file) {
-        ResponseEntity<String> response = configFilesUpload(file);
+    public ResponseEntity<?> configUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            ResponseEntity<?> response = configFilesUpload(file);
 
-        // creiamo una nuova istanza di configurazione usando il file ricevuto
-        ConfigInstance ci = new ConfigInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
+            // Se l'upload è fallito, ritorna l'errore
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
 
-        // aggiorniamo la configurazione
-        ConfigData.update(ci);
+            // creiamo una nuova istanza di configurazione usando il file ricevuto
+            ConfigInstance ci = new ConfigInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
 
-        return response;
+            // aggiorniamo la configurazione
+            ConfigData.update(ci);
+
+            return response;
+        } catch (Exception e) {
+            logger.error("Errore durante il caricamento della configurazione: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.FILE_UPLOAD_ERROR,
+                            "Errore durante il caricamento del file di configurazione", e.getMessage()));
+        }
     }
 
     /**
@@ -220,18 +262,30 @@ public class ConverterWebServiceController {
      * @return
      */
     @PostMapping("/conversionContextUpload")
-    public ResponseEntity<String> conversionContextUpload(@RequestParam("file") MultipartFile file) {
-        ResponseEntity<String> response = configFilesUpload(file);
+    public ResponseEntity<?> conversionContextUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            ResponseEntity<?> response = configFilesUpload(file);
 
-        // ricarica la mappa di configurazione conversion context
-        logger.info(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())).getAbsolutePath());
+            // Se l'upload è fallito, ritorna l'errore
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return response;
+            }
 
-        // creiamo una nuova istanza di contesto per la conversione usando il file ricevuto
-        ConversionContextInstance ci = new ConversionContextInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
+            // ricarica la mappa di configurazione conversion context
+            logger.info(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())).getAbsolutePath());
 
-        // aggiorniamo il contesto
-        ConversionContextData.update(ci);
-        return response;
+            // creiamo una nuova istanza di contesto per la conversione usando il file ricevuto
+            ConversionContextInstance ci = new ConversionContextInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
+
+            // aggiorniamo il contesto
+            ConversionContextData.update(ci);
+            return response;
+        } catch (Exception e) {
+            logger.error("Errore durante il caricamento del contesto di conversione: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.FILE_UPLOAD_ERROR,
+                            "Errore durante il caricamento del file di contesto di conversione", e.getMessage()));
+        }
     }
 
     /**
@@ -239,9 +293,11 @@ public class ConverterWebServiceController {
      * @param file file di configurazione
      * @return risposta
      */
-    private ResponseEntity<String> configFilesUpload (MultipartFile file){
+    private ResponseEntity<?> configFilesUpload (MultipartFile file){
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File vuoto.");
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("failure", ErrorCode.EMPTY_FILE,
+                            "Il file inviato è vuoto", "File vuoto ricevuto"));
         }
 
         try {
@@ -258,7 +314,14 @@ public class ConverterWebServiceController {
 
         } catch (IOException e) {
             logger.error("Errore nel caricamento del file: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body("Errore nel caricamento del file di configurazione");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.IO_ERROR,
+                            "Errore durante il salvataggio del file", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Errore generico nel caricamento del file: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("failure", ErrorCode.GENERIC_ERROR,
+                            "Errore imprevisto durante il caricamento del file", e.getMessage()));
         }
     }
 
@@ -282,7 +345,6 @@ public class ConverterWebServiceController {
      * Metodo che riconosce automaticamente il MediaType dal nome del file tramite libreria Tika
      * @param file fileConvertito
      * @return mediaType corretto
-     * @throws IllegalExtensionException mediatype non riconosciuto
      */
     private MediaType determineMediaType(File file) {
         try {
@@ -290,6 +352,7 @@ public class ConverterWebServiceController {
             logger.warn(mimeType);
             return MediaType.parseMediaType(mimeType);
         } catch (IOException e) {
+            logger.warn("Impossibile determinare il media type per il file: {}", file.getName());
             return MediaType.APPLICATION_OCTET_STREAM;
         }
     }
