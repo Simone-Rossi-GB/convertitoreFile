@@ -1,5 +1,7 @@
 package gui;
 
+import gui.jsonHandler.ConfigManager;
+import gui.jsonHandler.JsonConfig;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -134,12 +136,18 @@ public class MainViewController {
      */
     @FXML
     private void initialize() throws IOException {
+        JsonConfig jsonConfig = ConfigManager.readConfig();
         // 1) impostiamo subito l’aspetto del toggle
         themeToggle.setSelected(false);    // false → dark di default
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
             Parent root = themeToggle.getScene().getRoot();
             root.getStyleClass().removeAll("dark", "light");
-            root.getStyleClass().add(newV ? "light" : "dark");
+            assert jsonConfig != null;
+            if(jsonConfig.getTheme().equals("dark")) {
+                root.getStyleClass().add(newV ? "light" : "dark");
+            }else{
+                root.getStyleClass().add(newV ? "dark" : "light");
+            }
             // qui potresti salvare nelle Preferences la scelta dell’utente
         });
         refreshUITexts(MainApp.getCurrentLocale());
@@ -186,6 +194,7 @@ public class MainViewController {
     }
 
     private void initializeLanguageMenu() {
+        menu.getStyleClass().add("context-menu");
         for (Map.Entry<String, Locale> entry : localeMap.entrySet()) {
             String imageFile = entry.getKey();
             Locale locale = entry.getValue();
@@ -589,6 +598,12 @@ public class MainViewController {
      * Termina l'applicazione
      */
     private void exitApplication() {
+        boolean isLightTheme = themeToggle.isSelected();
+        if (isLightTheme) {
+            ConfigManager.writeConfig(new JsonConfig("light",MainApp.getCurrentLocale().getLanguage()));
+        } else {
+            ConfigManager.writeConfig(new JsonConfig("dark" ,MainApp.getCurrentLocale().getLanguage()));
+        }
         addLogMessage("Chiusura dell'applicazione...");
         interruptWatcher();
         Platform.exit();
