@@ -1,5 +1,30 @@
 package webService.client.gui;
 
+import gui.jsonHandler.ConfigManager;
+import gui.jsonHandler.JsonConfig;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.fxml.FXML;
+import javafx.scene.control.ToggleButton;
+import configuration.configHandlers.config.ConfigData;
+import configuration.configHandlers.config.ConfigInstance;
+import configuration.configHandlers.config.ConfigReader;
+import converters.exception.ConversionException;
+import converters.exception.FileCreationException;
+import converters.exception.IllegalExtensionException;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.StageStyle;
+import objects.DirectoryWatcher;
+import objects.Log;
+import converters.Zipper;
+import objects.Utility;
 import webService.client.configuration.configHandlers.config.ConfigData;
 import webService.client.configuration.configHandlers.config.ConfigInstance;
 import webService.client.configuration.configHandlers.config.ConfigReader;
@@ -15,9 +40,7 @@ import webService.client.objects.Utility;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -26,19 +49,21 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import javafx.scene.control.TextArea;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.nio.file.StandardCopyOption;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
+import javafx.geometry.Side;
+
 
 import javax.xml.ws.WebServiceException;
 
@@ -47,18 +72,25 @@ import javax.xml.ws.WebServiceException;
  */
 public class MainViewController {
 
+    public HBox header;
     @FXML
     private Label statusIndicator;
     @FXML
     private Label monitoringStatusLabel;
     @FXML
-    private Label applicationLogArea;
+    private Label logAreaTitle;
+    @FXML
+    private Label conversionSettingsTitle;
+    @FXML
+    private TextArea applicationLogArea;
     @FXML
     private Label detectedFilesCounter;
     @FXML
     private Label successfulConversionsCounter;
     @FXML
     private Label failedConversionsCounter;
+    @FXML
+    private Button langButton;
     @FXML
     private Button MonitoringBtn;
     @FXML
@@ -73,7 +105,17 @@ public class MainViewController {
     private Button fileConvertitiBtn;
     @FXML
     private Button conversioniFalliteBtn;
+    @FXML
+    private ToggleButton themeToggle;
+    @FXML
+    private Label detectedFilesLabel;
+    @FXML
+    private Label successfulConversionsLabel;
+    @FXML
+    private Label failedConversionsLabel;
 
+    // Riferimento all'applicazione principale
+    private MainApp mainApp;
     private static final Logger logger = LogManager.getLogger(MainViewController.class);
 
     // Variabili di stato
@@ -92,6 +134,19 @@ public class MainViewController {
     private boolean isShowingProgress = false; // Flag per sapere se stiamo mostrando una barra di progresso
 
     private Thread watcherThread;
+    private final String configFile = "src/main/java/configuration/configFiles/config.json";
+    private ContextMenu menu = new ContextMenu();
+
+    private final Map<String, Locale> localeMap = new HashMap<>();
+    {
+        localeMap.put("it.png", new Locale("it", "IT"));
+        localeMap.put("en.png", new Locale("en", "EN"));
+        localeMap.put("de.png", new Locale("de", "DE"));
+    }
+
+    static class Delta {
+        double x, y;
+    }
     private final String configFile = "src/main/java/webService/client/configuration/configFiles/config.json";
     private final String conversionContextFile = "src/main/java/webService/client/configuration/configFiles/conversionContext.json";
     private MainApp mainApp;
@@ -102,14 +157,43 @@ public class MainViewController {
      */
     @FXML
     private void initialize() throws IOException {
-        // Inizializza l'interfaccia
-        setupEventHandlers();
-        updateMonitoringStatus();
-        logger.info("Applicazione avviata.");
-        logger.info("Caricamento configurazione...");
-        //Inizializza il client webService
+        JsonConfig jsonConfig = ConfigManager.readConfig();
+        // 1) impostiamo subito l'aspetto del toggle
+        themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
+        themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
+            Parent root = themeToggle.getScene().getRoot();
+            root.getStyleClass().removeAll("dark", "light");
+
+            // Logica diretta: se è selezionato → light, altrimenti → dark
+            if (newV) {
+                root.getStyleClass().add("light");
+            } else {
+                root.getStyleClass().add("dark");
+            }
+        });
+        refreshUITexts(MainApp.getCurrentLocale());
+        updateLangButtonGraphic(MainApp.getCurrentLocale());
+        initializeLanguageMenu();
+        Delta dragDelta = new Delta();
+
+        header.setOnMousePressed(event -> {
+            dragDelta.x = event.getSceneX();
+            dragDelta.y = event.getSceneY();
+        });
+
+        header.setOnMouseDragged(event -> {
+            MainApp.getPrimaryStage().setX(event.getScreenX() - dragDelta.x);
+            MainApp.getPrimaryStage().setY(event.getScreenY() - dragDelta.y);
+        });
+
+        // 2) inizializzo engine e client
+        engine = new Engine();
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
-        //Inizializza i gestori dei file di configurazione
+
+        // 3) UI setup e configurazione
+        setupEventHandlers();
+        logger.info("Applicazione avviata. Caricamento configurazione...");
+
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
         loadConfiguration();
@@ -128,7 +212,109 @@ public class MainViewController {
         }
     }
 
+    @FXML
+    private void showLanguageMenu() {
+        if (menu.isShowing()) {
+            menu.hide();
+        } else {
+            menu.show(langButton, Side.RIGHT, 0, 0);
+        }
+    }
 
+    private void initializeLanguageMenu() {
+        menu.getStyleClass().add("context-menu");
+        for (Map.Entry<String, Locale> entry : localeMap.entrySet()) {
+            String imageFile = entry.getKey();
+            Locale locale = entry.getValue();
+            ImageView icon = new ImageView(getClass().getResource("/flags/" + imageFile).toExternalForm());
+            icon.setFitWidth(24);
+            icon.setFitHeight(20);
+            icon.getStyleClass().addAll("flag-icon");
+
+            // Etichetta della lingua (es: "IT")
+            Label label = new Label(locale.getCountry());
+            label.getStyleClass().addAll("flag-name");
+
+            // Layout orizzontale: bandiera + sigla
+            HBox content = new HBox(icon, label);
+            content.getStyleClass().add("lang-menu-item");
+
+            content.setAlignment(Pos.CENTER_LEFT);
+
+            content.setSpacing(6);
+            content.setPadding(new Insets(4, 4, 4, 4));
+
+            CustomMenuItem item = new CustomMenuItem(content, false);
+
+            item.setOnAction(ev -> {
+                MainApp.setCurrentLocale(locale);
+                updateLangButtonGraphic(locale);
+                refreshUITexts(locale);
+                menu.hide();
+            });
+
+            menu.getItems().add(item);
+        }
+    }
+
+    public void refreshUITexts(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+
+        logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
+        detectedFilesLabel.setText(bundle.getString("label.detectedFilesLabel"));
+        successfulConversionsLabel.setText(bundle.getString("label.successfulConversionsLabel"));
+        failedConversionsLabel.setText(bundle.getString("label.failedConversionsLabel"));
+        caricaFileBtn.setText(bundle.getString("btn.caricaFileBtn"));
+        fileConvertitiBtn.setText(bundle.getString("btn.fileConvertitiBtn"));
+        conversioniFalliteBtn.setText(bundle.getString("btn.conversioniFalliteBtn"));
+        conversionSettingsTitle.setText(bundle.getString("label.conversionSettingsTitle"));
+        configBtn.setText(bundle.getString("btn.configBtn"));
+        conversionConfigBtn.setText(bundle.getString("btn.conversionConfigBtn"));
+        MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn"));
+    }
+
+    private void updateLangButtonGraphic(Locale locale) {
+        String imageFile = getFlagFileForLocale(locale);
+
+        ImageView icon = new ImageView(getClass().getResource("/flags/" + imageFile).toExternalForm());
+        icon.setFitWidth(24);
+        icon.setFitHeight(20);
+        icon.getStyleClass().add("flag-icon");
+
+        langButton.setGraphic(icon);
+    }
+
+    // Metodo per ottenere il nome del file immagine (es: "it.png") associato a un dato Locale
+    private String getFlagFileForLocale(Locale locale) {
+        // Scorre tutte le entry della mappa (file immagine → Locale) come stream
+        return localeMap.entrySet()
+                // Filtra le entry che hanno un Locale uguale a quello passato come parametro
+                .stream()
+                .filter(e -> e.getValue().equals(locale))
+                // Trasforma l'entry nella sua chiave, ovvero il nome del file immagine
+                .map(Map.Entry::getKey)
+                // Restituisce il primo match trovato, se c'è
+                .findFirst()
+                // Altrimenti, se non c'è match, ritorna "it.png" come default
+                .orElse("it.png");
+    }
+
+    /**
+     * Aggiorna lo stile del pulsante monitoraggio in base allo stato
+     */
+    private void updateMonitoringButtonStyle() {
+        if (isMonitoring) {
+            // Quando monitora -> colore acquamarina come Directory
+            MonitoringBtn.getStyleClass().removeAll("standard-btn");
+            MonitoringBtn.getStyleClass().add("accent-btn");
+            MonitoringBtn.setText("Monitoring ON");
+        } else {
+            // Quando non monitora -> colore grigio standard
+            MonitoringBtn.getStyleClass().removeAll("accent-btn");
+            MonitoringBtn.getStyleClass().add("standard-btn");
+            MonitoringBtn.setText("Monitoring OFF");
+        }
+    }
 
     /**
      * Configura i listener degli eventi sui pulsanti.
@@ -176,8 +362,9 @@ public class MainViewController {
             watcherThread.start();
             resetCounters();
         }
+
         isMonitoring = !isMonitoring;
-        updateMonitoringStatus();
+        updateMonitoringButtonStyle(); // Aggiorna lo stile del pulsante
     }
 
     /**
@@ -194,24 +381,6 @@ public class MainViewController {
         });
     }
 
-    /**
-     * Aggiorna l'indicatore visivo dello stato di monitoraggio.
-     */
-    private void updateMonitoringStatus() {
-        Platform.runLater(() -> {
-            if (isMonitoring) {
-                monitoringStatusLabel.setText("Monitoraggio: Attivo");
-                statusIndicator.setTextFill(javafx.scene.paint.Color.web("#27ae60"));
-                MonitoringBtn.setText("Ferma Monitoraggio");
-                MonitoringBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
-            } else {
-                monitoringStatusLabel.setText("Monitoraggio: Fermo");
-                statusIndicator.setTextFill(javafx.scene.paint.Color.web("#e74c3c"));
-                MonitoringBtn.setText("Avvia Monitoraggio");
-                MonitoringBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
-            }
-        });
-    }
 
     /**
      * Estrae le informazioni contenute nel file di configurazione
@@ -258,7 +427,7 @@ public class MainViewController {
             //Carica il file FXML
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
-            Parent configWindow = loader.load();
+            VBox configWindow = loader.load();
 
             // Crea lo stage per la finestra di configurazione
             Stage configStage = new Stage();
@@ -266,12 +435,55 @@ public class MainViewController {
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
             configStage.setResizable(false);
-            configStage.setScene(new Scene(configWindow));
+
+            // DIMENSIONI PIÙ PICCOLE
+            configStage.setWidth(598);
+            configStage.setHeight(780);
+
+            // Crea la scene
+            Scene scene = new Scene(configWindow);
+
+            configStage.initStyle(StageStyle.TRANSPARENT);
+            scene.setFill(Color.TRANSPARENT);
+
+            javafx.scene.shape.Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(configWindow.widthProperty());
+            clip.heightProperty().bind(configWindow.heightProperty());
+            configWindow.setClip(clip);
+
+            // **APPLICA IL TEMA CORRENTE ALLA CONFIG WINDOW**
+            boolean isLightTheme = themeToggle.isSelected();
+            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
+            if (isLightTheme) {
+                configWindow.getStyleClass().add("light");
+            } else {
+                configWindow.getStyleClass().add("dark");
+            }
+
+            // **Carica il CSS per il tema moderno**
+            try {
+                scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
+                logger.info("CSS moderno caricato per la finestra di configurazione");
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
+                // Fallback - prova percorso alternativo
+                try {
+                    scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
+                    logger.info("CSS moderno caricato da percorso alternativo");
+                } catch (Exception cssError2) {
+                    logger.error("CSS non trovato in nessun percorso: " + cssError2.getMessage());
+                }
+            }
+
+            configStage.setScene(scene);
 
             // Ottiene il controller e passa i riferimenti necessari
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
-            // Mostra la finestra e attende la chiusura
+
+            // Mostra la finestra e attendi la chiusura
             addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
 
@@ -298,7 +510,7 @@ public class MainViewController {
             // Carica il file FXML
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/ConversionConfigWindow.fxml"));
-            Parent configWindow = loader.load();
+            VBox configWindow = loader.load(); // CAMBIATO: VBox invece di Parent
 
             // Crea lo stage per la finestra di configurazione
             Stage configStage = new Stage();
@@ -306,12 +518,53 @@ public class MainViewController {
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
             configStage.setResizable(false);
-            configStage.setScene(new Scene(configWindow));
 
-            // Ottiene il controller e passa i riferimenti necessari
+            // DIMENSIONI AGGIORNATE
+            configStage.setWidth(750);
+            configStage.setHeight(767);
+
+            // Crea la scene
+            Scene scene = new Scene(configWindow);
+
+            // STILE TRASPARENTE E ANGOLI ARROTONDATI
+            configStage.initStyle(StageStyle.TRANSPARENT);
+            scene.setFill(Color.TRANSPARENT);
+
+            javafx.scene.shape.Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(configWindow.widthProperty());
+            clip.heightProperty().bind(configWindow.heightProperty());
+            configWindow.setClip(clip);
+            boolean isLightTheme = themeToggle.isSelected();
+            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
+            if (isLightTheme) {
+                configWindow.getStyleClass().add("light");
+            } else {
+                configWindow.getStyleClass().add("dark");
+            }
+
+            // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
+            try {
+                scene.getStylesheets().add(getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm());
+                logger.info("CSS moderno caricato per la finestra di configurazione conversione");
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
+                // Fallback - prova percorso alternativo
+                try {
+                    scene.getStylesheets().add(getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm());
+                    logger.info("CSS moderno caricato da percorso alternativo");
+                } catch (Exception cssError2) {
+                    logger.error("CSS non trovato in nessun percorso: " + cssError2.getMessage());
+                }
+            }
+
+            configStage.setScene(scene);
+
+            // Ottieni il controller e passa i riferimenti necessari
             ConversionConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
-            // Mostra la finestra e attende la chiusura
+            // Mostra la finestra e attendi la chiusura
             logger.info("Editor configurazione conversione aperto");
             configStage.showAndWait();
             // Ricarica la configurazione
@@ -354,17 +607,14 @@ public class MainViewController {
     public void addLogMessage(String message) {
         Platform.runLater(() -> {
             String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
-            String logEntry = "[" + timestamp + "] " + message;
+            String logEntry = "• [" + timestamp + "] " + message;
 
-            // Se stiamo mostrando una barra di progresso, non aggiungere messaggi normali
-            if (isShowingProgress) {
-                return;
-            }
-
-            if ("Log dell'applicazione...".equals(applicationLogArea.getText())) {
+            // Per TextArea, aggiungi alla fine del testo esistente
+            String currentText = applicationLogArea.getText();
+            if (currentText == null || currentText.isEmpty() || currentText.equals("• [hh:mm:ss] Avvio monitoraggio…\n• [hh:mm:ss] File convertiti…\n• …")) {
                 applicationLogArea.setText(logEntry);
             } else {
-                applicationLogArea.setText(applicationLogArea.getText() + "\n" + logEntry);
+                applicationLogArea.setText(currentText + "\n" + logEntry);
             }
         });
     }
@@ -391,6 +641,13 @@ public class MainViewController {
      * Termina l'applicazione
      */
     private void exitApplication() {
+        boolean isLightTheme = themeToggle.isSelected();
+        // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
+        if (isLightTheme) {
+            ConfigManager.writeConfig(new JsonConfig("light",MainApp.getCurrentLocale().getLanguage()));
+        } else {
+            ConfigManager.writeConfig(new JsonConfig("dark" ,MainApp.getCurrentLocale().getLanguage()));
+        }
         addLogMessage("Chiusura dell'applicazione...");
         interruptWatcher();
         Platform.exit();
@@ -404,6 +661,18 @@ public class MainViewController {
         //Quando viene chiamato incrementa il numero di file ricevuti
         Platform.runLater(() -> fileRicevuti++);
         String srcExtension;
+        srcExtension = Utility.getExtension(srcFile);
+
+        //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
+        if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
+            try{
+                srcExtension = Zipper.extractFileExstension(srcFile);
+            } catch (IOException e) {
+                launchAlertError("Impossibile decomprimere il file");
+            }catch (IllegalExtensionException e){
+                launchAlertError("I file hanno formati diversi");
+            }
+
         List<String> formats = null;
         try {
             srcExtension = extractSrcExtension(srcFile);
@@ -422,12 +691,37 @@ public class MainViewController {
                     new Thread(() -> performConversion(srcFile, chosenFormat)).start();
                 });
             });
-        } catch (Exception e) { //Intercetta tutte le eccezioni sollevate
-            //Sposta il file di partenza nella cartella delle conversioni fallite
-            moveFileToErrorFolder(srcFile);
+        } catch (Exception e) { // Exception ammessa nel programma
             launchAlertError(e.getMessage());
-            aggiornaCounterScartati();
+            Platform.runLater(() -> {
+                fileScartati++;
+                stampaRisultati();
+            });
+            return;
         }
+
+        List<String> finalFormats = formats;
+        String finalSrcExtension = srcExtension;
+
+        //Mostra il dialog moderno per selezionare il formato di output
+        Platform.runLater(() -> {
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
+
+            ChoiceDialog<String> dialog = DialogHelper.createModernChoiceDialog(
+                    finalFormats.get(0),
+                    finalFormats,
+                    "Seleziona Formato",
+                    "Converti " + srcFile.getName() + " in...",
+                    "Formato desiderato:",
+                    isLightTheme
+            );
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(chosenFormat -> {
+                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
+            });
+        });
     }
 
     /**
@@ -522,34 +816,19 @@ public class MainViewController {
             updateProgressInLog(filename, 80, "Elaborazione risultato...");
             Thread.sleep(200);
 
-            if (result.isSuccess()) {
-                // Verifica che il file convertito sia stato effettivamente salvato
-                outputDestinationFile = result.getResult();
-                if (outputDestinationFile.exists()) {
-                    // Fase 7: Finalizzazione
-                    updateProgressInLog(filename, 95, "Finalizzazione...");
-                    Thread.sleep(100);
-
-                    // Completamento
-                    updateProgressInLog(filename, 100, "Completato!");
-
-                    logger.info("Conversione tramite web service riuscita");
-                    addFinalLogMessage(filename + " convertito con successo in " + targetFormat);
-
-                    File finalOutputDestinationFile = outputDestinationFile;
-                    Platform.runLater(() -> {
-                        fileConvertiti++;
-                        stampaRisultati();
-                        launchAlertSuccess(finalOutputDestinationFile);
-                    });
+                if (result.isSuccess()) {
+                    // Verifica che il file convertito sia stato effettivamente salvato
+                    if (outputDestinationFile.exists()) {
+                        addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                        webServiceSuccess = true;
+                    } else {
+                        throw new FileCreationException("Il file convertito non è stato salvato correttamente dal web service");
+                    }
                 } else {
-                    addFinalLogMessage(filename + " - File non salvato correttamente");
-                    throw new ConversionException("Il file convertito non è stato salvato correttamente dal web service");
+                    throw new ConversionException("Web service ha restituito errore: " + result.getError());
                 }
-            } else {
-                addFinalLogMessage(filename + " - Errore server: " + result.getMessage());
-                throw new ConversionException("Web service ha restituito errore: " + result.getMessage());
-            }
+            } catch (Exception wsError) { // TOFIX
+                addLogMessage("Web service fallito: " + wsError.getMessage());
 
         } catch (Exception e) {
             addFinalLogMessage(filename + " - Conversione fallita: " + e.getMessage());
@@ -654,11 +933,27 @@ public class MainViewController {
 
     /**
      * Lancia un alert di errore col messaggio desiderato e aggiunge la relativa voce al log
+     * @param message
+     */
+    /**
+     * Lancia un alert di errore col messaggio desiderato e aggiunge la relativa voce al log
      * @param message messaggio di errore
      */
     public void launchAlertError(String message) {
         logger.error(message);
-        showAlert("Errore", message, Alert.AlertType.ERROR);
+        Platform.runLater(() -> {
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
+
+            Alert alert = DialogHelper.createModernAlert(
+                    Alert.AlertType.ERROR,
+                    "Errore",
+                    message,
+                    isLightTheme
+            );
+
+            alert.showAndWait();
+        });
     }
 
     /**
@@ -668,21 +963,17 @@ public class MainViewController {
     public void launchAlertSuccess(File file) {
         String message = "Conversione di " + file.getName() + " riuscita";
         logger.info(message);
-        showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
-    }
-
-    /**
-     * Mostra un alert
-     * @param title titolo scelto
-     * @param message messaggio scelto
-     * @param tipo tipo di alert scelto
-     */
-    private void showAlert(String title, String message, Alert.AlertType tipo) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(tipo);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
+
+            Alert alert = DialogHelper.createModernAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Conversione riuscita",
+                    message,
+                    isLightTheme
+            );
+
             alert.showAndWait();
         });
     }

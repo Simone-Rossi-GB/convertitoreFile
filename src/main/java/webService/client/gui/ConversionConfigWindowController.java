@@ -1,53 +1,79 @@
-package webService.client.gui;
+package gui;
 
-import webService.client.configuration.configHandlers.conversionContext.*;
+import configuration.configHandlers.conversionContext.ConversionContextReader;
+import configuration.configHandlers.conversionContext.ConversionContextWriter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-
-
 /**
- * Controller della finestra di configurazione dell'applicazione.
- * Gestisce le directory di monitoraggio, successo, errore, il flag di avvio automatico
- * e la visualizzazione della sezione "conversions" del file di configurazione JSON.
+ * Controller modernizzato della finestra di configurazione conversione.
+ * Gestisce i parametri di conversione con supporto per temi dark/light e dialog moderni.
  */
 public class ConversionConfigWindowController {
 
     @FXML public TextField unionField;
     @FXML public TextField zippedOutputField;
     @FXML public TextField txtPassword;
+    @FXML public TextField protectedOutputField;
 
     @FXML public Button toggleUnionBtn;
     @FXML public Button toggleZippedOutputBtn;
+    @FXML public Button toggleProtectedOutputBtn;
 
+    @FXML public Button saveButton;
+    @FXML public Button cancelButton;
+
+    @FXML private VBox conversionConfigHeaderContainer;
 
     private Stage dialogStage;
     private static final Logger logger = LogManager.getLogger(ConversionConfigWindowController.class);
     private boolean union;
     private boolean zippedOutput;
-    private String watermark;
+    private boolean protectedOutput;
 
     /**
      * Inizializza il controller della finestra di configurazione.
      */
     @FXML
     private void initialize() {
-        // Configura il campo di testo per la password
-        txtPassword.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        // Non più stili inline - tutto gestito da CSS
         loadCurrentConfiguration();
     }
 
-
     /**
-     * Imposta lo stage per la finestra.
+     * Imposta lo stage e configura il drag della finestra
      */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+
+        // Configura il drag dell'header come nella ConfigWindow
+        if (conversionConfigHeaderContainer != null) {
+            Delta dragDelta = new Delta();
+
+            conversionConfigHeaderContainer.setOnMousePressed(event -> {
+                dragDelta.x = event.getSceneX();
+                dragDelta.y = event.getSceneY();
+            });
+
+            conversionConfigHeaderContainer.setOnMouseDragged(event -> {
+                dialogStage.setX(event.getScreenX() - dragDelta.x);
+                dialogStage.setY(event.getScreenY() - dragDelta.y);
+            });
+
+            // Cursore di movimento
+            conversionConfigHeaderContainer.setOnMouseEntered(event -> {
+                conversionConfigHeaderContainer.setCursor(javafx.scene.Cursor.MOVE);
+            });
+
+            conversionConfigHeaderContainer.setOnMouseExited(event -> {
+                conversionConfigHeaderContainer.setCursor(javafx.scene.Cursor.DEFAULT);
+            });
+        }
     }
 
     /**
@@ -56,18 +82,22 @@ public class ConversionConfigWindowController {
     private void loadCurrentConfiguration() {
         // Carica i campi principali dalla configurazione
         txtPassword.setText(ConversionContextReader.getPassword());
+
         union = ConversionContextReader.getIsUnion();
         unionField.setText(String.valueOf(union));
         updateUnionToggleButton();
+
         zippedOutput = ConversionContextReader.getIsZippedOutput();
         zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
-        logger.info("Configurazione caricata correttamente");
+
+        // DA FINIRE PER PROTECTED OUTPUT
+
+        logger.info("Configurazione conversione caricata correttamente");
     }
 
     /**
      * Cambia il valore del flag zippedOutput.
-     * @param actionEvent pulsante toggleZippedOutput cliccato
      */
     @FXML
     public void zippedOutput(ActionEvent actionEvent) {
@@ -76,9 +106,15 @@ public class ConversionConfigWindowController {
         updateZippedOutputToggleButton();
     }
 
+    @FXML
+    public void protectedOutput(ActionEvent actionEvent) {
+        protectedOutput = !protectedOutput;
+        protectedOutputField.setText(String.valueOf(protectedOutput));
+        updateProtectedOutputToggleButton();
+    }
+
     /**
      * Cambia il valore del flag union.
-     * @param actionEvent pulsante toggleUnion cliccato
      */
     @FXML
     private void toggleUnion(ActionEvent actionEvent) {
@@ -88,32 +124,80 @@ public class ConversionConfigWindowController {
     }
 
     /**
-     * Aggiorna l'interfaccia in base allo stato del flag union.
+     * Aggiorna l'interfaccia in base allo stato del flag union usando CSS classes.
      */
     private void updateUnionToggleButton() {
         if (union) {
+            // STATO ATTIVO
             toggleUnionBtn.setText("Disabilita");
-            toggleUnionBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
-            unionField.setStyle("-fx-background-color: #d5f4e6; -fx-text-fill: #27ae60; -fx-font-weight: bold;");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            unionField.getStyleClass().removeAll("active-state");
+            unionField.getStyleClass().add("active-state");
+
         } else {
+            // STATO SPENTO
             toggleUnionBtn.setText("Abilita");
-            toggleUnionBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
-            unionField.setStyle("-fx-background-color: #fadbd8; -fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            unionField.getStyleClass().removeAll("active-state");
         }
     }
 
     /**
-     * Aggiorna l'interfaccia in base allo stato del flag union.
+     * Aggiorna l'interfaccia in base allo stato del flag zippedOutput usando CSS classes.
      */
     private void updateZippedOutputToggleButton() {
         if (zippedOutput) {
+            // STATO ATTIVO
             toggleZippedOutputBtn.setText("Disabilita");
-            toggleZippedOutputBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
-            zippedOutputField.setStyle("-fx-background-color: #d5f4e6; -fx-text-fill: #27ae60; -fx-font-weight: bold;");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            zippedOutputField.getStyleClass().removeAll("active-state");
+            zippedOutputField.getStyleClass().add("active-state");
+
         } else {
+            // STATO SPENTO
             toggleZippedOutputBtn.setText("Abilita");
-            toggleZippedOutputBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
-            zippedOutputField.setStyle("-fx-background-color: #fadbd8; -fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            zippedOutputField.getStyleClass().removeAll("active-state");
+        }
+    }
+
+    private void updateProtectedOutputToggleButton() {
+        if (protectedOutput) {
+            // STATO ATTIVO
+            toggleProtectedOutputBtn.setText("Disabilita");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            protectedOutputField.getStyleClass().removeAll("active-state");
+            protectedOutputField.getStyleClass().add("active-state");
+
+        } else {
+            // STATO SPENTO
+            toggleProtectedOutputBtn.setText("Abilita");
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            protectedOutputField.getStyleClass().removeAll("active-state");
         }
     }
 
@@ -122,29 +206,35 @@ public class ConversionConfigWindowController {
      */
     @FXML
     private void saveConfiguration(ActionEvent event) {
-        //Aggiorna le voci nel JSON
-        InstanceConversionContextWriter ccw = new InstanceConversionContextWriter(new File("src/main/java/webService/client/configuration/configFiles/conversionContext.json"));
-        ccw.writeIsUnionEnabled(union);
-        ccw.writeIsZippedOutput(zippedOutput);
-        ccw.writePassword(txtPassword.getText());
-        ConversionContextData.update(new ConversionContextInstance(new File("src/main/java/webService/client/configuration/configFiles/conversionContext.json")));
-        logger.info("Configurazione di conversione salvata");
+        // Aggiorna le voci nel JSON
+        ConversionContextWriter.setIsUnion(union);
+        ConversionContextWriter.setIsZippedOutput(zippedOutput);
+        ConversionContextWriter.setPassword(txtPassword.getText());
+
+        logger.info("Configurazione di conversione salvata con successo");
+
         // Chiude la finestra
         dialogStage.close();
     }
 
     /**
-     * Chiude la finestra senza salvare.
+     * Chiude la finestra senza salvare usando dialog moderno.
      */
     @FXML
     private void cancelAndClose(ActionEvent event) {
         // Controlla se ci sono modifiche non salvate
         if (hasUnsavedChanges()) {
             logger.info("Tentativo di chiusura con modifiche non salvate");
-            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmAlert.setTitle("Modifiche non salvate");
-            confirmAlert.setHeaderText("Ci sono modifiche non salvate");
-            confirmAlert.setContentText("Sei sicuro di voler chiudere senza salvare?");
+
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
+
+            Alert confirmAlert = DialogHelper.createModernAlert(
+                    Alert.AlertType.CONFIRMATION,
+                    "Modifiche non salvate",
+                    "Ci sono modifiche non salvate. Sei sicuro di voler chiudere senza salvare?",
+                    isLightTheme
+            );
 
             confirmAlert.showAndWait().ifPresent(response -> {
                 if (response.getButtonData().isDefaultButton()) {
@@ -152,7 +242,7 @@ public class ConversionConfigWindowController {
                 }
             });
         } else {
-            logger.info("Finestra di configurazione chiusa senza modifiche");
+            logger.info("Finestra di configurazione conversione chiusa senza modifiche");
             dialogStage.close();
         }
     }
@@ -161,14 +251,25 @@ public class ConversionConfigWindowController {
      * Verifica se ci sono modifiche non salvate.
      */
     private boolean hasUnsavedChanges() {
-        // Controlla i campi modificabili
-        String currentPassword = ConversionContextReader.getPassword();
-        boolean currentUnion = ConversionContextReader.getIsUnion();
-        boolean currentZippedOutput = ConversionContextReader.getIsZippedOutput();
+        try {
+            // Controlla i campi modificabili
+            String currentPassword = ConversionContextReader.getPassword();
+            boolean currentUnion = ConversionContextReader.getIsUnion();
+            boolean currentZippedOutput = ConversionContextReader.getIsZippedOutput();
 
-        return !currentPassword.equals(txtPassword.getText().trim()) ||
-                currentUnion != union ||
-                currentZippedOutput != zippedOutput;
+            return !currentPassword.equals(txtPassword.getText().trim()) ||
+                    currentUnion != union ||
+                    currentZippedOutput != zippedOutput;
+        } catch (Exception e) {
+            logger.warn("Errore durante la verifica delle modifiche: " + e.getMessage());
+            return true; // In caso di errore, assumi che ci siano modifiche
+        }
+    }
 
+    /**
+     * Classe helper per il drag della finestra
+     */
+    class Delta {
+        double x, y;
     }
 }

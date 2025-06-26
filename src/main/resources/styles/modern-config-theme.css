@@ -1,0 +1,485 @@
+/* modern-config-theme.css */
+/* Stili per Configuration Window - JavaFX */
+
+/* ROOT CONTAINER - NESSUNA OMBRA */
+.config-root-container {
+    -fx-background-color: #2d3142;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    /* NESSUNA OMBRA */
+    -fx-effect: none;
+    -fx-font-family: "Inter", "Roboto", sans-serif;
+}
+
+/* HEADER SECTION */
+.config-header-container {
+    -fx-background-color: linear-gradient(to bottom, #3d4252 0%, #2d3142 100%);
+    -fx-background-radius: 16 16 0 0;
+    -fx-border-radius: 16 16 0 0;
+}
+
+.config-main-title {
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 2);
+    -fx-font-weight: bold;
+}
+
+.config-subtitle {
+    -fx-text-fill: #a0aec0;
+    -fx-font-style: italic;
+    /* RIMOSSA L'OMBRA STRANA */
+    -fx-effect: none;
+}
+
+/* SEPARATORS */
+.config-main-separator {
+    /* RIMOSSO IL GRADIENTE CHE CAUSAVA LE LINEE NERE */
+    -fx-background-color: #4a5568;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.3;
+}
+
+.config-section-line {
+    -fx-background-color: #4a5568;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.5;
+}
+
+/* CONTENT AREAS */
+.config-content-area {
+    -fx-background-color: #2d3142;
+}
+
+.config-fields-container {
+    -fx-background-color: linear-gradient(to bottom, rgba(53,56,71,0.6) 0%, rgba(45,49,66,0.8) 100%);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(74,85,104,0.3);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+.config-json-container {
+    -fx-background-color: linear-gradient(to bottom, rgba(53,56,71,0.6) 0%, rgba(26,32,44,0.8) 100%);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(74,85,104,0.3);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+/* LABELS */
+.config-section-title {
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 3, 0, 0, 2);
+    -fx-font-weight: bold;
+}
+
+.config-field-label {
+    -fx-text-fill: #e2e8f0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+    -fx-font-weight: bold;
+}
+
+.config-description-label {
+    -fx-text-fill: #a0aec0;
+    -fx-font-style: italic;
+}
+
+.config-status-label {
+    -fx-text-fill: #718096;
+    -fx-font-style: italic;
+}
+
+/* FIELD GROUPS */
+.config-field-group {
+    -fx-background-color: rgba(26,32,44,0.3);
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-border-color: rgba(74,85,104,0.2);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+/* TEXT FIELDS */
+.config-text-field {
+    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-text-fill: #e2e8f0;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-padding: 10 15 10 15;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-prompt-text-fill: #718096;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
+}
+
+.config-text-field:focused {
+    -fx-border-color: #4FD1C7;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
+}
+
+/* VALIDAZIONE PATH - AZZURRO PER VALIDI, ROSSO PER INVALIDI */
+.config-text-field.valid-path {
+    -fx-background-color: rgba(79, 209, 199, 0.1);
+    -fx-border-color: #4FD1C7;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
+}
+
+.config-text-field.invalid-path {
+    -fx-background-color: rgba(245, 101, 101, 0.1);
+    -fx-border-color: #F56565;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.3), 6, 0, 0, 2);
+}
+
+.config-readonly-field {
+    -fx-background-color: linear-gradient(to bottom, #2d3748 0%, #4a5568 100%);
+    -fx-text-fill: #cbd5e0;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 1;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+
+/* BUTTONS - ALLARGATI PER STABILITÀ */
+.config-browse-btn, .config-success-btn, .config-error-btn {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
+    -fx-font-weight: bold;
+    -fx-min-width: 120px;  /* LARGHEZZA MINIMA PIÙ AMPIA */
+    -fx-pref-width: 120px; /* LARGHEZZA PREFERITA */
+    -fx-max-width: 120px;  /* LARGHEZZA MASSIMA */
+}
+
+/* HOVER MOLTO PIÙ STABILE - SOLO COLORE E OMBRA */
+.config-browse-btn:hover, .config-success-btn:hover, .config-error-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.7), 12, 0, 0, 4);
+}
+
+/* TOGGLE BUTTON - ALLARGATO E STABILE */
+.config-toggle-btn, .config-toggle-btn-active {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
+    -fx-font-weight: bold;
+    -fx-min-width: 150px;  /* ANCORA PIÙ LARGO */
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+/* HOVER STABILE ANCHE PER TOGGLE */
+.config-toggle-btn:hover, .config-toggle-btn-active:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+}
+
+/* JSON EDITOR */
+.config-json-scroll {
+    -fx-background-color: #1a202c;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-width: 2;
+    -fx-effect: inset 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.config-json-scroll .viewport {
+    -fx-background-color: #1a202c;
+    -fx-background-radius: 8;
+}
+
+.config-json-scroll .content {
+    -fx-background-color: #1a202c;
+}
+
+.config-json-area {
+    -fx-background-color: #1a202c;
+    -fx-text-fill: #e2e8f0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-family: "Consolas", "Monaco", "Source Code Pro", monospace;
+    -fx-font-size: 13px;
+    -fx-control-inner-background: #1a202c;
+    -fx-text-area-background: #1a202c;
+    -fx-highlight-fill: #4a5568;
+    -fx-highlight-text-fill: #ffffff;
+    -fx-prompt-text-fill: #718096;
+    -fx-padding: 15;
+}
+
+/* FOOTER */
+.config-footer-container {
+    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-background-radius: 0 0 16 16;
+    -fx-border-radius: 0 0 16 16;
+}
+
+/* FOOTER BUTTONS - MANTIENI translate-y SOLO QUI (sono isolati nel footer) */
+.config-save-btn {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 8, 0, 0, 3);
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.config-save-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.5), 12, 0, 0, 4);
+}
+
+.config-cancel-btn {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 3);
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.config-cancel-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
+}
+
+/* SCROLLBAR STYLING */
+.config-json-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #2d3748;
+    -fx-background-radius: 6;
+}
+
+.config-json-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-background-radius: 6;
+}
+
+.config-json-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #4a5568 100%);
+}
+
+.config-json-scroll .scroll-bar:vertical .increment-button,
+.config-json-scroll .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* =================================================================== */
+/* LIGHT THEME SUPPORT */
+/* =================================================================== */
+
+/* LIGHT THEME - ROOT CONTAINER SENZA OMBRA */
+.light .config-root-container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    /* NESSUNA OMBRA */
+    -fx-effect: none;
+}
+
+.light .config-header-container {
+    -fx-background-color: linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%);
+}
+
+.light .config-main-title {
+    -fx-text-fill: #2d3748;
+    -fx-effect: none;
+}
+
+.light .config-subtitle {
+    -fx-text-fill: #4a5568;
+    /* NESSUNA OMBRA ANCHE IN LIGHT THEME */
+    -fx-effect: none;
+}
+
+/* CONTENT AREA CON CONTRASTO GRIGIO */
+.light .config-content-area {
+    -fx-background-color: #f8f9fa;
+}
+
+.light .config-fields-container,
+.light .config-json-container {
+    -fx-background-color: linear-gradient(to bottom, rgba(247,250,252,0.8) 0%, rgba(237,242,247,0.9) 100%);
+    -fx-border-color: rgba(226,232,240,0.5);
+}
+
+.light .config-section-title,
+.light .config-field-label {
+    -fx-text-fill: #2d3748;
+    -fx-effect: none;
+}
+
+.light .config-text-field {
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+}
+
+.light .config-text-field:focused {
+    -fx-border-color: #4FD1C7;
+}
+
+/* LIGHT THEME - VALIDAZIONE PATH */
+.light .config-text-field.valid-path {
+    -fx-background-color: rgba(79, 209, 199, 0.1);
+    -fx-border-color: #4FD1C7;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
+}
+
+.light .config-text-field.invalid-path {
+    -fx-background-color: rgba(245, 101, 101, 0.1);
+    -fx-border-color: #F56565;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.3), 6, 0, 0, 2);
+}
+
+/* LIGHT THEME - READONLY FIELD: solo quando FALSE diventa grigio chiaro */
+.light .config-readonly-field {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%) !important;
+    -fx-text-fill: #2d3748 !important;
+    -fx-border-color: #cbd5e0 !important;
+    -fx-border-radius: 6 !important;
+    -fx-background-radius: 6 !important;
+    -fx-border-width: 1 !important;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+
+/* LIGHT THEME - READONLY FIELD quando è TRUE (azzurro) */
+.config-readonly-field.active-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
+    -fx-border-radius: 6 !important;
+    -fx-background-radius: 6 !important;
+    -fx-border-width: 2 !important;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1) !important;
+}
+
+/* LIGHT THEME - TOGGLE BUTTON ALLARGATO E STABILE */
+.light .config-toggle-btn, .light .config-toggle-btn-active {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+    -fx-min-width: 150px;  /* STESSA LARGHEZZA DEL DARK THEME */
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.light .config-toggle-btn:hover, .light .config-toggle-btn-active:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 4);
+}
+
+.light .config-json-scroll,
+.light .config-json-area {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+}
+
+.light .config-json-area {
+    -fx-text-fill: #2d3748;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-area-background: #ffffff;
+}
+
+.light .config-footer-container {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+}
+
+/* LIGHT THEME - SEPARATORS SENZA LINEE NERE */
+.light .config-main-separator {
+    -fx-background-color: #e2e8f0;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.5;
+}
+
+.light .config-section-line {
+    -fx-background-color: #e2e8f0;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.7;
+}
+
+/* LIGHT THEME - FIELD GROUPS CON CONTRASTO */
+.light .config-field-group {
+    -fx-background-color: rgba(247,250,252,0.5);
+    -fx-border-color: rgba(226,232,240,0.3);
+}
+
+/* LIGHT THEME - BUTTONS ALLARGATI E STABILI */
+.light .config-browse-btn,
+.light .config-success-btn,
+.light .config-error-btn,
+.light .config-save-btn {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-min-width: 120px;  /* STESSA LARGHEZZA DEL DARK THEME */
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+.light .config-browse-btn:hover,
+.light .config-success-btn:hover,
+.light .config-error-btn:hover,
+.light .config-save-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.7), 12, 0, 0, 4);
+}
+
+.light .config-cancel-btn {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+    -fx-min-width: 120px;  /* STESSA LARGHEZZA */
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+.light .config-cancel-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 4);
+}
