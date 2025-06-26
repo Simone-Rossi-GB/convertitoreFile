@@ -404,17 +404,84 @@ public class EMLtoPDFconverter extends Converter {
         return null;
     }
 
+
+    /**
+     * Legge il contenuto testuale di un TextBody rilevando automaticamente l'encoding
+     * dall'header Content-Type. Supporta fallback intelligente per encoding non supportati.
+     *
+     * @param textBody Il TextBody da leggere
+     * @return Il contenuto testuale decodificato correttamente
+     * @throws IOException Se si verificano errori durante la lettura
+     */
     private String readTextContent(TextBody textBody) throws IOException {
-        try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), StandardCharsets.UTF_8)) {
-            StringBuilder sb = new StringBuilder();
-            char[] buffer = new char[4096];
-            int bytesRead;
-            while ((bytesRead = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, bytesRead);
+        String charset = getCharset(textBody);
+
+        // Prima prova con il charset rilevato
+        try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), charset)) {
+            return readFromReader(reader);
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Charset non supportato: {}, tentativo fallback su UTF-8", charset);
+
+            // Fallback 1: UTF-8
+            try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), StandardCharsets.UTF_8)) {
+                return readFromReader(reader);
+            } catch (Exception e2) {
+                logger.warn("Fallback UTF-8 fallito, tentativo con ISO-8859-1");
+
+                // Fallback 2: ISO-8859-1 (supporta tutti i byte 0-255)
+                try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), StandardCharsets.ISO_8859_1)) {
+                    return readFromReader(reader);
+                } catch (Exception e3) {
+                    logger.error("Tutti i tentativi di decodifica falliti, uso default system charset");
+
+                    // Fallback finale: charset di sistema
+                    try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream())) {
+                        return readFromReader(reader);
+                    }
+                }
             }
-            return sb.toString();
         }
     }
+
+    /**
+     * Rileva il charset dall'header Content-Type del TextBody
+     *
+     * @param textBody Il TextBody da analizzare
+     * @return Il charset rilevato o "UTF-8" come default
+     */
+    private String getCharset(TextBody textBody) {
+        Entity parent = textBody.getParent();
+        if (parent != null && parent.getHeader() != null) {
+            ContentTypeField field = (ContentTypeField) parent.getHeader().getField("Content-Type");
+            if (field != null && field.getCharset() != null) {
+                String charset = field.getCharset();
+                logger.debug("Charset rilevato dall'header: {}", charset);
+                return charset;
+            }
+        }
+
+        // Default fallback
+        logger.debug("Nessun charset specificato, uso UTF-8 come default");
+        return "UTF-8";
+    }
+
+    /**
+     * Utility method per leggere da un InputStreamReader
+     *
+     * @param reader Il reader da cui leggere
+     * @return Il contenuto letto come stringa
+     * @throws IOException Se si verificano errori durante la lettura
+     */
+    private String readFromReader(InputStreamReader reader) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        char[] buffer = new char[4096];
+        int bytesRead;
+        while ((bytesRead = reader.read(buffer)) != -1) {
+            sb.append(buffer, 0, bytesRead);
+        }
+        return sb.toString();
+    }
+
 
     private String getImageExtension(String mimeType) {
         String lowerType = mimeType.toLowerCase();
