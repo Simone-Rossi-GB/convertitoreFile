@@ -84,7 +84,7 @@ public class ChromeManager {
         }
 
         // Prova a caricare converter.properties
-        File configFile = new File("src/main/java/converters/mailConverters/converter.properties");
+        File configFile = new File("src/main/java/webService/server/converters/mailConverters/converter.properties");
         if (configFile.exists()) {
             try (InputStream is = new java.io.FileInputStream(configFile)) {
                 config.load(is);

@@ -45,7 +45,7 @@
         "zip" : "webService.server.converters.compressedFilesConverters.TARGZtoZIPconverter"
       },
       "msg" : {
-        "pdf" : "webService.server.converters.mailConvertersMSGtoPDFconverter"
+        "pdf" : "webService.server.converters.mailConverters.MSGtoPDFconverter"
       },
       "bmp" : {
         "gif" : "webService.server.converters.imageConverters.GenericImageConverter",
