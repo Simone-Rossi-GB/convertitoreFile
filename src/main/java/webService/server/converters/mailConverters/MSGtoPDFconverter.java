@@ -1,187 +1,484 @@
 package webService.server.converters.mailConverters;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.tool.xml.XMLWorkerHelper;
-import webService.server.converters.Converter;
+import converters.Converter;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
-import org.jsoup.Jsoup;
 
+import java.awt.Desktop;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Converte un file email .msg (formato Outlook) in un documento PDF.
- * Include intestazioni, corpo email (HTML o testo semplice) e una lista degli allegati.
- * Utilizza Apache POI HSMF per l'elaborazione del file MSG, iText per la generazione del PDF e JSoup per la pulizia HTML.
+ * Convertitore MSG to PDF usando Chrome/Chromium headless nativo
+ * Approccio: MSG → HTML → PDF tramite Chrome --headless
  */
 public class MSGtoPDFconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(MSGtoPDFconverter.class);
-    private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-    private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
+    private Map<String, String> embeddedImages = new HashMap<String, String>();
+    private File tempDir;
+    private String originalBaseName;
 
-    /**
-     * Converte un file .msg in un file PDF con intestazioni, corpo e allegati.
-     *
-     * @param msgFile File .msg da convertire
-     * @return ArrayList contenente un solo file PDF generato
-     * @throws IOException in caso di problemi I/O
-     * @throws DocumentException in caso di problemi nella generazione del PDF
-     * @throws NullPointerException se uno degli oggetti critici è null
-     */
+    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
+    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
+
     @Override
-    public File convert(File msgFile) throws IOException, DocumentException {
-        if (msgFile == null) {
-            logger.error("File MSG nullo");
-            throw new NullPointerException("L'oggetto msgFile non esiste.");
-        }
-
-        if (!msgFile.exists()) {
-            logger.error("File MSG non trovato: {}", msgFile.getAbsolutePath());
+    public File convert(File msgFile) throws IOException {
+        if (msgFile == null || !msgFile.exists()) {
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
 
-        logger.info("Inizio conversione con parametri: \n | msgFile.getPath() = {}", msgFile.getPath());
+        logger.info("Inizio conversione MSG to PDF con Chrome Headless: {}", msgFile.getName());
 
-        File outputDir = new File(System.getProperty("java.io.tmpdir"), "msg_to_pdf");
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
-            logger.error("Impossibile creare directory output: {}", outputDir.getAbsolutePath());
-            throw new IOException("Impossibile creare la directory di output: " + outputDir.getAbsolutePath());
-        }
-
-        String baseName = msgFile.getName().replaceFirst("[.][^.]+$", "");
-        File outputPdfFile = new File(outputDir, baseName + ".pdf");
-
-        MAPIMessage msg = new MAPIMessage(msgFile.getAbsolutePath());
-
-        Document document = new Document();
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
+        setupTempDirectory(msgFile);
 
         try {
-            document.open();
-            addMsgHeadersToPdf(msg, document);
-            document.add(new Paragraph("\n"));
-            addMsgBodyToPdf(msg, document, writer);
+            MAPIMessage message = parseMsgMessage(msgFile);
+            extractEmbeddedImages(message);
+            File htmlFile = generateCompleteHtml(message);
+
+            // Debug: apri HTML nel browser se richiesto
+            if (DEBUG_OPEN_HTML_IN_BROWSER) {
+                openHtmlInBrowser(htmlFile, ChromeManager.getInstance().getChromePath());
+            }
+
+            File pdfFile = convertHtmlToPdfWithChrome(htmlFile);
+
+            logger.info("Conversione completata: {}", pdfFile.getName());
+
+            return pdfFile; // ritorna file convertito
+
+        } catch (Exception e) {
+            logger.error("Errore durante la conversione MSG", e);
+            throw new IOException("Errore durante la conversione MSG: " + e.getMessage(), e);
         } finally {
-            if (document.isOpen()) document.close();
-            writer.close();
-            try {
-                msg.close();
-            } catch (IOException e) {
-                logger.warn("Chiusura MAPIMessage fallita: {}", e.getMessage());
+            if (!DEBUG_KEEP_TEMP_FILES) {
+                cleanup();
+                logger.info("File temporanei eliminati.");
+            } else {
+                logger.info("File temporanei mantenuti per debugging nella directory: {}", tempDir.getAbsolutePath());
+            }
+        }
+    }
+
+    private void setupTempDirectory(File msgFile) throws IOException {
+        originalBaseName = msgFile.getName().replaceFirst("[.][^.]+$", "");
+        tempDir = new File("temp", originalBaseName + "_" + System.currentTimeMillis());
+        if (!tempDir.mkdirs()) {
+            throw new IOException("Impossibile creare directory temporanea: " + tempDir.getAbsolutePath());
+        }
+        logger.info("Directory temporanea creata: {}", tempDir.getAbsolutePath());
+    }
+
+    private MAPIMessage parseMsgMessage(File msgFile) throws IOException {
+        try {
+            return new MAPIMessage(msgFile.getAbsolutePath());
+        } catch (Exception e) {
+            throw new IOException("Errore nel parsing del file MSG: " + e.getMessage(), e);
+        }
+    }
+
+    private File convertHtmlToPdfWithChrome(File htmlFile) throws IOException, InterruptedException {
+        String chromePath = ChromeManager.getInstance().getChromePath();
+        if (chromePath == null) {
+            throw new IOException("Chrome non disponibile tramite ChromeManager");
+        }
+
+        File pdfFile = new File(tempDir, originalBaseName + ".pdf");
+
+        List<String> command = new ArrayList<String>();
+        command.add(chromePath);
+        command.add("--headless");
+        command.add("--no-sandbox");
+        command.add("--disable-gpu");
+        command.add("--disable-dev-shm-usage");
+        command.add("--disable-extensions");
+        command.add("--disable-plugins");
+        command.add("--run-all-compositor-stages-before-draw");
+        command.add("--virtual-time-budget=10000");
+        command.add("--print-to-pdf=" + pdfFile.getAbsolutePath());
+        command.add("--print-to-pdf-no-header");
+        command.add("file://" + htmlFile.getAbsolutePath().replace("\\", "/"));
+
+        logger.info("Esecuzione comando Chrome: {}", String.join(" ", command));
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+
+        Process process = pb.start();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            StringBuilder output = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+            if (output.length() > 0) {
+                logger.debug("Output Chrome: {}", output.toString());
             }
         }
 
-        if (!outputPdfFile.exists()) {
-            logger.error("Creazione del file PDF fallita: {}", outputPdfFile.getAbsolutePath());
-            throw new IOException("Errore nella creazione del file PDF: " + outputPdfFile.getAbsolutePath());
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            logger.error("Chrome headless failed with exit code: {}. Command: {}", exitCode, String.join(" ", command));
+            throw new IOException("Chrome headless failed with exit code: " + exitCode);
         }
 
-        logger.info("Conversione completata con successo: {}", outputPdfFile.getName());
+        if (!pdfFile.exists()) {
+            logger.error("PDF non generato da Chrome. Percorso atteso: {}", pdfFile.getAbsolutePath());
+            throw new IOException("PDF non generato da Chrome");
+        }
 
-        return outputPdfFile;
+        return pdfFile;
     }
 
-    /**
-     * Aggiunge le intestazioni dell'email al documento PDF.
-     *
-     * @param msg      MAPIMessage da cui estrarre le intestazioni
-     * @param document Documento PDF di destinazione
-     * @throws DocumentException in caso di errore PDF
-     * @throws IOException in caso di problemi I/O
-     * @throws NullPointerException se uno degli oggetti è null
-     */
-    private static void addMsgHeadersToPdf(MAPIMessage msg, Document document) throws DocumentException, IOException {
-        if (msg == null) throw new NullPointerException("L'oggetto msg non esiste.");
-        if (document == null) throw new NullPointerException("L'oggetto document non esiste.");
+    private void openHtmlInBrowser(File htmlFile, String chromePath) {
+        // Questo metodo non è chiamato nel flusso normale se DEBUG_OPEN_HTML_IN_BROWSER è false
+        if (!htmlFile.exists()) {
+            logger.warn("Impossibile aprire il file HTML, non esiste: {}", htmlFile.getAbsolutePath());
+            return;
+        }
 
-        document.add(new Paragraph("Email Headers:", HEADER_FONT));
-        document.add(new Paragraph("----------------------------------------", HEADER_FONT));
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(htmlFile.toURI());
+                logger.info("File HTML aperto con il browser predefinito: {}", htmlFile.getAbsolutePath());
+                return;
+            }
+        } catch (UnsupportedOperationException e) {
+            logger.warn("L'operazione 'browse' non è supportata dal Desktop API in questo ambiente. Errore: {}", e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Errore I/O durante l'apertura del file HTML con il browser predefinito: {}", e.getMessage());
+        }
 
-        try { String from = msg.getDisplayFrom(); if (from != null && !from.trim().isEmpty()) document.add(new Paragraph("Da: " + from, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
-        try { String to = msg.getDisplayTo(); if (to != null && !to.trim().isEmpty()) document.add(new Paragraph("A: " + to, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
-        try { String cc = msg.getDisplayCC(); if (cc != null && !cc.trim().isEmpty()) document.add(new Paragraph("Cc: " + cc, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
-        try { String bcc = msg.getDisplayBCC(); if (bcc != null && !bcc.trim().isEmpty()) document.add(new Paragraph("Bcc: " + bcc, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
-        try { String subject = msg.getSubject(); if (subject != null && !subject.trim().isEmpty()) document.add(new Paragraph("Oggetto: " + subject, CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
-        try { Calendar cal = msg.getMessageDate(); if (cal != null) document.add(new Paragraph("Data: " + cal.getTime(), CONTENT_FONT)); } catch (ChunkNotFoundException ignored) {}
-
-        document.add(new Paragraph("----------------------------------------\n", HEADER_FONT));
-    }
-
-    /**
-     * Aggiunge il corpo del messaggio (HTML o testo semplice) e gli allegati al PDF.
-     *
-     * @param msg      MAPIMessage da cui estrarre il corpo
-     * @param document Documento PDF di destinazione
-     * @param writer   PdfWriter per la scrittura XHTML
-     * @throws DocumentException in caso di errore PDF
-     * @throws IOException in caso di problemi I/O
-     * @throws NullPointerException se uno degli oggetti è null
-     */
-    private static void addMsgBodyToPdf(MAPIMessage msg, Document document, PdfWriter writer) throws DocumentException, IOException {
-        if (msg == null) throw new NullPointerException("L'oggetto msg non esiste.");
-        if (document == null) throw new NullPointerException("L'oggetto document non esiste.");
-        if (writer == null) throw new NullPointerException("L'oggetto writer non esiste.");
-
-        String htmlBody = null;
-        String textBody = null;
-
-        try { htmlBody = msg.getHtmlBody(); } catch (ChunkNotFoundException ignored) {}
-
-        if (htmlBody != null && !htmlBody.trim().isEmpty()) {
+        if (chromePath != null && new File(chromePath).exists()) {
             try {
-                org.jsoup.nodes.Document jsoupDoc = Jsoup.parse(htmlBody);
-                jsoupDoc.outputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml);
-                jsoupDoc.outputSettings().charset(StandardCharsets.UTF_8);
-                jsoupDoc.outputSettings().escapeMode(org.jsoup.nodes.Entities.EscapeMode.xhtml);
+                List<String> command = new ArrayList<>();
+                command.add(chromePath);
+                command.add(htmlFile.toURI().toString());
 
-                String xhtml = jsoupDoc.html();
-                XMLWorkerHelper.getInstance().parseXHtml(writer, document,
-                        new ByteArrayInputStream(xhtml.getBytes(StandardCharsets.UTF_8)),
-                        StandardCharsets.UTF_8);
-            } catch (Exception e) {
-                logger.warn("Errore nel parsing HTML: {}", e.getMessage());
-                document.add(new Paragraph("Contenuto HTML (errore nel parsing):\n" + htmlBody, CONTENT_FONT));
+                logger.info("Tentativo di apertura HTML con Chrome esplicito: {}", String.join(" ", command));
+
+                ProcessBuilder pb = new ProcessBuilder(command);
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+                logger.info("Comando di apertura Chrome avviato per: {}", htmlFile.getAbsolutePath());
+
+            } catch (IOException e) {
+                logger.error("Errore durante il tentativo di aprire l'HTML con Chrome esplicito: {}", e.getMessage());
             }
         } else {
-            try { textBody = msg.getTextBody(); } catch (ChunkNotFoundException ignored) {}
+            logger.warn("Impossibile aprire l'HTML nel browser: Desktop API non disponibile e percorso Chrome non valido.");
+        }
+    }
 
-            if (textBody != null && !textBody.trim().isEmpty()) {
-                document.add(new Paragraph(textBody, CONTENT_FONT));
-            } else {
-                document.add(new Paragraph("Nessun contenuto del corpo disponibile per questa email.", CONTENT_FONT));
+    private File generateCompleteHtml(MAPIMessage message) throws IOException {
+        StringBuilder html = new StringBuilder();
+
+        // Header HTML identico al tuo EML converter
+        html.append("<!DOCTYPE html>\n");
+        html.append("<html>\n");
+        html.append("<head>\n");
+        html.append("    <meta charset=\"UTF-8\">\n");
+        html.append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n");
+        html.append("    <title>Email PDF</title>\n");
+        html.append("    <style>\n");
+        html.append("        @page {\n");
+        html.append("            size: A4;\n");
+        html.append("            margin: 0;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        html, body {\n");
+        html.append("            margin: 0;\n");
+        html.append("            padding: 0;\n");
+        html.append("            height: 100%;\n");
+        html.append("            width: 100%;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        * {\n");
+        html.append("            box-sizing: border-box;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        body {\n");
+        html.append("            font-family: 'Segoe UI', Arial, sans-serif;\n");
+        html.append("            font-size: 11px;\n");
+        html.append("            line-height: 1.4;\n");
+        html.append("            color: #333;\n");
+        html.append("            background: white;\n");
+        html.append("        }\n");
+        html.append("        .email-content {\n");
+        html.append("            max-width: 100%;\n");
+        html.append("            word-wrap: break-word;\n");
+        html.append("            overflow-wrap: break-word;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        img {\n");
+        html.append("            max-width: 100%;\n");
+        html.append("            height: auto;\n");
+        html.append("            display: block;\n");
+        html.append("            margin: 8px 0;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        table {\n");
+        html.append("            border-collapse: collapse;\n");
+        html.append("            width: 100%;\n");
+        html.append("            margin: 8px 0;\n");
+        html.append("            font-size: inherit;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        td, th {\n");
+        html.append("            padding: 6px;\n");
+        html.append("            vertical-align: top;\n");
+        html.append("            border: 1px solid #ddd;\n");
+        html.append("            word-wrap: break-word;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        .no-print {\n");
+        html.append("            display: none !important;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        table table {\n");
+        html.append("            border: none;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        table table td {\n");
+        html.append("            border: none;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        @media print {\n");
+        html.append("            body::before, body::after {\n");
+        html.append("                content: none !important;\n");
+        html.append("                display: none !important;\n");
+        html.append("            }\n");
+        html.append("            @page {\n");
+        html.append("                margin: 0 !important;\n");
+        html.append("            }\n");
+        html.append("        }\n");
+        html.append("    </style>\n");
+        html.append("</head>\n");
+        html.append("<body>\n");
+
+        // Contenuto email senza header (come nel tuo EML)
+        html.append("<div class=\"email-content\">");
+        appendMsgContent(html, message);
+        html.append("</div>");
+
+        html.append("</body></html>");
+
+        File htmlFile = new File(tempDir, "email.html");
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(htmlFile), StandardCharsets.UTF_8)) {
+            writer.write(html.toString());
+        }
+
+        logger.info("HTML generato: {}", htmlFile.getAbsolutePath());
+        return htmlFile;
+    }
+
+    private void appendMsgContent(StringBuilder html, MAPIMessage message) throws IOException {
+        try {
+            // Prova prima HTML body
+            String htmlBody = message.getHtmlBody();
+            if (htmlBody != null && !htmlBody.trim().isEmpty()) {
+                String processedHtml = processCidReferences(htmlBody);
+                html.append(processedHtml);
+                logger.info("Usato HTML body del MSG");
+                return;
             }
+        } catch (ChunkNotFoundException e) {
+            logger.debug("HTML body non trovato nel MSG, provo RTF body");
         }
 
         try {
-            AttachmentChunks[] attachments = msg.getAttachmentFiles();
-            if (attachments != null && attachments.length > 0) {
-                document.add(new Paragraph("\nAllegati:", HEADER_FONT));
-                for (AttachmentChunks att : attachments) {
-                    try {
-                        String fileName = null;
-                        if (att.getAttachLongFileName() != null) {
-                            fileName = att.getAttachLongFileName().toString();
-                        } else if (att.getAttachFileName() != null) {
-                            fileName = att.getAttachFileName().toString();
-                        }
-                        if (fileName != null && !fileName.trim().isEmpty()) {
-                            document.add(new Paragraph("- " + fileName, CONTENT_FONT));
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Errore nella lettura del nome dell'allegato: {}", e.getMessage());
+            // Fallback su RTF body convertito in testo
+            String rtfBody = message.getRtfBody();
+            if (rtfBody != null && !rtfBody.trim().isEmpty()) {
+                // Conversione molto semplice RTF -> HTML
+                String convertedHtml = convertRtfToHtml(rtfBody);
+                html.append(convertedHtml);
+                logger.info("Usato RTF body del MSG convertito");
+                return;
+            }
+        } catch (ChunkNotFoundException e) {
+            logger.debug("RTF body non trovato nel MSG, provo text body");
+        }
+
+        try {
+            // Fallback finale su text body
+            String textBody = message.getTextBody();
+            if (textBody != null && !textBody.trim().isEmpty()) {
+                html.append("<pre style=\"white-space: pre-wrap; font-family: inherit;\">")
+                        .append(escapeHtml(textBody))
+                        .append("</pre>");
+                logger.info("Usato text body del MSG");
+                return;
+            }
+        } catch (ChunkNotFoundException e) {
+            logger.warn("Nessun body trovato nel MSG");
+        }
+
+        // Se non c'è contenuto
+        html.append("<p><em>Nessun contenuto disponibile</em></p>");
+    }
+
+    private void extractEmbeddedImages(MAPIMessage message) throws IOException, ChunkNotFoundException {
+        AttachmentChunks[] attachments = message.getAttachmentFiles();
+        if (attachments == null) return;
+
+        for (int i = 0; i < attachments.length; i++) {
+            AttachmentChunks attachment = attachments[i];
+
+            try {
+                // Controlla se è un'immagine embedded
+                String fileName = getAttachmentFileName(attachment);
+                String mimeType = getAttachmentMimeType(attachment);
+
+                if (mimeType != null && mimeType.startsWith("image/")) {
+                    byte[] attachmentData = attachment.getEmbeddedAttachmentObject();
+                    if (attachmentData != null) {
+                        saveEmbeddedImageFromAttachment(attachmentData, fileName, mimeType, i);
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Errore nell'estrazione allegato {}: {}", i, e.getMessage());
+            }
+        }
+    }
+
+    private String getAttachmentFileName(AttachmentChunks attachment) {
+        try {
+            if (attachment.getAttachLongFileName() != null) {
+                return attachment.getAttachLongFileName().toString();
+            }
+            if (attachment.getAttachFileName() != null) {
+                return attachment.getAttachFileName().toString();
+            }
+        } catch (Exception e) {
+            logger.debug("Errore nel recupero nome allegato: {}", e.getMessage());
+        }
+        return "attachment";
+    }
+
+    private String getAttachmentMimeType(AttachmentChunks attachment) {
+        try {
+            if (attachment.getAttachMimeTag() != null) {
+                return attachment.getAttachMimeTag().toString();
+            }
+        } catch (Exception e) {
+            logger.debug("Errore nel recupero MIME type allegato: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    private void saveEmbeddedImageFromAttachment(byte[] imageData, String fileName, String mimeType, int index) throws IOException {
+        String extension = getImageExtension(mimeType);
+        String safeFileName = "embedded_" + index + "." + extension;
+
+        File imageFile = new File(tempDir, safeFileName);
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            fos.write(imageData);
+        }
+
+        // Mappa per riferimenti CID (usa diversi formati possibili)
+        String contentId = fileName.replaceAll("[^a-zA-Z0-9._-]", "_");
+        embeddedImages.put(contentId, imageFile.getAbsolutePath());
+        embeddedImages.put("cid:" + contentId, imageFile.getAbsolutePath());
+        embeddedImages.put("<" + contentId + ">", imageFile.getAbsolutePath());
+
+        logger.info("Immagine MSG salvata: {} -> {}", fileName, safeFileName);
+    }
+
+    private String convertRtfToHtml(String rtfBody) {
+        // Conversione molto semplice RTF -> HTML
+        // Rimuove i comandi RTF base e mantiene il testo
+        String text = rtfBody;
+
+        // Rimuove header RTF
+        text = text.replaceAll("\\{\\\\rtf1[^}]*\\}", "");
+
+        // Rimuove comandi di formattazione RTF
+        text = text.replaceAll("\\\\[a-z]+\\d*", "");
+        text = text.replaceAll("\\{|\\}", "");
+
+        // Pulisce spazi multipli
+        text = text.replaceAll("\\s+", " ").trim();
+
+        // Converte newline in <br>
+        text = text.replace("\n", "<br>");
+
+        return "<div>" + escapeHtml(text) + "</div>";
+    }
+
+    private String processCidReferences(String htmlContent) {
+        String processed = htmlContent;
+
+        for (Map.Entry<String, String> entry : embeddedImages.entrySet()) {
+            String contentId = entry.getKey();
+            String localPath = "file:///" + entry.getValue().replace("\\", "/");
+
+            // Sostituisci vari formati di riferimento
+            processed = processed.replaceAll(
+                    "src=[\"']cid:" + contentId + "[\"']",
+                    "src=\"" + localPath + "\""
+            );
+            processed = processed.replaceAll(
+                    "src=[\"']" + contentId + "[\"']",
+                    "src=\"" + localPath + "\""
+            );
+        }
+
+        return processed;
+    }
+
+    // Utility methods identici al tuo EML converter
+    private String getImageExtension(String mimeType) {
+        if (mimeType == null) return "img";
+        String lowerType = mimeType.toLowerCase();
+        if ("image/gif".equals(lowerType)) {
+            return "gif";
+        } else if ("image/jpeg".equals(lowerType)) {
+            return "jpg";
+        } else if ("image/png".equals(lowerType)) {
+            return "png";
+        } else if ("image/bmp".equals(lowerType)) {
+            return "bmp";
+        } else if ("image/webp".equals(lowerType)) {
+            return "webp";
+        } else {
+            return "img";
+        }
+    }
+
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
+    }
+
+    private void cleanup() {
+        if (tempDir != null && tempDir.exists()) {
+            File[] files = tempDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (!file.delete()) {
+                        logger.warn("Impossibile eliminare il file temporaneo: {}", file.getAbsolutePath());
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.warn("Errore nella lettura degli allegati: {}", e.getMessage());
+            if (!tempDir.delete()) {
+                logger.warn("Impossibile eliminare la directory temporanea: {}", tempDir.getAbsolutePath());
+            }
         }
+        embeddedImages.clear();
     }
 }

@@ -1,257 +1,532 @@
 package webService.server.converters.mailConverters;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.tool.xml.XMLWorkerHelper;
-import webService.server.converters.Converter;
+import converters.Converter;
 import org.apache.james.mime4j.dom.*;
-import org.apache.james.mime4j.dom.Header;
-import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
-import org.apache.james.mime4j.dom.field.DateTimeField;
 import org.apache.james.mime4j.message.DefaultMessageBuilder;
-import org.jsoup.Jsoup;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-
-import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import java.awt.Desktop;
+import java.io.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Questa classe si occupa della conversione di email in formato .eml in documenti PDF.
- * Estrae intestazioni, corpo (HTML o testo) e li organizza in un file PDF.
+ * Convertitore EML to PDF usando Chrome/Chromium headless nativo
+ * Approccio: EML → HTML → PDF tramite Chrome --headless
  */
 public class EMLtoPDFconverter extends Converter {
 
     private static final Logger logger = LogManager.getLogger(EMLtoPDFconverter.class);
-    private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-    private static final Font CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10);
+    private Map<String, String> embeddedImages = new HashMap<String, String>();
+    private File tempDir;
+    private String originalBaseName; // Campo per memorizzare il nome base originale del file EML
 
-    /**
-     * Converte un file .eml in PDF.
-     *
-     * @param emlFile File sorgente in formato .eml
-     * @return ArrayList contenente il file PDF generato
-     * @throws IOException         in caso di errori I/O
-     * @throws DocumentException   in caso di errori nella generazione PDF
-     * @throws NullPointerException se uno degli oggetti principali è null
-     */
+    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
+    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
+
     @Override
-    public File convert(File emlFile) throws IOException, DocumentException {
-        if (emlFile == null) throw new NullPointerException("L'oggetto emlFile non esiste.");
-        logger.info("Inizio conversione con parametri: \n | emlFile.getPath() = {}", emlFile.getPath());
-
-        if (!emlFile.exists()) {
-            logger.error("File EML non trovato: {}", emlFile);
+    public File convert(File emlFile) throws IOException {
+        if (emlFile == null || !emlFile.exists()) {
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }
 
-        File outputDir = new File("src/temp");
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
-            logger.error("Impossibile creare la directory di output: {}", outputDir.getAbsolutePath());
-            throw new IOException("Impossibile creare la directory di output: " + outputDir.getAbsolutePath());
-        }
+        logger.info("Inizio conversione EML to PDF con Chrome Headless: {}", emlFile.getName());
 
-        String baseName = emlFile.getName().replaceFirst("[.][^.]+$", "");
-        File outputPdfFile = new File(outputDir, baseName + ".pdf");
-
-        DefaultMessageBuilder builder = new DefaultMessageBuilder();
-        Message mime4jMessage;
-        try (InputStream is = Files.newInputStream(emlFile.toPath())) {
-            mime4jMessage = builder.parseMessage(is);
-        }
-
-        if (mime4jMessage == null){
-            logger.error("L'oggetto Message non esiste.");
-            throw new NullPointerException("L'oggetto Message non esiste.");
-        }
-
-        Document document = new Document();
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputPdfFile));
+        setupTempDirectory(emlFile);
 
         try {
-            document.open();
-            addEmlHeadersToPdf(mime4jMessage, document);
-            document.add(new Paragraph("\n"));
-            processMime4jBody(mime4jMessage.getBody(), document, writer);
+            Message message = parseEmailMessage(emlFile);
+            extractEmbeddedImages(message.getBody());
+            File htmlFile = generateCompleteHtml(message); // generateCompleteHtml è stato modificato
+
+            File pdfFile = convertHtmlToPdfWithChrome(htmlFile); // convertHtmlToPdfWithChrome usa originalBaseName
+
+            logger.info("Conversione completata: {}", pdfFile.getName());
+
+            return pdfFile; //ritorna file convertito
+
+        } catch (Exception e) {
+            logger.error("Errore durante la conversione", e);
+            throw new IOException("Errore durante la conversione: " + e.getMessage(), e);
         } finally {
-            if (document.isOpen()) document.close();
-            writer.close();
+            if (!DEBUG_KEEP_TEMP_FILES) {
+                cleanup();
+                logger.info("File temporanei eliminati.");
+            } else {
+                logger.info("File temporanei mantenuti per debugging nella directory: {}", tempDir.getAbsolutePath());
+            }
         }
-
-        if (!outputPdfFile.exists()) {
-            logger.error("ERRORE: creazione del file PDF fallita: {}", outputPdfFile.getAbsolutePath());
-            throw new IOException("Errore nella creazione del file PDF " + outputPdfFile.getAbsolutePath());
-        }
-
-        logger.info("Creazione file .pdf completata: {}", outputPdfFile.getName());
-        return outputPdfFile;
     }
 
-    /**
-     * Aggiunge le intestazioni dell'email al documento PDF.
-     *
-     * @param message  Messaggio MIME4J da cui estrarre i metadati
-     * @param document Documento PDF di destinazione
-     * @throws DocumentException se si verifica un errore nella scrittura PDF
-     */
-    private static void addEmlHeadersToPdf(Message message, Document document) throws DocumentException {
-        if (message == null) {
-            logger.error("L'oggetto message non esiste.");
-            throw new NullPointerException("L'oggetto message non esiste.");
+    private void setupTempDirectory(File emlFile) throws IOException {
+        // Estrai il nome base originale del file EML (senza estensione)
+        originalBaseName = emlFile.getName().replaceFirst("[.][^.]+$", "");
+        // Crea la directory temporanea con un timestamp per evitare collisioni
+        tempDir = new File("temp", originalBaseName + "_" + System.currentTimeMillis());
+        if (!tempDir.mkdirs()) {
+            throw new IOException("Impossibile creare directory temporanea: " + tempDir.getAbsolutePath());
         }
-        if (document == null) {
-            logger.error("L'oggetto document non esiste.");
-            throw new NullPointerException("L'oggetto document non esiste.");
+        logger.info("Directory temporanea creata: {}", tempDir.getAbsolutePath());
+    }
+
+    private Message parseEmailMessage(File emlFile) throws IOException {
+        DefaultMessageBuilder builder = new DefaultMessageBuilder();
+        try (InputStream is = Files.newInputStream(emlFile.toPath())) {
+            return builder.parseMessage(is);
         }
+    }
 
-        document.add(new Paragraph("Email Headers:", HEADER_FONT));
-        document.add(new Paragraph("----------------------------------------", HEADER_FONT));
-
-        addFieldToPdf(document, "Da", message.getFrom());
-        addFieldToPdf(document, "A", message.getTo());
-        addFieldToPdf(document, "Cc", message.getCc());
-        addFieldToPdf(document, "Bcc", message.getBcc());
-        addFieldToPdf(document, "Oggetto", message.getSubject());
-
-        DateTimeField dateTimeField = (DateTimeField) message.getHeader().getField("Date");
-        if (dateTimeField != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            addFieldToPdf(document, "Data", sdf.format(dateTimeField.getDate()));
+    private File convertHtmlToPdfWithChrome(File htmlFile) throws IOException, InterruptedException {
+        String chromePath = ChromeManager.getInstance().getChromePath();
+        if (chromePath == null) {
+            throw new IOException("Chrome non disponibile tramite ChromeManager");
         }
 
-        Header header = message.getHeader();
-        if (header != null) {
-            String messageId = header.getField("Message-ID") != null ? header.getField("Message-ID").getBody() : null;
-            if (messageId != null) {
-                addFieldToPdf(document, "Message-ID", messageId);
+        // Usa il nome base originale (del file EML) per il nome del file PDF
+        File pdfFile = new File(tempDir, originalBaseName + ".pdf"); // Questo dovrebbe risolvere il nome del PDF
+
+        List<String> command = new ArrayList<String>();
+        command.add(chromePath);
+        command.add("--headless");
+        command.add("--no-sandbox"); // Necessario in alcuni ambienti Linux/Docker
+        command.add("--disable-gpu"); // Necessario per ambienti senza GUI/GPU
+        command.add("--disable-dev-shm-usage"); // Utile in ambienti Docker/Linux
+        command.add("--disable-extensions");
+        command.add("--disable-plugins");
+        command.add("--run-all-compositor-stages-before-draw"); // Garantisce rendering completo
+        command.add("--virtual-time-budget=10000"); // 10 secondi timeout caricamento pagina
+        command.add("--print-to-pdf=" + pdfFile.getAbsolutePath());
+        command.add("--print-to-pdf-no-header"); // Flag per rimuovere header/footer predefiniti del browser
+        command.add("file://" + htmlFile.getAbsolutePath().replace("\\", "/")); // Percorso del file HTML da convertire
+
+        logger.info("Esecuzione comando Chrome: {}", String.join(" ", command));
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+
+        Process process = pb.start();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            StringBuilder output = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+            if (output.length() > 0) {
+                logger.debug("Output Chrome: {}", output.toString());
             }
         }
 
-        document.add(new Paragraph("----------------------------------------\n", HEADER_FONT));
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            logger.error("Chrome headless failed with exit code: {}. Command: {}", exitCode, String.join(" ", command));
+            throw new IOException("Chrome headless failed with exit code: " + exitCode);
+        }
+
+        if (!pdfFile.exists()) {
+            logger.error("PDF non generato da Chrome. Percorso atteso: {}", pdfFile.getAbsolutePath());
+            throw new IOException("PDF non generato da Chrome");
+        }
+
+        return pdfFile;
     }
 
-    /**
-     * Aggiunge un campo (mittente, destinatari, oggetto, ecc.) al PDF in modo formattato.
-     *
-     * @param document   Il documento PDF
-     * @param fieldName  Nome del campo
-     * @param fieldValue Valore del campo (può essere Mailbox, List<Mailbox> o String)
-     * @throws DocumentException in caso di errore
-     */
-    private static void addFieldToPdf(Document document, String fieldName, Object fieldValue) throws DocumentException {
-        if (document == null) {
-            logger.error("L'oggetto document non esiste.");
-            throw new NullPointerException("L'oggetto document non esiste.");
+    private void openHtmlInBrowser(File htmlFile, String chromePath) {
+        // Questo metodo non è chiamato nel flusso normale se DEBUG_OPEN_HTML_IN_BROWSER è false
+        if (!htmlFile.exists()) {
+            logger.warn("Impossibile aprire il file HTML, non esiste: {}", htmlFile.getAbsolutePath());
+            return;
         }
-        if (fieldValue == null) return;
 
-        String valueString = "";
-        if (fieldValue instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Mailbox> mailboxList = (List<Mailbox>) fieldValue;
-            StringBuilder sb = new StringBuilder();
-            for (Mailbox mailbox : mailboxList) {
-                if (sb.length() > 0) sb.append("; ");
-                sb.append(mailbox.getAddress());
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(htmlFile.toURI());
+                logger.info("File HTML aperto con il browser predefinito: {}", htmlFile.getAbsolutePath());
+                return;
             }
-            valueString = sb.toString();
-        } else if (fieldValue instanceof Mailbox) {
-            valueString = ((Mailbox) fieldValue).getAddress();
+        } catch (UnsupportedOperationException e) {
+            logger.warn("L'operazione 'browse' non è supportata dal Desktop API in questo ambiente. Errore: {}", e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Errore I/O durante l'apertura del file HTML con il browser predefinito: {}", e.getMessage());
+        }
+
+        if (chromePath != null && new File(chromePath).exists()) {
+            try {
+                List<String> command = new ArrayList<>();
+                command.add(chromePath);
+                command.add(htmlFile.toURI().toString());
+
+                logger.info("Tentativo di apertura HTML con Chrome esplicito: {}", String.join(" ", command));
+
+                ProcessBuilder pb = new ProcessBuilder(command);
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+                logger.info("Comando di apertura Chrome avviato per: {}", htmlFile.getAbsolutePath());
+
+            } catch (IOException e) {
+                logger.error("Errore durante il tentativo di aprire l'HTML con Chrome esplicito: {}", e.getMessage());
+            }
         } else {
-            valueString = fieldValue.toString();
-        }
-
-        if (!valueString.isEmpty()) {
-            document.add(new Paragraph(fieldName + ": " + valueString, CONTENT_FONT));
+            logger.warn("Impossibile aprire l'HTML nel browser: Desktop API non disponibile e percorso Chrome non valido.");
         }
     }
 
-    /**
-     * Elabora il corpo dell'email, gestendo HTML, testo semplice e multipart.
-     *
-     * @param body     Corpo MIME dell'email
-     * @param document Documento PDF
-     * @param writer   Writer PDF per l'HTML
-     * @throws IOException        se si verifica un errore di I/O
-     * @throws DocumentException se si verifica un errore nella scrittura PDF
-     */
-    private static void processMime4jBody(Body body, Document document, PdfWriter writer) throws IOException, DocumentException {
-        if (body == null) {
-            logger.error("L'oggetto body non esiste.");
-            throw new NullPointerException("L'oggetto body non esiste.");
-        }
-        if (document == null) {
-            logger.error("L'oggetto document non esiste.");
-            throw new NullPointerException("L'oggetto document non esiste.");
-        }
-        if (writer == null) {
-            logger.error("L'oggetto writer non esiste.");
-            throw new NullPointerException("L'oggetto writer non esiste.");
+    private File generateCompleteHtml(Message message) throws IOException {
+        StringBuilder html = new StringBuilder();
+
+        // Header HTML standard
+        html.append("<!DOCTYPE html>\n");
+        html.append("<html>\n");
+        html.append("<head>\n");
+        html.append("    <meta charset=\"UTF-8\">\n");
+        html.append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n");
+        html.append("    <title>Email PDF</title>\n");
+        html.append("    <style>\n");
+        html.append("        @page {\n");
+        html.append("            size: A4;\n");
+        html.append("            margin: 0; /* Imposta i margini della pagina di stampa a 0 per eliminare spazi vuoti */\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        html, body {\n");
+        html.append("            margin: 0;\n");
+        html.append("            padding: 0;\n");
+        html.append("            height: 100%;\n"); // Assicura che html e body coprano l'intera altezza
+        html.append("            width: 100%;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        * {\n");
+        html.append("            box-sizing: border-box;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        body {\n");
+        html.append("            font-family: 'Segoe UI', Arial, sans-serif;\n");
+        html.append("            font-size: 11px;\n");
+        html.append("            line-height: 1.4;\n");
+        html.append("            color: #333;\n");
+        html.append("            background: white;\n");
+        html.append("        }\n");
+
+        // Ho rimosso completamente il blocco .email-header dall'HTML generato.
+        // Questo è il modo più efficace per eliminare una potenziale prima pagina vuota.
+
+        html.append("        .email-content {\n");
+        html.append("            max-width: 100%;\n");
+        html.append("            word-wrap: break-word;\n");
+        html.append("            overflow-wrap: break-word;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        img {\n");
+        html.append("            max-width: 100%;\n");
+        html.append("            height: auto;\n");
+        html.append("            display: block;\n");
+        html.append("            margin: 8px 0;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        table {\n");
+        html.append("            border-collapse: collapse;\n");
+        html.append("            width: 100%;\n");
+        html.append("            margin: 8px 0;\n");
+        html.append("            font-size: inherit;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        td, th {\n");
+        html.append("            padding: 6px;\n");
+        html.append("            vertical-align: top;\n");
+        html.append("            border: 1px solid #ddd;\n");
+        html.append("            word-wrap: break-word;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        .no-print {\n");
+        html.append("            display: none !important;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        table table {\n");
+        html.append("            border: none;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        table table td {\n");
+        html.append("            border: none;\n");
+        html.append("        }\n");
+        html.append("        \n");
+        // NUOVE REGOLE CSS per nascondere i footer/header di stampa di Chrome
+        html.append("        @media print {\n");
+        html.append("            /* Nasconde gli header/footer testuali di Chrome */\n");
+        html.append("            body::before, body::after {\n");
+        html.append("                content: none !important;\n");
+        html.append("                display: none !important;\n");
+        html.append("            }\n");
+        html.append("            /* Forza i margini della pagina a zero per evitare spazi bianchi indesiderati */\n");
+        html.append("            @page {\n");
+        html.append("                margin: 0 !important;\n");
+        html.append("            }\n");
+        html.append("        }\n");
+        html.append("    </style>\n");
+        html.append("</head>\n");
+        html.append("<body>\n");
+
+        // Il blocco email-header (con le info Da:, A:, Oggetto:, Data:)
+        // è stato COMPLETAMENTE rimosso da qui. Non viene generato nell'HTML.
+        // Questo dovrebbe risolvere definitivamente la pagina vuota iniziale.
+
+        html.append("<div class=\"email-content\">");
+        appendEmailContent(html, message.getBody());
+        html.append("</div>");
+
+        html.append("</body></html>");
+
+        File htmlFile = new File(tempDir, "email.html"); // Il nome del file HTML temporaneo è sempre "email.html"
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(htmlFile), StandardCharsets.UTF_8)) {
+            writer.write(html.toString());
         }
 
+        logger.info("HTML generato: {}", htmlFile.getAbsolutePath());
+        return htmlFile;
+    }
+
+    // Metodi helper
+    private void appendEmailHeaders(StringBuilder html, Message message) {
+        // Questo metodo non è più chiamato in generateCompleteHtml.
+        // Il suo contenuto non viene più aggiunto all'HTML finale per il PDF.
+        appendHeaderField(html, "Da:", getFieldValue(message.getFrom()));
+        appendHeaderField(html, "A:", getFieldValue(message.getTo()));
+        if (message.getCc() != null) {
+            appendHeaderField(html, "Cc:", getFieldValue(message.getCc()));
+        }
+        appendHeaderField(html, "Oggetto:", message.getSubject());
+        appendHeaderField(html, "Data:", getFieldValue(message.getDate()));
+    }
+
+    private void appendHeaderField(StringBuilder html, String label, String value) {
+        html.append("<div class=\"header-field\">")
+                .append("<span class=\"header-label\">").append(escapeHtml(label)).append("</span>")
+                .append("<span>").append(escapeHtml(value != null ? value : "")).append("</span>")
+                .append("</div>");
+    }
+
+    private void appendEmailContent(StringBuilder html, Body body) throws IOException {
         if (body instanceof TextBody) {
             TextBody textBody = (TextBody) body;
-            String mimeType = getContentTypeFromTextBody(textBody);
-            String content = readTextBodyContent(textBody);
+            String mimeType = getContentType(textBody);
+            String content = readTextContent(textBody);
 
             if (mimeType.contains("text/html")) {
-                org.jsoup.nodes.Document jsoupDoc = Jsoup.parse(content);
-                jsoupDoc.outputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml);
-                jsoupDoc.outputSettings().charset(StandardCharsets.UTF_8);
-                jsoupDoc.outputSettings().escapeMode(org.jsoup.nodes.Entities.EscapeMode.xhtml);
-
-                String xhtmlContent = jsoupDoc.html();
-                XMLWorkerHelper.getInstance().parseXHtml(writer, document,
-                        new ByteArrayInputStream(xhtmlContent.getBytes(StandardCharsets.UTF_8)),
-                        StandardCharsets.UTF_8);
-            } else {
-                document.add(new Paragraph(content, CONTENT_FONT));
+                String processedHtml = processCidReferences(content);
+                html.append(processedHtml);
+            } else if (mimeType.contains("text/plain")) {
+                // Non generiamo alcun HTML per il contenuto text/plain
+                // se non desiderato (come da tua precedente indicazione).
             }
         } else if (body instanceof Multipart) {
             Multipart multipart = (Multipart) body;
             for (Entity part : multipart.getBodyParts()) {
-                processMime4jBody(part.getBody(), document, writer);
+                appendEmailContent(html, part.getBody());
+            }
+        }
+    }
+
+    private void extractEmbeddedImages(Body body) throws IOException {
+        if (body instanceof TextBody) {
+            TextBody textBody = (TextBody) body;
+            String mimeType = getContentType(textBody);
+
+            if (mimeType.startsWith("image/")) {
+                String contentId = getContentId(textBody);
+                if (contentId != null) {
+                    saveEmbeddedImage(textBody, contentId, mimeType);
+                }
+            }
+        } else if (body instanceof Multipart) {
+            Multipart multipart = (Multipart) body;
+            for (Entity part : multipart.getBodyParts()) {
+                extractEmbeddedImages(part.getBody());
+            }
+        }
+    }
+
+    private void saveEmbeddedImage(TextBody textBody, String contentId, String mimeType) throws IOException {
+        String content = readTextContent(textBody);
+
+        try {
+            byte[] imageData = java.util.Base64.getDecoder().decode(content.replaceAll("\\s", ""));
+            String extension = getImageExtension(mimeType);
+            String fileName = contentId.replaceAll("[<>]", "") + "." + extension;
+
+            File imageFile = new File(tempDir, fileName);
+            try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                fos.write(imageData);
+            }
+
+            embeddedImages.put(contentId, imageFile.getAbsolutePath());
+            logger.info("Immagine salvata: {} -> {}", contentId, fileName);
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Impossibile decodificare immagine Base64: {}", contentId);
+        }
+    }
+
+    private String processCidReferences(String htmlContent) {
+        String processed = htmlContent;
+
+        for (Map.Entry<String, String> entry : embeddedImages.entrySet()) {
+            String contentId = entry.getKey().replaceAll("[<>]", "");
+            String localPath = "file:///" + entry.getValue().replace("\\", "/");
+            processed = processed.replaceAll(
+                    "src=[\"']cid:" + contentId + "[\"']",
+                    "src=\"" + localPath + "\""
+            );
+        }
+
+        return processed;
+    }
+
+    private String getContentType(TextBody textBody) {
+        Entity parent = textBody.getParent();
+        if (parent != null && parent.getHeader() != null) {
+            ContentTypeField field = (ContentTypeField) parent.getHeader().getField("Content-Type");
+            return field != null ? field.getMimeType() : "text/plain";
+        }
+        return "text/plain";
+    }
+
+    private String getContentId(TextBody textBody) {
+        Entity parent = textBody.getParent();
+        if (parent != null && parent.getHeader() != null) {
+            org.apache.james.mime4j.stream.Field field = parent.getHeader().getField("Content-ID");
+            return field != null ? field.getBody() : null;
+        }
+        return null;
+    }
+
+
+    /**
+     * Legge il contenuto testuale di un TextBody rilevando automaticamente l'encoding
+     * dall'header Content-Type. Supporta fallback intelligente per encoding non supportati.
+     *
+     * @param textBody Il TextBody da leggere
+     * @return Il contenuto testuale decodificato correttamente
+     * @throws IOException Se si verificano errori durante la lettura
+     */
+    private String readTextContent(TextBody textBody) throws IOException {
+        String charset = getCharset(textBody);
+
+        // Prima prova con il charset rilevato
+        try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), charset)) {
+            return readFromReader(reader);
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Charset non supportato: {}, tentativo fallback su UTF-8", charset);
+
+            // Fallback 1: UTF-8
+            try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), StandardCharsets.UTF_8)) {
+                return readFromReader(reader);
+            } catch (Exception e2) {
+                logger.warn("Fallback UTF-8 fallito, tentativo con ISO-8859-1");
+
+                // Fallback 2: ISO-8859-1 (supporta tutti i byte 0-255)
+                try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), StandardCharsets.ISO_8859_1)) {
+                    return readFromReader(reader);
+                } catch (Exception e3) {
+                    logger.error("Tutti i tentativi di decodifica falliti, uso default system charset");
+
+                    // Fallback finale: charset di sistema
+                    try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream())) {
+                        return readFromReader(reader);
+                    }
+                }
             }
         }
     }
 
     /**
-     * Recupera il tipo MIME da un TextBody.
+     * Rileva il charset dall'header Content-Type del TextBody
      *
-     * @param textBody Il corpo testuale
-     * @return MimeType (es. "text/plain", "text/html")
+     * @param textBody Il TextBody da analizzare
+     * @return Il charset rilevato o "UTF-8" come default
      */
-    private static String getContentTypeFromTextBody(TextBody textBody) {
-        if (textBody == null) throw new NullPointerException("L'oggetto textBody non esiste.");
+    private String getCharset(TextBody textBody) {
+        Entity parent = textBody.getParent();
+        if (parent != null && parent.getHeader() != null) {
+            ContentTypeField field = (ContentTypeField) parent.getHeader().getField("Content-Type");
+            if (field != null && field.getCharset() != null) {
+                String charset = field.getCharset();
+                logger.debug("Charset rilevato dall'header: {}", charset);
+                return charset;
+            }
+        }
 
-        ContentTypeField contentTypeField = (ContentTypeField) textBody.getParent().getHeader().getField("Content-Type");
-        return contentTypeField != null ? contentTypeField.getMimeType() : "text/plain";
+        // Default fallback
+        logger.debug("Nessun charset specificato, uso UTF-8 come default");
+        return "UTF-8";
     }
 
     /**
-     * Legge il contenuto testuale da un TextBody.
+     * Utility method per leggere da un InputStreamReader
      *
-     * @param textBody Corpo di testo
-     * @return Stringa contenente il testo
-     * @throws IOException in caso di problemi di lettura
+     * @param reader Il reader da cui leggere
+     * @return Il contenuto letto come stringa
+     * @throws IOException Se si verificano errori durante la lettura
      */
-    private static String readTextBodyContent(TextBody textBody) throws IOException {
-        if (textBody == null) throw new NullPointerException("L'oggetto textBody non esiste.");
-
-        try (InputStreamReader reader = new InputStreamReader(textBody.getInputStream(), StandardCharsets.UTF_8)) {
-            StringBuilder sb = new StringBuilder();
-            char[] buffer = new char[4096];
-            int bytesRead;
-            while ((bytesRead = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, bytesRead);
-            }
-            return sb.toString();
+    private String readFromReader(InputStreamReader reader) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        char[] buffer = new char[4096];
+        int bytesRead;
+        while ((bytesRead = reader.read(buffer)) != -1) {
+            sb.append(buffer, 0, bytesRead);
         }
+        return sb.toString();
+    }
+
+
+    private String getImageExtension(String mimeType) {
+        String lowerType = mimeType.toLowerCase();
+        if ("image/gif".equals(lowerType)) {
+            return "gif";
+        } else if ("image/jpeg".equals(lowerType)) {
+            return "jpg";
+        } else if ("image/png".equals(lowerType)) {
+            return "png";
+        } else if ("image/bmp".equals(lowerType)) {
+            return "bmp";
+        } else if ("image/webp".equals(lowerType)) {
+            return "webp";
+        } else {
+            return "img";
+        }
+    }
+
+    private String getFieldValue(Object field) {
+        return field != null ? field.toString() : "";
+    }
+
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
+    }
+
+    private void cleanup() {
+        if (tempDir != null && tempDir.exists()) {
+            File[] files = tempDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (!file.delete()) {
+                        logger.warn("Impossibile eliminare il file temporaneo: {}", file.getAbsolutePath());
+                    }
+                }
+            }
+            if (!tempDir.delete()) {
+                logger.warn("Impossibile eliminare la directory temporanea: {}", tempDir.getAbsolutePath());
+            }
+        }
+        embeddedImages.clear();
     }
 }
