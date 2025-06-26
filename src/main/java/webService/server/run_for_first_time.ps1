@@ -117,6 +117,7 @@ try {
 
     Write-Host "✅ Download completato" -ForegroundColor Green
 }
+# Aggiungi qui il blocco 'catch' mancante
 catch {
     Write-Host "❌ Errore nel download di Chrome Headless Shell: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host "Possibili cause:" -ForegroundColor Yellow
@@ -145,7 +146,8 @@ $FileSize = (Get-Item $ZipFile).Length
 
 # Headless Shell è più piccolo: minimo 10MB
 if ($FileSize -lt 10971520) {
-    Write-Host "❌ File chrome-headless-shell.zip troppo piccolo ($FileSize bytes)" -ForegroundColor Red
+    # Ho corretto la sintassi per includere la variabile in una stringa
+    Write-Host "❌ File chrome-headless-shell.zip troppo piccolo ($($FileSize) bytes)" -ForegroundColor Red
     Write-Host "   Il download potrebbe essere incompleto o corrotto" -ForegroundColor Gray
     Write-Host "   Riprova il download" -ForegroundColor Gray
     Remove-Item $ZipFile -Force

@@ -1,11 +1,11 @@
 @echo off
-REM setup_chrome.bat - Download Chrome Headless Shell per Windows
+REM Download Chrome Headless Shell per Windows
 
 title Setup Chrome Headless Shell per Email Converter
 
 echo.
 echo 🚀 Chrome Headless Shell Setup per Email Converter
-echo =================================================
+echo ==========================================================
 echo 🪟 Windows rilevato
 
 REM 1. Rileva architettura Windows
@@ -92,7 +92,7 @@ if exist "%CHROME_EXE%" (
     )
 )
 
-REM 4. Download Chrome Headless Shell
+REM 4. Download Chrome Headless Shell (VERSIONE VELOCE)
 echo.
 echo ⬇️  Scaricando Chrome Headless Shell %ARCH%...
 echo    URL: %CHROME_URL%
@@ -102,7 +102,24 @@ echo    Destinazione: %TARGET_DIR%\
 REM Elimina eventuali file precedenti
 if exist chrome-headless-shell.zip del chrome-headless-shell.zip >nul 2>&1
 
-REM Download con PowerShell
+REM Prova prima curl (più veloce), poi PowerShell come fallback
+echo 🚀 Tentativo download con curl...
+curl --version >nul 2>&1
+if %ERRORLEVEL%==0 (
+    echo ✅ curl disponibile - download veloce!
+    curl -L --progress-bar -o chrome-headless-shell.zip "%CHROME_URL%"
+    if %ERRORLEVEL%==0 (
+        echo ✅ Download completato con curl
+        goto :download_success
+    ) else (
+        echo ⚠️  curl fallito, provo con PowerShell...
+    )
+) else (
+    echo ⚠️  curl non disponibile, uso PowerShell...
+)
+
+REM Fallback con PowerShell
+echo 🐌 Download con PowerShell...
 powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Write-Host 'Download Chrome Headless Shell in corso...'; try { Invoke-WebRequest -Uri '%CHROME_URL%' -OutFile 'chrome-headless-shell.zip' -UseBasicParsing; Write-Host 'Download completato' } catch { Write-Host 'Errore download:' $_.Exception.Message; exit 1 }}"
 
 if %ERRORLEVEL% neq 0 (
@@ -116,6 +133,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
+:download_success
 if not exist chrome-headless-shell.zip (
     echo ❌ File chrome-headless-shell.zip non trovato dopo il download
     pause
@@ -216,8 +234,7 @@ if exist "%CHROME_EXE%" (
         echo    ^(Normale su alcuni sistemi, dovrebbe funzionare nell'applicazione^)
         echo.
         echo 🎉 Setup completato!
-    )
-else (
+    ) else (
     echo ❌ Chrome Headless Shell non trovato dopo l'installazione
     echo    Qualcosa è andato storto durante l'estrazione
     pause
@@ -234,5 +251,7 @@ echo 💡 Vantaggi Headless Shell:
 echo    - Molto più leggero (~%FILE_SIZE_MB%MB vs ~150MB Chrome completo)
 echo    - Avvio più veloce
 echo    - Stesso risultato PDF identico
+echo.
+echo 🚀 Nota: Questo script prova prima curl (veloce) poi PowerShell (compatibile)
 echo.
 pause

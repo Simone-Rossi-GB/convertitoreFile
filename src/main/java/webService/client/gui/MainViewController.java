@@ -652,7 +652,7 @@ public class MainViewController {
      */
     public void launchDialogConversion(File srcFile) {
         //Quando viene chiamato incrementa il numero di file ricevuti
-        Platform.runLater(() -> fileRicevuti++);
+        Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
         srcExtension = Utility.getExtension(srcFile);
 
