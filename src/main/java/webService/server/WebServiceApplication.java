@@ -27,6 +27,8 @@ public class WebServiceApplication {
         //Inizializza i gestori dei file di configurazione
         ConfigInstance ci = new ConfigInstance(new File("config-files/config.json"));
         ConfigData.update(ci);
+        logger.info(ci.getJsonFile().getAbsolutePath());
+        logger.info(ci.getJsonFile().exists());
         ConversionContextInstance cci = new ConversionContextInstance(new File("config-files/conversionContext.json"));
         ConversionContextData.update(cci);
         if (context == null || !context.isActive()) {
