@@ -66,7 +66,7 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
 
             // Prepara file output tar.gz
             String baseName = zipFile.getName().replaceFirst("\\.zip$", "");
-            outputTarGz = new File("src/temp", baseName + ".tar.gz");
+            outputTarGz = new File(zipFile.getParent(), baseName + ".tar.gz");
 
             try (FileOutputStream fos = new FileOutputStream(outputTarGz);
                  GzipCompressorOutputStream gcos = new GzipCompressorOutputStream(fos);

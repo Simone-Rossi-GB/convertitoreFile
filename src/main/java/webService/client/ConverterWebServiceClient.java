@@ -78,7 +78,6 @@ public class ConverterWebServiceClient {
     /**
      * Recupera la lista delle conversioni possibili per una data estensione sorgente.
      * Chiama l'endpoint /conversions/{extension} del servizio web.
-     *
      * @param extension L'estensione del file originale (es. "pdf", "docx")
      * @return Una lista di estensioni di destinazione possibili per la conversione
      * @throws WebServiceException se il servizio non è disponibile o si verifica un errore

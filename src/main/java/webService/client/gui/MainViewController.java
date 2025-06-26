@@ -96,7 +96,7 @@ public class MainViewController {
     private MainApp mainApp;
 
     /**
-     * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
+     * Metodo invocato automaticamente da JavaFX dopo il caricamento dell'FXML.
      * Inizializza il controller, i listener e carica la configurazione.
      */
     @FXML
@@ -106,13 +106,17 @@ public class MainViewController {
         updateMonitoringStatus();
         logger.info("Applicazione avviata.");
         logger.info("Caricamento configurazione...");
-
+        //Inizializza il client webService
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+        //Inizializza i gestori dei file di configurazione
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
         loadConfiguration();
         ConversionContextInstance cci = new ConversionContextInstance(new File(conversionContextFile));
         ConversionContextData.update(cci);
+        //Carica la configurazione di base
+        loadConfiguration();
+        //Invia al server i file di configurazione
         if(webServiceClient.isServiceAvailable()){
             webServiceClient.sendConfigFile(new File(configFile));
             webServiceClient.sendConversionContextFile(new File(conversionContextFile));
@@ -208,7 +212,11 @@ public class MainViewController {
         });
     }
 
+    /**
+     * Estrae le informazioni contenute nel file di configurazione
+     */
     private void loadConfiguration() {
+        //Ottiene i percorsi delle cartelle dal file di config e le crea se non esistono;
         monitoredFolderPath = ConfigReader.getMonitoredDir();
         checkAndCreateFolder(monitoredFolderPath);
         convertedFolderPath = ConfigReader.getSuccessOutputDir();
@@ -222,10 +230,11 @@ public class MainViewController {
         logger.info("Cartella monitorata: {}", monitoredFolderPath);
         logger.info("Cartella file convertiti: {}", convertedFolderPath);
         logger.info("Cartella file falliti: {}", failedFolderPath);
-
     }
 
-    // Metodo che controlla l'esistenza di una directory e se non esiste la crea
+    /**
+     * Metodo che controlla l'esistenza di una directory e se non esiste la crea
+     */
     private void checkAndCreateFolder(String path) {
         File folder = new File(path);
         if (!folder.exists()) {
@@ -238,11 +247,14 @@ public class MainViewController {
         }
     }
 
-
+    /**
+     * Apre la finestra per modificare il file config.json
+     */
     private void openConfigurationWindow() {
         try {
             addLogMessage("Apertura editor configurazione...");
 
+            //Carica il file FXML
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
             Parent configWindow = loader.load();
@@ -255,10 +267,10 @@ public class MainViewController {
             configStage.setResizable(false);
             configStage.setScene(new Scene(configWindow));
 
-            // Ottieni il controller e passa i riferimenti necessari
+            // Ottiene il controller e passa i riferimenti necessari
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
-            // Mostra la finestra e attendi la chiusura
+            // Mostra la finestra e attende la chiusura
             addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
 
@@ -275,10 +287,14 @@ public class MainViewController {
         }
     }
 
+    /**
+     * Apre la finestra per modificare il file conversionContext.json
+     */
     private void openConversionConfigurationWindow() {
         try {
             addLogMessage("Apertura editor configurazione della conversione...");
 
+            // Carica il file FXML
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/ConversionConfigWindow.fxml"));
             Parent configWindow = loader.load();
@@ -294,14 +310,13 @@ public class MainViewController {
             // Ottiene il controller e passa i riferimenti necessari
             ConversionConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
-            // Mostra la finestra e attendi la chiusura
+            // Mostra la finestra e attende la chiusura
             logger.info("Editor configurazione conversione aperto");
             configStage.showAndWait();
             // Ricarica la configurazione
             logger.info("Configurazione inviata al webService");
             webServiceClient.sendConversionContextFile(new File(conversionContextFile));
         }catch (IOException e) {
-            e.printStackTrace();
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
        }
@@ -331,6 +346,10 @@ public class MainViewController {
         }
     }
 
+    /**
+     * Aggiunge un messaggio al log della GUI
+     * @param message messaggio da aggiungere
+     */
     public void addLogMessage(String message) {
         Platform.runLater(() -> {
             String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
@@ -349,6 +368,9 @@ public class MainViewController {
         });
     }
 
+    /**
+     * Interrompe il thread del directory watcher e tutti quelli che ha generato in maniera sicura
+     */
     public void interruptWatcher() {
         addLogMessage("Terminazione del watcher...");
         if (watcherThread != null) {
@@ -374,26 +396,16 @@ public class MainViewController {
     }
 
     /**
-     * Fa comparire il dialog per selezionare il formato nel quale convertire il/i file
+     * Fa comparire il dialog per selezionare il formato nel quale convertire il/i file e poi avvia la conversione
      * @param srcFile file di partenza
      */
     public void launchDialogConversion(File srcFile) {
+        //Quando viene chiamato incrementa il numero di file ricevuti
         Platform.runLater(() -> fileRicevuti++);
         String srcExtension;
-        srcExtension = Utility.getExtension(srcFile);
-
-        //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
-        if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
-            try{
-                srcExtension = Zipper.extractFileExstension(srcFile);
-        } catch (IOException e) {
-            launchAlertError("Impossibile decomprimere il file");
-        }catch (IllegalExtensionException e){
-            launchAlertError("I file hanno formati diversi");
-        }
-
         List<String> formats = null;
         try {
+            srcExtension = extractSrcExtension(srcFile);
             //tenta di ottenere i formati dal webService
             formats = getExtensionsFromWebService(srcExtension);
             List<String> finalFormats = formats;
@@ -406,14 +418,35 @@ public class MainViewController {
                 Optional<String> result = dialog.showAndWait();
                 //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
                 result.ifPresent(chosenFormat -> {
-                    new Thread(() -> performConversion(srcFile, chosenFormat)).start();
+                   performConversion(srcFile, chosenFormat);
                 });
             });
         } catch (Exception e) { //Intercetta tutte le eccezioni sollevate
+            //Sposta il file di partenza nella cartella delle conversioni fallite
             moveFileToErrorFolder(srcFile);
             launchAlertError(e.getMessage());
             aggiornaCounterScartati();
         }
+    }
+
+    /**
+     * Estrae l'estensione del file da convertire.
+     * @param file file di partenza
+     * @return l'estensione del file. Se la conversione multipla è impostata ritorna l'estensione dei file contenuti
+     * @throws IOException la classe zipper non è riuscita a decomprimere il file nel caso di conversione multipla
+     * @throws IllegalExtensionException Il file non ha estensione. Nel caso di conversione multipla può essere lanciata se i file della cartella compressa sono di formati diversi
+     */
+    private String extractSrcExtension(File file) throws IOException, IllegalExtensionException {
+        String srcExtension = Utility.getExtension(file);
+        //Se è impostata la conversione multipla prende l'estensione dei file contenuti se è uguale per tutti
+        if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
+            try {
+                srcExtension = Zipper.extractFileExstension(file);
+            } catch (IOException e) {
+                throw new IOException("Impossibile decomprimere il file");
+            }
+        }
+        return srcExtension;
     }
 
     /**
@@ -430,9 +463,9 @@ public class MainViewController {
      * Chiede al server i formati in cui il file può essere convertito
      * @param srcExtension formato di partenza
      * @return lista di formati supportati
-     * @throws Exception eccezioni generate dal webService o problemi con i formati
+     * @throws WebServiceException web service non disponibile o errore durante la ricerca dei formati
      */
-    private List<String> getExtensionsFromWebService(String srcExtension) throws Exception{
+    private List<String> getExtensionsFromWebService(String srcExtension) throws WebServiceException{
         List<String> formats = null;
         // Controlla se il webService è attivo
         if (webServiceClient.isServiceAvailable()) {
@@ -487,6 +520,7 @@ public class MainViewController {
             Thread.sleep(200);
 
             if (result.isSuccess()) {
+                // Verifica che il file convertito sia stato effettivamente salvato
                 outputDestinationFile = result.getResult();
                 if (outputDestinationFile.exists()) {
                     // Fase 7: Finalizzazione
@@ -599,7 +633,7 @@ public class MainViewController {
 
     /**
      * Viene chiamato in caso di errore di qualsiasi natura durante la conversione. Sposta il file di partenza in una cartella dedicata alle conversioni fallite
-     * @param originalMonitoredFile
+     * @param originalMonitoredFile file di partenza
      */
     private void moveFileToErrorFolder(File originalMonitoredFile) {
         try {

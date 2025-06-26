@@ -52,7 +52,6 @@ public class MainApp extends Application {
             });
 
         } catch (IOException e) {
-            e.printStackTrace();
             logger.fatal("Errore nel caricare GraphicalMenu.fxml: {}", e.getMessage());
             System.err.println("Errore nel caricare GraphicalMenu.fxml: " + e.getMessage());
 

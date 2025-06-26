@@ -125,29 +125,19 @@ public class EngineWebService {
 
         File outFile;
 
-        //Crea un file temp per la conversione
-        File tempFile = new File("src/temp", srcFile.getName());
-        System.out.println("Oggetto temp creato");
-
-        //copiamo il file originale nella destinazione del file temporaneo sostituendolo
-        Files.copy(srcFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-        //Elimina il file temp al termine del'applicazione
-        tempFile.deleteOnExit();
-
         //impostiamo il formato di conversione finale
         ConversionContextWriter.setDestinationFormat(outExt);
 
         try {
             // convertiamo il file
-            outFile = converter.conversione(tempFile);
+            outFile = converter.conversione(srcFile);
         } catch (Exception e) {
             throw new ConversionException(e.getMessage());
         }
 
         //eliminiamo preventivamente il file temporaneo anche se viene eliminato
         // alla chiusura della JVM
-        Files.deleteIfExists(tempFile.toPath());
+        Files.deleteIfExists(srcFile.toPath());
 
         return outFile;
     }

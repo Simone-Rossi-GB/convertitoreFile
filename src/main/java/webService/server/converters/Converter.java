@@ -1,15 +1,21 @@
 package webService.server.converters;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.client.objects.Utility;
+import webService.server.converters.compressedFilesConverters.ZIPtoTARGZconverter;
+
 import java.io.File;
 
 public abstract class Converter {
+    private static final Logger logger = LogManager.getLogger(Converter.class);
 
     public File conversione(File srcFile) throws Exception {
+        logger.info(srcFile.getAbsolutePath());
         File outFile = convert(srcFile);
+        logger.info(outFile.getAbsolutePath());
         if(ConversionContextReader.getIsZippedOutput() && !Utility.getExtension(outFile).equals("zip")) {
-            System.out.println("Zippo i file");
             return Zipper.compressioneFile(outFile, Utility.getBaseName(srcFile));
         }
         return outFile;
