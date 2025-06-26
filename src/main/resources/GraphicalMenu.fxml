@@ -179,11 +179,11 @@
             <!-- FOOTER BAR -->
             <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="900.0" spacing="10" styleClass="footer-bar">
                 <children>
-                    <ToggleButton fx:id="themeToggle" styleClass="theme-toggle-btn" text="☾/☀">
+                    <ToggleButton fx:id="themeToggle" prefHeight="49.0" prefWidth="50.0" styleClass="theme-toggle-btn" text="☾/☀">
                   <font>
                      <Font name="DejaVu Sans" size="13.5" />
                   </font></ToggleButton>
-                    <Button fx:id="langButton" onAction="#showLanguageMenu" styleClass="theme-toggle-btn" />
+                    <Button fx:id="langButton" onAction="#showLanguageMenu" prefHeight="41.0" prefWidth="16.0" styleClass="theme-toggle-btn" />
 
                     <Region HBox.hgrow="ALWAYS" />
 
@@ -192,7 +192,7 @@
                     </Label>
                 </children>
                 <padding>
-                    <Insets bottom="12.0" left="25.0" right="25.0" top="12.0" />
+                    <Insets bottom="14.0" left="25.0" right="25.0" top="8.0" />
                 </padding>
             </HBox>
 
