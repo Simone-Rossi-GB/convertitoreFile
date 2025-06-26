@@ -3,7 +3,6 @@ package converters.jsonCsvConverters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import objects.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,31 +17,45 @@ import converters.exception.EmptyFileException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * Classe per la conversione di un file CSV in un file JSON.
+ * Utilizza Jackson per la gestione del formato JSON e implementa una logica avanzata per la gestione dei delimitatori e delle virgolette.
+ */
 public class CSVtoJSONconverter extends Converter {
 
-    private static final Logger logger = LogManager.getLogger(CSVtoJSONconverter.class);
+    private static final Logger logger = LogManager.getLogger(CSVtoJSONconverter.class); // Logger per la gestione degli errori e informazioni
+
     /**
-     * Converte un file CSV in un file JSON con delimitatore rilevato automaticamente.
-     * Ogni riga del CSV diventa un oggetto JSON.
+     * Metodo principale per la conversione di un file CSV in JSON.
+     *
+     * @param srcFile Il file CSV da convertire.
+     * @return Il file JSON generato.
+     * @throws IOException Se si verifica un errore durante la lettura o scrittura del file.
+     * @throws EmptyFileException Se il file CSV è vuoto.
      */
     public File convert(File srcFile) throws IOException, EmptyFileException {
         logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
+
+        // Legge tutte le righe del file CSV
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {
             logger.error("Il file CSV è vuoto → {}", srcFile.getName());
             throw new EmptyFileException("Il file CSV è vuoto: " + srcFile.getName());
         }
 
+        // Rimuove eventuali caratteri BOM dalla prima riga e determina il delimitatore
         String headerLine = removeBOM(lines.get(0));
         String delimiter = detectDelimiter(headerLine);
         String[] headers = splitCsvLine(headerLine, delimiter);
 
+        // Crea un oggetto JSON utilizzando Jackson
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode jsonArray = mapper.createArrayNode();
 
+        // Itera sulle righe del CSV per convertirle in JSON
         for (int i = 1; i < lines.size(); i++) {
             String rawLine = lines.get(i).trim();
-            if (rawLine.isEmpty()) continue;
+            if (rawLine.isEmpty()) continue; // Ignora righe vuote
 
             String[] values = splitCsvLine(rawLine, delimiter);
             if (values.length < headers.length) {
@@ -54,11 +67,13 @@ public class CSVtoJSONconverter extends Converter {
                 logger.warn("Riga {} con celle extra → Verranno ignorate", i + 1);
             }
 
+            // Crea un oggetto JSON per la riga corrente
             ObjectNode obj = mapper.createObjectNode();
             for (int j = 0; j < headers.length; j++) {
                 String key = stripQuotes(headers[j]);
                 String value = stripQuotes(values[j]);
 
+                // Determina se il valore è numerico e lo converte
                 if (value.matches("^-?\\d+(\\.\\d+)?$")) {
                     obj.put(key, Double.parseDouble(value));
                 } else {
@@ -68,6 +83,7 @@ public class CSVtoJSONconverter extends Converter {
             jsonArray.add(obj);
         }
 
+        // Crea il file JSON di output
         File output = new File(srcFile.getParent(), getBaseName(srcFile) + ".json");
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(output, jsonArray);
@@ -80,19 +96,25 @@ public class CSVtoJSONconverter extends Converter {
     }
 
     /**
-     * Rimuove il carattere BOM all'inizio della stringa, se presente.
+     * Rimuove eventuali caratteri BOM (Byte Order Mark) dalla stringa.
+     *
+     * @param line La riga da cui rimuovere il BOM.
+     * @return La riga senza BOM.
      */
     private static String removeBOM(String line) {
         return line.replace("\uFEFF", "");
     }
 
     /**
-     * Rileva il delimitatore più probabile analizzando la riga dell'header.
+     * Determina il delimitatore del CSV analizzando la prima riga.
+     *
+     * @param line La riga di intestazione del CSV.
+     * @return Il delimitatore più probabile.
      */
     private static String detectDelimiter(String line) {
-        char[] delimiters = {',', ';', '\t', '|'};
+        char[] delimiters = {',', ';', '\t', '|'}; // Possibili delimitatori
         int maxCount = 0;
-        String selected = ",";
+        String selected = ","; // Default: virgola
         for (char delim : delimiters) {
             int count = line.split(Pattern.quote(String.valueOf(delim)), -1).length - 1;
             if (count > maxCount) {
@@ -104,7 +126,11 @@ public class CSVtoJSONconverter extends Converter {
     }
 
     /**
-     * Divide una riga CSV nei suoi campi, rispettando eventuali virgolette.
+     * Divide una riga CSV in un array di stringhe, gestendo le virgolette.
+     *
+     * @param line La riga CSV da dividere.
+     * @param delimiter Il delimitatore utilizzato nel CSV.
+     * @return Un array di stringhe contenente i valori della riga.
      */
     private static String[] splitCsvLine(String line, String delimiter) {
         List<String> result = new ArrayList<>();
@@ -114,7 +140,7 @@ public class CSVtoJSONconverter extends Converter {
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if (c == '"') {
-                inQuotes = !inQuotes;
+                inQuotes = !inQuotes; // Alterna lo stato delle virgolette
             } else if (String.valueOf(c).equals(delimiter) && !inQuotes) {
                 result.add(sb.toString());
                 sb.setLength(0);
@@ -122,12 +148,15 @@ public class CSVtoJSONconverter extends Converter {
                 sb.append(c);
             }
         }
-        result.add(sb.toString());
+        result.add(sb.toString()); // Aggiunge l'ultimo valore
         return result.toArray(new String[0]);
     }
 
     /**
-     * Rimuove virgolette iniziali/finali da una stringa, se presenti.
+     * Rimuove le virgolette da una stringa, se presenti.
+     *
+     * @param s La stringa da elaborare.
+     * @return La stringa senza virgolette.
      */
     private static String stripQuotes(String s) {
         if (s == null) return "";
@@ -139,7 +168,10 @@ public class CSVtoJSONconverter extends Converter {
     }
 
     /**
-     * Estrae il nome base di un file (senza estensione).
+     * Ottiene il nome base del file senza estensione.
+     *
+     * @param file Il file da analizzare.
+     * @return Il nome del file senza estensione.
      */
     private static String getBaseName(File file) {
         String name = file.getName();
@@ -147,4 +179,3 @@ public class CSVtoJSONconverter extends Converter {
         return (lastDot == -1) ? name : name.substring(0, lastDot);
     }
 }
-
