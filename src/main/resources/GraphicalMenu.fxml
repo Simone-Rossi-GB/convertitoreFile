@@ -179,7 +179,7 @@
             <!-- FOOTER BAR -->
             <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="900.0" spacing="10" styleClass="footer-bar">
                 <children>
-                    <ToggleButton fx:id="themeToggle" prefHeight="49.0" prefWidth="50.0" styleClass="theme-toggle-btn" text="☾/☀">
+                    <ToggleButton fx:id="themeToggle" prefHeight="49.0" prefWidth="60.0" styleClass="theme-toggle-btn" text="☾/☀">
                   <font>
                      <Font name="DejaVu Sans" size="13.5" />
                   </font></ToggleButton>
@@ -192,7 +192,7 @@
                     </Label>
                 </children>
                 <padding>
-                    <Insets bottom="14.0" left="25.0" right="25.0" top="8.0" />
+                    <Insets bottom="12.0" left="25.0" right="25.0" top="10.0" />
                 </padding>
             </HBox>
 
