@@ -755,19 +755,21 @@ public class MainViewController {
      * @param srcFile file di partenza
      * @param targetFormat formato di destinazione
      */
-    private void performConversion(File srcFile, String targetFormat) throws ConversionException, WebServiceException{
+    private void performConversion(File srcFile, String targetFormat) throws ConversionException, WebServiceException {
         String filename = srcFile.getName();
 
         try {
             // Fase 1: Inizializzazione
             updateProgressInLog(filename, 0, "Inizializzazione...");
-            Thread.sleep(200); // Simula tempo di elaborazione
+            Thread.sleep(200);
 
             // Fase 2: Verifica servizio
             updateProgressInLog(filename, 10, "Verifica servizio...");
             if (!webServiceClient.isServiceAvailable()) {
                 addFinalLogMessage(filename + " - Servizio non disponibile");
-                throw new WebServiceException("Il web service non è disponibile");
+                aggiornaCounterScartati();
+                moveFileToErrorFolder(srcFile);
+                return; // IMPORTANTE: return invece di throw
             }
 
             // Fase 3: Caricamento file
@@ -777,7 +779,7 @@ public class MainViewController {
             File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
 
             // Fase 4: Invio al server il conversion context
-            updateProgressInLog(filename, 40, "Invio paramtri al server...");
+            updateProgressInLog(filename, 40, "Invio parametri al server...");
             Thread.sleep(200);
 
             ConversionContextWriter.setDestinationFormat(targetFormat);
@@ -793,19 +795,64 @@ public class MainViewController {
             updateProgressInLog(filename, 80, "Elaborazione risultato...");
             Thread.sleep(200);
 
-                if (result.isSuccess()) {
-                    // Verifica che il file convertito sia stato effettivamente salvato
-                    if (outputDestinationFile.exists()) {
-                        addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
-                    } else {
-                        throw new FileCreationException("Il file convertito non è stato salvato correttamente dal web service");
-                    }
-                } else {
-                    throw new ConversionException("Web service ha restituito errore: " + result.getError());
-                }
-            } catch (Exception wsError) { // TOFIX
-                addLogMessage("Web service fallito: " + wsError.getMessage());
+            if (result.isSuccess()) {
+                // Fase 7: Verifica file salvato
+                updateProgressInLog(filename, 90, "Verifica file salvato...");
+                Thread.sleep(100);
 
+                // Verifica che il file convertito sia stato effettivamente salvato
+                if (outputDestinationFile.exists()) {
+                    // Fase 8: Completamento
+                    updateProgressInLog(filename, 100, "Completato!");
+                    Thread.sleep(100);
+
+                    addFinalLogMessage("✅ Conversione riuscita: " + filename);
+
+                    // AGGIORNA CONTATORE SUCCESSI
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                    });
+
+                    // Rimuovi il file originale dalla cartella monitorata
+                    try {
+                        if (srcFile.exists()) {
+                            srcFile.delete();
+                            logger.info("File originale rimosso dalla cartella monitorata: " + srcFile.getName());
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Non è stato possibile rimuovere il file originale: " + e.getMessage());
+                    }
+
+                } else {
+                    // File non salvato correttamente
+                    updateProgressInLog(filename, 100, "Errore: file non salvato");
+                    addFinalLogMessage("❌ Errore: " + filename + " - File non salvato dal web service");
+                    aggiornaCounterScartati();
+                    moveFileToErrorFolder(srcFile);
+                }
+            } else {
+                // Web service ha restituito errore
+                updateProgressInLog(filename, 100, "Errore dal server");
+                addFinalLogMessage("❌ Errore server: " + filename + " - " + result.getError());
+                aggiornaCounterScartati();
+                moveFileToErrorFolder(srcFile);
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Ripristina lo stato di interruzione
+            updateProgressInLog(filename, 100, "Interrotto");
+            addFinalLogMessage("⚠️ Conversione interrotta: " + filename);
+            aggiornaCounterScartati();
+            moveFileToErrorFolder(srcFile);
+
+        } catch (Exception e) {
+            // Qualsiasi altro errore
+            updateProgressInLog(filename, 100, "Errore imprevisto");
+            addFinalLogMessage("❌ Errore imprevisto: " + filename + " - " + e.getMessage());
+            logger.error("Errore durante conversione di " + filename, e);
+            aggiornaCounterScartati();
+            moveFileToErrorFolder(srcFile);
         }
     }
 
