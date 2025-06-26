@@ -5,10 +5,10 @@
 /* =================================================================== */
 
 .dialog-pane {
-    -fx-background-color: #2d3142;
+    -fx-background-color: #2d3142 !important;
     -fx-background-radius: 15;
     -fx-border-radius: 15;
-    -fx-border-color: rgba(74,85,104,0.3);
+    -fx-border-color: rgba(74,85,104,0.3) !important;
     -fx-border-width: 1;
     -fx-font-family: "Inter", "Roboto", sans-serif;
 }
