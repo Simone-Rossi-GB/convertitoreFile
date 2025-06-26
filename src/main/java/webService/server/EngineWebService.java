@@ -125,9 +125,6 @@ public class EngineWebService {
 
         File outFile;
 
-        //impostiamo il formato di conversione finale
-        ConversionContextWriter.setDestinationFormat(outExt);
-
         try {
             // convertiamo il file
             outFile = converter.conversione(srcFile);

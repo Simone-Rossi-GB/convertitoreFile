@@ -118,6 +118,8 @@ public class ConverterWebServiceClient {
             return new ConversionResult(false, "Servizio di conversione non disponibile.");
         }
 
+
+
         try {
             // Costruisce l'URL per la conversione
             String url = baseUrl + "/api/converter/convert";
@@ -186,6 +188,9 @@ public class ConverterWebServiceClient {
      */
     private String getExtensionFromMediaType(String mediaType) {
         try {
+            //Mediatype relativo a docx protetto, ma non permette di riconoscere l'estensione
+            if (mediaType.equals("application/x-tika-ooxml-protected"))
+                return ".docx";
             // Utilizza Apache Tika per mappare il MIME type all'estensione
             MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
             MimeType mimeType = allTypes.forName(mediaType);

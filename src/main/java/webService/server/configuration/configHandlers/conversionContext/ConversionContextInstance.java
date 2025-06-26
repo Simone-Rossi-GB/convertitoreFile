@@ -21,6 +21,7 @@ public class ConversionContextInstance {
         List<String> MANDATORY_FIELDS = Arrays.asList(
                 "destinationFormat",
                 "password",
+                "protected",
                 "union",
                 "zippedOutput"
         );

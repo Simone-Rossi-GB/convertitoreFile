@@ -5,6 +5,7 @@ import webService.client.configuration.configHandlers.config.ConfigInstance;
 import webService.client.configuration.configHandlers.config.ConfigReader;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.client.objects.DirectoryWatcher;
@@ -484,7 +485,6 @@ public class MainViewController {
      * @param targetFormat formato di destinazione
      */
     private void performConversion(File srcFile, String targetFormat) throws ConversionException, WebServiceException{
-        boolean webServiceSuccess = false;
         String filename = srcFile.getName();
 
         try {
@@ -505,9 +505,12 @@ public class MainViewController {
 
             File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
 
-            // Fase 4: Invio al server
-            updateProgressInLog(filename, 40, "Invio al server...");
+            // Fase 4: Invio al server il conversion context
+            updateProgressInLog(filename, 40, "Invio paramtri al server...");
             Thread.sleep(200);
+
+            ConversionContextWriter.setDestinationFormat(targetFormat);
+            webServiceClient.sendConversionContextFile(new File(conversionContextFile));
 
             logger.info("Tentativo conversione tramite web service...");
 

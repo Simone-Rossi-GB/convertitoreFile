@@ -43,4 +43,13 @@ public class ConversionContextReader extends ConversionContextData {
     public static boolean getIsZippedOutput() {
         return (boolean) context.get().get("zippedOutput");
     }
+
+    /**
+     * Indica se i file convertiti devono essere protetti da password quando possibile.
+     *
+     * @return {@code true} se è richiesta la protezione; {@code false} altrimenti
+     */
+    public static boolean getProtected() {
+        return (boolean) context.get().get("protected");
+    }
 }

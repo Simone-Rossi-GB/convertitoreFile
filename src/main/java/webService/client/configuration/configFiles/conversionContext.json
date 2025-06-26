@@ -2,6 +2,7 @@
   "data" : {
     "destinationFormat" : "png",
     "password" : "samplefiles",
+    "protected" : true,
     "union" : false,
     "zippedOutput" : false
   }

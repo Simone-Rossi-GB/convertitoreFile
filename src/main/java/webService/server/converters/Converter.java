@@ -18,7 +18,10 @@ public abstract class Converter {
         logger.info(outFile.getAbsolutePath());
         // Controlla se il file in output deve essere zippato
         if(ConversionContextReader.getIsZippedOutput() && !Utility.getExtension(outFile).equals("zip")) {
-            return Zipper.compressioneFile(outFile, Utility.getBaseName(srcFile));
+            if (ConversionContextReader.getIsUnion())
+                return Zipper.compressioneFileProtetto(outFile, Utility.getBaseName(srcFile));
+            else
+                return Zipper.compressioneFile(outFile, Utility.getBaseName(srcFile));
         }
         return outFile;
     }

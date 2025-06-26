@@ -106,7 +106,10 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             }
             //Altrimenti zippa le singole immagini
             else{
-                outputFile = Zipper.compressioneFile(pages, baseName);
+                if(ConversionContextReader.getProtected())
+                    outputFile = Zipper.compressioneFileProtetto(pages, baseName);
+                else
+                    outputFile = Zipper.compressioneFile(pages, baseName);
             }
 
             pdfDocument.close();

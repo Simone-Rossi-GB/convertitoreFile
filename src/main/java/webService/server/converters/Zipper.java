@@ -1,5 +1,6 @@
 package webService.server.converters;
 
+import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.client.objects.Utility;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 public class Zipper {
     private static final Logger logger = LogManager.getLogger(Zipper.class);
@@ -29,7 +33,7 @@ public class Zipper {
      * @throws IOException in caso di errore di lettura/scrittura
      */
     public static File zip(List<File> files) throws IOException, FileMoveException {
-        File outputZip = new File("src/temp/images.zip"); // nome zip più esplicito
+        File outputZip = new File(files.get(0).getParent(), "file.zip");
 
         try (FileOutputStream fos = new FileOutputStream(outputZip);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
@@ -59,6 +63,40 @@ public class Zipper {
         }
         return outputZip;
     }
+
+
+    /**
+     * Crea un file ZIP contenente tutti i file specificati.
+     *
+     * @param files Lista di file da includere
+     * @return File ZIP generato
+     * @throws IOException in caso di errore di lettura/scrittura
+     * @throws FileMoveException impossibile eliminare il file temporaneo
+     */
+    public static File zipWithPassword(List<File> files) throws IOException, FileMoveException {
+        File outputZip = new File(files.get(0).getParent(), "file.zip");
+        ZipFile zipFile = new ZipFile(outputZip, ConversionContextReader.getPassword().toCharArray());
+
+        ZipParameters parameters = new ZipParameters();
+        parameters.setEncryptFiles(true);
+        parameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD);
+
+        for (File f : files) {
+            if (!f.exists() || !f.isFile()) {
+                logger.warn("File non valido: {}", f.getAbsolutePath());
+                continue;
+            }
+
+            zipFile.addFile(f, parameters);
+
+            if (!f.delete()) {
+                throw new FileMoveException("Impossibile eliminare il file temporaneo");
+            }
+        }
+
+        return outputZip;
+    }
+
 
     /**
      * Decomprime un file zip in un arrayList di file
@@ -119,6 +157,36 @@ public class Zipper {
         //Assegna al file il nome voluto
         zippedFiles = rinominaFileZip(zippedFiles, baseName);
         return zippedFiles;
+    }
+
+    /**
+     * Comprime una lista di file in un file zip protetto
+     * @param files ArrayList di file
+     * @param baseName Nome del file.zip
+     * @return File.zip
+     * @throws IOException Impossibile rinominare il file
+     */
+    public static File compressioneFileProtetto(ArrayList<File> files, String baseName) throws IOException, FileMoveException {
+        logger.info("Compressione dei file generati in output");
+        //Crea il file zip
+        File zippedFiles = zipWithPassword(files);
+        //Assegna al file il nome voluto
+        zippedFiles = rinominaFileZip(zippedFiles, baseName);
+        return zippedFiles;
+    }
+
+    /**
+     * Comprime un singolo file in un file zip protetto
+     * @param file file singolo da zippare
+     * @param baseName Nome del file.zip
+     * @return File.zip
+     * @throws IOException Impossibile rinominare il file
+     */
+    public static File compressioneFileProtetto(File file, String baseName) throws IOException, FileMoveException {
+        //Crea una lista con un solo file
+        ArrayList<File> files = new ArrayList<>();
+        files.add(file);
+        return compressioneFileProtetto(files, baseName);
     }
 
     /**

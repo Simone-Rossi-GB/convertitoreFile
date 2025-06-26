@@ -287,6 +287,7 @@ public class ConverterWebServiceController {
     private MediaType determineMediaType(File file) {
         try {
             String mimeType = tika.detect(file);
+            logger.warn(mimeType);
             return MediaType.parseMediaType(mimeType);
         } catch (IOException e) {
             return MediaType.APPLICATION_OCTET_STREAM;

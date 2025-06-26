@@ -8,12 +8,19 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.poifs.crypt.EncryptionMode;
+import org.apache.poi.poifs.crypt.Encryptor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
+import org.bouncycastle.openssl.PasswordException;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.security.GeneralSecurityException;
 import java.util.*;
 
 /**
@@ -35,7 +42,7 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
      * @throws IOException in caso di errore nella conversione
      */
     @Override
-    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException, PasswordException {
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}", pdfFile.getPath());
 
         XWPFDocument docx = new XWPFDocument();
@@ -67,8 +74,26 @@ public class PDFtoDOCXconverter extends AbstractPDFConverter {
         }
 
         File outputFile = new File(getTempFileName(pdfFile));
-        try (FileOutputStream out = new FileOutputStream(outputFile)) {
-            docx.write(out);
+        if(ConversionContextReader.getProtected()) {
+            try (POIFSFileSystem fs = new POIFSFileSystem();
+                 FileOutputStream fos = new FileOutputStream(outputFile)) {
+
+                EncryptionInfo info = new EncryptionInfo(EncryptionMode.standard);
+                Encryptor encryptor = info.getEncryptor();
+                encryptor.confirmPassword(ConversionContextReader.getPassword());
+
+                try (OutputStream os = encryptor.getDataStream(fs)) {
+                    docx.write(os);
+                } catch (GeneralSecurityException e) {
+                    throw new PasswordException("Errore nell'impostazione della password");
+                }
+
+                fs.writeFilesystem(fos);
+            }
+        }else{
+            try (FileOutputStream out = new FileOutputStream(outputFile)) {
+                docx.write(out);
+            }
         }
 
         logger.info("Conversione completata: {}", outputFile.getAbsolutePath());

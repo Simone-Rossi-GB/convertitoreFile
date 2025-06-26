@@ -44,4 +44,13 @@ public class ConversionContextWriter extends ConversionContextData {
     public static void setIsZippedOutput(boolean isZippedOutput) {
         context.get().put("zippedOutput", isZippedOutput);
     }
+
+    /**
+     * Specifica se l’output della conversione deve essere protetto da password quando possibile.
+     *
+     * @param isProtected {@code true} se l’output va protetto; {@code false} altrimenti
+     */
+    public static void setProtected(boolean isProtected) {
+        context.get().put("protected", isProtected);
+    }
 }

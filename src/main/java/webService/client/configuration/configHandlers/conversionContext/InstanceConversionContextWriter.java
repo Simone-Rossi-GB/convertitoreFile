@@ -57,4 +57,13 @@ public class InstanceConversionContextWriter {
     public void writeIsZippedOutput(boolean isZippedOutput) {
         JsonWriter.write(isZippedOutput, "zippedOutput", jsonFile, rootReference);
     }
+
+    /**
+     * Scrive un nuovo valore per il flag protected per le conversioni
+     *
+     * @param isProtected {@code true} protegge quando possibile i file in output
+     */
+    public void writeProtected(boolean isProtected) {
+        JsonWriter.write(isProtected, "protected", jsonFile, rootReference);
+    }
 }
