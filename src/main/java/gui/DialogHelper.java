@@ -1,39 +1,91 @@
 package gui;
 
-import javafx.application.Platform;
-import javafx.scene.Scene;
+import gui.jsonHandler.ConfigManager;
+import gui.jsonHandler.JsonConfig;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+
 /**
- * Helper class per applicare stili moderni ai dialog JavaFX.
- * Applica automaticamente il tema corrente (dark/light) e gli stili CSS moderni.
+ * Helper class per creare dialog moderni con supporto per temi dark/light
  */
 public class DialogHelper {
 
     private static final Logger logger = LogManager.getLogger(DialogHelper.class);
 
     /**
-     * Applica lo stile moderno a un dialog in base al tema corrente.
-     *
-     * @param dialog Il dialog da stilizzare
-     * @param isLightTheme Se true applica il tema light, altrimenti dark
+     * Crea un Alert moderno con il tema appropriato
      */
-    public static void applyModernStyle(Dialog<?> dialog, boolean isLightTheme) {
+    public static Alert createModernAlert(Alert.AlertType alertType, String title, String message, boolean isLightTheme) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        // Applica il tema al dialog
+        applyThemeToDialog(alert, isLightTheme);
+
+        return alert;
+    }
+
+    /**
+     * Crea un ChoiceDialog moderno con il tema appropriato
+     */
+    public static ChoiceDialog<String> createModernChoiceDialog(String defaultChoice, List<String> choices,
+                                                                String title, String header, String content, boolean isLightTheme) {
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(defaultChoice, choices);
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+
+        // Applica il tema al dialog
+        applyThemeToDialog(dialog, isLightTheme);
+
+        return dialog;
+    }
+
+    /**
+     * Crea un TextInputDialog moderno con il tema appropriato
+     */
+    public static TextInputDialog createModernTextInputDialog(String defaultText, String title,
+                                                              String header, String content, boolean isLightTheme) {
+        TextInputDialog dialog = new TextInputDialog(defaultText);
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+
+        // Applica il tema al dialog
+        applyThemeToDialog(dialog, isLightTheme);
+
+        return dialog;
+    }
+
+    /**
+     * Metodo principale per applicare il tema a qualsiasi dialog
+     */
+    private static void applyThemeToDialog(Dialog<?> dialog, boolean isLightTheme) {
         try {
+            // Ottieni il DialogPane
             DialogPane dialogPane = dialog.getDialogPane();
 
-            // Applica la classe per il tema
-            dialogPane.getStyleClass().removeAll("light", "dark"); // Rimuovi prima
+            // Carica il CSS per i dialog moderni
+            String cssPath = DialogHelper.class.getResource("/css/modern-dialogs-theme.css").toExternalForm();
+            dialogPane.getStylesheets().add(cssPath);
+
+            // Applica la classe del tema appropriato
             if (isLightTheme) {
                 dialogPane.getStyleClass().add("light");
+                logger.debug("Applicato tema light al dialog");
             } else {
                 dialogPane.getStyleClass().add("dark");
+                logger.debug("Applicato tema dark al dialog");
             }
 
-            // Applica classi specifiche per il tipo di dialog
+            // Applica classe specifica per il tipo di alert
             if (dialog instanceof Alert) {
                 Alert alert = (Alert) dialog;
                 switch (alert.getAlertType()) {
@@ -43,141 +95,76 @@ public class DialogHelper {
                     case INFORMATION:
                         dialogPane.getStyleClass().add("information");
                         break;
-                    case WARNING:
-                        dialogPane.getStyleClass().add("warning");
-                        break;
                     case CONFIRMATION:
                         dialogPane.getStyleClass().add("confirmation");
                         break;
+                    case WARNING:
+                        dialogPane.getStyleClass().add("warning");
+                        break;
                 }
-            }
-
-            // Caricamento CSS più robusto
-            boolean cssLoaded = false;
-
-            // Prova prima /css/
-            try {
-                String cssUrl = DialogHelper.class.getResource("/css/modern-dialogs-theme.css").toExternalForm();
-                dialogPane.getStylesheets().clear(); // Pulisci prima
-                dialogPane.getStylesheets().add(cssUrl);
-                cssLoaded = true;
-                logger.debug("CSS dialog moderno caricato da /css/");
-            } catch (Exception cssError) {
-                // Prova /styles/
-                try {
-                    String cssUrl = DialogHelper.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm();
-                    dialogPane.getStylesheets().clear();
-                    dialogPane.getStylesheets().add(cssUrl);
-                    cssLoaded = true;
-                    logger.debug("CSS dialog moderno caricato da /styles/");
-                } catch (Exception cssError2) {
-                    logger.warn("Impossibile caricare CSS moderno per dialog: " + cssError2.getMessage());
-                }
-            }
-
-            // Se il CSS non è stato caricato, prova a prenderlo dalla scena principale
-            if (!cssLoaded && MainApp.getPrimaryStage() != null) {
-                try {
-                    Scene mainScene = MainApp.getPrimaryStage().getScene();
-                    if (mainScene != null && !mainScene.getStylesheets().isEmpty()) {
-                        for (String stylesheet : mainScene.getStylesheets()) {
-                            if (stylesheet.contains("dialog")) {
-                                dialogPane.getStylesheets().add(stylesheet);
-                                cssLoaded = true;
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception fallbackError) {
-                    logger.debug("Fallback CSS loading failed: " + fallbackError.getMessage());
-                }
-            }
-
-            // Imposta l'owner se disponibile
-            if (MainApp.getPrimaryStage() != null) {
-                Platform.runLater(() -> {
-                    try {
-                        Stage dialogStage = (Stage) dialogPane.getScene().getWindow();
-                        if (dialogStage != null) {
-                            dialogStage.initOwner(MainApp.getPrimaryStage());
-                        }
-                    } catch (Exception ownerError) {
-                        logger.debug("Error setting dialog owner: " + ownerError.getMessage());
-                    }
-                });
             }
 
         } catch (Exception e) {
-            logger.error("Errore nell'applicazione dello stile moderno al dialog: " + e.getMessage());
+            logger.warn("Errore nell'applicazione del tema al dialog: " + e.getMessage());
+            // Fallback: prova percorso alternativo
+            try {
+                String fallbackCssPath = DialogHelper.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm();
+                dialog.getDialogPane().getStylesheets().add(fallbackCssPath);
+
+                if (isLightTheme) {
+                    dialog.getDialogPane().getStyleClass().add("light");
+                } else {
+                    dialog.getDialogPane().getStyleClass().add("dark");
+                }
+                logger.debug("Applicato tema con percorso fallback");
+            } catch (Exception fallbackError) {
+                logger.error("Impossibile applicare il tema al dialog: " + fallbackError.getMessage());
+            }
         }
     }
+
     /**
-     * Crea un Alert moderno con stile automatico.
-     *
-     * @param alertType Tipo di alert
-     * @param title Titolo del dialog
-     * @param message Messaggio del dialog
-     * @param isLightTheme Se true applica il tema light
-     * @return Alert stilizzato
+     * Metodo helper per rilevare automaticamente il tema corrente
      */
-    public static Alert createModernAlert(Alert.AlertType alertType, String title, String message, boolean isLightTheme) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
+    public static boolean detectCurrentTheme() {
+        try {
+            // Primo tentativo: controlla il primaryStage
+            if (MainApp.getPrimaryStage() != null &&
+                    MainApp.getPrimaryStage().getScene() != null &&
+                    MainApp.getPrimaryStage().getScene().getRoot() != null) {
 
-        // Applica lo stile moderno
-        applyModernStyle(alert, isLightTheme);
+                return MainApp.getPrimaryStage().getScene().getRoot().getStyleClass().contains("light");
+            }
+        } catch (Exception e) {
+            logger.debug("Impossibile rilevare tema da primaryStage: " + e.getMessage());
+        }
 
-        return alert;
+        try {
+            // Fallback: controlla il config JSON
+            JsonConfig config = ConfigManager.readConfig();
+            return "light".equals(config.getTheme());
+        } catch (Exception e) {
+            logger.debug("Impossibile rilevare tema da config: " + e.getMessage());
+        }
+
+        // Default: dark theme
+        return false;
     }
 
     /**
-     * Crea un ChoiceDialog moderno con stile automatico.
-     *
-     * @param defaultChoice Scelta di default
-     * @param choices Lista delle scelte disponibili
-     * @param title Titolo del dialog
-     * @param headerText Testo dell'header
-     * @param contentText Testo del contenuto
-     * @param isLightTheme Se true applica il tema light
-     * @return ChoiceDialog stilizzato
+     * Versioni semplificate che rilevano automaticamente il tema
      */
-    public static <T> ChoiceDialog<T> createModernChoiceDialog(T defaultChoice, java.util.Collection<T> choices,
-                                                               String title, String headerText, String contentText,
-                                                               boolean isLightTheme) {
-        ChoiceDialog<T> dialog = new ChoiceDialog<>(defaultChoice, choices);
-        dialog.setTitle(title);
-        dialog.setHeaderText(headerText);
-        dialog.setContentText(contentText);
-
-        // Applica lo stile moderno
-        applyModernStyle(dialog, isLightTheme);
-
-        return dialog;
+    public static Alert createModernAlert(Alert.AlertType alertType, String title, String message) {
+        return createModernAlert(alertType, title, message, detectCurrentTheme());
     }
 
-    /**
-     * Crea un TextInputDialog moderno con stile automatico.
-     *
-     * @param defaultText Testo di default
-     * @param title Titolo del dialog
-     * @param headerText Testo dell'header
-     * @param contentText Testo del contenuto
-     * @param isLightTheme Se true applica il tema light
-     * @return TextInputDialog stilizzato
-     */
+    public static ChoiceDialog<String> createModernChoiceDialog(String defaultChoice, List<String> choices,
+                                                                String title, String header, String content) {
+        return createModernChoiceDialog(defaultChoice, choices, title, header, content, detectCurrentTheme());
+    }
+
     public static TextInputDialog createModernTextInputDialog(String defaultText, String title,
-                                                              String headerText, String contentText,
-                                                              boolean isLightTheme) {
-        TextInputDialog dialog = new TextInputDialog(defaultText);
-        dialog.setTitle(title);
-        dialog.setHeaderText(headerText);
-        dialog.setContentText(contentText);
-
-        // Applica lo stile moderno
-        applyModernStyle(dialog, isLightTheme);
-
-        return dialog;
+                                                              String header, String content) {
+        return createModernTextInputDialog(defaultText, title, header, content, detectCurrentTheme());
     }
 }

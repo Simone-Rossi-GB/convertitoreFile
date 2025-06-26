@@ -679,8 +679,8 @@ public class MainViewController {
 
         //Mostra il dialog moderno per selezionare il formato di output
         Platform.runLater(() -> {
-            // Determina il tema corrente
-            boolean isLightTheme = themeToggle.isSelected();
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
             ChoiceDialog<String> dialog = DialogHelper.createModernChoiceDialog(
                     finalFormats.get(0),
@@ -692,7 +692,6 @@ public class MainViewController {
             );
 
             Optional<String> result = dialog.showAndWait();
-            //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
             result.ifPresent(chosenFormat -> {
                 new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
             });
@@ -791,11 +790,15 @@ public class MainViewController {
      * Lancia un alert di errore col messaggio desiderato e aggiunge la relativa voce al log
      * @param message
      */
+    /**
+     * Lancia un alert di errore col messaggio desiderato e aggiunge la relativa voce al log
+     * @param message
+     */
     public void launchAlertError(String message) {
         logger.error(message);
         Platform.runLater(() -> {
-            // Determina il tema corrente
-            boolean isLightTheme = themeToggle.isSelected();
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
             Alert alert = DialogHelper.createModernAlert(
                     Alert.AlertType.ERROR,
@@ -816,8 +819,8 @@ public class MainViewController {
         String message = "Conversione di " + file.getName() + " riuscita";
         logger.info(message);
         Platform.runLater(() -> {
-            // Determina il tema corrente
-            boolean isLightTheme = themeToggle.isSelected();
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
             Alert alert = DialogHelper.createModernAlert(
                     Alert.AlertType.INFORMATION,
@@ -829,7 +832,6 @@ public class MainViewController {
             alert.showAndWait();
         });
     }
-
     public static boolean launchDialogUnisci() throws Exception {
         CompletableFuture<Boolean> union = new CompletableFuture<>();
 

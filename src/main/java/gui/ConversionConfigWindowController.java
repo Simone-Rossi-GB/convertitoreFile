@@ -226,8 +226,8 @@ public class ConversionConfigWindowController {
         if (hasUnsavedChanges()) {
             logger.info("Tentativo di chiusura con modifiche non salvate");
 
-            // Determina il tema corrente dalla finestra padre
-            boolean isLightTheme = dialogStage.getScene().getRoot().getStyleClass().contains("light");
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
             Alert confirmAlert = DialogHelper.createModernAlert(
                     Alert.AlertType.CONFIRMATION,

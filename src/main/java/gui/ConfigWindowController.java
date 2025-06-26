@@ -320,6 +320,9 @@ public class ConfigWindowController {
     /**
      * Chiude la finestra senza salvare.
      */
+    /**
+     * Chiude la finestra senza salvare.
+     */
     @FXML
     private void cancelAndClose(ActionEvent event) {
         try {
@@ -327,8 +330,8 @@ public class ConfigWindowController {
             if (hasUnsavedChanges()) {
                 logger.info("Tentativo di chiusura con modifiche non salvate");
 
-                // Determina il tema corrente dalla finestra padre
-                boolean isLightTheme = dialogStage.getScene().getRoot().getStyleClass().contains("light");
+                // Usa il metodo helper per rilevare automaticamente il tema
+                boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
                 Alert confirmAlert = DialogHelper.createModernAlert(
                         Alert.AlertType.CONFIRMATION,
@@ -351,7 +354,6 @@ public class ConfigWindowController {
             showAlert("Attenzione", "Impossibile verificare le modifiche. Chiudo la finestra.", Alert.AlertType.WARNING);
         }
     }
-
 
     /**
      * Verifica se ci sono modifiche non salvate.
@@ -379,20 +381,14 @@ public class ConfigWindowController {
      */
     private void showAlert(String title, String message, Alert.AlertType alertType) {
         Platform.runLater(() -> {
-            // Determina il tema corrente dalla finestra padre
-            boolean isLightTheme = false;
-            try {
-                if (dialogStage != null && dialogStage.getScene() != null && dialogStage.getScene().getRoot() != null) {
-                    isLightTheme = dialogStage.getScene().getRoot().getStyleClass().contains("light");
-                }
-            } catch (Exception e) {
-                // Se non riusciamo a determinare il tema, usiamo dark
-            }
+            // Usa il metodo helper per rilevare automaticamente il tema
+            boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
             Alert alert = DialogHelper.createModernAlert(alertType, title, message, isLightTheme);
             alert.showAndWait();
         });
     }
+
 
     static class Delta {
         double x, y;
