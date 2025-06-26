@@ -1,8 +1,7 @@
 package webService.server;
 
 import com.twelvemonkeys.util.convert.ConversionException;
-import webService.server.converters.exception.IllegalExtensionException;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
+import webService.server.converters.exception.*;
 import webService.server.converters.Converter;
 import webService.server.configuration.configHandlers.config.ConfigReader;
 import webService.client.objects.Log;
@@ -12,9 +11,6 @@ import java.nio.file.*;
 import java.util.*;
 import webService.server.converters.Zipper;
 
-import webService.server.converters.exception.FileMoveException;
-import webService.server.converters.exception.FormatsException;
-import webService.server.converters.exception.UnsupportedConversionException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -52,7 +48,7 @@ public class EngineWebService {
 
 
     /**
-     * Esecuzione conversione
+     * Esecuzione conversione - VERSIONE CORRETTA
      * @param srcExt Estensione file iniziale
      * @param outExt Estensione file finale
      * @param srcFile File iniziale
@@ -61,21 +57,38 @@ public class EngineWebService {
      * @throws FileMoveException Errore nella gestione del file temporaneo
      * @throws UnsupportedConversionException conversione non supportata
      */
-    public File conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException,UnsupportedConversionException  {
-        File outFile;
+    public File conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException, UnsupportedConversionException {
+        File outFile = null; // CORREZIONE: Inizializza sempre la variabile
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
+            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
                 outFile = conversioneMultipla(Zipper.extractFileExstension(srcFile), outExt, srcFile);
-            else
+            } else {
                 outFile = conversioneSingola(srcExt, outExt, srcFile);
+            }
+
+            logger.info("Conversione completata con successo: {} -> {}", srcFile.getName(), outFile.getName());
             return outFile;
+
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new ConversionException("Errore nel caricamento del convertitore");
-        }catch (IOException e){
-            throw new FileMoveException("Errore nella gestione del file temporaneo");
-        } catch (FormatsException | IllegalExtensionException e){
+            logger.error("Errore nel caricamento del convertitore: {}", e.getMessage());
+            throw new ConversionException("Errore nel caricamento del convertitore: " + e.getMessage());
+        } catch (FormatsException | IllegalExtensionException e) {
+            logger.error("Conversione non supportata: {}", e.getMessage());
             throw new UnsupportedConversionException(e.getMessage());
+        } catch (IOException e) {
+            logger.error("Errore I/O durante la conversione: {}", e.getMessage());
+            // CORREZIONE: Distingui tra errori critici e non critici
+            if (e.getMessage().contains("file temporaneo") || e.getMessage().contains("delete")) {
+                // Errore non critico - la conversione è riuscita ma non si riesce a pulire
+                logger.warn("Errore non critico nella pulizia file temporanei: {}", e.getMessage());
+                // Se abbiamo comunque un file di output valido, restituiscilo
+                if (outFile != null && outFile.exists()) {
+                    logger.info("Conversione riuscita nonostante errore pulizia temporanei");
+                    return outFile;
+                }
+            }
+            throw new FileMoveException("Errore nella gestione del file: " + e.getMessage());
         }
     }
 
@@ -102,19 +115,18 @@ public class EngineWebService {
         return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
     }
 
-    /**
-     * Effettua la conversione del singolo file
-     * @param srcExt formato di partenza
-     * @param outExt formato di output
-     * @param srcFile file di partenza
-     * @return file convertito
-     * @throws ClassNotFoundException convertitore non trovato
-     * @throws NoSuchMethodException metodo di conversione non trovato
-     * @throws InvocationTargetException impossibile istanziare il convertitore
-     * @throws InstantiationException classe astratta
-     * @throws IllegalAccessException costruttore del convertitore non accessibile
-     * @throws IOException errore nella gestione del file temp
-     */
+/** Effettua la conversione del singolo file
+ * @param srcExt formato di partenza
+ * @param outExt formato di output
+ * @param srcFile file di partenza
+ * @return file convertito
+ * @throws ClassNotFoundException convertitore non trovato
+ * @throws NoSuchMethodException metodo di conversione non trovato
+ * @throws InvocationTargetException impossibile istanziare il convertitore
+ * @throws InstantiationException classe astratta
+ * @throws IllegalAccessException costruttore del convertitore non accessibile
+ * @throws IOException errore nella gestione del file temp
+ */
     private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
         //Istanzia il convertitore adatto
         String converterClassName = checkParameters(srcExt, outExt, srcFile); // ritorna il nome del convertitore
@@ -128,13 +140,28 @@ public class EngineWebService {
         try {
             // convertiamo il file
             outFile = converter.conversione(srcFile);
+            logger.info("Conversione completata con successo: {}", outFile.getName());
         } catch (Exception e) {
+            logger.error("Errore durante la conversione: {}", e.getMessage());
             throw new ConversionException(e.getMessage());
         }
 
-        //eliminiamo preventivamente il file temporaneo anche se viene eliminato
-        // alla chiusura della JVM
-        Files.deleteIfExists(srcFile.toPath());
+        // Gestione sicura dell'eliminazione del file temporaneo
+        try {
+            // Verifica se il file esiste ancora prima di tentare l'eliminazione
+            if (srcFile.exists() && Files.exists(srcFile.toPath())) {
+                Files.deleteIfExists(srcFile.toPath());
+                logger.info("File temporaneo eliminato: {}", srcFile.getName());
+            } else {
+                logger.info("File temporaneo già eliminato o non esistente: {}", srcFile.getName());
+            }
+        } catch (IOException e) {
+            // NON lanciare eccezione per errori di eliminazione file temporanei
+            // Il file potrebbe essere stato già eliminato o essere in uso
+            logger.warn("Impossibile eliminare il file temporaneo {}: {} (non critico)",
+                    srcFile.getName(), e.getMessage());
+            // Il file verrà eliminato automaticamente alla chiusura della JVM
+        }
 
         return outFile;
     }

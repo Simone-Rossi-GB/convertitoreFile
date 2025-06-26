@@ -1,9 +1,6 @@
 package webService.server;
 
-import webService.server.converters.exception.ConversionException;
-import webService.server.converters.exception.FileMoveException;
-import webService.server.converters.exception.IllegalExtensionException;
-import webService.server.converters.exception.UnsupportedConversionException;
+import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;

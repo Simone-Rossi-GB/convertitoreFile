@@ -1,4 +1,4 @@
-package webService.server.converters;
+package webService.server;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import webService.server.converters.exception.WatermarkException;
 
 public class PDFWatermarkApplier {
 
@@ -20,7 +21,7 @@ public class PDFWatermarkApplier {
      * @param watermarkText Il testo da usare come watermark.
      * @return true se il watermark è stato applicato con successo, false altrimenti.
      */
-    public static boolean applyWatermark(String inputPdfPath, String outputPdfPath, String watermarkText) {
+    public static void applyWatermark(String inputPdfPath, String outputPdfPath, String watermarkText) throws WatermarkException{
 
         try (PDDocument document = PDDocument.load(new File(inputPdfPath))) {
 
