@@ -30,6 +30,7 @@ public class ConversionConfigWindowController {
     private static final Logger logger = LogManager.getLogger(ConversionConfigWindowController.class);
     private boolean union;
     private boolean zippedOutput;
+    private String watermark;
 
     /**
      * Inizializza il controller della finestra di configurazione.
