@@ -769,14 +769,21 @@ public class MainViewController {
                 addFinalLogMessage(filename + " - Servizio non disponibile");
                 aggiornaCounterScartati();
                 moveFileToErrorFolder(srcFile);
-                return; // IMPORTANTE: return invece di throw
+                return;
             }
 
             // Fase 3: Caricamento file
             updateProgressInLog(filename, 20, "Caricamento file...");
             Thread.sleep(300);
 
-            File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
+            // CORREZIONE: Calcola il nome del file convertito con la nuova estensione
+            String baseFileName = srcFile.getName();
+            int lastDotIndex = baseFileName.lastIndexOf('.');
+            if (lastDotIndex > 0) {
+                baseFileName = baseFileName.substring(0, lastDotIndex);
+            }
+            String convertedFileName = baseFileName + "." + targetFormat;
+            File outputDestinationFile = new File(convertedFolderPath, convertedFileName);
 
             // Fase 4: Invio al server il conversion context
             updateProgressInLog(filename, 40, "Invio parametri al server...");
@@ -800,13 +807,41 @@ public class MainViewController {
                 updateProgressInLog(filename, 90, "Verifica file salvato...");
                 Thread.sleep(100);
 
-                // Verifica che il file convertito sia stato effettivamente salvato
-                if (outputDestinationFile.exists()) {
+                // CORREZIONE: Verifica se esiste il file convertito con il nome corretto
+                boolean fileExists = outputDestinationFile.exists();
+
+                // DEBUGGING: Log per capire cosa sta succedendo
+                logger.info("Verifica file convertito:");
+                logger.info("  - Nome originale: {}", srcFile.getName());
+                logger.info("  - Nome convertito atteso: {}", convertedFileName);
+                logger.info("  - Percorso completo: {}", outputDestinationFile.getAbsolutePath());
+                logger.info("  - File esiste: {}", fileExists);
+
+                // Se il file non esiste con il nome calcolato, prova a cercarlo nella cartella
+                if (!fileExists) {
+                    logger.info("File non trovato con nome calcolato, cerco nella cartella...");
+                    File convertedDir = new File(convertedFolderPath);
+                    File[] files = convertedDir.listFiles();
+                    if (files != null) {
+                        for (File f : files) {
+                            logger.info("  - File trovato: {}", f.getName());
+                            // Verifica se il file inizia con lo stesso nome base
+                            if (f.getName().startsWith(baseFileName + ".")) {
+                                outputDestinationFile = f;
+                                fileExists = true;
+                                logger.info("  - MATCH! Trovato file convertito: {}", f.getName());
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (fileExists) {
                     // Fase 8: Completamento
                     updateProgressInLog(filename, 100, "Completato!");
                     Thread.sleep(100);
 
-                    addFinalLogMessage("✅ Conversione riuscita: " + filename);
+                    addFinalLogMessage("✅ Conversione riuscita: " + filename + " → " + outputDestinationFile.getName());
 
                     // AGGIORNA CONTATORE SUCCESSI
                     Platform.runLater(() -> {
@@ -826,8 +861,8 @@ public class MainViewController {
 
                 } else {
                     // File non salvato correttamente
-                    updateProgressInLog(filename, 100, "Errore: file non salvato");
-                    addFinalLogMessage("❌ Errore: " + filename + " - File non salvato dal web service");
+                    updateProgressInLog(filename, 100, "Errore: file non trovato");
+                    addFinalLogMessage("❌ Errore: " + filename + " - File convertito non trovato in " + convertedFolderPath);
                     aggiornaCounterScartati();
                     moveFileToErrorFolder(srcFile);
                 }
@@ -840,14 +875,13 @@ public class MainViewController {
             }
 
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Ripristina lo stato di interruzione
+            Thread.currentThread().interrupt();
             updateProgressInLog(filename, 100, "Interrotto");
             addFinalLogMessage("⚠️ Conversione interrotta: " + filename);
             aggiornaCounterScartati();
             moveFileToErrorFolder(srcFile);
 
         } catch (Exception e) {
-            // Qualsiasi altro errore
             updateProgressInLog(filename, 100, "Errore imprevisto");
             addFinalLogMessage("❌ Errore imprevisto: " + filename + " - " + e.getMessage());
             logger.error("Errore durante conversione di " + filename, e);
@@ -887,7 +921,6 @@ public class MainViewController {
         Platform.runLater(() -> {
             String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
 
-
             StringBuilder progressBar = new StringBuilder();
             progressBar.append("[").append(timestamp).append("] ");
             progressBar.append(filename).append(": [");
@@ -896,7 +929,7 @@ public class MainViewController {
             int filled = progress / 10; // 0-10
             for (int i = 0; i < 10; i++) {
                 if (i < filled) {
-                    progressBar.append("■"); // Quadrato pieno (supportato meglio)
+                    progressBar.append("■"); // Quadrato pieno
                 } else {
                     progressBar.append("□"); // Quadrato vuoto
                 }
@@ -913,7 +946,8 @@ public class MainViewController {
                 applicationLogArea.setText(updatedText);
             } else {
                 // Prima volta che mostriamo il progresso per questo file
-                if (!"Log dell'applicazione...".equals(applicationLogArea.getText())) {
+                if (!"Log dell'applicazione...".equals(applicationLogArea.getText()) &&
+                        !applicationLogArea.getText().isEmpty()) {
                     applicationLogArea.setText(applicationLogArea.getText() + "\n" + newProgressLine);
                 } else {
                     applicationLogArea.setText(newProgressLine);
@@ -923,10 +957,12 @@ public class MainViewController {
 
             currentProgressLogLine = newProgressLine;
 
-            // Se completato, resetta i flag
+            // Se completato, resetta i flag DOPO un breve delay
             if (progress >= 100) {
-                isShowingProgress = false;
-                currentProgressLogLine = null;
+                Platform.runLater(() -> {
+                            isShowingProgress = false;
+                            currentProgressLogLine = null;
+                });
             }
         });
     }
