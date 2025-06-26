@@ -17,7 +17,7 @@ PantheraConverter/
 │   │   │   │
 │   │   │   ├── webService.client.objects/                       
 |   |   |   |   ├── config/
-│   |	|   |   |	└── config.json
+│   |    |   |   |    └── config.json
 │   │   │   │   ├── ConvertionException.java
 │   │   │   │   ├── Engine.java                 
 │   │   │   │   ├── ConverterConfig.java         
@@ -49,7 +49,6 @@ PantheraConverter/
 │                                         
 └── target/                                       # Build output Maven
 
-
 =======================================================================
 
 ## 1. ConverterWebServiceController.java
@@ -76,10 +75,10 @@ PantheraConverter/
 - **Endpoint**: POST `/api/webService.client.objects/convert`
 - **Funzione**: Converte un file caricato nel formato richiesto
 - **Parametri**:
-    - `file`: File da convertire (MultipartFile)
-    - `targetFormat`: Formato di destinazione
-    - `password`: Password per PDF protetti (opzionale)
-    - `mergeImages`: Flag per unire pagine PDF in singola immagine (opzionale)
+  - `file`: File da convertire (MultipartFile)
+  - `targetFormat`: Formato di destinazione
+  - `password`: Password per PDF protetti (opzionale)
+  - `mergeImages`: Flag per unire pagine PDF in singola immagine (opzionale)
 
 **Processo di conversione**:
 
@@ -191,11 +190,11 @@ PantheraConverter/
 - **Funzione principale del client**
 - Invia file al web service per la conversione
 - **Processo**:
-    1. Verifica disponibilità servizio
-    2. Prepara richiesta multipart con file e parametri
-    3. Esegue POST al web service
-    4. Riceve array di byte del file convertito
-    5. Salva il file localmente nel percorso specificato
+  1. Verifica disponibilità servizio
+  2. Prepara richiesta multipart con file e parametri
+  3. Esegue POST al web service
+  4. Riceve array di byte del file convertito
+  5. Salva il file localmente nel percorso specificato
 - **Gestione errori completa**: Errori HTTP, di rete, I/O
 - **Ritorna**: `ConversionResult` con stato e messaggio
 
@@ -263,11 +262,11 @@ PantheraConverter/
 
 - **Logica principale di conversione con fallback**
 - **Processo**:
-    1. Gestisce dialoghi per PDF (password, unione pagine)
-    2. **Primo tentativo**: Web service se disponibile
-    3. **Secondo tentativo**: Engine locale se web service fallisce
-    4. Gestisce file originale dopo successo/fallimento
-    5. Aggiorna contatori e UI
+  1. Gestisce dialoghi per PDF (password, unione pagine)
+  2. **Primo tentativo**: Web service se disponibile
+  3. **Secondo tentativo**: Engine locale se web service fallisce
+  4. Gestisce file originale dopo successo/fallimento
+  5. Aggiorna contatori e UI
 
 **Gestione dialoghi**:
 
@@ -344,11 +343,11 @@ PantheraConverter/
 **`saveConfiguration()`**
 
 - **Processo di salvataggio**:
-    1. Valida tutte le directory
-    2. Ricostruisce JSON mantenendo sezione "conversions" originale
-    3. Aggiorna solo campi modificabili
-    4. Salva tramite engine con formattazione pretty-print
-    5. Notifica successo e chiude finestra
+  1. Valida tutte le directory
+  2. Ricostruisce JSON mantenendo sezione "conversions" originale
+  3. Aggiorna solo campi modificabili
+  4. Salva tramite engine con formattazione pretty-print
+  5. Notifica successo e chiude finestra
 
 **Funzioni di supporto**:
 
