@@ -12,9 +12,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class MainApp extends Application {
 
     private static Stage primaryStage;
+    private static Locale currentLocale = new Locale("it", "IT"); // valore iniziale
     private static final Logger logger = LogManager.getLogger(MainApp.class);
 
     static class Delta {
@@ -27,7 +31,9 @@ public class MainApp extends Application {
         MainApp.primaryStage = stage;
 
         // Carico l'FXML principale
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GraphicalMenu.fxml"));
+        Locale locale = new Locale("en", "EN");
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GraphicalMenu.fxml"), bundle);
         Pane root = loader.load();
         HBox header = (HBox) root.lookup("#header");
 
@@ -84,6 +90,10 @@ public class MainApp extends Application {
     public static Stage getPrimaryStage() {
         return primaryStage;
     }
+
+    public static Locale getCurrentLocale() { return currentLocale; }
+
+    public static void setCurrentLocale(Locale locale) { currentLocale = locale; }
 
     public static void main(String[] args) {
         launch(args);

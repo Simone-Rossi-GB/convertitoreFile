@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
@@ -9,6 +11,9 @@ import configuration.configHandlers.config.ConfigReader;
 import converters.exception.ConversionException;
 import converters.exception.FileCreationException;
 import converters.exception.IllegalExtensionException;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,13 +39,15 @@ import java.awt.*;
 import javafx.scene.control.TextArea;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
+import javafx.geometry.Side;
 
 
 /**
@@ -61,6 +68,8 @@ public class MainViewController {
     private Label successfulConversionsCounter;
     @FXML
     private Label failedConversionsCounter;
+    @FXML
+    private Button langButton;
     @FXML
     private Button MonitoringBtn;
     @FXML
@@ -98,6 +107,16 @@ public class MainViewController {
     private Engine engine;
     private Thread watcherThread;
     private final String configFile = "src/main/java/configuration/configFiles/config.json";
+    private ContextMenu menu = new ContextMenu();
+
+    private final Map<String, Locale> localeMap = new HashMap<>();
+    {
+        localeMap.put("it.png", new Locale("it", "IT"));
+        localeMap.put("en.png", new Locale("en", "GB"));
+        localeMap.put("de.png", new Locale("de", "DE"));
+    }
+
+
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -113,6 +132,8 @@ public class MainViewController {
             root.getStyleClass().add(newV ? "light" : "dark");
             // qui potresti salvare nelle Preferences la scelta dell’utente
         });
+        updateLangButtonGraphic(MainApp.getCurrentLocale());
+        initializeLanguageMenu();
 
         // 2) inizializzo engine e client
         engine = new Engine();
@@ -132,6 +153,79 @@ public class MainViewController {
         }
     }
 
+    @FXML
+    private void showLanguageMenu() {
+        if (menu.isShowing()) {
+            menu.hide();
+        } else {
+            menu.show(langButton, Side.RIGHT, 0, 0);
+        }
+    }
+
+    private void initializeLanguageMenu() {
+        for (Map.Entry<String, Locale> entry : localeMap.entrySet()) {
+            String imageFile = entry.getKey();
+            Locale locale = entry.getValue();
+            ImageView icon = new ImageView(getClass().getResource("/flags/" + imageFile).toExternalForm());
+            icon.setFitWidth(24);
+            icon.setFitHeight(20);
+            icon.getStyleClass().addAll("flag-icon");
+
+            // Etichetta della lingua (es: "IT")
+            Label label = new Label(locale.getCountry());
+            label.getStyleClass().addAll("flag-name");
+
+            // Layout orizzontale: bandiera + sigla
+            HBox content = new HBox(icon, label);
+            content.getStyleClass().add("lang-menu-item");
+
+            content.setAlignment(Pos.CENTER_LEFT);
+
+            content.setSpacing(6);
+            content.setPadding(new Insets(4, 4, 4, 4));
+
+            CustomMenuItem item = new CustomMenuItem(content, false);
+            item.getStyleClass().add("custom-menu-item"); // ← ESSENZIALE
+
+            item.setOnAction(ev -> {
+                try {
+                    MainApp.setCurrentLocale(locale);
+                    LanguageManager.switchLanguage(MainApp.getPrimaryStage(), locale);
+                    menu.hide();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            menu.getItems().add(item);
+        }
+    }
+
+    private void updateLangButtonGraphic(Locale locale) {
+        String imageFile = getFlagFileForLocale(locale);
+
+        ImageView icon = new ImageView(getClass().getResource("/flags/" + imageFile).toExternalForm());
+        icon.setFitWidth(24);
+        icon.setFitHeight(20);
+        icon.getStyleClass().add("flag-icon");
+
+        langButton.setGraphic(icon);
+    }
+
+    // Metodo per ottenere il nome del file immagine (es: "it.png") associato a un dato Locale
+    private String getFlagFileForLocale(Locale locale) {
+        // Scorre tutte le entry della mappa (file immagine → Locale) come stream
+        return localeMap.entrySet()
+                // Filtra le entry che hanno un Locale uguale a quello passato come parametro
+                .stream()
+                .filter(e -> e.getValue().equals(locale))
+                // Trasforma l'entry nella sua chiave, ovvero il nome del file immagine
+                .map(Map.Entry::getKey)
+                // Restituisce il primo match trovato, se c'è
+                .findFirst()
+                // Altrimenti, se non c'è match, ritorna "it.png" come default
+                .orElse("it.png");
+    }
 
     /**
      * Aggiorna lo stile del pulsante monitoraggio in base allo stato
@@ -149,7 +243,6 @@ public class MainViewController {
             MonitoringBtn.setText("Monitoring OFF");
         }
     }
-
 
     /**
      * Configura i listener degli eventi sui pulsanti.
