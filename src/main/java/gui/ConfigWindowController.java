@@ -326,10 +326,16 @@ public class ConfigWindowController {
             // Controlla se ci sono modifiche non salvate
             if (hasUnsavedChanges()) {
                 logger.info("Tentativo di chiusura con modifiche non salvate");
-                Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmAlert.setTitle("Modifiche non salvate");
-                confirmAlert.setHeaderText("Ci sono modifiche non salvate");
-                confirmAlert.setContentText("Sei sicuro di voler chiudere senza salvare?");
+
+                // Determina il tema corrente dalla finestra padre
+                boolean isLightTheme = dialogStage.getScene().getRoot().getStyleClass().contains("light");
+
+                Alert confirmAlert = DialogHelper.createModernAlert(
+                        Alert.AlertType.CONFIRMATION,
+                        "Modifiche non salvate",
+                        "Ci sono modifiche non salvate. Sei sicuro di voler chiudere senza salvare?",
+                        isLightTheme
+                );
 
                 confirmAlert.showAndWait().ifPresent(response -> {
                     if (response.getButtonData().isDefaultButton()) {
@@ -345,6 +351,7 @@ public class ConfigWindowController {
             showAlert("Attenzione", "Impossibile verificare le modifiche. Chiudo la finestra.", Alert.AlertType.WARNING);
         }
     }
+
 
     /**
      * Verifica se ci sono modifiche non salvate.
@@ -372,15 +379,22 @@ public class ConfigWindowController {
      */
     private void showAlert(String title, String message, Alert.AlertType alertType) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(alertType);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
+            // Determina il tema corrente dalla finestra padre
+            boolean isLightTheme = false;
+            try {
+                if (dialogStage != null && dialogStage.getScene() != null && dialogStage.getScene().getRoot() != null) {
+                    isLightTheme = dialogStage.getScene().getRoot().getStyleClass().contains("light");
+                }
+            } catch (Exception e) {
+                // Se non riusciamo a determinare il tema, usiamo dark
+            }
+
+            Alert alert = DialogHelper.createModernAlert(alertType, title, message, isLightTheme);
             alert.showAndWait();
         });
     }
 
-    class Delta {
+    static class Delta {
         double x, y;
     }
 }

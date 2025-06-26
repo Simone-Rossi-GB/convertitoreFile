@@ -41,10 +41,23 @@ public class MainApp extends Application {
         // Creo la scena, senza dimensioni hard-coded (l'FXML le contiene)
         Scene scene = new Scene(root);
 
-        // Carico entrambi i CSS (scaricati in src/main/resources/styles/)
+        // Carico i CSS per il tema principale e per i dialog moderni
         scene.getStylesheets().addAll(
                 getClass().getResource("/styles/modern-main-theme.css").toExternalForm()
         );
+
+        // **AGGIUNGIAMO IL CSS PER I DIALOG MODERNI GLOBALMENTE**
+        try {
+            scene.getStylesheets().add(getClass().getResource("/css/modern-dialogs-theme.css").toExternalForm());
+            logger.info("CSS dialog moderni caricato globalmente da /css/");
+        } catch (Exception cssError) {
+            try {
+                scene.getStylesheets().add(getClass().getResource("/styles/modern-dialogs-theme.css").toExternalForm());
+                logger.info("CSS dialog moderni caricato globalmente da /styles/");
+            } catch (Exception cssError2) {
+                logger.warn("Impossibile caricare CSS dialog moderni: " + cssError2.getMessage());
+            }
+        }
 
         // Applico il tema di default
         root.getStyleClass().add(config.getTheme());

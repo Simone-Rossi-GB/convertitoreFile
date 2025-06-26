@@ -139,18 +139,18 @@ public class MainViewController {
     @FXML
     private void initialize() throws IOException {
         JsonConfig jsonConfig = ConfigManager.readConfig();
-        // 1) impostiamo subito l’aspetto del toggle
-        themeToggle.setSelected(false);    // false → dark di default
+        // 1) impostiamo subito l'aspetto del toggle
+        themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
             Parent root = themeToggle.getScene().getRoot();
             root.getStyleClass().removeAll("dark", "light");
-            assert jsonConfig != null;
-            if(jsonConfig.getTheme().equals("dark")) {
-                root.getStyleClass().add(newV ? "light" : "dark");
-            }else{
-                root.getStyleClass().add(newV ? "dark" : "light");
+
+            // Logica diretta: se è selezionato → light, altrimenti → dark
+            if (newV) {
+                root.getStyleClass().add("light");
+            } else {
+                root.getStyleClass().add("dark");
             }
-            // qui potresti salvare nelle Preferences la scelta dell’utente
         });
         refreshUITexts(MainApp.getCurrentLocale());
         updateLangButtonGraphic(MainApp.getCurrentLocale());
@@ -432,6 +432,7 @@ public class MainViewController {
 
             // **APPLICA IL TEMA CORRENTE ALLA CONFIG WINDOW**
             boolean isLightTheme = themeToggle.isSelected();
+            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
             if (isLightTheme) {
                 configWindow.getStyleClass().add("light");
             } else {
@@ -510,9 +511,8 @@ public class MainViewController {
             clip.widthProperty().bind(configWindow.widthProperty());
             clip.heightProperty().bind(configWindow.heightProperty());
             configWindow.setClip(clip);
-
-            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
             boolean isLightTheme = themeToggle.isSelected();
+            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
             if (isLightTheme) {
                 configWindow.getStyleClass().add("light");
             } else {
@@ -611,6 +611,7 @@ public class MainViewController {
      */
     private void exitApplication() {
         boolean isLightTheme = themeToggle.isSelected();
+        // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
         if (isLightTheme) {
             ConfigManager.writeConfig(new JsonConfig("light",MainApp.getCurrentLocale().getLanguage()));
         } else {
@@ -675,12 +676,21 @@ public class MainViewController {
 
         List<String> finalFormats = formats;
         String finalSrcExtension = srcExtension;
-        //Mostra il dialog per selezionare il formato di output
+
+        //Mostra il dialog moderno per selezionare il formato di output
         Platform.runLater(() -> {
-            ChoiceDialog<String> dialog = new ChoiceDialog<>(finalFormats.get(0), finalFormats);
-            dialog.setTitle("Seleziona Formato");
-            dialog.setHeaderText("Converti " + srcFile.getName() + " in...");
-            dialog.setContentText("Formato desiderato:");
+            // Determina il tema corrente
+            boolean isLightTheme = themeToggle.isSelected();
+
+            ChoiceDialog<String> dialog = DialogHelper.createModernChoiceDialog(
+                    finalFormats.get(0),
+                    finalFormats,
+                    "Seleziona Formato",
+                    "Converti " + srcFile.getName() + " in...",
+                    "Formato desiderato:",
+                    isLightTheme
+            );
+
             Optional<String> result = dialog.showAndWait();
             //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
             result.ifPresent(chosenFormat -> {
@@ -783,7 +793,19 @@ public class MainViewController {
      */
     public void launchAlertError(String message) {
         logger.error(message);
-        showAlert("Errore", message, Alert.AlertType.ERROR);
+        Platform.runLater(() -> {
+            // Determina il tema corrente
+            boolean isLightTheme = themeToggle.isSelected();
+
+            Alert alert = DialogHelper.createModernAlert(
+                    Alert.AlertType.ERROR,
+                    "Errore",
+                    message,
+                    isLightTheme
+            );
+
+            alert.showAndWait();
+        });
     }
 
     /**
@@ -793,21 +815,17 @@ public class MainViewController {
     public void launchAlertSuccess(File file) {
         String message = "Conversione di " + file.getName() + " riuscita";
         logger.info(message);
-        showAlert("Conversione riuscita", message, Alert.AlertType.INFORMATION);
-    }
-
-    /**
-     * Mostra un alert
-     * @param title titolo scelto
-     * @param message messaggio scelto
-     * @param tipo tipo di alert scelto
-     */
-    private void showAlert(String title, String message, Alert.AlertType tipo) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(tipo);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
+            // Determina il tema corrente
+            boolean isLightTheme = themeToggle.isSelected();
+
+            Alert alert = DialogHelper.createModernAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Conversione riuscita",
+                    message,
+                    isLightTheme
+            );
+
             alert.showAndWait();
         });
     }
@@ -816,10 +834,31 @@ public class MainViewController {
         CompletableFuture<Boolean> union = new CompletableFuture<>();
 
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Unisci PDF");
-            alert.setHeaderText(null);
-            alert.setContentText("Vuoi unire le pagine in un'unica immagine JPG?");
+            // Migliore rilevamento del tema
+            boolean isLightTheme = false;
+            try {
+                if (MainApp.getPrimaryStage() != null &&
+                        MainApp.getPrimaryStage().getScene() != null &&
+                        MainApp.getPrimaryStage().getScene().getRoot() != null) {
+                    isLightTheme = MainApp.getPrimaryStage().getScene().getRoot().getStyleClass().contains("light");
+                }
+            } catch (Exception e) {
+                // Fallback: controlla il config
+                try {
+                    JsonConfig config = ConfigManager.readConfig();
+                    isLightTheme = "light".equals(config.getTheme());
+                } catch (Exception configError) {
+                    // Default: dark theme
+                    isLightTheme = false;
+                }
+            }
+
+            Alert alert = DialogHelper.createModernAlert(
+                    Alert.AlertType.CONFIRMATION,
+                    "Unisci PDF",
+                    "Vuoi unire le pagine in un'unica immagine JPG?",
+                    isLightTheme
+            );
 
             ButtonType siBtn = new ButtonType("Si");
             ButtonType noBtn = new ButtonType("No");
@@ -833,20 +872,42 @@ public class MainViewController {
         });
 
         try {
-            return union.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) { // Exception ammessa nel programma
+            return union.get();
+        } catch (Exception e) {
             throw new Exception("Impossibile ottenere il parametro Boolean");
         }
     }
 
     public static String launchDialogStringParameter() throws Exception {
-
         CompletableFuture<String> extraParameter = new CompletableFuture<>();
-        Platform.runLater(() ->{
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Password PDF");
-            dialog.setHeaderText("Inserisci la password per il PDF (se richiesta)");
-            dialog.setContentText("Password:");
+
+        Platform.runLater(() -> {
+            // Migliore rilevamento del tema
+            boolean isLightTheme = false;
+            try {
+                if (MainApp.getPrimaryStage() != null &&
+                        MainApp.getPrimaryStage().getScene() != null &&
+                        MainApp.getPrimaryStage().getScene().getRoot() != null) {
+                    isLightTheme = MainApp.getPrimaryStage().getScene().getRoot().getStyleClass().contains("light");
+                }
+            } catch (Exception e) {
+                // Fallback: controlla il config
+                try {
+                    JsonConfig config = ConfigManager.readConfig();
+                    isLightTheme = "light".equals(config.getTheme());
+                } catch (Exception configError) {
+                    // Default: dark theme
+                    isLightTheme = false;
+                }
+            }
+
+            TextInputDialog dialog = DialogHelper.createModernTextInputDialog(
+                    "",
+                    "Password PDF",
+                    "Inserisci la password per il PDF (se richiesta)",
+                    "Password:",
+                    isLightTheme
+            );
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(pwd -> Log.addMessage("Password ricevuta: " + (pwd.isEmpty() ? "(vuota)" : "(nascosta)")));
@@ -854,12 +915,14 @@ public class MainViewController {
             logger.info("Password ricevuta: {}", parameter == null || parameter.isEmpty() ? "(vuota)" : "(nascosta)");
             extraParameter.complete(parameter);
         });
+
         try {
-            return extraParameter.get(); // blocca finché la finestra non è chiusa
-        } catch (Exception e) { // Exception ammessa nel programma
+            return extraParameter.get();
+        } catch (Exception e) {
             throw new Exception("Impossibile ottenere il parametro String");
         }
     }
+
 
     public void stampaRisultati() {
         logger.info("Stato: ricevuti={}, convertiti={}, scartati={}", fileRicevuti, fileConvertiti, fileScartati);

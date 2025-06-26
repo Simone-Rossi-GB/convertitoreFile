@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
@@ -21,10 +23,10 @@ public class DialogHelper {
      */
     public static void applyModernStyle(Dialog<?> dialog, boolean isLightTheme) {
         try {
-            // Ottieni il DialogPane
             DialogPane dialogPane = dialog.getDialogPane();
 
             // Applica la classe per il tema
+            dialogPane.getStyleClass().removeAll("light", "dark"); // Rimuovi prima
             if (isLightTheme) {
                 dialogPane.getStyleClass().add("light");
             } else {
@@ -50,36 +52,65 @@ public class DialogHelper {
                 }
             }
 
-            // Carica il CSS moderno per i dialog
+            // Caricamento CSS più robusto
+            boolean cssLoaded = false;
+
+            // Prova prima /css/
             try {
-                dialogPane.getStylesheets().add(
-                        DialogHelper.class.getResource("/css/modern-dialogs-theme.css").toExternalForm()
-                );
+                String cssUrl = DialogHelper.class.getResource("/css/modern-dialogs-theme.css").toExternalForm();
+                dialogPane.getStylesheets().clear(); // Pulisci prima
+                dialogPane.getStylesheets().add(cssUrl);
+                cssLoaded = true;
                 logger.debug("CSS dialog moderno caricato da /css/");
             } catch (Exception cssError) {
+                // Prova /styles/
                 try {
-                    dialogPane.getStylesheets().add(
-                            DialogHelper.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm()
-                    );
+                    String cssUrl = DialogHelper.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm();
+                    dialogPane.getStylesheets().clear();
+                    dialogPane.getStylesheets().add(cssUrl);
+                    cssLoaded = true;
                     logger.debug("CSS dialog moderno caricato da /styles/");
                 } catch (Exception cssError2) {
                     logger.warn("Impossibile caricare CSS moderno per dialog: " + cssError2.getMessage());
                 }
             }
 
+            // Se il CSS non è stato caricato, prova a prenderlo dalla scena principale
+            if (!cssLoaded && MainApp.getPrimaryStage() != null) {
+                try {
+                    Scene mainScene = MainApp.getPrimaryStage().getScene();
+                    if (mainScene != null && !mainScene.getStylesheets().isEmpty()) {
+                        for (String stylesheet : mainScene.getStylesheets()) {
+                            if (stylesheet.contains("dialog")) {
+                                dialogPane.getStylesheets().add(stylesheet);
+                                cssLoaded = true;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception fallbackError) {
+                    logger.debug("Fallback CSS loading failed: " + fallbackError.getMessage());
+                }
+            }
+
             // Imposta l'owner se disponibile
             if (MainApp.getPrimaryStage() != null) {
-                Stage dialogStage = (Stage) dialogPane.getScene().getWindow();
-                if (dialogStage != null) {
-                    dialogStage.initOwner(MainApp.getPrimaryStage());
-                }
+                Platform.runLater(() -> {
+                    try {
+                        Stage dialogStage = (Stage) dialogPane.getScene().getWindow();
+                        if (dialogStage != null) {
+                            dialogStage.initOwner(MainApp.getPrimaryStage());
+                        }
+                    } catch (Exception ownerError) {
+                        logger.debug("Error setting dialog owner: " + ownerError.getMessage());
+                    }
+                });
             }
 
         } catch (Exception e) {
             logger.error("Errore nell'applicazione dello stile moderno al dialog: " + e.getMessage());
         }
     }
-
     /**
      * Crea un Alert moderno con stile automatico.
      *
