@@ -89,6 +89,7 @@ public class ConverterWebServiceController {
         Path tempInputFilePath = null;
         Path conversionTempDir = null;
         File convertedOutputFile = null;
+
             logger.info("Inizio conversione file: {} -> {}", file.getOriginalFilename(), targetFormat);
 
             // Crea una directory temporanea con identificativo univoco per questa conversione
@@ -122,29 +123,27 @@ public class ConverterWebServiceController {
                 throw new ConversionException("File convertito inesistente");
             }
 
-            // crea un array di byte per la risposta al client leggendo i byte del file convertito
-            byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
-            logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
+        // crea un array di byte per la risposta al client leggendo i byte del file convertito
+        byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
+        logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
 
-            // Determina il Content-Type corretto per la risposta HTTP
-            MediaType contentType = determineMediaType(convertedOutputFile);
+        // Determina il Content-Type corretto per la risposta HTTP
+        MediaType contentType = determineMediaType(convertedOutputFile);
 
-            logger.info("Conversione completata con successo per: {}", originalFilename);
+        // Costruisci la risposta con i byte del file
+        HttpHeaders headers = new HttpHeaders();
 
-            // Ritorna la risposta JSON strutturata con il file convertito
-            FileResponse response = new FileResponse(
-                    "success",
-                    convertedOutputFile.getName(),
-                    contentType.toString(),
-                    fileBytes.length,
-                    fileBytes
-            );
+        // inseriamo nell'header il tipo di contenuto della risposta
+        headers.setContentType(contentType);
 
-            return ResponseEntity.ok(response);
-        } finally {
-            clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
-            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+        // aggiungiamo all'header come allegato il nome del file convertito
+        headers.setContentDispositionFormData("attachment", convertedOutputFile.getName());
 
+        // aggiungiamo all'header la lunghezza in byte del contenuto della risposta
+        headers.setContentLength(fileBytes.length);
+
+        logger.info("Conversione completata con successo per: {}", originalFilename);
+        return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
     }
 
 
