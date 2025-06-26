@@ -58,8 +58,8 @@ public class ConversionConfigWindowController {
         loadCurrentConfiguration();
         if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
             locale = MainApp.getCurrentLocale();
-            refreshUITexts(locale);
         }
+        refreshUITexts(locale);
     }
 
     public void refreshUITexts(Locale locale) {
@@ -78,7 +78,7 @@ public class ConversionConfigWindowController {
         toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
         toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
         saveButton.setText(bundle.getString("btn.saveButton"));
-        cancelButton.setText(bundle.getString("btn.cancelButton"));
+        cancelButton.setText(bundle.getString("btn.closeButton"));
     }
 
     /**

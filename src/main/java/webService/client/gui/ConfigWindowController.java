@@ -79,8 +79,8 @@ public class ConfigWindowController {
         loadCurrentConfiguration();
         if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
             locale = MainApp.getCurrentLocale();
-            refreshUITexts(locale);
         }
+        refreshUITexts(locale);
     }
 
     public void refreshUITexts(Locale locale) {
@@ -97,9 +97,11 @@ public class ConfigWindowController {
         errorDirField.setPromptText(bundle.getString("field.errorDirField"));
         startMonitoringLabel.setText(bundle.getString("label.startMonitoringLabel"));
         toggleMonitorBtn.setText(bundle.getString("btn.activate"));
-        browseMonitoredBtn.setText(bundle.getString("btn.browseMonitoredBtn"));
+        browseMonitoredBtn.setText(bundle.getString("btn.browse"));
+        browseSuccessBtn.setText(bundle.getString("btn.browse"));
+        browseErrorBtn.setText(bundle.getString("btn.browse"));
         saveButton.setText(bundle.getString("btn.saveButton"));
-        cancelButton.setText(bundle.getString("btn.cancelButton"));
+        cancelButton.setText(bundle.getString("btn.closeButton"));
     }
 
     /**
