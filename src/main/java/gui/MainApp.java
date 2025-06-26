@@ -21,21 +21,16 @@ public class MainApp extends Application {
     private static Locale currentLocale = new Locale("it", "IT"); // valore iniziale
     private static final Logger logger = LogManager.getLogger(MainApp.class);
 
-    static class Delta {
-        double x, y;
-    }
-
     @Override
     public void start(Stage stage) throws Exception {
         // Salvo lo stage primario per eventuali dialog/modal
         MainApp.primaryStage = stage;
 
         // Carico l'FXML principale
-        Locale locale = new Locale("en", "EN");
+        Locale locale = new Locale("it", "IT");
         ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GraphicalMenu.fxml"), bundle);
         Pane root = loader.load();
-        HBox header = (HBox) root.lookup("#header");
 
         // Passo l'app al controller
         MainViewController controller = loader.getController();
@@ -69,18 +64,6 @@ public class MainApp extends Application {
         stage.setHeight(653);
         stage.setScene(scene);
         stage.show();
-
-        Delta dragDelta = new Delta();
-
-        header.setOnMousePressed(event -> {
-            dragDelta.x = event.getSceneX();
-            dragDelta.y = event.getSceneY();
-        });
-
-        header.setOnMouseDragged(event -> {
-            primaryStage.setX(event.getScreenX() - dragDelta.x);
-            primaryStage.setY(event.getScreenY() - dragDelta.y);
-        });
 
         // Log di chiusura
         stage.setOnCloseRequest(evt -> logger.info("Applicazione chiusa."));

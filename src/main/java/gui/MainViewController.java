@@ -116,7 +116,9 @@ public class MainViewController {
         localeMap.put("de.png", new Locale("de", "DE"));
     }
 
-
+    static class Delta {
+        double x, y;
+    }
 
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento del FXML.
@@ -134,6 +136,17 @@ public class MainViewController {
         });
         updateLangButtonGraphic(MainApp.getCurrentLocale());
         initializeLanguageMenu();
+        Delta dragDelta = new Delta();
+
+        header.setOnMousePressed(event -> {
+            dragDelta.x = event.getSceneX();
+            dragDelta.y = event.getSceneY();
+        });
+
+        header.setOnMouseDragged(event -> {
+            MainApp.getPrimaryStage().setX(event.getScreenX() - dragDelta.x);
+            MainApp.getPrimaryStage().setY(event.getScreenY() - dragDelta.y);
+        });
 
         // 2) inizializzo engine e client
         engine = new Engine();
@@ -146,6 +159,7 @@ public class MainViewController {
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
         loadConfiguration();
+
 
         // 4) se nel config ho il monitor a start, lo avvio
         if (monitorAtStart) {
