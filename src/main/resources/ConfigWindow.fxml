@@ -1,155 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ConfigWindowController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="750.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ConfigWindowController">
+
     <children>
-        <!-- Header -->
-        <Label alignment="CENTER" prefWidth="770.0" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 15;" text="Editor Configurazione" textAlignment="CENTER">
-            <font>
-                <Font name="System Bold" size="20.0" />
-            </font>
-        </Label>
-
-        <!-- configuration Fields Section -->
-        <VBox spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-padding: 15;">
+        <!-- MODERN HEADER -->
+        <VBox fx:id="configHeaderContainer" prefHeight="43.0" prefWidth="750.0" spacing="5" styleClass="config-header-container">
             <children>
-                <Label text="Configurazione Cartelle" textFill="#2c3e50">
+                <Label alignment="CENTER" prefWidth="720.0" styleClass="config-main-title" text="Editor Configurazione" textAlignment="CENTER">
                     <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
-
-                <!-- Cartella Input -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Cartella Monitorata (Input):" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="monitoredDirField" prefWidth="500.0" promptText="Seleziona la cartella da monitorare..." />
-                                <Button fx:id="browseMonitoredBtn" onAction="#browseMonitoredDirectory" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" text="Sfoglia..." />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-
-                <!-- Cartella Success -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Cartella File Convertiti (Success):" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="successDirField" prefWidth="500.0" promptText="Seleziona cartella per file convertiti..." />
-                                <Button fx:id="browseSuccessBtn" onAction="#browseSuccessDirectory" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;" text="Sfoglia..." />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-
-                <!-- Cartella Error -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Cartella Errori:" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="errorDirField" prefWidth="500.0" promptText="Seleziona cartella per file con errori..." />
-                                <Button fx:id="browseErrorBtn" onAction="#browseErrorDirectory" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" text="Sfoglia..." />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-
-                <!-- Monitor at Start -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Avvio Automatico Monitoraggio:" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="monitorAtStartField" editable="false" prefWidth="100.0" style="-fx-background-color: #bdc3c7;" text="false" />
-                                <Button fx:id="toggleMonitorBtn" onAction="#toggleMonitorAtStart" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 5;" text="Cambia Valore" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-            </children>
-        </VBox>
-
-        <Separator />
-
-        <!-- Conversions JSON Section -->
-        <VBox spacing="10.0" VBox.vgrow="ALWAYS">
-            <children>
-                <Label text="Configurazione Conversioni (JSON)" textFill="#2c3e50">
-                    <font>
-                        <Font name="System Bold" size="16.0" />
-                    </font>
-                </Label>
-                <Label text="Visualizzazione della sezione 'conversions' del file JSON (sola lettura)." textFill="#7f8c8d" wrapText="true">
+                <Label alignment="CENTER" prefWidth="720.0" styleClass="config-subtitle" text="Configura le impostazioni del File Converter Manager" textAlignment="CENTER">
                     <font>
                         <Font size="12.0" />
                     </font>
                 </Label>
-
-                <!-- Text Editor Area -->
-                <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" style="-fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8;" VBox.vgrow="ALWAYS">
-                    <content>
-                        <TextArea fx:id="conversionsTextArea" editable="false" style="-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 13px; -fx-background-color: #f8f9fa; -fx-text-fill: #2c3e50; -fx-border-color: transparent;" wrapText="false">
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor></TextArea>
-                    </content>
-                </ScrollPane>
-            <Label fx:id="monitoringStatusLabel" textFill="#7f8c8d" wrapText="true">
-               <font>
-                  <Font size="12.0" />
-               </font>
-            </Label>
             </children>
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
         </VBox>
 
-        <!-- Buttons -->
-        <HBox alignment="CENTER" spacing="20.0">
+        <!-- MAIN SEPARATOR -->
+        <Separator styleClass="config-main-separator" />
+
+        <!-- MAIN CONTENT AREA -->
+        <VBox prefHeight="579.0" prefWidth="750.0" spacing="20.0" styleClass="config-content-area" VBox.vgrow="ALWAYS">
             <children>
-                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Salva">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
-                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Chiudi">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
+
+                <!-- CONFIGURATION FIELDS SECTION -->
+                <VBox spacing="15.0" styleClass="config-fields-container">
+                    <children>
+                        <Label styleClass="config-section-title" text="Configurazione Cartelle">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <Separator styleClass="config-section-line" />
+
+                        <!-- Input Folder -->
+                        <VBox spacing="6.0" styleClass="config-field-group">
+                            <children>
+                                <Label styleClass="config-field-label" text="Cartella Monitorata (Input)">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="monitoredDirField" prefWidth="450.0" promptText="Seleziona la cartella da monitorare..." styleClass="config-text-field" />
+                                        <Button fx:id="browseMonitoredBtn" onAction="#browseMonitoredDirectory" prefHeight="32.0" prefWidth="100.0" styleClass="config-browse-btn" text="Sfoglia">
+                                            <font>
+                                                <Font name="System Bold" size="11.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Success Folder -->
+                        <VBox spacing="6.0" styleClass="config-field-group">
+                            <children>
+                                <Label styleClass="config-field-label" text="Cartella File Convertiti (Success)">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="successDirField" prefWidth="450.0" promptText="Seleziona cartella per file convertiti..." styleClass="config-text-field" />
+                                        <Button fx:id="browseSuccessBtn" onAction="#browseSuccessDirectory" prefHeight="32.0" prefWidth="100.0" styleClass="config-success-btn" text="Sfoglia">
+                                            <font>
+                                                <Font name="System Bold" size="11.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Error Folder -->
+                        <VBox spacing="6.0" styleClass="config-field-group">
+                            <children>
+                                <Label styleClass="config-field-label" text="Cartella Errori">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="errorDirField" prefWidth="450.0" promptText="Seleziona cartella per file con errori..." styleClass="config-text-field" />
+                                        <Button fx:id="browseErrorBtn" onAction="#browseErrorDirectory" prefHeight="32.0" prefWidth="100.0" styleClass="config-error-btn" text="Sfoglia">
+                                            <font>
+                                                <Font name="System Bold" size="11.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Monitor at Start -->
+                        <VBox spacing="6.0" styleClass="config-field-group">
+                            <children>
+                                <Label styleClass="config-field-label" text="Avvio Automatico Monitoraggio">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="710.0" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="monitorAtStartField" editable="false" prefWidth="100.0" styleClass="config-readonly-field" text="false" />
+                                        <Button fx:id="toggleMonitorBtn" onAction="#toggleMonitorAtStart" prefHeight="32.0" prefWidth="150.0" styleClass="config-toggle-btn" text="Cambia Valore">
+                                            <font>
+                                                <Font name="System Bold" size="11.0" />
+                                            </font>
+                                        </Button>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+      
+              <!-- ACTION BUTTONS FOOTER -->
+              <HBox alignment="CENTER" prefHeight="76.0" prefWidth="750.0" spacing="20.0" styleClass="config-fields-container">
+                  <children>
+                      <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" styleClass="config-save-btn" text="Salva">
+                          <font>
+                              <Font name="System Bold" size="13.0" />
+                          </font>
+                      </Button>
+                      <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" styleClass="config-cancel-btn" text="Chiudi">
+                          <font>
+                              <Font name="System Bold" size="13.0" />
+                          </font>
+                      </Button>
+                  </children>
+                  <padding>
+                      <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                  </padding>
+              </HBox>
             </children>
-        </HBox>
+            <padding>
+                <Insets bottom="0.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </VBox>
+
+        <!-- FOOTER SEPARATOR -->
+        <Separator styleClass="config-main-separator" />
     </children>
-    <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-    </padding>
 </VBox>

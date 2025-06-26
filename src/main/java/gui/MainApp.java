@@ -17,7 +17,7 @@ public class MainApp extends Application {
     private static Stage primaryStage;
     private static final Logger logger = LogManager.getLogger(MainApp.class);
 
-    class Delta {
+    static class Delta {
         double x, y;
     }
 
@@ -40,7 +40,7 @@ public class MainApp extends Application {
 
         // Carico entrambi i CSS (scaricati in src/main/resources/styles/)
         scene.getStylesheets().addAll(
-                getClass().getResource("/styles/modern-dark-theme.css").toExternalForm()
+                getClass().getResource("/styles/modern-main-theme.css").toExternalForm()
         );
 
         // Applico il tema di default
@@ -60,7 +60,7 @@ public class MainApp extends Application {
         root.setClip(clip);
 
         stage.setWidth(900);       // Larghezza esatta
-        stage.setHeight(654);
+        stage.setHeight(653);
         stage.setScene(scene);
         stage.show();
 

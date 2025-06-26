@@ -10,6 +10,10 @@ import converters.exception.ConversionException;
 import converters.exception.FileCreationException;
 import converters.exception.IllegalExtensionException;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.StageStyle;
 import objects.DirectoryWatcher;
 import objects.Log;
 import converters.Zipper;
@@ -37,6 +41,7 @@ import java.util.concurrent.CompletableFuture;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
+
 
 /**
  * Controller principale della UI per la gestione del monitoraggio cartelle e conversione file.
@@ -258,21 +263,61 @@ public class MainViewController {
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
-            Parent configWindow = loader.load();
+            VBox configWindow = loader.load();
 
             // Crea lo stage per la finestra di configurazione
             Stage configStage = new Stage();
             configStage.setTitle("Editor Configurazione");
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
-            configStage.setResizable(true);
-            configStage.setMinWidth(700);
-            configStage.setMinHeight(600);
-            configStage.setScene(new Scene(configWindow));
+            configStage.setResizable(false);
+
+            // DIMENSIONI PIÙ PICCOLE
+            configStage.setWidth(598);
+            configStage.setHeight(764);
+
+            // Crea la scene
+            Scene scene = new Scene(configWindow);
+
+            configStage.initStyle(StageStyle.TRANSPARENT);
+            scene.setFill(Color.TRANSPARENT);
+
+            javafx.scene.shape.Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(configWindow.widthProperty());
+            clip.heightProperty().bind(configWindow.heightProperty());
+            configWindow.setClip(clip);
+
+            // **APPLICA IL TEMA CORRENTE ALLA CONFIG WINDOW**
+            boolean isLightTheme = themeToggle.isSelected();
+            if (isLightTheme) {
+                configWindow.getStyleClass().add("light");
+            } else {
+                configWindow.getStyleClass().add("dark");
+            }
+
+            // **Carica il CSS per il tema moderno**
+            try {
+                scene.getStylesheets().add(getClass().getResource("/css/modern-config-theme.css").toExternalForm());
+                logger.info("CSS moderno caricato per la finestra di configurazione");
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
+                // Fallback - prova percorso alternativo
+                try {
+                    scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
+                    logger.info("CSS moderno caricato da percorso alternativo");
+                } catch (Exception cssError2) {
+                    logger.error("CSS non trovato in nessun percorso: " + cssError2.getMessage());
+                }
+            }
+
+            configStage.setScene(scene);
 
             // Ottieni il controller e passa i riferimenti necessari
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
+
             // Mostra la finestra e attendi la chiusura
             addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
@@ -298,26 +343,70 @@ public class MainViewController {
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/ConversionConfigWindow.fxml"));
-            Parent configWindow = loader.load();
+            VBox configWindow = loader.load(); // CAMBIATO: VBox invece di Parent
 
             // Crea lo stage per la finestra di configurazione
             Stage configStage = new Stage();
             configStage.setTitle("Editor Configurazione Conversione");
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
-            configStage.setResizable(true);
-            configStage.setMinWidth(700);
-            configStage.setMinHeight(600);
-            configStage.setScene(new Scene(configWindow));
+            configStage.setResizable(false);
 
-            // Ottiene il controller e passa i riferimenti necessari
+            // DIMENSIONI AGGIORNATE
+            configStage.setWidth(750);
+            configStage.setHeight(630);
+
+            // Crea la scene
+            Scene scene = new Scene(configWindow);
+
+            // STILE TRASPARENTE E ANGOLI ARROTONDATI
+            configStage.initStyle(StageStyle.TRANSPARENT);
+            scene.setFill(Color.TRANSPARENT);
+
+            javafx.scene.shape.Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(configWindow.widthProperty());
+            clip.heightProperty().bind(configWindow.heightProperty());
+            configWindow.setClip(clip);
+
+            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
+            boolean isLightTheme = themeToggle.isSelected();
+            if (isLightTheme) {
+                configWindow.getStyleClass().add("light");
+            } else {
+                configWindow.getStyleClass().add("dark");
+            }
+
+            // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
+            try {
+                scene.getStylesheets().add(getClass().getResource("/css/modern-conversion-config-theme.css").toExternalForm());
+                logger.info("CSS moderno caricato per la finestra di configurazione conversione");
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
+                // Fallback - prova percorso alternativo
+                try {
+                    scene.getStylesheets().add(getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm());
+                    logger.info("CSS moderno caricato da percorso alternativo");
+                } catch (Exception cssError2) {
+                    logger.error("CSS non trovato in nessun percorso: " + cssError2.getMessage());
+                }
+            }
+
+            configStage.setScene(scene);
+
+            // Ottieni il controller e passa i riferimenti necessari
             ConversionConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
+
             // Mostra la finestra e attendi la chiusura
-            logger.info("Editor configurazione conversione aperto");
+            addLogMessage("Editor configurazione conversione aperto");
             configStage.showAndWait();
+
+            addLogMessage("Editor configurazione conversione chiuso");
+
         } catch (IOException e) {
-            launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
+            launchAlertError("Impossibile aprire l'editor di configurazione conversione: " + e.getMessage());
         }
     }
 
@@ -662,4 +751,5 @@ public class MainViewController {
     public void openFailedConvertionsFolder(javafx.event.ActionEvent actionEvent) {
         openFolder(failedFolderPath);
     }
+
 }

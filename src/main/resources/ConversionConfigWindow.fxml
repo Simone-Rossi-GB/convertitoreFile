@@ -1,104 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ConversionConfigWindowController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="0" styleClass="conversion-config-root-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ConversionConfigWindowController">
+
     <children>
-        <!-- Header -->
-        <Label alignment="CENTER" prefWidth="770.0" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 15;" text="Editor Configurazione Conversione" textAlignment="CENTER">
-            <font>
-                <Font name="System Bold" size="20.0" />
-            </font>
-        </Label>
-
-        <!-- configurazione parametri -->
-        <VBox spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-padding: 15;">
+        <!-- MODERN HEADER -->
+        <VBox fx:id="conversionConfigHeaderContainer" prefHeight="43.0" prefWidth="750.0" spacing="5" styleClass="conversion-config-header-container">
             <children>
-                <Label text="Configurazione Parametri" textFill="#2c3e50">
+                <Label alignment="CENTER" prefWidth="720.0" styleClass="conversion-config-main-title" text="Editor Configurazione Conversione" textAlignment="CENTER">
                     <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
-
-                <!-- Password -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Password (usata solo se necessario):" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="txtPassword" prefWidth="500.0" promptText="Inserisci la tua password" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-                <!-- Union -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Unione delle pagine dei documenti pdf in un'unica immagine:" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="unionField" editable="false" prefWidth="100.0" style="-fx-background-color: #bdc3c7;" text="false" />
-                                <Button fx:id="toggleUnionBtn" onAction="#toggleUnion" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 5;" text="Cambia Valore" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-                <!-- Zipped output -->
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="File convertito zippato:" textFill="#34495e">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <TextField fx:id="zippedOutputField" editable="false" prefWidth="100.0" style="-fx-background-color: #bdc3c7;" text="false" />
-                                <Button fx:id="toggleZippedOutputBtn" onAction="#zippedOutput" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 5;" text="Cambia Valore" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
+                <Label alignment="CENTER" prefWidth="720.0" styleClass="conversion-config-subtitle" text="Configura i parametri per le conversioni dei file" textAlignment="CENTER">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
             </children>
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
         </VBox>
 
+        <!-- MAIN SEPARATOR -->
+        <Separator styleClass="conversion-config-main-separator" />
 
-
-        <!-- Buttons -->
-        <HBox alignment="CENTER" spacing="20.0">
+        <!-- MAIN CONTENT AREA -->
+        <VBox prefHeight="579.0" prefWidth="750.0" spacing="20.0" styleClass="conversion-config-content-area" VBox.vgrow="ALWAYS">
             <children>
-                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Salva">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
-                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.5, 0, 2);" text="Chiudi">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
+
+                <!-- CONFIGURATION FIELDS SECTION -->
+                <VBox spacing="15.0" styleClass="conversion-config-fields-container">
+                    <children>
+                        <Label styleClass="conversion-config-section-title" text="Configurazione Parametri">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <Separator styleClass="conversion-config-section-line" />
+
+                        <!-- Password Field -->
+                        <VBox spacing="6.0" styleClass="conversion-config-field-group">
+                            <children>
+                                <Label styleClass="conversion-config-field-label" text="Password (usata solo se necessario)">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="txtPassword" prefWidth="600.0" promptText="Inserisci la password per documenti protetti..." styleClass="conversion-config-text-field" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Union Field -->
+                        <VBox spacing="6.0" styleClass="conversion-config-field-group">
+                            <children>
+                                <Label styleClass="conversion-config-field-label" text="Unione delle pagine dei documenti PDF in un'unica immagine">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="unionField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
+                                        <Button fx:id="toggleUnionBtn" onAction="#toggleUnion" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
+                                            <font>
+                                                <Font name="System Bold" size="11.0" />
+                                            </font>
+                                        </Button>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Zipped Output Field -->
+                        <VBox spacing="6.0" styleClass="conversion-config-field-group">
+                            <children>
+                                <Label styleClass="conversion-config-field-label" text="File convertito zippato">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="zippedOutputField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
+                                        <Button fx:id="toggleZippedOutputBtn" onAction="#zippedOutput" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
+                                            <font>
+                                                <Font name="System Bold" size="11.0" />
+                                            </font>
+                                        </Button>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <!-- ACTION BUTTONS FOOTER -->
+                <HBox alignment="CENTER" prefHeight="76.0" prefWidth="750.0" spacing="20.0" styleClass="conversion-config-fields-container">
+                    <children>
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" styleClass="conversion-config-save-btn" text="Salva">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" styleClass="conversion-config-cancel-btn" text="Chiudi">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                    </padding>
+                </HBox>
             </children>
-        </HBox>
+            <padding>
+                <Insets bottom="0.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </VBox>
+
+        <!-- FOOTER SEPARATOR -->
+        <Separator styleClass="conversion-config-main-separator" />
     </children>
-    <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-    </padding>
 </VBox>

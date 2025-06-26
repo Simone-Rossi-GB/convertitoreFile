@@ -2,6 +2,8 @@ package gui;
 
 import configuration.configExceptions.JsonStructureException;
 import configuration.configHandlers.config.*;
+import javafx.scene.Parent;
+import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.application.Platform;
@@ -45,10 +47,10 @@ public class ConfigWindowController {
     @FXML private Button toggleMonitorBtn;
 
     // Area per le conversioni JSON (sola lettura)
-    @FXML private TextArea conversionsTextArea;
-    @FXML private Label monitoringStatusLabel;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
+
+    @FXML private VBox configHeaderContainer;
 
     private Stage dialogStage;
     private boolean monitorAtStart = false;
@@ -60,25 +62,17 @@ public class ConfigWindowController {
     @FXML
     private void initialize() {
         // Configura il TextArea per la visualizzazione (sola lettura)
-        conversionsTextArea.setStyle("-fx-font-family: 'Consolas', 'Monaco', monospace; " +
-                "-fx-font-size: 13px; " +
-                "-fx-background-color: #f8f9fa; " +
-                "-fx-text-fill: #2c3e50; " +
-                "-fx-border-color: transparent;");
-        conversionsTextArea.setEditable(false);
-
         // Configura i campi di testo per le directory
         setupDirectoryFields();
         loadCurrentConfiguration();
     }
 
     /**
-     * Applica stile e validazione ai campi directory.
+     * Rimuovi gli stili inline dai campi directory e usa solo CSS
      */
     private void setupDirectoryFields() {
-        monitoredDirField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
-        successDirField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
-        errorDirField.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        // Rimuovi gli stili inline - usa solo le classi CSS
+        // Non impostare più stili qui, lascia che il CSS gestisca tutto
 
         // Listener per validazione dei percorsi in tempo reale
         monitoredDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, monitoredDirField));
@@ -87,27 +81,77 @@ public class ConfigWindowController {
     }
 
     /**
-     * Valida un percorso di directory e applica uno stile coerente al campo.
+     * Valida un percorso di directory e applica stili CSS appropriati
      */
     private void validateDirectoryPath(String path, TextField field) {
         if (path == null || path.trim().isEmpty()) {
-            field.setStyle("-fx-background-color: #ffffff; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+            // Stato neutro - rimuovi tutte le classi di validazione
+            field.getStyleClass().removeAll("valid-path", "invalid-path");
+            field.setStyle(""); // Reset dello stile inline
             return;
         }
+
         File dir = new File(path.trim());
         if (dir.exists() && dir.isDirectory()) {
-            field.setStyle("-fx-background-color: #d5f4e6; -fx-border-color: #27ae60; -fx-border-radius: 5;");
+            // Path valido - AZZURRO (AQUAMARINE)
+            field.getStyleClass().removeAll("invalid-path");
+            if (!field.getStyleClass().contains("valid-path")) {
+                field.getStyleClass().add("valid-path");
+            }
+            // Stile inline azzurro aquamarine
+            field.setStyle("-fx-background-color: rgba(79, 209, 199, 0.1); " +
+                    "-fx-border-color: #4FD1C7; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 8; " +
+                    "-fx-background-radius: 8; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1);");
         } else {
-            field.setStyle("-fx-background-color: #fadbd8; -fx-border-color: #e74c3c; -fx-border-radius: 5;");
+            // Path non valido - ROSSO
+            field.getStyleClass().removeAll("valid-path");
+            if (!field.getStyleClass().contains("invalid-path")) {
+                field.getStyleClass().add("invalid-path");
+            }
+            // Stile inline rosso
+            field.setStyle("-fx-background-color: rgba(245, 101, 101, 0.1); " +
+                    "-fx-border-color: #F56565; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 8; " +
+                    "-fx-background-radius: 8; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.3), 4, 0, 0, 1);");
         }
     }
 
 
+
     /**
-     * Imposta lo stage per la finestra.
+     * Imposta lo stage e configura il drag della finestra
      */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+
+        // Configura il drag dell'header
+        if (configHeaderContainer != null) {
+            Delta dragDelta = new Delta();
+
+            configHeaderContainer.setOnMousePressed(event -> {
+                dragDelta.x = event.getSceneX();
+                dragDelta.y = event.getSceneY();
+            });
+
+            configHeaderContainer.setOnMouseDragged(event -> {
+                dialogStage.setX(event.getScreenX() - dragDelta.x);
+                dialogStage.setY(event.getScreenY() - dragDelta.y);
+            });
+
+            // Cursore di movimento
+            configHeaderContainer.setOnMouseEntered(event -> {
+                configHeaderContainer.setCursor(javafx.scene.Cursor.MOVE);
+            });
+
+            configHeaderContainer.setOnMouseExited(event -> {
+                configHeaderContainer.setCursor(javafx.scene.Cursor.DEFAULT);
+            });
+        }
     }
 
     /**
@@ -123,7 +167,6 @@ public class ConfigWindowController {
         monitorAtStartField.setText(String.valueOf(monitorAtStart));
         updateMonitorToggleButton();
 
-        updateStatus("Configurazione caricata", false);
         logger.info("Configurazione caricata correttamente");
     }
 
@@ -184,20 +227,23 @@ public class ConfigWindowController {
         updateMonitorToggleButton();
     }
 
-    /**
-     * Aggiorna l'interfaccia in base allo stato monitorAtStart.
-     */
     private void updateMonitorToggleButton() {
         if (monitorAtStart) {
+            // ATTIVO - Solo il testo cambia, bottone rimane grigio
             toggleMonitorBtn.setText("Disabilita");
-            toggleMonitorBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;");
-            monitorAtStartField.setStyle("-fx-background-color: #d5f4e6; -fx-text-fill: #27ae60; -fx-font-weight: bold;");
+
+            // Usa classe CSS invece di stile inline
+            monitorAtStartField.getStyleClass().removeAll("active-state");
+            monitorAtStartField.getStyleClass().add("active-state");
         } else {
+            // SPENTO - Solo il testo cambia, bottone rimane grigio
             toggleMonitorBtn.setText("Abilita");
-            toggleMonitorBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5;");
-            monitorAtStartField.setStyle("-fx-background-color: #fadbd8; -fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+
+            // Rimuovi classe CSS
+            monitorAtStartField.getStyleClass().removeAll("active-state");
         }
     }
+
 
     /**
      * Verifica che tutte le directory siano valide o tenti di crearle se mancanti.
@@ -217,7 +263,6 @@ public class ConfigWindowController {
 
         for (int i = 0; i < directories.length; i++) {
             if (directories[i].isEmpty()) {
-                updateStatus(labels[i] + " non specificata!", true);
                 logger.error("{} non specificata", labels[i]);
                 showAlert("Errore di validazione", labels[i] + " deve essere specificata.", Alert.AlertType.ERROR);
                 return false;
@@ -229,7 +274,6 @@ public class ConfigWindowController {
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
                     logger.warn("Creata directory mancante: {}", path);
-                    updateStatus("Creata directory: " + directories[i], false);
                 }
             } catch (IOException e) {
                 throw new IOException("Impossibile creare la cartella");
@@ -255,7 +299,6 @@ public class ConfigWindowController {
         wr.writeIsMonitoringEnabledAtStart(monitorAtStart);
         ConfigData.update(new ConfigInstance(ConfigData.getJsonFile()));
         logger.info("Configurazione salvata con successo");
-        updateStatus("Configurazione salvata con successo!", false);
         dialogStage.close();
 
     }
@@ -325,20 +368,6 @@ public class ConfigWindowController {
     }
 
     /**
-     * Aggiorna il label di stato.
-     */
-    private void updateStatus(String message, boolean isError) {
-        Platform.runLater(() -> {
-            monitoringStatusLabel.setText(message);
-            if (isError) {
-                monitoringStatusLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
-            } else {
-                monitoringStatusLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
-            }
-        });
-    }
-
-    /**
      * Mostra un alert.
      */
     private void showAlert(String title, String message, Alert.AlertType alertType) {
@@ -349,5 +378,9 @@ public class ConfigWindowController {
             alert.setContentText(message);
             alert.showAndWait();
         });
+    }
+
+    class Delta {
+        double x, y;
     }
 }
