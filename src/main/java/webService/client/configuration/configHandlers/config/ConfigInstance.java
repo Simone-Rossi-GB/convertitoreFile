@@ -40,7 +40,6 @@ public class ConfigInstance {
         );
 
         this.jsonFile = jsonFile;
-        System.out.println(jsonFile.getPath());
         // Esegue la validazione della struttura del JSON
         JsonUtility.validateJsonFromStringOrFile(new RecognisedFile(jsonFile), MANDATORY_FIELDS);
         logger.info("{} validato correttamente", jsonFile.getPath());
