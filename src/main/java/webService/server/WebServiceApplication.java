@@ -25,11 +25,11 @@ public class WebServiceApplication {
      */
     public static void startWebService() {
         //Inizializza i gestori dei file di configurazione
-        ConfigInstance ci = new ConfigInstance(new File("config-files/config.json"));
+        ConfigInstance ci = new ConfigInstance(new File("src/main/java/webService/client/configuration/configFiles/config.json"));
         ConfigData.update(ci);
         logger.info(ci.getJsonFile().getAbsolutePath());
         logger.info(ci.getJsonFile().exists());
-        ConversionContextInstance cci = new ConversionContextInstance(new File("config-files/conversionContext.json"));
+        ConversionContextInstance cci = new ConversionContextInstance(new File("src/main/java/webService/client/configuration/configFiles/conversionContext.json"));
         ConversionContextData.update(cci);
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);

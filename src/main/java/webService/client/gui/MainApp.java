@@ -2,7 +2,6 @@ package webService.client.gui;
 
 import webService.client.gui.jsonHandler.*;
 
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
@@ -13,8 +12,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import webService.client.gui.MainViewController;
-
 import java.util.Locale;
 import java.util.ResourceBundle;
 
