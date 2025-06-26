@@ -495,7 +495,7 @@ public class MainViewController {
 
             // DIMENSIONI AGGIORNATE
             configStage.setWidth(750);
-            configStage.setHeight(630);
+            configStage.setHeight(730);
 
             // Crea la scene
             Scene scene = new Scene(configWindow);
