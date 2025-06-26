@@ -1,7 +1,6 @@
-package gui;
+package webService.client.gui;
 
-import configuration.configHandlers.conversionContext.ConversionContextReader;
-import configuration.configHandlers.conversionContext.ConversionContextWriter;
+import webService.client.configuration.configHandlers.conversionContext.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

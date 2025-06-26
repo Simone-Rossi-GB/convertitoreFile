@@ -1,18 +1,12 @@
 package webService.client.gui;
 
-import gui.jsonHandler.ConfigManager;
-import gui.jsonHandler.JsonConfig;
+import webService.client.gui.jsonHandler.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
-import configuration.configHandlers.config.ConfigData;
-import configuration.configHandlers.config.ConfigInstance;
-import configuration.configHandlers.config.ConfigReader;
-import converters.exception.ConversionException;
-import converters.exception.FileCreationException;
-import converters.exception.IllegalExtensionException;
+import webService.server.converters.exception.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Border;
@@ -21,10 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
-import objects.DirectoryWatcher;
-import objects.Log;
-import converters.Zipper;
-import objects.Utility;
+import webService.client.objects.*;
+import webService.server.converters.Zipper;
 import webService.client.configuration.configHandlers.config.ConfigData;
 import webService.client.configuration.configHandlers.config.ConfigInstance;
 import webService.client.configuration.configHandlers.config.ConfigReader;
@@ -54,6 +46,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
 import java.util.Objects;
@@ -134,7 +129,6 @@ public class MainViewController {
     private boolean isShowingProgress = false; // Flag per sapere se stiamo mostrando una barra di progresso
 
     private Thread watcherThread;
-    private final String configFile = "src/main/java/configuration/configFiles/config.json";
     private ContextMenu menu = new ContextMenu();
 
     private final Map<String, Locale> localeMap = new HashMap<>();
@@ -149,8 +143,6 @@ public class MainViewController {
     }
     private final String configFile = "src/main/java/webService/client/configuration/configFiles/config.json";
     private final String conversionContextFile = "src/main/java/webService/client/configuration/configFiles/conversionContext.json";
-    private MainApp mainApp;
-
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento dell'FXML.
      * Inizializza il controller, i listener e carica la configurazione.
@@ -187,7 +179,6 @@ public class MainViewController {
         });
 
         // 2) inizializzo engine e client
-        engine = new Engine();
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
 
         // 3) UI setup e configurazione
@@ -719,7 +710,7 @@ public class MainViewController {
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(chosenFormat -> {
-                new Thread(() -> performConversionWithFallback(srcFile, chosenFormat, finalSrcExtension)).start();
+                new Thread(() -> performConversion(srcFile, chosenFormat)).start();
             });
         });
     }
@@ -820,7 +811,6 @@ public class MainViewController {
                     // Verifica che il file convertito sia stato effettivamente salvato
                     if (outputDestinationFile.exists()) {
                         addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
-                        webServiceSuccess = true;
                     } else {
                         throw new FileCreationException("Il file convertito non è stato salvato correttamente dal web service");
                     }
@@ -830,11 +820,6 @@ public class MainViewController {
             } catch (Exception wsError) { // TOFIX
                 addLogMessage("Web service fallito: " + wsError.getMessage());
 
-        } catch (Exception e) {
-            addFinalLogMessage(filename + " - Conversione fallita: " + e.getMessage());
-            moveFileToErrorFolder(srcFile);
-            launchAlertError(e.getMessage());
-            aggiornaCounterScartati();
         }
     }
 

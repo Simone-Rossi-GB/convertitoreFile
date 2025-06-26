@@ -1,7 +1,7 @@
-package gui;
+package webService.client.gui;
 
-import configuration.configExceptions.JsonStructureException;
-import configuration.configHandlers.config.*;
+import webService.client.configuration.configExceptions.JsonStructureException;
+import webService.client.configuration.configHandlers.config.*;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.Logger;

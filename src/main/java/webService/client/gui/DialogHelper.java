@@ -1,7 +1,6 @@
-package gui;
+package webService.client.gui;
 
-import gui.jsonHandler.ConfigManager;
-import gui.jsonHandler.JsonConfig;
+import webService.client.gui.jsonHandler.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;

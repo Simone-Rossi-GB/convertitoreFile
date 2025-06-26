@@ -1,4 +1,4 @@
-package gui.jsonHandler;
+package webService.client.gui.jsonHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class ConfigManager {
 
-    private static final File CONFIG_FILE = new File("src/main/java/gui/jsonHandler/guiConfig.json");
+    private static final File CONFIG_FILE = new File("src/main/java/webService/client/gui/jsonHandler/guiConfig.json");
 
     public static JsonConfig readConfig() {
         ObjectMapper mapper = new ObjectMapper();
