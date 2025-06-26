@@ -61,6 +61,8 @@ public class MainViewController {
     @FXML
     private Label monitoringStatusLabel;
     @FXML
+    private Label logAreaTitle;
+    @FXML
     private TextArea applicationLogArea;
     @FXML
     private Label detectedFilesCounter;
@@ -202,17 +204,20 @@ public class MainViewController {
             item.getStyleClass().add("custom-menu-item"); // ← ESSENZIALE
 
             item.setOnAction(ev -> {
-                try {
-                    MainApp.setCurrentLocale(locale);
-                    LanguageManager.switchLanguage(MainApp.getPrimaryStage(), locale);
-                    menu.hide();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                MainApp.setCurrentLocale(locale);
+                refreshUITexts(locale);
+                menu.hide();
             });
 
             menu.getItems().add(item);
         }
+    }
+
+    public void refreshUITexts(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+
+        logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
+
     }
 
     private void updateLangButtonGraphic(Locale locale) {
