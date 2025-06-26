@@ -208,7 +208,6 @@ public class MainViewController {
             content.setPadding(new Insets(4, 4, 4, 4));
 
             CustomMenuItem item = new CustomMenuItem(content, false);
-            item.getStyleClass().add("custom-menu-item"); // ← ESSENZIALE
 
             item.setOnAction(ev -> {
                 MainApp.setCurrentLocale(locale);
