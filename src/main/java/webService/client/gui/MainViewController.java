@@ -87,6 +87,8 @@ public class MainViewController {
     private String convertedFolderPath = "Non configurata";
     private String failedFolderPath = "Non configurata";
     private boolean monitorAtStart;
+    private String currentProgressLogLine = null; // Tiene traccia della riga di progresso corrente
+    private boolean isShowingProgress = false; // Flag per sapere se stiamo mostrando una barra di progresso
 
     private Thread watcherThread;
     private final String configFile = "src/main/java/webService/client/configuration/configFiles/config.json";
@@ -109,6 +111,7 @@ public class MainViewController {
         //Inizializza i gestori dei file di configurazione
         ConfigInstance ci = new ConfigInstance(new File(configFile));
         ConfigData.update(ci);
+        loadConfiguration();
         ConversionContextInstance cci = new ConversionContextInstance(new File(conversionContextFile));
         ConversionContextData.update(cci);
         //Carica la configurazione di base
@@ -220,6 +223,7 @@ public class MainViewController {
         checkAndCreateFolder(convertedFolderPath);
         failedFolderPath = ConfigReader.getErrorOutputDir();
         checkAndCreateFolder(failedFolderPath);
+        checkAndCreateFolder("src/temp");
         monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
 
         logger.info("Configurazione caricata da config.json");
@@ -350,6 +354,12 @@ public class MainViewController {
         Platform.runLater(() -> {
             String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
             String logEntry = "[" + timestamp + "] " + message;
+
+            // Se stiamo mostrando una barra di progresso, non aggiungere messaggi normali
+            if (isShowingProgress) {
+                return;
+            }
+
             if ("Log dell'applicazione...".equals(applicationLogArea.getText())) {
                 applicationLogArea.setText(logEntry);
             } else {
@@ -408,7 +418,7 @@ public class MainViewController {
                 Optional<String> result = dialog.showAndWait();
                 //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
                 result.ifPresent(chosenFormat -> {
-                   performConversion(srcFile, chosenFormat);
+                    new Thread(() -> performConversion(srcFile, chosenFormat)).start();
                 });
             });
         } catch (Exception e) { //Intercetta tutte le eccezioni sollevate
@@ -474,32 +484,150 @@ public class MainViewController {
      * @param targetFormat formato di destinazione
      */
     private void performConversion(File srcFile, String targetFormat) throws ConversionException, WebServiceException{
-        File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
-        if (webServiceClient.isServiceAvailable()) {
+        boolean webServiceSuccess = false;
+        String filename = srcFile.getName();
+
+        try {
+            // Fase 1: Inizializzazione
+            updateProgressInLog(filename, 0, "Inizializzazione...");
+            Thread.sleep(200); // Simula tempo di elaborazione
+
+            // Fase 2: Verifica servizio
+            updateProgressInLog(filename, 10, "Verifica servizio...");
+            if (!webServiceClient.isServiceAvailable()) {
+                addFinalLogMessage(filename + " - Servizio non disponibile");
+                throw new WebServiceException("Il web service non è disponibile");
+            }
+
+            // Fase 3: Caricamento file
+            updateProgressInLog(filename, 20, "Caricamento file...");
+            Thread.sleep(300);
+
+            File outputDestinationFile = new File(convertedFolderPath, srcFile.getName());
+
+            // Fase 4: Invio al server
+            updateProgressInLog(filename, 40, "Invio al server...");
+            Thread.sleep(200);
+
             logger.info("Tentativo conversione tramite web service...");
+
+            // Fase 5: Conversione in corso
+            updateProgressInLog(filename, 60, "Conversione in corso...");
             ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
+
+            // Fase 6: Elaborazione risultato
+            updateProgressInLog(filename, 80, "Elaborazione risultato...");
+            Thread.sleep(200);
+
             if (result.isSuccess()) {
                 // Verifica che il file convertito sia stato effettivamente salvato
                 outputDestinationFile = result.getResult();
                 if (outputDestinationFile.exists()) {
+                    // Fase 7: Finalizzazione
+                    updateProgressInLog(filename, 95, "Finalizzazione...");
+                    Thread.sleep(100);
+
+                    // Completamento
+                    updateProgressInLog(filename, 100, "Completato!");
+
                     logger.info("Conversione tramite web service riuscita");
-                    addLogMessage("Conversione WEB SERVICE riuscita: " + result.getMessage());
+                    addFinalLogMessage(filename + " convertito con successo in " + targetFormat);
+
+                    File finalOutputDestinationFile = outputDestinationFile;
+                    Platform.runLater(() -> {
+                        fileConvertiti++;
+                        stampaRisultati();
+                        launchAlertSuccess(finalOutputDestinationFile);
+                    });
                 } else {
+                    addFinalLogMessage(filename + " - File non salvato correttamente");
                     throw new ConversionException("Il file convertito non è stato salvato correttamente dal web service");
                 }
             } else {
+                addFinalLogMessage(filename + " - Errore server: " + result.getMessage());
                 throw new ConversionException("Web service ha restituito errore: " + result.getMessage());
             }
-        } else {
-            throw new WebServiceException("Il web service non è disponibile");
-        }
 
-        // Se arrivia qui, il web service ha avuto successo e aggiorna il counter dei file convertiti con successo
-        File finalOutputDestinationFile = outputDestinationFile;
+        } catch (Exception e) {
+            addFinalLogMessage(filename + " - Conversione fallita: " + e.getMessage());
+            moveFileToErrorFolder(srcFile);
+            launchAlertError(e.getMessage());
+            aggiornaCounterScartati();
+        }
+    }
+
+    /**
+     * Aggiunge un messaggio di completamento/errore e resetta la barra di progresso
+     * @param message Messaggio finale da aggiungere
+     */
+    private void addFinalLogMessage(String message) {
         Platform.runLater(() -> {
-            fileConvertiti++;
-            stampaRisultati();
-            launchAlertSuccess(finalOutputDestinationFile);
+            String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
+            String logEntry = "[" + timestamp + "] " + message;
+
+            if (!"Log dell'applicazione...".equals(applicationLogArea.getText())) {
+                applicationLogArea.setText(applicationLogArea.getText() + "\n" + logEntry);
+            } else {
+                applicationLogArea.setText(logEntry);
+            }
+
+            // Resetta i flag della barra di progresso
+            isShowingProgress = false;
+            currentProgressLogLine = null;
+        });
+    }
+
+    /**
+     * Aggiorna o aggiunge una barra di progresso nei log
+     * @param filename Nome del file in conversione
+     * @param progress Progresso da 0 a 100
+     * @param status Messaggio di stato
+     */
+    private void updateProgressInLog(String filename, int progress, String status) {
+        Platform.runLater(() -> {
+            String timestamp = java.time.LocalTime.now().toString().substring(0, 8);
+
+
+            StringBuilder progressBar = new StringBuilder();
+            progressBar.append("[").append(timestamp).append("] ");
+            progressBar.append(filename).append(": [");
+
+            // Barra con caratteri ASCII puri
+            int filled = progress / 10; // 0-10
+            for (int i = 0; i < 10; i++) {
+                if (i < filled) {
+                    progressBar.append("■"); // Quadrato pieno (supportato meglio)
+                } else {
+                    progressBar.append("□"); // Quadrato vuoto
+                }
+            }
+
+            progressBar.append("] ").append(progress).append("% - ").append(status);
+
+            String newProgressLine = progressBar.toString();
+
+            if (isShowingProgress && currentProgressLogLine != null) {
+                // Sostituisce l'ultima riga di progresso
+                String currentText = applicationLogArea.getText();
+                String updatedText = currentText.replace(currentProgressLogLine, newProgressLine);
+                applicationLogArea.setText(updatedText);
+            } else {
+                // Prima volta che mostriamo il progresso per questo file
+                if (!"Log dell'applicazione...".equals(applicationLogArea.getText())) {
+                    applicationLogArea.setText(applicationLogArea.getText() + "\n" + newProgressLine);
+                } else {
+                    applicationLogArea.setText(newProgressLine);
+                }
+                isShowingProgress = true;
+            }
+
+            currentProgressLogLine = newProgressLine;
+
+            // Se completato, resetta i flag
+            if (progress >= 100) {
+                isShowingProgress = false;
+                currentProgressLogLine = null;
+            }
         });
     }
 
