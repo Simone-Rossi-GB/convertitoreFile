@@ -61,6 +61,8 @@ public class MainViewController {
     @FXML
     private Label monitoringStatusLabel;
     @FXML
+    private Label logAreaTitle;
+    @FXML
     private TextArea applicationLogArea;
     @FXML
     private Label detectedFilesCounter;
@@ -86,6 +88,12 @@ public class MainViewController {
     private Button conversioniFalliteBtn;
     @FXML
     private ToggleButton themeToggle;
+    @FXML
+    private Label detectedFilesLabel;
+    @FXML
+    private Label successfulConversionsLabel;
+    @FXML
+    private Label failedConversionsLabel;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -134,6 +142,7 @@ public class MainViewController {
             root.getStyleClass().add(newV ? "light" : "dark");
             // qui potresti salvare nelle Preferences la scelta dell’utente
         });
+        refreshUITexts(MainApp.getCurrentLocale());
         updateLangButtonGraphic(MainApp.getCurrentLocale());
         initializeLanguageMenu();
         Delta dragDelta = new Delta();
@@ -199,20 +208,24 @@ public class MainViewController {
             content.setPadding(new Insets(4, 4, 4, 4));
 
             CustomMenuItem item = new CustomMenuItem(content, false);
-            item.getStyleClass().add("custom-menu-item"); // ← ESSENZIALE
 
             item.setOnAction(ev -> {
-                try {
-                    MainApp.setCurrentLocale(locale);
-                    LanguageManager.switchLanguage(MainApp.getPrimaryStage(), locale);
-                    menu.hide();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                MainApp.setCurrentLocale(locale);
+                refreshUITexts(locale);
+                menu.hide();
             });
 
             menu.getItems().add(item);
         }
+    }
+
+    public void refreshUITexts(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+
+        logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
+        detectedFilesLabel.setText(bundle.getString("label.detectedFilesLabel"));
+        successfulConversionsLabel.setText(bundle.getString("label.successfulConversionsLabel"));
+        failedConversionsLabel.setText(bundle.getString("label.failedConversionsLabel"));
     }
 
     private void updateLangButtonGraphic(Locale locale) {

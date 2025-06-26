@@ -117,7 +117,7 @@
                     <!-- RIGHT PANEL - Log Application -->
                     <VBox prefHeight="480.0" prefWidth="650.0" spacing="8.0" styleClass="log-panel">
                         <children>
-                            <Label styleClass="log-title" text="%label.logAreaTitle">
+                            <Label fx:id="logAreaTitle" styleClass="log-title" text="Application Log">
                                 <font><Font name="System Bold" size="18.0" /></font>
                             </Label>
                             <Separator prefWidth="630.0" styleClass="section-line" />
@@ -145,21 +145,21 @@
             <!-- STATISTICS BAR -->
             <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="900.0" spacing="15" styleClass="stats-bar">
                 <children>
-                    <Label styleClass="stat-label" text="Detected Files">
+                    <Label fx:id="detectedFilesLabel" styleClass="stat-label" text="Detected Files">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
                     <Label fx:id="detectedFilesCounter" styleClass="stat-value" text="XX">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
 
-                    <Label styleClass="stat-label" text="Successful Conversions">
+                    <Label fx:id="successfulConversionsLabel" styleClass="stat-label" text="Successful Conversions">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
                     <Label fx:id="successfulConversionsCounter" styleClass="stat-value" text="XX">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
 
-                    <Label styleClass="stat-label" text="Failed Conversions">
+                    <Label fx:id="failedConversionsLabel" styleClass="stat-label" text="Failed Conversions">
                         <font><Font name="System Bold" size="12.0" /></font>
                     </Label>
                     <Label fx:id="failedConversionsCounter" styleClass="stat-value" text="XX">
