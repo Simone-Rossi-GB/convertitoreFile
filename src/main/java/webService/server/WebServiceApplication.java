@@ -5,6 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import webService.client.configuration.configHandlers.config.ConfigData;
+import webService.client.configuration.configHandlers.config.ConfigInstance;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
+
+import java.io.File;
 
 @SpringBootApplication
 public class WebServiceApplication {
@@ -18,6 +24,11 @@ public class WebServiceApplication {
      * context --> applicazione webservice
      */
     public static void startWebService() {
+        //Inizializza i gestori dei file di configurazione
+        ConfigInstance ci = new ConfigInstance(new File("config-files/config.json"));
+        ConfigData.update(ci);
+        ConversionContextInstance cci = new ConversionContextInstance(new File("config-files/conversionContext.json"));
+        ConversionContextData.update(cci);
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
             logger.trace("Web Service: Web Service avviato su porta 8080");

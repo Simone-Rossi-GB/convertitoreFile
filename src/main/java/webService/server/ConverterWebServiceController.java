@@ -1,5 +1,6 @@
 package webService.server;
 
+import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.server.converters.exception.UnsupportedConversionException;
@@ -20,6 +21,8 @@ import webService.server.configuration.configHandlers.conversionContext.Conversi
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,7 +84,7 @@ public class ConverterWebServiceController {
     @PostMapping("/convert")
     public ResponseEntity<?> convertFile(
             @RequestParam("file") MultipartFile file, //parametri richiesti dopo il /convert/
-            @RequestParam("targetFormat") String targetFormat) {
+            @RequestParam("targetFormat") String targetFormat) throws IOException, FileMoveException {
 
         Path tempInputFilePath = null;
         Path conversionTempDir = null;
@@ -104,8 +107,20 @@ public class ConverterWebServiceController {
             } catch (IllegalExtensionException e) {
                 logger.error(e.getMessage());
                 // gestiamo l'eccezione ritornando un InternalServerError
-                return ResponseEntity.internalServerError()
-                        .body(Collections.singletonList(e.getMessage()));
+                // Converti lo stacktrace in Stringa
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stackTrace = sw.toString();
+
+                // Crea il messaggio di errore personalizzato
+                ErrorResponse errorResponse = new ErrorResponse(
+                        1234,  // codice errore personalizzato (scegli tu)
+                        "Errore durante la conversione del file", // messaggio custom
+                        stackTrace
+                );
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(errorResponse);
             }
 
             assert originalFilename != null; // diciamo al JVM che il nome non è mai null
@@ -125,10 +140,7 @@ public class ConverterWebServiceController {
 
             // Verifica che il file convertito esista
             if (convertedOutputFile == null || !convertedOutputFile.exists()) {
-                System.out.println(convertedOutputFile.getName());
-                return ResponseEntity.internalServerError()
-                        .body(Collections.singletonList("Il file convertito non è stato generato correttamente"));
-            }
+                throw new ConversionException("File convertito inesistente");            }
 
             // crea un array di byte per la risposta al client leggendo i byte del file convertito
             byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
@@ -151,17 +163,11 @@ public class ConverterWebServiceController {
 
             logger.info("Conversione completata con successo per: {}", originalFilename);
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
-
-        } catch (IllegalExtensionException | FileMoveException | UnsupportedConversionException e) {
-            return ResponseEntity.internalServerError() // errore con la conversione
-                    .body(Collections.singletonList(e.getMessage()));
-        }catch(IOException e){
-            return ResponseEntity.internalServerError() // errore nella lettura del file
-                    .body(Collections.singletonList(e.getMessage()));
         } finally {
             clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
         }
     }
+
 
     /**
      * Elimina i vari file e directory temporanee
