@@ -73,7 +73,7 @@ public class DialogHelper {
             DialogPane dialogPane = dialog.getDialogPane();
 
             // Carica il CSS per i dialog moderni
-            String cssPath = DialogHelper.class.getResource("/css/modern-dialogs-theme.css").toExternalForm();
+            String cssPath = DialogHelper.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm();
             dialogPane.getStylesheets().add(cssPath);
 
             // Applica la classe del tema appropriato

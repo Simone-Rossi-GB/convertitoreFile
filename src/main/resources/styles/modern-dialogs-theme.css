@@ -1,8 +1,7 @@
-/* modern-dialogs-theme.css */
-/* Stili moderni per tutti i Dialog JavaFX */
+/* modern-dialogs-theme.css - VERSIONE CORRETTA E SEMPLIFICATA */
 
 /* =================================================================== */
-/* ALERT DIALOGS - GENERAL STYLING */
+/* DARK THEME (DEFAULT) */
 /* =================================================================== */
 
 .dialog-pane {
@@ -15,6 +14,7 @@
     -fx-font-family: "Inter", "Roboto", sans-serif;
 }
 
+/* Header del dialog */
 .dialog-pane > .header-panel {
     -fx-background-color: linear-gradient(to bottom, #3d4252 0%, #2d3142 100%);
     -fx-background-radius: 15 15 0 0;
@@ -26,9 +26,9 @@
     -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
     -fx-font-size: 18px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 2);
 }
 
+/* Contenuto del dialog */
 .dialog-pane > .content {
     -fx-background-color: #2d3142;
     -fx-padding: 25;
@@ -41,10 +41,7 @@
     -fx-font-weight: 500;
 }
 
-/* =================================================================== */
-/* BUTTON BAR STYLING */
-/* =================================================================== */
-
+/* Button bar */
 .dialog-pane > .button-bar {
     -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
     -fx-background-radius: 0 0 15 15;
@@ -52,11 +49,7 @@
     -fx-padding: 20 25 20 25;
 }
 
-.dialog-pane > .button-bar > .container {
-    -fx-spacing: 15;
-}
-
-/* MODERN BUTTON STYLING */
+/* Pulsanti */
 .dialog-pane .button {
     -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
     -fx-text-fill: white;
@@ -65,7 +58,6 @@
     -fx-background-radius: 8;
     -fx-border-width: 1;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
     -fx-font-weight: bold;
     -fx-font-size: 13px;
     -fx-min-width: 80px;
@@ -74,27 +66,84 @@
 
 .dialog-pane .button:hover {
     -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);
 }
 
 /* OK/YES BUTTON - AQUAMARINE */
 .dialog-pane .button:default {
-    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
-    -fx-text-fill: white;
-    -fx-border-color: #4FD1C7;
-    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 8, 0, 0, 3);
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
 }
 
 .dialog-pane .button:default:hover {
-    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
-    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4);
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%) !important;
 }
 
 /* =================================================================== */
-/* CHOICE DIALOG STYLING */
+/* LIGHT THEME */
 /* =================================================================== */
 
-.dialog-pane .choice-box {
+.light.dialog-pane,
+.light .dialog-pane {
+    -fx-background-color: #ffffff !important;
+    -fx-border-color: rgba(226,232,240,0.5) !important;
+}
+
+.light.dialog-pane > .header-panel,
+.light .dialog-pane > .header-panel {
+    -fx-background-color: linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%) !important;
+}
+
+.light.dialog-pane > .header-panel > .label,
+.light .dialog-pane > .header-panel > .label {
+    -fx-text-fill: #2d3748 !important;
+}
+
+.light.dialog-pane > .content,
+.light .dialog-pane > .content {
+    -fx-background-color: #f8f9fa !important;
+}
+
+.light.dialog-pane .label,
+.light .dialog-pane .label {
+    -fx-text-fill: #2d3748 !important;
+}
+
+.light.dialog-pane > .button-bar,
+.light .dialog-pane > .button-bar {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%) !important;
+}
+
+.light.dialog-pane .button,
+.light .dialog-pane .button {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%) !important;
+    -fx-text-fill: #2d3748 !important;
+    -fx-border-color: #e2e8f0 !important;
+}
+
+.light.dialog-pane .button:hover,
+.light .dialog-pane .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%) !important;
+}
+
+.light.dialog-pane .button:default,
+.light .dialog-pane .button:default {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
+}
+
+.light.dialog-pane .button:default:hover,
+.light .dialog-pane .button:default:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%) !important;
+}
+
+/* =================================================================== */
+/* INPUT FIELDS - CHOICE BOX e TEXT FIELD */
+/* =================================================================== */
+
+.dialog-pane .choice-box,
+.dialog-pane .text-field {
     -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
     -fx-text-fill: #e2e8f0;
     -fx-border-color: #4a5568;
@@ -103,193 +152,13 @@
     -fx-border-width: 2;
     -fx-padding: 8 15 8 15;
     -fx-font-size: 14px;
-    -fx-font-weight: 500;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
 }
 
-.dialog-pane .choice-box:focused {
-    -fx-border-color: #4FD1C7;
-    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
-}
-
-.dialog-pane .choice-box .arrow {
-    -fx-background-color: #4FD1C7;
-}
-
-.dialog-pane .choice-box .arrow-button {
-    -fx-background-color: transparent;
-}
-
-/* CHOICE BOX DROPDOWN */
-.choice-box-popup .list-view {
-    -fx-background-color: #2d3748;
-    -fx-border-color: #4a5568;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 3);
-}
-
-.choice-box-popup .list-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: #e2e8f0;
-    -fx-padding: 10 15 10 15;
-    -fx-font-size: 14px;
-}
-
-.choice-box-popup .list-cell:hover {
-    -fx-background-color: rgba(79, 209, 199, 0.2);
-    -fx-text-fill: #ffffff;
-}
-
-.choice-box-popup .list-cell:selected {
-    -fx-background-color: #4FD1C7;
-    -fx-text-fill: white;
-}
-
-/* =================================================================== */
-/* TEXT INPUT DIALOG STYLING */
-/* =================================================================== */
-
-.dialog-pane .text-field {
-    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
-    -fx-text-fill: #e2e8f0;
-    -fx-border-color: #4a5568;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-width: 2;
-    -fx-padding: 10 15 10 15;
-    -fx-font-size: 14px;
-    -fx-font-weight: 500;
-    -fx-prompt-text-fill: #718096;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
-}
-
-.dialog-pane .text-field:focused {
-    -fx-border-color: #4FD1C7;
-    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
-}
-
-/* =================================================================== */
-/* ERROR DIALOG SPECIFIC */
-/* =================================================================== */
-
-.dialog-pane.error .header-panel {
-    -fx-background-color: linear-gradient(to bottom, #744b47 0%, #5a3632 100%);
-}
-
-.dialog-pane.error .button:default {
-    -fx-background-color: linear-gradient(to bottom, #e74c3c 0%, #c0392b 100%);
-    -fx-border-color: #e74c3c;
-    -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.4), 8, 0, 0, 3);
-}
-
-.dialog-pane.error .button:default:hover {
-    -fx-background-color: linear-gradient(to bottom, #ec7063 0%, #e74c3c 100%);
-    -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.6), 12, 0, 0, 4);
-}
-
-/* =================================================================== */
-/* SUCCESS DIALOG SPECIFIC */
-/* =================================================================== */
-
-.dialog-pane.information .header-panel {
-    -fx-background-color: linear-gradient(to bottom, #2d5a3d 0%, #1e3d2a 100%);
-}
-
-/* =================================================================== */
-/* LIGHT THEME SUPPORT */
-/* =================================================================== */
-
-.light .dialog-pane {
-    -fx-background-color: #ffffff;
-    -fx-border-color: rgba(226,232,240,0.5);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 3);
-}
-
-.light .dialog-pane > .header-panel {
-    -fx-background-color: linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%);
-}
-
-.light .dialog-pane > .header-panel > .label {
-    -fx-text-fill: #2d3748;
-    -fx-effect: none;
-}
-
-.light .dialog-pane > .content {
-    -fx-background-color: #f8f9fa;
-}
-
-.light .dialog-pane .label {
-    -fx-text-fill: #2d3748;
-}
-
-.light .dialog-pane > .button-bar {
-    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
-}
-
-.light .dialog-pane .button {
-    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
-    -fx-text-fill: #2d3748;
-    -fx-border-color: #e2e8f0;
-}
-
-.light .dialog-pane .button:hover {
-    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
-}
-
-.light .dialog-pane .button:default {
-    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
-    -fx-text-fill: white;
-    -fx-border-color: #4FD1C7;
-}
-
-.light .dialog-pane .button:default:hover {
-    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
-}
-
+.light.dialog-pane .choice-box,
 .light .dialog-pane .choice-box,
+.light.dialog-pane .text-field,
 .light .dialog-pane .text-field {
-    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%);
-    -fx-text-fill: #2d3748;
-    -fx-border-color: #e2e8f0;
-}
-
-.light .dialog-pane .choice-box:focused,
-.light .dialog-pane .text-field:focused {
-    -fx-border-color: #4FD1C7;
-}
-
-.light .choice-box-popup .list-view {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #e2e8f0;
-}
-
-.light .choice-box-popup .list-cell {
-    -fx-text-fill: #2d3748;
-}
-
-.light .choice-box-popup .list-cell:hover {
-    -fx-background-color: rgba(79, 209, 199, 0.1);
-}
-
-.light .choice-box-popup .list-cell:selected {
-    -fx-background-color: #4FD1C7;
-    -fx-text-fill: white;
-}
-
-/* ERROR DIALOG LIGHT THEME */
-.light .dialog-pane.error .header-panel {
-    -fx-background-color: linear-gradient(to bottom, #fed7d7 0%, #feb2b2 100%);
-}
-
-.light .dialog-pane.error .button:default {
-    -fx-background-color: linear-gradient(to bottom, #e74c3c 0%, #c0392b 100%);
-    -fx-text-fill: white;
-}
-
-/* SUCCESS DIALOG LIGHT THEME */
-.light .dialog-pane.information .header-panel {
-    -fx-background-color: linear-gradient(to bottom, #c6f6d5 0%, #9ae6b4 100%);
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%) !important;
+    -fx-text-fill: #2d3748 !important;
+    -fx-border-color: #e2e8f0 !important;
 }

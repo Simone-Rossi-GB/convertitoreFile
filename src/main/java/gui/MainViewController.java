@@ -441,7 +441,7 @@ public class MainViewController {
 
             // **Carica il CSS per il tema moderno**
             try {
-                scene.getStylesheets().add(getClass().getResource("/css/modern-config-theme.css").toExternalForm());
+                scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
                 logger.info("CSS moderno caricato per la finestra di configurazione");
             } catch (Exception cssError) {
                 logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
@@ -521,7 +521,7 @@ public class MainViewController {
 
             // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
             try {
-                scene.getStylesheets().add(getClass().getResource("/css/modern-conversion-config-theme.css").toExternalForm());
+                scene.getStylesheets().add(getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm());
                 logger.info("CSS moderno caricato per la finestra di configurazione conversione");
             } catch (Exception cssError) {
                 logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
