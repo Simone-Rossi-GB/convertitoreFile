@@ -69,8 +69,8 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
             outputTarGz = new File(zipFile.getParent(), baseName + ".tar.gz");
 
             try (FileOutputStream fos = new FileOutputStream(outputTarGz);
-                 GzipCompressorOutputStream gcos = new GzipCompressorOutputStream(fos);
-                 TarArchiveOutputStream tarOut = new TarArchiveOutputStream(gcos)) {
+                 GzipCompressorOutputStream gcos = new GzipCompressorOutputStream(fos); //Stream per la compressione Gzip
+                 TarArchiveOutputStream tarOut = new TarArchiveOutputStream(gcos)) { //Stream per la scrittura dell'archivio Tar
 
                 tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
