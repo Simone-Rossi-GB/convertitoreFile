@@ -65,6 +65,8 @@ public class MainViewController {
     @FXML
     private Label logAreaTitle;
     @FXML
+    private Label conversionSettingsTitle;
+    @FXML
     private TextArea applicationLogArea;
     @FXML
     private Label detectedFilesCounter;
@@ -122,7 +124,7 @@ public class MainViewController {
     private final Map<String, Locale> localeMap = new HashMap<>();
     {
         localeMap.put("it.png", new Locale("it", "IT"));
-        localeMap.put("en.png", new Locale("en", "GB"));
+        localeMap.put("en.png", new Locale("en", "EN"));
         localeMap.put("de.png", new Locale("de", "DE"));
     }
 
@@ -236,10 +238,19 @@ public class MainViewController {
         detectedFilesLabel.setText(bundle.getString("label.detectedFilesLabel"));
         successfulConversionsLabel.setText(bundle.getString("label.successfulConversionsLabel"));
         failedConversionsLabel.setText(bundle.getString("label.failedConversionsLabel"));
+        caricaFileBtn.setText(bundle.getString("btn.caricaFileBtn"));
+        fileConvertitiBtn.setText(bundle.getString("btn.fileConvertitiBtn"));
+        conversioniFalliteBtn.setText(bundle.getString("btn.conversioniFalliteBtn"));
+        conversionSettingsTitle.setText(bundle.getString("label.conversionSettingsTitle"));
+        configBtn.setText(bundle.getString("btn.configBtn"));
+        conversionConfigBtn.setText(bundle.getString("btn.conversionConfigBtn"));
+        MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn"));
     }
 
     private void updateLangButtonGraphic(Locale locale) {
         String imageFile = getFlagFileForLocale(locale);
+        System.out.println(locale);
+        System.out.println(imageFile);
 
         ImageView icon = new ImageView(getClass().getResource("/flags/" + imageFile).toExternalForm());
         icon.setFitWidth(24);

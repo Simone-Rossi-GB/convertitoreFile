@@ -75,17 +75,17 @@
                             <!-- Opzioni Conversione Section -->
                             <VBox prefHeight="189.0" prefWidth="246.0" spacing="10.0" styleClass="options-section">
                                 <children>
-                                    <Label styleClass="section-title" text="Conversion Settings">
+                                    <Label fx:id="conversionSettingsTitle" styleClass="section-title" text="Settings">
                                         <font><Font name="System Bold" size="16.0" /></font>
                                     </Label>
                                     <Separator prefWidth="280.0" styleClass="section-line" />
 
                                     <VBox alignment="CENTER" prefHeight="107.0" prefWidth="216.0" spacing="10.0">
                                         <children>
-                                            <Button fx:id="configBtn" prefHeight="32.0" prefWidth="140.0" styleClass="standard-btn" text="Main Settings">
+                                            <Button fx:id="configBtn" prefHeight="32.0" prefWidth="140.0" styleClass="standard-btn" text="General Options">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
-                                            <Button fx:id="conversionConfigBtn" prefHeight="32.0" prefWidth="140.0" styleClass="standard-btn" text="Conversion Settings">
+                                            <Button fx:id="conversionConfigBtn" prefHeight="32.0" prefWidth="140.0" styleClass="standard-btn" text="Conversion Options">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
                                         </children>
@@ -99,7 +99,7 @@
                             <!-- Monitoring Button Section -->
                             <VBox alignment="TOP_CENTER" prefHeight="130.0" prefWidth="246.0" spacing="0" styleClass="monitoring-section">
                                 <children>
-                                    <Button fx:id="MonitoringBtn" prefHeight="40.0" prefWidth="140.0" styleClass="standard-btn" text="Monitoring ON">
+                                    <Button fx:id="MonitoringBtn" prefHeight="40.0" prefWidth="140.0" styleClass="standard-btn" text="Monitoring OFF">
                                         <font><Font name="System Bold" size="13.0" /></font>
                                     </Button>
                                 </children>
