@@ -418,7 +418,7 @@ public class MainViewController {
                 Optional<String> result = dialog.showAndWait();
                 //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
                 result.ifPresent(chosenFormat -> {
-                   performConversion(srcFile, chosenFormat);
+                    new Thread(() -> performConversion(srcFile, chosenFormat)).start();
                 });
             });
         } catch (Exception e) { //Intercetta tutte le eccezioni sollevate
