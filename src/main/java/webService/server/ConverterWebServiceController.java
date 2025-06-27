@@ -59,17 +59,10 @@ public class ConverterWebServiceController {
      */
     @GetMapping("/conversions/{extension}")
     public ResponseEntity<List<String>> getPossibleConversions(@PathVariable String extension) {
-        try {
-            logger.info("Richiesta conversioni possibili per estensione: {}", extension);
-            List<String> conversions = engine.getPossibleConversions(extension);
-            // ritorno un json contenente una lista con le possibili conversioni da un determinato formato d'origine
-            return ResponseEntity.ok(conversions);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            //ritorno una lista immutabile con un solo elemento ovvero l'eccezione generata.
-            return ResponseEntity.badRequest()
-                    .body(Collections.singletonList(e.getMessage()));
-        }
+        logger.info("Richiesta conversioni possibili per estensione: {}", extension);
+        List<String> conversions = engine.getPossibleConversions(extension);
+        // ritorno un json contenente una lista con le possibili conversioni da un determinato formato d'origine
+        return ResponseEntity.ok(conversions);
     }
 
     /**

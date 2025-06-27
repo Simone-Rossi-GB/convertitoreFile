@@ -649,17 +649,6 @@ public class MainViewController {
         //Quando viene chiamato incrementa il numero di file ricevuti
         Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
-        srcExtension = Utility.getExtension(srcFile);
-
-        //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
-        if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
-            try{
-                srcExtension = Zipper.extractFileExstension(srcFile);
-            } catch (IOException e) {
-                launchAlertError("Impossibile decomprimere il file");
-            }catch (IllegalExtensionException e){
-                launchAlertError("I file hanno formati diversi");
-            }
 
         List<String> formats = null;
         try {
@@ -844,16 +833,6 @@ public class MainViewController {
                         fileConvertiti++;
                         stampaRisultati();
                     });
-
-                    // Rimuovi il file originale dalla cartella monitorata
-                    try {
-                        if (srcFile.exists()) {
-                            srcFile.delete();
-                            logger.info("File originale rimosso dalla cartella monitorata: " + srcFile.getName());
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Non è stato possibile rimuovere il file originale: " + e.getMessage());
-                    }
 
                 } else {
                     // File non salvato correttamente
