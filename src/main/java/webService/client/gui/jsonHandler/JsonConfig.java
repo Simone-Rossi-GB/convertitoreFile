@@ -1,4 +1,4 @@
-package webService.client.configuration.jsonUtilities.jsonHandler;
+package webService.client.gui.jsonHandler;
 
 public class JsonConfig {
     private String theme;

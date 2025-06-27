@@ -1,7 +1,7 @@
 package webService.client.gui;
 
 import javafx.scene.image.Image;
-import webService.client.configuration.jsonUtilities.jsonHandler.*;
+import webService.client.gui.jsonHandler.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;

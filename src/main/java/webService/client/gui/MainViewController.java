@@ -1,6 +1,6 @@
 package webService.client.gui;
 
-import webService.client.configuration.jsonUtilities.jsonHandler.*;
+import webService.client.gui.jsonHandler.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;

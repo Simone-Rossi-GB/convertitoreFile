@@ -1,4 +1,4 @@
-package webService.client.configuration.jsonUtilities.jsonHandler;
+package webService.client.gui.jsonHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

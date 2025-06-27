@@ -1,9 +1,9 @@
 {
   "data" : {
-    "destinationFormat" : "pdf",
+    "destinationFormat" : "jpg",
     "password" : "samplefiles",
     "protected" : false,
-    "union" : false,
+    "union" : true,
     "zippedOutput" : false,
     "watermark" : "ciao",
     "multipleConversion" : false
