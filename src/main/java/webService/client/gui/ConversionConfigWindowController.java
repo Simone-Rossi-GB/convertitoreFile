@@ -184,7 +184,7 @@ public class ConversionConfigWindowController {
     private void updateUnionToggleButton() {
         if (union) {
             // STATO ATTIVO
-            toggleUnionBtn.setText(bundle.getString("btn.deactivate"));
+            toggleUnionBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -195,7 +195,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleUnionBtn.setText(bundle.getString("btn.activate"));
+            toggleUnionBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -208,7 +208,7 @@ public class ConversionConfigWindowController {
     private void updateMultipleConversionButton() {
         if (multipleConversions) {
             // STATO ATTIVO
-            toggleMultipleConversionBtn.setText(bundle.getString("btn.deactivate"));
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -219,7 +219,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleMultipleConversionBtn.setText(bundle.getString("btn.activate"));
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -235,7 +235,7 @@ public class ConversionConfigWindowController {
     private void updateZippedOutputToggleButton() {
         if (zippedOutput) {
             // STATO ATTIVO
-            toggleZippedOutputBtn.setText(bundle.getString("btn.deactivate"));
+            toggleZippedOutputBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -246,7 +246,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
+            toggleZippedOutputBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -259,7 +259,7 @@ public class ConversionConfigWindowController {
     private void updateProtectedOutputToggleButton() {
         if (protectedOutput) {
             // STATO ATTIVO
-            toggleProtectedOutputBtn.setText(bundle.getString("btn.deactivate"));
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -270,7 +270,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
