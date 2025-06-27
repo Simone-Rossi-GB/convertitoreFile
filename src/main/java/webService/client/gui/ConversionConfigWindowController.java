@@ -21,8 +21,12 @@ import java.util.ResourceBundle;
  */
 public class ConversionConfigWindowController {
 
+    @FXML public TextField unionField;
+    @FXML public TextField zippedOutputField;
     @FXML public TextField txtPassword;
+    @FXML public TextField protectedOutputField;
     @FXML public TextField txtWatermark;
+    @FXML public TextField multipleConversionField;
 
     @FXML public Button toggleUnionBtn;
     @FXML public Button toggleZippedOutputBtn;
@@ -122,15 +126,19 @@ public class ConversionConfigWindowController {
         txtWatermark.setText(ConversionContextReader.getWatermark());
 
         union = ConversionContextReader.getIsUnion();
+        unionField.setText(String.valueOf(union));
         updateUnionToggleButton();
 
         zippedOutput = ConversionContextReader.getIsZippedOutput();
+        zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
 
         protectedOutput = ConversionContextReader.getProtected();
+        protectedOutputField.setText(String.valueOf(protectedOutput));
         updateProtectedOutputToggleButton();
 
         multipleConversions = ConversionContextReader.getIsMultipleConversionEnabled();
+        multipleConversionField.setText(String.valueOf(multipleConversions));
         updateMultipleConversionButton();
 
         logger.info("Configurazione conversione caricata correttamente");
@@ -142,12 +150,14 @@ public class ConversionConfigWindowController {
     @FXML
     public void zippedOutput(ActionEvent actionEvent) {
         zippedOutput = !zippedOutput;
+        zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
     }
 
     @FXML
     public void protectedOutput(ActionEvent actionEvent) {
         protectedOutput = !protectedOutput;
+        protectedOutputField.setText(String.valueOf(protectedOutput));
         updateProtectedOutputToggleButton();
     }
 
@@ -157,84 +167,116 @@ public class ConversionConfigWindowController {
     @FXML
     private void toggleUnion(ActionEvent actionEvent) {
         union = !union;
+        unionField.setText(String.valueOf(union));
         updateUnionToggleButton();
     }
 
     @FXML
     private void toggleMultipleConversion(ActionEvent actionEvent) {
         multipleConversions = !multipleConversions;
+        multipleConversionField.setText(String.valueOf(multipleConversions));
         updateMultipleConversionButton();
     }
 
     /**
-     * Aggiorna l'interfaccia in base allo stato del flag union usando CSS classes dinamiche.
+     * Aggiorna l'interfaccia in base allo stato del flag union usando CSS classes.
      */
     private void updateUnionToggleButton() {
-        // Rimuovi tutte le classi di stato precedenti
-        toggleUnionBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
-
         if (union) {
-            // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
-            toggleUnionBtn.setText(bundle.getString("btn.deactivate"));
-            toggleUnionBtn.getStyleClass().add("deactivate-state");
+            // STATO ATTIVO
+            toggleUnionBtn.setText(bundle.getString("btn.inactive"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            unionField.getStyleClass().removeAll("active-state");
+            unionField.getStyleClass().add("active-state");
+
         } else {
-            // STATO SPENTO - mostra "Attiva" - pulsante GRIGIO
-            toggleUnionBtn.setText(bundle.getString("btn.activate"));
-            toggleUnionBtn.getStyleClass().add("activate-state");
+            // STATO SPENTO
+            toggleUnionBtn.setText(bundle.getString("btn.active"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            unionField.getStyleClass().removeAll("active-state");
         }
     }
 
-    /**
-     * Aggiorna l'interfaccia in base allo stato del flag multipleConversions usando CSS classes dinamiche.
-     */
     private void updateMultipleConversionButton() {
-        // Rimuovi tutte le classi di stato precedenti
-        toggleMultipleConversionBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
-
         if (multipleConversions) {
-            // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
-            toggleMultipleConversionBtn.setText(bundle.getString("btn.deactivate"));
-            toggleMultipleConversionBtn.getStyleClass().add("deactivate-state");
+            // STATO ATTIVO
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.inactive"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            multipleConversionField.getStyleClass().removeAll("active-state");
+            multipleConversionField.getStyleClass().add("active-state");
+
         } else {
-            // STATO SPENTO - mostra "Attiva" - pulsante GRIGIO
-            toggleMultipleConversionBtn.setText(bundle.getString("btn.activate"));
-            toggleMultipleConversionBtn.getStyleClass().add("activate-state");
+            // STATO SPENTO
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.active"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            multipleConversionField.getStyleClass().removeAll("active-state");
         }
     }
 
     /**
-     * Aggiorna l'interfaccia in base allo stato del flag zippedOutput usando CSS classes dinamiche.
+     * Aggiorna l'interfaccia in base allo stato del flag zippedOutput usando CSS classes.
      */
     private void updateZippedOutputToggleButton() {
-        // Rimuovi tutte le classi di stato precedenti
-        toggleZippedOutputBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
-
         if (zippedOutput) {
-            // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
-            toggleZippedOutputBtn.setText(bundle.getString("btn.deactivate"));
-            toggleZippedOutputBtn.getStyleClass().add("deactivate-state");
+            // STATO ATTIVO
+            toggleZippedOutputBtn.setText(bundle.getString("btn.inactive"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            zippedOutputField.getStyleClass().removeAll("active-state");
+            zippedOutputField.getStyleClass().add("active-state");
+
         } else {
-            // STATO SPENTO - mostra "Attiva" - pulsante GRIGIO
-            toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
-            toggleZippedOutputBtn.getStyleClass().add("activate-state");
+            // STATO SPENTO
+            toggleZippedOutputBtn.setText(bundle.getString("btn.active"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            zippedOutputField.getStyleClass().removeAll("active-state");
         }
     }
 
-    /**
-     * Aggiorna l'interfaccia in base allo stato del flag protectedOutput usando CSS classes dinamiche.
-     */
     private void updateProtectedOutputToggleButton() {
-        // Rimuovi tutte le classi di stato precedenti
-        toggleProtectedOutputBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
-
         if (protectedOutput) {
-            // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
-            toggleProtectedOutputBtn.setText(bundle.getString("btn.deactivate"));
-            toggleProtectedOutputBtn.getStyleClass().add("deactivate-state");
+            // STATO ATTIVO
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.inactive"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            protectedOutputField.getStyleClass().removeAll("active-state");
+            protectedOutputField.getStyleClass().add("active-state");
+
         } else {
-            // STATO SPENTO - mostra "Attiva" - pulsante GRIGIO
-            toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
-            toggleProtectedOutputBtn.getStyleClass().add("activate-state");
+            // STATO SPENTO
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.active"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleZippedOutputBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            protectedOutputField.getStyleClass().removeAll("active-state");
         }
     }
 
@@ -304,16 +346,12 @@ public class ConversionConfigWindowController {
             String currentPassword = ConversionContextReader.getPassword();
             boolean currentUnion = ConversionContextReader.getIsUnion();
             boolean currentZippedOutput = ConversionContextReader.getIsZippedOutput();
-            boolean currentProtectOutput = ConversionContextReader.getProtected();
-            boolean currentMultipleConversion = ConversionContextReader.getIsMultipleConversionEnabled();
             String currentWatermark = ConversionContextReader.getWatermark();
 
             return !currentPassword.equals(txtPassword.getText().trim()) ||
                     currentUnion != union ||
                     currentZippedOutput != zippedOutput ||
-                    !currentWatermark.equals(txtWatermark.getText().trim()) ||
-                    currentMultipleConversion != multipleConversions ||
-                    currentProtectOutput != protectedOutput;
+                    !currentWatermark.equals(txtWatermark.getText().trim());
         } catch (Exception e) {
             logger.warn("Errore durante la verifica delle modifiche: " + e.getMessage());
             return true; // In caso di errore, assumi che ci siano modifiche
