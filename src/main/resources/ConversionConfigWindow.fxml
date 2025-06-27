@@ -67,7 +67,7 @@
                         </VBox>
                   <VBox layoutX="10.0" layoutY="69.0" spacing="6.0" styleClass="conversion-config-field-group">
                      <children>
-                        <Label fx:id="watermarkLabel" styleClass="conversion-config-field-label" text="Watermark (usato solo se necessario)">
+                        <Label fx:id="watermarkLabel" styleClass="conversion-config-field-label" text="Watermark (solo per conversioni in pdf)">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>

@@ -4,6 +4,7 @@
     "password" : "samplefiles",
     "protected" : true,
     "union" : false,
-    "zippedOutput" : false
+    "zippedOutput" : false,
+    "watermark" : ""
   }
 }

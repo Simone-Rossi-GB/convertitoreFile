@@ -52,4 +52,11 @@ public class ConversionContextReader extends ConversionContextData {
     public static boolean getProtected() {
         return (boolean) context.get().get("protected");
     }
+
+    /**
+     * Restituisce il watermark da applicare
+     *
+     * @return stringa contenente il watermark
+     */
+    public static String getWatermark() {return context.get().get("watermark").toString();}
 }

@@ -125,6 +125,7 @@ public class ConversionConfigWindowController {
         zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
 
+        txtWatermark.setText(ConversionContextReader.getWatermark());
         // DA FINIRE PER PROTECTED OUTPUT
 
         logger.info("Configurazione conversione caricata correttamente");
@@ -244,6 +245,7 @@ public class ConversionConfigWindowController {
         ConversionContextWriter.setIsUnion(union);
         ConversionContextWriter.setIsZippedOutput(zippedOutput);
         ConversionContextWriter.setPassword(txtPassword.getText());
+        ConversionContextWriter.setWatermark(txtWatermark.getText());
 
         logger.info("Configurazione di conversione salvata con successo");
 
@@ -290,10 +292,12 @@ public class ConversionConfigWindowController {
             String currentPassword = ConversionContextReader.getPassword();
             boolean currentUnion = ConversionContextReader.getIsUnion();
             boolean currentZippedOutput = ConversionContextReader.getIsZippedOutput();
+            String currentWatermark = ConversionContextReader.getWatermark();
 
             return !currentPassword.equals(txtPassword.getText().trim()) ||
                     currentUnion != union ||
-                    currentZippedOutput != zippedOutput;
+                    currentZippedOutput != zippedOutput ||
+                    !currentWatermark.equals(txtWatermark.getText().trim());
         } catch (Exception e) {
             logger.warn("Errore durante la verifica delle modifiche: " + e.getMessage());
             return true; // In caso di errore, assumi che ci siano modifiche
