@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="0" styleClass="conversion-config-root-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConversionConfigWindowController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="0" styleClass="conversion-config-root-container" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConversionConfigWindowController">
 
     <children>
         <!-- MODERN HEADER -->
