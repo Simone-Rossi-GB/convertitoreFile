@@ -1,8 +1,7 @@
 package webService.client.gui;
 
-import webService.client.gui.jsonHandler.*;
+import webService.client.configuration.jsonUtilities.jsonHandler.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
