@@ -121,7 +121,51 @@
     -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1) !important;
 }
 
-/* TOGGLE BUTTONS - SEMPRE GRIGI */
+/* ========================================= */
+/* TOGGLE BUTTONS - NUOVA LOGICA DINAMICA   */
+/* ========================================= */
+
+/* TOGGLE BUTTONS - STATO "ATTIVA" (funzione OFF) - GRIGIO */
+.conversion-config-toggle-btn.activate-state {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.conversion-config-toggle-btn.activate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+}
+
+/* TOGGLE BUTTONS - STATO "DISATTIVA" (funzione ON) - AZZURRO */
+.conversion-config-toggle-btn.deactivate-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.conversion-config-toggle-btn.deactivate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4);
+}
+
+/* TOGGLE BUTTONS - CLASSE BASE (FALLBACK) */
 .conversion-config-toggle-btn {
     -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
     -fx-text-fill: white;
@@ -252,10 +296,63 @@
     -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1) !important;
 }
 
+/* ========================================= */
+/* LIGHT THEME - TOGGLE BUTTONS DINAMICI    */
+/* ========================================= */
+
+/* LIGHT THEME - TOGGLE BUTTONS - STATO "ATTIVA" (funzione OFF) - GRIGIO */
+.light .conversion-config-toggle-btn.activate-state {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.light .conversion-config-toggle-btn.activate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
+}
+
+/* LIGHT THEME - TOGGLE BUTTONS - STATO "DISATTIVA" (funzione ON) - AZZURRO */
+.light .conversion-config-toggle-btn.deactivate-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.light .conversion-config-toggle-btn.deactivate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4);
+}
+
+/* LIGHT THEME - TOGGLE BUTTONS - CLASSE BASE (FALLBACK) */
 .light .conversion-config-toggle-btn {
     -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
     -fx-text-fill: #2d3748;
     -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
 }
 
 .light .conversion-config-toggle-btn:hover {

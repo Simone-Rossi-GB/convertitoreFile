@@ -1,10 +1,10 @@
 {
   "data" : {
-    "destinationFormat" : "docx",
+    "destinationFormat" : "bmp",
     "password" : "samplefiles",
-    "protected" : true,
-    "union" : true,
-    "zippedOutput" : false,
+    "protected" : false,
+    "union" : false,
+    "zippedOutput" : true,
     "watermark" : "",
     "multipleConversion" : false
   }
