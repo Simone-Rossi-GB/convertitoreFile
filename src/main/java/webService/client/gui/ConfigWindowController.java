@@ -267,14 +267,14 @@ public class ConfigWindowController {
         ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         if (monitorAtStart) {
             // ATTIVO - Solo il testo cambia, bottone rimane grigio
-            toggleMonitorBtn.setText(bundle.getString("btn.deactivate"));
+            toggleMonitorBtn.setText(bundle.getString("btn.inactive"));
 
             // Usa classe CSS invece di stile inline
             monitorAtStartField.getStyleClass().removeAll("active-state");
             monitorAtStartField.getStyleClass().add("active-state");
         } else {
             // SPENTO - Solo il testo cambia, bottone rimane grigio
-            toggleMonitorBtn.setText(bundle.getString("btn.activate"));
+            toggleMonitorBtn.setText(bundle.getString("btn.active"));
 
             // Rimuovi classe CSS
             monitorAtStartField.getStyleClass().removeAll("active-state");
