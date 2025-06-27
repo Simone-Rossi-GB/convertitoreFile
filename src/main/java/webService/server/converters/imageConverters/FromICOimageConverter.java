@@ -23,6 +23,7 @@ public class FromICOimageConverter extends Converter {
     @Override
     public File convert(File imgFile) throws NullJsonValueException, IOException {
         String outputExtension = ImageConverterUtility.getAndCheckOutputExtension();
+        logger.warn(outputExtension);
         List<String> formatsWithAlpha = ConfigReader.getFormatsWithAlphaChannel();
         List<String> formatsRequiringIntermediate = ConfigReader.getFormatsRequiringIntermediateConversion();
 
@@ -47,11 +48,11 @@ public class FromICOimageConverter extends Converter {
         }
 
         if (formatsRequiringIntermediate.contains(outputExtension)) {
-            outFile = new File("src/temp", getBaseName(imgFile) + ".png");
+            outFile = new File(imgFile.getParent(), getBaseName(imgFile) + ".png");
             ImageIO.write(largest, "png", outFile);
         }
 
-        outFile = new File("src/temp", getBaseName(imgFile) + "." + outputExtension);
+        outFile = new File(imgFile.getParent(), getBaseName(imgFile) + "." + outputExtension);
         ICOEncoder.write(largest, outFile);
 
         logger.info("Creazione file .{} completata: {}",outputExtension, outFile.getName());

@@ -25,8 +25,11 @@ import webService.server.configuration.configHandlers.conversionContext.Conversi
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
+import webService.client.configuration.configHandlers.config.*;
+import webService.client.configuration.configHandlers.conversionContext.*;
+import webService.client.configuration.configExceptions.*;
+
 import webService.client.objects.DirectoryWatcher;
-import webService.client.objects.Log;
 import webService.server.converters.Zipper;
 import webService.client.objects.Utility;
 import org.apache.logging.log4j.Logger;
@@ -57,6 +60,8 @@ import java.util.concurrent.CompletableFuture;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
+import webService.server.converters.exception.ConversionException;
+import webService.server.converters.exception.IllegalExtensionException;
 import javafx.geometry.Side;
 
 
@@ -144,6 +149,7 @@ public class MainViewController {
     }
     private final String configFile = "src/main/java/webService/client/configuration/configFiles/config.json";
     private final String conversionContextFile = "src/main/java/webService/client/configuration/configFiles/conversionContext.json";
+    private InstanceConversionContextWriter iccw = null;
     /**
      * Metodo invocato automaticamente da JavaFX dopo il caricamento dell'FXML.
      * Inizializza il controller, i listener e carica la configurazione.
@@ -191,6 +197,7 @@ public class MainViewController {
         ConfigData.update(ci);
         loadConfiguration();
         ConversionContextInstance cci = new ConversionContextInstance(new File(conversionContextFile));
+        iccw = new InstanceConversionContextWriter(new File(conversionContextFile));
         ConversionContextData.update(cci);
         //Carica la configurazione di base
         loadConfiguration();
@@ -692,6 +699,7 @@ public class MainViewController {
                 );
 
                 Optional<String> result = dialog.showAndWait();
+                //Se il dialog ha ritornato un formato per la conversione, viene istanziato un nuovo thread che se ne occupa
                 result.ifPresent(chosenFormat -> {
                     new Thread(() -> performConversion(srcFile, chosenFormat)).start();
                 });
@@ -794,7 +802,8 @@ public class MainViewController {
             updateProgressInLog(filename, 40, "Invio parametri al server...");
             Thread.sleep(200);
 
-            ConversionContextWriter.setDestinationFormat(targetFormat);
+            iccw.writeDestinationFormat(targetFormat);
+            ConversionContextData.update(new ConversionContextInstance(new File(conversionContextFile)));
             webServiceClient.sendConversionContextFile(new File(conversionContextFile));
 
             logger.info("Tentativo conversione tramite web service...");
