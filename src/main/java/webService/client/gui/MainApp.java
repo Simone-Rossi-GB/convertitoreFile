@@ -1,5 +1,6 @@
 package webService.client.gui;
 
+import javafx.scene.image.Image;
 import webService.client.gui.jsonHandler.*;
 
 import javafx.scene.paint.Color;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainApp extends Application {
@@ -61,7 +63,8 @@ public class MainApp extends Application {
         root.getStyleClass().add(config.getTheme());
 
         // Configuro lo stage
-        stage.setTitle("File Converter Manager");
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/ByteBridgeLogo.png"))));
+        stage.setTitle("ByteBridge");
         stage.setResizable(false);
         stage.initStyle(StageStyle.TRANSPARENT);
         scene.setFill(Color.TRANSPARENT);

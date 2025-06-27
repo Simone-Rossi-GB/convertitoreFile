@@ -2,8 +2,8 @@
   "data" : {
     "destinationFormat" : "docx",
     "password" : "samplefiles",
-    "protected" : true,
-    "union" : false,
+    "protected" : false,
+    "union" : true,
     "zippedOutput" : false,
     "watermark" : "",
     "multipleConversion" : false
