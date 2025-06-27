@@ -1,5 +1,8 @@
 package webService.client.gui;
 
+import webService.client.configuration.configHandlers.config.ConfigData;
+import webService.client.configuration.configHandlers.config.ConfigInstance;
+import webService.client.configuration.configHandlers.config.InstanceConfigWriter;
 import webService.client.configuration.configHandlers.conversionContext.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -246,6 +249,16 @@ public class ConversionConfigWindowController {
 
         logger.info("Configurazione di conversione salvata con successo");
 
+        InstanceConversionContextWriter wr = new InstanceConversionContextWriter(ConversionContextData.getJsonFile());
+        wr.writeIsUnionEnabled(union);
+        wr.writeIsZippedOutput(zippedOutput);
+        wr.writePassword(txtPassword.getText());
+        wr.writeProtected(protectedOutput);
+        wr.writeWatermark(txtWatermark.getText());
+
+        ConversionContextData.update(new ConversionContextInstance(ConversionContextData.getJsonFile()));
+
+        logger.info("Configurazione salvata con successo");
         // Chiude la finestra
         dialogStage.close();
     }
