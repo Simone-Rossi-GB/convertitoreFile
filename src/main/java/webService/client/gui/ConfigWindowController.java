@@ -67,6 +67,7 @@ public class ConfigWindowController {
     private boolean monitorAtStart = false;
     private static final Logger logger = LogManager.getLogger(ConfigWindowController.class);
     private static Locale locale = null;
+    private static ResourceBundle bundle;
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -79,13 +80,13 @@ public class ConfigWindowController {
         loadCurrentConfiguration();
         if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
             locale = MainApp.getCurrentLocale();
+            bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         }
+        updateMonitorToggleButton();
         refreshUITexts(locale);
     }
 
     public void refreshUITexts(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
-
         configTitle.setText(bundle.getString("label.configTitle"));
         configTitleDesc.setText(bundle.getString("label.configTitleDesc"));
         directoryLabel.setText(bundle.getString("label.directoryLabel"));
@@ -96,7 +97,6 @@ public class ConfigWindowController {
         errorDirectoryLabel.setText(bundle.getString("label.errorDirectoryLabel"));
         errorDirField.setPromptText(bundle.getString("field.errorDirField"));
         startMonitoringLabel.setText(bundle.getString("label.startMonitoringLabel"));
-        toggleMonitorBtn.setText(bundle.getString("btn.activate"));
         browseMonitoredBtn.setText(bundle.getString("btn.browse"));
         browseSuccessBtn.setText(bundle.getString("btn.browse"));
         browseErrorBtn.setText(bundle.getString("btn.browse"));
@@ -202,7 +202,6 @@ public class ConfigWindowController {
 
         monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
         monitorAtStartField.setText(String.valueOf(monitorAtStart));
-        updateMonitorToggleButton();
 
         logger.info("Configurazione caricata correttamente");
     }
@@ -265,16 +264,17 @@ public class ConfigWindowController {
     }
 
     private void updateMonitorToggleButton() {
+        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         if (monitorAtStart) {
             // ATTIVO - Solo il testo cambia, bottone rimane grigio
-            toggleMonitorBtn.setText("Disabilita");
+            toggleMonitorBtn.setText(bundle.getString("btn.deactivate"));
 
             // Usa classe CSS invece di stile inline
             monitorAtStartField.getStyleClass().removeAll("active-state");
             monitorAtStartField.getStyleClass().add("active-state");
         } else {
             // SPENTO - Solo il testo cambia, bottone rimane grigio
-            toggleMonitorBtn.setText("Abilita");
+            toggleMonitorBtn.setText(bundle.getString("btn.activate"));
 
             // Rimuovi classe CSS
             monitorAtStartField.getStyleClass().removeAll("active-state");
@@ -372,8 +372,8 @@ public class ConfigWindowController {
 
                 Alert confirmAlert = DialogHelper.createModernAlert(
                         Alert.AlertType.CONFIRMATION,
-                        "Modifiche non salvate",
-                        "Ci sono modifiche non salvate. Sei sicuro di voler chiudere senza salvare?",
+                        "Unsaved Changes",
+                        bundle.getString("label.closeWOsaving"),
                         isLightTheme
                 );
 

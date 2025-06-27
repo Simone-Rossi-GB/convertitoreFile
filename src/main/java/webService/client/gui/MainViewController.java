@@ -130,6 +130,7 @@ public class MainViewController {
 
     private Thread watcherThread;
     private ContextMenu menu = new ContextMenu();
+    private ResourceBundle bundle;
 
     private final Map<String, Locale> localeMap = new HashMap<>();
     {
@@ -163,7 +164,8 @@ public class MainViewController {
                 root.getStyleClass().add("dark");
             }
         });
-        refreshUITexts(MainApp.getCurrentLocale());
+        bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
+        refreshUITexts();
         updateLangButtonGraphic(MainApp.getCurrentLocale());
         initializeLanguageMenu();
         Delta dragDelta = new Delta();
@@ -240,7 +242,8 @@ public class MainViewController {
             item.setOnAction(ev -> {
                 MainApp.setCurrentLocale(locale);
                 updateLangButtonGraphic(locale);
-                refreshUITexts(locale);
+                bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+                refreshUITexts();
                 menu.hide();
             });
 
@@ -248,9 +251,7 @@ public class MainViewController {
         }
     }
 
-    public void refreshUITexts(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
-
+    public void refreshUITexts() {
         mainTitleLabel.setText(bundle.getString("label.mainTitle"));
         logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
         detectedFilesLabel.setText(bundle.getString("label.detectedFilesLabel"));
@@ -842,6 +843,7 @@ public class MainViewController {
                     Thread.sleep(100);
 
                     addFinalLogMessage("✅ Conversione riuscita: " + filename + " → " + outputDestinationFile.getName());
+                    launchAlertSuccess(srcFile); // Alert success
 
                     // AGGIORNA CONTATORE SUCCESSI
                     Platform.runLater(() -> {
@@ -1015,16 +1017,18 @@ public class MainViewController {
      * @param file File da convertire
      */
     public void launchAlertSuccess(File file) {
-        String message = "Conversione di " + file.getName() + " riuscita";
+        String message = bundle.getString("label.conversionSuccessMsg");
+        message = message.replace("$", file.getName());
         logger.info(message);
+        String finalMessage = message;
         Platform.runLater(() -> {
             // Usa il metodo helper per rilevare automaticamente il tema
             boolean isLightTheme = DialogHelper.detectCurrentTheme();
 
             Alert alert = DialogHelper.createModernAlert(
                     Alert.AlertType.INFORMATION,
-                    "Conversione riuscita",
-                    message,
+                    bundle.getString("label.conversionSuccess"),
+                    finalMessage,
                     isLightTheme
             );
 

@@ -10,6 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Helper class per creare dialog moderni con supporto per temi dark/light
@@ -17,11 +19,14 @@ import java.util.List;
 public class DialogHelper {
 
     private static final Logger logger = LogManager.getLogger(DialogHelper.class);
+    private static Locale locale = null;
+    private static ResourceBundle bundle;
 
     /**
      * Crea un Alert moderno con il tema appropriato
      */
     public static Alert createModernAlert(Alert.AlertType alertType, String title, String message, boolean isLightTheme) {
+        updateLanguage();
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -29,6 +34,13 @@ public class DialogHelper {
 
         DialogPane pane = alert.getDialogPane();
         pane.setStyle("-fx-background-color: transparent;");
+
+        // Crea pulsanti personalizzati
+        ButtonType buttonYes = new ButtonType(bundle.getString("btn.okButton") , ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonNo = new ButtonType(bundle.getString("btn.cancelButton") , ButtonBar.ButtonData.CANCEL_CLOSE);
+
+    // Rimuove i pulsanti di default e aggiunge i tuoi
+        alert.getButtonTypes().setAll(buttonYes, buttonNo);
 
         // Applica il tema al dialog
         applyThemeToDialog(alert, isLightTheme);
@@ -157,6 +169,13 @@ public class DialogHelper {
 
         // Default: dark theme
         return false;
+    }
+
+    private static void updateLanguage(){
+        if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
+            locale = MainApp.getCurrentLocale();
+            bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
+        }
     }
 
     /**

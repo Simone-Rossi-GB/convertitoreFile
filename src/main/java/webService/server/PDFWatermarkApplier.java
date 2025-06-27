@@ -21,7 +21,7 @@ public class PDFWatermarkApplier {
      * @param watermarkText Il testo da usare come watermark.
      * @return true se il watermark è stato applicato con successo, false altrimenti.
      */
-    public static void applyWatermark(String inputPdfPath, String outputPdfPath, String watermarkText) throws WatermarkException{
+    public static boolean applyWatermark(String inputPdfPath, String outputPdfPath, String watermarkText) throws WatermarkException{
 
         try (PDDocument document = PDDocument.load(new File(inputPdfPath))) {
 

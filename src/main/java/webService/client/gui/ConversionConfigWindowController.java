@@ -48,6 +48,7 @@ public class ConversionConfigWindowController {
     private boolean zippedOutput;
     private boolean protectedOutput;
     private static Locale locale = null;
+    private static ResourceBundle bundle;
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -55,15 +56,15 @@ public class ConversionConfigWindowController {
     @FXML
     private void initialize() {
         // Non più stili inline - tutto gestito da CSS
-        loadCurrentConfiguration();
         if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
             locale = MainApp.getCurrentLocale();
+            bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         }
+        loadCurrentConfiguration();
         refreshUITexts(locale);
     }
 
     public void refreshUITexts(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         conversionContextTitle.setText(bundle.getString("label.conversionContextTitle"));
         conversionContextDesc.setText(bundle.getString("label.conversionContextDesc"));
         configurationParameters.setText(bundle.getString("label.configurationParameters"));
@@ -74,9 +75,6 @@ public class ConversionConfigWindowController {
         unionLabel.setText(bundle.getString("label.unionLabel"));
         zippedLabel.setText(bundle.getString("label.zippedLabel"));
         protectedLabel.setText(bundle.getString("label.protectedLabel"));
-        toggleUnionBtn.setText(bundle.getString("btn.activate"));
-        toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
-        toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
         saveButton.setText(bundle.getString("btn.saveButton"));
         cancelButton.setText(bundle.getString("btn.closeButton"));
     }
@@ -165,7 +163,7 @@ public class ConversionConfigWindowController {
     private void updateUnionToggleButton() {
         if (union) {
             // STATO ATTIVO
-            toggleUnionBtn.setText("Disabilita");
+            toggleUnionBtn.setText(bundle.getString("btn.deactivate"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -176,7 +174,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleUnionBtn.setText("Abilita");
+            toggleUnionBtn.setText(bundle.getString("btn.activate"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -192,7 +190,7 @@ public class ConversionConfigWindowController {
     private void updateZippedOutputToggleButton() {
         if (zippedOutput) {
             // STATO ATTIVO
-            toggleZippedOutputBtn.setText("Disabilita");
+            toggleZippedOutputBtn.setText(bundle.getString("btn.deactivate"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -203,7 +201,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleZippedOutputBtn.setText("Abilita");
+            toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -216,7 +214,7 @@ public class ConversionConfigWindowController {
     private void updateProtectedOutputToggleButton() {
         if (protectedOutput) {
             // STATO ATTIVO
-            toggleProtectedOutputBtn.setText("Disabilita");
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.deactivate"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -227,7 +225,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleProtectedOutputBtn.setText("Abilita");
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -267,8 +265,8 @@ public class ConversionConfigWindowController {
 
             Alert confirmAlert = DialogHelper.createModernAlert(
                     Alert.AlertType.CONFIRMATION,
-                    "Modifiche non salvate",
-                    "Ci sono modifiche non salvate. Sei sicuro di voler chiudere senza salvare?",
+                    "Unsaved Changes",
+                    bundle.getString("label.closeWOsaving"),
                     isLightTheme
             );
 
