@@ -125,11 +125,21 @@ public class ConversionConfigWindowController {
 
         txtWatermark.setText(ConversionContextReader.getWatermark());
 
+        union = ConversionContextReader.getIsUnion();
+        unionField.setText(String.valueOf(union));
         updateUnionToggleButton();
 
+        zippedOutput = ConversionContextReader.getIsZippedOutput();
+        zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
 
+        protectedOutput = ConversionContextReader.getProtected();
+        protectedOutputField.setText(String.valueOf(protectedOutput));
         updateProtectedOutputToggleButton();
+
+        multipleConversions = ConversionContextReader.getIsMultipleConversionEnabled();
+        multipleConversionField.setText(String.valueOf(multipleConversions));
+        updateMultipleConversionButton();
 
         logger.info("Configurazione conversione caricata correttamente");
     }
