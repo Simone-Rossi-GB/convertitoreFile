@@ -1,7 +1,7 @@
 {
   "data" : {
-    "formatsWithAlphaChannel" : [ "png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff" ],
-    "formatsRequiringIntermediateConversion" : [ "webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm" ],
+    "formatsWithAlphaChannel" : [ "png", "tiff", "gif", "webp", "psd", "icns", "ico", "tga", "iff", "heic" ],
+    "formatsRequiringIntermediateConversion" : [ "webp", "pbm", "pgm", "ppm", "pam", "tga", "iff", "xwd", "icns", "pnm", "heic" ],
     "conversions" : {
       "pdf" : {
         "doc" : "webService.server.converters.pdfConverters.PDFtoDOCconverter",
@@ -40,6 +40,24 @@
       },
       "msg" : {
         "pdf" : "webService.server.converters.mailConverters.MSGtoPDFconverter"
+      },
+      "heic" : {
+        "bmp" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "gif" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "ico" : "webService.server.converters.imageConverters.ToICOimageConverter",
+        "icns" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "iff" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "jpeg" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "jpg" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "pam" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "pbm" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "pgm" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "png" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "pnm" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "ppm" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "tga" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "tiff" : "webService.server.converters.imageConverters.GenericImageConverter",
+        "webp" : "webService.server.converters.imageConverters.GenericImageConverter"
       },
       "bmp" : {
         "gif" : "webService.server.converters.imageConverters.GenericImageConverter",

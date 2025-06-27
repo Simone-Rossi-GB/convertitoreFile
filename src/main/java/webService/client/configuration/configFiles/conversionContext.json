@@ -1,11 +1,11 @@
 {
   "data" : {
-    "destinationFormat" : "doc",
+    "destinationFormat" : "pdf",
     "password" : "samplefiles",
     "protected" : false,
     "union" : false,
     "zippedOutput" : false,
-    "watermark" : "",
+    "watermark" : "ciao",
     "multipleConversion" : false
   }
 }

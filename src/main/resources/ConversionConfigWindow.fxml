@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="0" styleClass="conversion-config-root-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConversionConfigWindowController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="0" styleClass="conversion-config-root-container" xmlns="http://javafx.com/javafx/8.0.452" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConversionConfigWindowController">
 
     <children>
         <!-- MODERN HEADER -->
@@ -100,7 +95,6 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
-                                        <TextField fx:id="unionField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
                                         <Button fx:id="toggleUnionBtn" onAction="#toggleUnion" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
                                             <font>
                                                 <Font name="System Bold" size="11.0" />
@@ -122,7 +116,6 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
-                                        <TextField fx:id="zippedOutputField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
                                         <Button fx:id="toggleZippedOutputBtn" onAction="#zippedOutput" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
                                             <font>
                                                 <Font name="System Bold" size="11.0" />
@@ -142,7 +135,6 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <TextField fx:id="protectedOutputField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
                               <Button fx:id="toggleProtectedOutputBtn" onAction="#protectedOutput" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
                                  <font>
                                     <Font name="System Bold" size="11.0" />
@@ -162,7 +154,6 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <TextField fx:id="multipleConversionField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
                               <Button fx:id="toggleMultipleConversionBtn" onAction="#toggleMultipleConversion" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
                                  <font>
                                     <Font name="System Bold" size="11.0" />
