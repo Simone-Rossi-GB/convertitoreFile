@@ -1,4 +1,4 @@
-package webService.server.configuration.configHandlers.config;
+package webService.server.configuration.configHandlers.serverConfig;
 
 import webService.server.configuration.configExceptions.JsonStructureException;
 
@@ -57,41 +57,6 @@ public class ConfigReader extends ConfigData {
         return (List<String>) configDataMap.get("mandatoryEntries");
     }
 
-    /**
-     * Restituisce il percorso di output per le conversioni riuscite.
-     *
-     * @return percorso come stringa
-     */
-    public static String getSuccessOutputDir() throws JsonStructureException {
-        return configDataMap.get("successOutputDir").toString();
-    }
-
-    /**
-     * Restituisce il percorso di output per le conversioni fallite.
-     *
-     * @return percorso come stringa
-     */
-    public static String getErrorOutputDir() throws JsonStructureException {
-        return configDataMap.get("errorOutputDir").toString();
-    }
-
-    /**
-     * Restituisce il percorso della directory monitorata.
-     *
-     * @return percorso della cartella da monitorare
-     */
-    public static String getMonitoredDir() throws JsonStructureException {
-        return configDataMap.get("monitoredDir").toString();
-    }
-
-    /**
-     * Indica se il monitoraggio è abilitato all’avvio.
-     *
-     * @return {@code true} se il monitoraggio parte subito, altrimenti {@code false}
-     */
-    public static Boolean getIsMonitoringEnabledAtStart() throws JsonStructureException {
-        return (Boolean) configDataMap.get("monitorAtStart");
-    }
 
     /**
      * Indica se la conversione multipla è abilitata.

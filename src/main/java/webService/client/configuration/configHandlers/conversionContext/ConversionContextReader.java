@@ -1,5 +1,7 @@
 package webService.client.configuration.configHandlers.conversionContext;
 
+import webService.server.configuration.configExceptions.JsonStructureException;
+
 /**
  * Fornisce metodi di accesso ai dati presenti nel contesto di conversione corrente per il thread.
  * <p>
@@ -59,4 +61,13 @@ public class ConversionContextReader extends ConversionContextData {
      * @return stringa contenente il watermark
      */
     public static String getWatermark() {return context.get().get("watermark").toString();}
+
+    /**
+     * Indica se la conversione multipla è abilitata.
+     *
+     * @return {@code true} se sono consentite conversioni multiple, {@code false} altrimenti
+     */
+    public static Boolean getIsMultipleConversionEnabled() throws JsonStructureException {
+        return (Boolean) context.get().get("multipleConversion");
+    }
 }

@@ -35,8 +35,7 @@ public class ConfigInstance {
                 "successOutputDir",
                 "errorOutputDir",
                 "monitoredDir",
-                "monitorAtStart",
-                "conversions"
+                "monitorAtStart"
         );
 
         this.jsonFile = jsonFile;

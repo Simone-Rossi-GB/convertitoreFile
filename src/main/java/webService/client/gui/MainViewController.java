@@ -17,12 +17,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
 import webService.client.objects.*;
 import webService.server.converters.Zipper;
-import webService.client.configuration.configHandlers.config.ConfigData;
-import webService.client.configuration.configHandlers.config.ConfigInstance;
-import webService.client.configuration.configHandlers.config.ConfigReader;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.client.configuration.configHandlers.config.*;
@@ -134,7 +128,7 @@ public class MainViewController {
     private boolean isShowingProgress = false; // Flag per sapere se stiamo mostrando una barra di progresso
 
     private Thread watcherThread;
-    private ContextMenu menu = new ContextMenu();
+    private final ContextMenu menu = new ContextMenu();
     private ResourceBundle bundle;
 
     private final Map<String, Locale> localeMap = new HashMap<>();
@@ -201,12 +195,6 @@ public class MainViewController {
         ConversionContextData.update(cci);
         //Carica la configurazione di base
         loadConfiguration();
-        //Invia al server i file di configurazione
-        if(webServiceClient.isServiceAvailable()){
-            webServiceClient.sendConfigFile(new File(configFile));
-            webServiceClient.sendConversionContextFile(new File(conversionContextFile));
-        }else
-            logger.error("Errore nell'invio iniziale dei file di configurazione");
         if (monitorAtStart) {
             toggleMonitoring();
         }
@@ -494,8 +482,6 @@ public class MainViewController {
 
             // Ricarica la configurazione dopo la chiusura della finestra
             addLogMessage("Editor configurazione chiuso");
-            logger.info("Configurazione inviata al webService");
-            webServiceClient.sendConfigFile(new File(configFile));
             loadConfiguration();
             interruptWatcher();
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
@@ -572,9 +558,6 @@ public class MainViewController {
             // Mostra la finestra e attendi la chiusura
             logger.info("Editor configurazione conversione aperto");
             configStage.showAndWait();
-            // Ricarica la configurazione
-            logger.info("Configurazione inviata al webService");
-            webServiceClient.sendConversionContextFile(new File(conversionContextFile));
         }catch (IOException e) {
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
         }
@@ -669,7 +652,7 @@ public class MainViewController {
         srcExtension = Utility.getExtension(srcFile);
 
         //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
-        if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
+        if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
             try{
                 srcExtension = Zipper.extractFileExstension(srcFile);
             } catch (IOException e) {
@@ -724,7 +707,7 @@ public class MainViewController {
     private String extractSrcExtension(File file) throws IOException, IllegalExtensionException {
         String srcExtension = Utility.getExtension(file);
         //Se è impostata la conversione multipla prende l'estensione dei file contenuti se è uguale per tutti
-        if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
+        if(webService.server.configuration.configHandlers.conversionContext.ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
             try {
                 srcExtension = Zipper.extractFileExstension(file);
             } catch (IOException e) {
@@ -804,13 +787,11 @@ public class MainViewController {
 
             iccw.writeDestinationFormat(targetFormat);
             ConversionContextData.update(new ConversionContextInstance(new File(conversionContextFile)));
-            webServiceClient.sendConversionContextFile(new File(conversionContextFile));
-
             logger.info("Tentativo conversione tramite web service...");
 
             // Fase 5: Conversione in corso
             updateProgressInLog(filename, 60, "Conversione in corso...");
-            ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile);
+            ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, conversionContextFile);
 
             // Fase 6: Elaborazione risultato
             updateProgressInLog(filename, 80, "Elaborazione risultato...");

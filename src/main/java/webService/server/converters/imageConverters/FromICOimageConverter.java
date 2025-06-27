@@ -1,7 +1,7 @@
 package webService.server.converters.imageConverters;
 
 import webService.server.configuration.configExceptions.NullJsonValueException;
-import webService.server.configuration.configHandlers.config.ConfigReader;
+import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
 import webService.server.converters.Converter;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
 import net.ifok.image.image4j.codec.ico.ICOEncoder;

@@ -36,33 +36,6 @@ public class InstanceConfigReader {
     }
 
     /**
-     * Legge la lista dei formati che supportano il canale alfa.
-     *
-     * @return lista di estensioni (es. "png", "tga", ...)
-     */
-    public List<String> readFormatsWithAlphaChannel() throws JsonStructureException {
-        return JsonReader.read(new TypeReference<List<String>>() {}, "formatsWithAlphaChannel", jsonFile, rootReference);
-    }
-
-    /**
-     * Legge la lista dei formati che richiedono una conversione intermedia.
-     *
-     * @return lista di formati che devono essere convertiti in uno step intermedio
-     */
-    public List<String> readFormatsRequiringIntermediateConversion() throws JsonStructureException {
-        return JsonReader.read(new TypeReference<List<String>>() {}, "getFormatsRequiringIntermediateConversion", jsonFile, rootReference);
-    }
-
-    /**
-     * Restituisce la struttura delle conversioni definite nel file JSON.
-     *
-     * @return mappa con chiavi formato di partenza e valori formati di destinazione
-     */
-    public Map<String, Map<String, String>> readConversions() throws JsonStructureException {
-        return JsonReader.read(new TypeReference<Map<String, Map<String, String>>>() {}, "conversions", jsonFile, rootReference);
-    }
-
-    /**
      * Restituisce la lista dei campi obbligatori richiesti nella configurazione.
      *
      * @return lista di stringhe rappresentanti le chiavi obbligatorie
@@ -107,12 +80,5 @@ public class InstanceConfigReader {
         return JsonReader.read(new TypeReference<Boolean>() {}, "monitorAtStart", jsonFile, rootReference);
     }
 
-    /**
-     * Indica se è abilitata la conversione multipla di file in un'unica esecuzione.
-     *
-     * @return {@code true} se la conversione multipla è abilitata, altrimenti {@code false}
-     */
-    public Boolean readIsMultipleConversionEnabled() throws JsonStructureException {
-        return JsonReader.read(new TypeReference<Boolean>() {}, "multipleConversion", jsonFile, rootReference);
-    }
+
 }

@@ -1,9 +1,9 @@
 package webService.server.configuration.configHandlers.conversionContext;
 
-import webService.server.configuration.jsonUtilities.JsonUtility;
-import webService.server.configuration.jsonUtilities.recognisedWrappers.RecognisedFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import webService.client.configuration.jsonUtilities.JsonUtility;
+import webService.client.configuration.jsonUtilities.recognisedWrappers.RecognisedFile;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,8 +23,7 @@ public class ConversionContextInstance {
                 "password",
                 "protected",
                 "union",
-                "zippedOutput",
-                "watermark"
+                "zippedOutput"
         );
         this.jsonFile = jsonFile;
         // Esegue la validazione della struttura del JSON

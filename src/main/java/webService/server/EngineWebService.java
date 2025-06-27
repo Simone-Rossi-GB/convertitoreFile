@@ -1,9 +1,10 @@
 package webService.server;
 
 import com.twelvemonkeys.util.convert.ConversionException;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import webService.server.converters.Converter;
-import webService.server.configuration.configHandlers.config.ConfigReader;
+import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
 import webService.client.objects.Log;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -61,7 +62,7 @@ public class EngineWebService {
         File outFile = null; // CORREZIONE: Inizializza sempre la variabile
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(ConfigReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
+            if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
                 outFile = conversioneMultipla(Zipper.extractFileExstension(srcFile), outExt, srcFile);
             } else {
                 outFile = conversioneSingola(srcExt, outExt, srcFile);

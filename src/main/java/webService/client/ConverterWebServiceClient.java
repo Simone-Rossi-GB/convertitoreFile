@@ -112,7 +112,7 @@ public class ConverterWebServiceClient {
      * @param outputFile   Il percorso completo dove salvare il file convertito localmente
      * @return Un oggetto ConversionResult che indica successo/fallimento e dettagli dell'operazione
      */
-    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile) {
+    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile, String conversionContextFile) {
         // Verifica preliminare della disponibilità del servizio
         if (!isServiceAvailable()) {
             return new ConversionResult(false, "Servizio di conversione non disponibile.");
@@ -132,6 +132,8 @@ public class ConverterWebServiceClient {
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("file", new FileSystemResource(inputFile)); // Aggiunge il file da convertire
             body.add("targetFormat", targetFormat); // Aggiunge il formato target desiderato
+            File conversionContextConfig = new File(conversionContextFile);
+            body.add("configFile", new FileSystemResource(conversionContextConfig)); //Aggiunge il file di configurazione della conversione
 
             // Crea l'entità HTTP completa con corpo e header
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
@@ -212,81 +214,5 @@ public class ConverterWebServiceClient {
         return new ConversionResult(false, message);
     }
 
-    /**
-     * Invia un file di configurazione JSON al servizio web.
-     * Utilizza l'endpoint /configUpload per caricare la configurazione del servizio.
-     *
-     * @param jsonFile Il file JSON di configurazione da inviare al server
-     */
-    public void sendConfigFile(File jsonFile){
-        // Costruisce l'URL per l'upload della configurazione
-        String url = baseUrl + "/api/converter/configUpload";
 
-        // Verifica che il file esista prima di tentare l'upload
-        if (!jsonFile.exists()) {
-            System.err.println("Il file non esiste: " + jsonFile.getPath());
-            return;
-        }
-
-        // Prepara il contenuto come multipart/form-data per l'invio del file di configurazione
-        FileSystemResource resource = new FileSystemResource(jsonFile);
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", resource); // Aggiunge il file alla richiesta
-
-        // Configura gli header per multipart/form-data
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        // Crea l'entità HTTP completa
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        // Invia la richiesta POST al server
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-        // Controlla lo status HTTP della risposta e logga il risultato
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Upload della configurazione riuscito: " + response.getBody());
-        } else {
-            logger.error("Upload della configurazione fallito: " + response.getBody());
-        }
-    }
-
-    /**
-     * Invia un file di contesto per la conversione JSON al webservice.
-     * Utilizza l'endpoint /conversionContextUpload per caricare il contesto delle conversioni.
-     *
-     * @param jsonFile Il file JSON di contesto conversione da inviare al server
-     */
-    public void sendConversionContextFile(File jsonFile){
-        // Costruisce l'URL per l'upload del contesto conversione
-        String url = baseUrl + "/api/converter/conversionContextUpload";
-
-        // Verifica che il file esista prima di tentare l'upload
-        if (!jsonFile.exists()) {
-            System.err.println("Il file non esiste: " + jsonFile.getPath());
-            return;
-        }
-
-        // Prepara il contenuto come multipart/form-data
-        FileSystemResource resource = new FileSystemResource(jsonFile);
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", resource); // Aggiunge il file alla richiesta
-
-        // crea gli header settandoli a multipart/form-data
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        // Crea l'entità HTTP completa
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        // Invia la richiesta POST al server
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-        // Controlla lo status HTTP della risposta ed esegue i log
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Upload del contesto conversione riuscito: " + response.getBody());
-        } else {
-            logger.error("Upload del contesto conversione fallito: " + response.getBody());
-        }
-    }
 }

@@ -59,12 +59,4 @@ public class ConfigWriter extends ConfigData {
         configDataMap.put("monitorAtStart", isMonitoringEnabledAtStart);
     }
 
-    /**
-     * Abilita o disabilita la possibilità di effettuare conversioni multiple.
-     *
-     * @param isMultipleConversionEnabled valore booleano per "multipleConversion"
-     */
-    public void setIsMultipleConversionEnabled(boolean isMultipleConversionEnabled) {
-        configDataMap.put("multipleConversion", isMultipleConversionEnabled);
-    }
 }

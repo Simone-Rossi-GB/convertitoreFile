@@ -63,13 +63,4 @@ public class InstanceConfigWriter {
     public void writeIsMonitoringEnabledAtStart(boolean isMonitoringEnabledAtStart) {
         JsonWriter.write(isMonitoringEnabledAtStart, "monitorAtStart", jsonFile, rootReference);
     }
-
-    /**
-     * Scrive la preferenza per abilitare o meno le conversioni multiple.
-     *
-     * @param isMonitoringEnabledAtStart valore da scrivere nel campo "multipleConversion"
-     */
-    public void writeIsMultipleConversionEnabled(boolean isMonitoringEnabledAtStart) {
-        JsonWriter.write(isMonitoringEnabledAtStart, "multipleConversion", jsonFile, rootReference);
-    }
 }

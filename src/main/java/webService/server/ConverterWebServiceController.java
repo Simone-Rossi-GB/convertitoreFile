@@ -1,5 +1,6 @@
 package webService.server;
 
+import org.apache.jena.reasoner.IllegalParameterException;
 import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
@@ -12,15 +13,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.apache.tika.Tika;
-import webService.server.configuration.configHandlers.config.ConfigData;
-import webService.server.configuration.configHandlers.config.ConfigInstance;
+import webService.server.configuration.configHandlers.serverConfig.ConfigData;
+import webService.server.configuration.configHandlers.serverConfig.ConfigInstance;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,43 +81,45 @@ public class ConverterWebServiceController {
     @PostMapping("/convert")
     public ResponseEntity<?> convertFile(
             @RequestParam("file") MultipartFile file, //parametri richiesti dopo il /convert/
-            @RequestParam("targetFormat") String targetFormat) throws IOException, FileMoveException {
+            @RequestParam("targetFormat") String targetFormat ,
+            @RequestParam("configFile") MultipartFile configFile)throws IOException, FileMoveException { //Json di configurazione
 
         Path tempInputFilePath = null;
         Path conversionTempDir = null;
         File convertedOutputFile = null;
-            logger.info("Inizio conversione file: {} -> {}", file.getOriginalFilename(), targetFormat);
+        logger.info("Inizio conversione file: {} -> {}", file.getOriginalFilename(), targetFormat);
 
-            // Crea una directory temporanea con identificativo univoco per questa conversione
-            conversionTempDir = Files.createTempDirectory("conversion-" + UUID.randomUUID() + "-");
-            logger.info("Creata directory temporanea: {}", conversionTempDir);
+        // Crea una directory temporanea con identificativo univoco per questa conversione
+        conversionTempDir = Files.createTempDirectory("conversion-" + UUID.randomUUID() + "-");
+        logger.info("Creata directory temporanea: {}", conversionTempDir);
+        configFileUpload(configFile, conversionTempDir);
+        logger.warn(ConversionContextReader.getDestinationFormat());
+        // Salva il file caricato nella directory temporanea
+        String originalFilename = file.getOriginalFilename();
+        String extension = null;
 
-            // Salva il file caricato nella directory temporanea
-            String originalFilename = file.getOriginalFilename();
-            String extension = null;
+        // otteniamo direttamente dal file ricevuto il formato d'origine
+        extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
 
-            // otteniamo direttamente dal file ricevuto il formato d'origine
-            extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
+        assert originalFilename != null; // diciamo al JVM che il nome non è mai null
 
-            assert originalFilename != null; // diciamo al JVM che il nome non è mai null
+        // prendiamo la directory temporanea e col metodo resolve mettiamo in
+        // tempInputFilePath  percorsoTemporaneo/originalFileName.estensione
+        tempInputFilePath = conversionTempDir.resolve(originalFilename);
 
-            // prendiamo la directory temporanea e col metodo resolve mettiamo in
-            // tempInputFilePath  percorsoTemporaneo/originalFileName.estensione
-            tempInputFilePath = conversionTempDir.resolve(originalFilename);
+        file.transferTo(tempInputFilePath); // spostiamo il file nella director y temporanea
+        logger.info("File salvato in: {}", tempInputFilePath);
 
-            file.transferTo(tempInputFilePath); // spostiamo il file nella director y temporanea
-            logger.info("File salvato in: {}", tempInputFilePath);
+        // creiamo un oggetto file dal percorso del file
+        File inputFileForEngine = tempInputFilePath.toFile();
+        logger.info(inputFileForEngine.getAbsolutePath());
+        // Chiama EngineWebService per la conversione
+        convertedOutputFile = engine.conversione(extension, targetFormat, inputFileForEngine);
 
-            // creiamo un oggetto file dal percorso del file
-            File inputFileForEngine = tempInputFilePath.toFile();
-            logger.info(inputFileForEngine.getAbsolutePath());
-            // Chiama EngineWebService per la conversione
-            convertedOutputFile = engine.conversione(extension, targetFormat, inputFileForEngine);
-
-            // Verifica che il file convertito esista
-            if (convertedOutputFile == null || !convertedOutputFile.exists()) {
-                throw new ConversionException("File convertito inesistente");
-            }
+        // Verifica che il file convertito esista
+        if (convertedOutputFile == null || !convertedOutputFile.exists()) {
+            throw new ConversionException("File convertito inesistente");
+        }
 
             //applico il watermark
         if (!ConversionContextReader.getWatermark().equals("")) {
@@ -137,28 +138,28 @@ public class ConverterWebServiceController {
             }
         }
 
-            // crea un array di byte per la risposta al client leggendo i byte del file convertito
-            byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
-            logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
+        // crea un array di byte per la risposta al client leggendo i byte del file convertito
+        byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
+        logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
 
-            // Determina il Content-Type corretto per la risposta HTTP
-            MediaType contentType = determineMediaType(convertedOutputFile);
+        // Determina il Content-Type corretto per la risposta HTTP
+        MediaType contentType = determineMediaType(convertedOutputFile);
 
-            // Costruisci la risposta con i byte del file
-            HttpHeaders headers = new HttpHeaders();
+        // Costruisci la risposta con i byte del file
+        HttpHeaders headers = new HttpHeaders();
 
-            // inseriamo nell'header il tipo di contenuto della risposta
-            headers.setContentType(contentType);
+        // inseriamo nell'header il tipo di contenuto della risposta
+        headers.setContentType(contentType);
 
-            // aggiungiamo all'header come allegato il nome del file convertito
-            headers.setContentDispositionFormData("attachment", convertedOutputFile.getName());
+        // aggiungiamo all'header come allegato il nome del file convertito
+        headers.setContentDispositionFormData("attachment", convertedOutputFile.getName());
 
-            // aggiungiamo all'header la lunghezza in byte del contenuto della risposta
-            headers.setContentLength(fileBytes.length);
+        // aggiungiamo all'header la lunghezza in byte del contenuto della risposta
+        headers.setContentLength(fileBytes.length);
 
-            logger.info("Conversione completata con successo per: {}", originalFilename);
-            clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
-            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+        logger.info("Conversione completata con successo per: {}", originalFilename);
+        clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
+        return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
     }
 
 
@@ -195,69 +196,24 @@ public class ConverterWebServiceController {
         }
     }
 
-    /**
-     * Carica il file di configurazione base json inviato dal client
-     * @param file file di configurazione
-     * @return
-     */
-    @PostMapping("/configUpload")
-    public ResponseEntity<String> configUpload(@RequestParam("file") MultipartFile file) {
-        ResponseEntity<String> response = configFilesUpload(file);
 
-        // creiamo una nuova istanza di configurazione usando il file ricevuto
-        ConfigInstance ci = new ConfigInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
-
-        // aggiorniamo la configurazione
-        ConfigData.update(ci);
-
-        return response;
-    }
-
-    /**
-     * Carica il file di configurazione della conversione json inviato dal client
-     * @param file file di configurazione
-     * @return
-     */
-    @PostMapping("/conversionContextUpload")
-    public ResponseEntity<String> conversionContextUpload(@RequestParam("file") MultipartFile file) {
-        ResponseEntity<String> response = configFilesUpload(file);
-
-        // ricarica la mappa di configurazione conversion context
-        logger.info(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())).getAbsolutePath());
-
-        // creiamo una nuova istanza di contesto per la conversione usando il file ricevuto
-        ConversionContextInstance ci = new ConversionContextInstance(new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename())));
-
-        // aggiorniamo il contesto
-        ConversionContextData.update(ci);
-        return response;
-    }
 
     /**
      * Salva il file in un'apposita cartella o lo sostituisce se esiste già
      * @param file file di configurazione
-     * @return risposta
      */
-    private ResponseEntity<String> configFilesUpload (MultipartFile file){
+    private void configFileUpload (MultipartFile file, Path tempDirectory) throws FileMoveException {
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File vuoto.");
+            throw new IllegalParameterException("Il file di configurazione è vuoto");
         }
-
         try {
-            // Percorso relativo alla directory di lavoro del web service
-            Path uploadPath = Paths.get(uploadDir);
-            Files.createDirectories(uploadPath);
-
-            Path filePath = uploadPath.resolve(Objects.requireNonNull(file.getOriginalFilename()));
+            Path filePath = tempDirectory.resolve(Objects.requireNonNull(file.getOriginalFilename()));
             file.transferTo(filePath);
-
-            logger.info("Working directory: {}", System.getProperty("user.dir"));
-            logger.info("File {} salvato in {}", file.getOriginalFilename(), filePath.toAbsolutePath());
-            return ResponseEntity.ok("File salvato: " + filePath.toAbsolutePath());
-
+            ConversionContextInstance cci = new ConversionContextInstance(filePath.toFile());
+            ConversionContextData.update(cci);
+            logger.info("Cofigurazione conversion config caricata con successo");
         } catch (IOException e) {
-            logger.error("Errore nel caricamento del file: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body("Errore nel caricamento del file di configurazione");
+            throw new FileMoveException("Impossibile salvare il file di configurazione conversion context");
         }
     }
 

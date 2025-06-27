@@ -1,4 +1,4 @@
-package webService.server.configuration.configHandlers.config;
+package webService.server.configuration.configHandlers.serverConfig;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import webService.server.configuration.jsonUtilities.JsonData;

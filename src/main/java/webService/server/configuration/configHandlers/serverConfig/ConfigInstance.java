@@ -1,4 +1,4 @@
-package webService.server.configuration.configHandlers.config;
+package webService.server.configuration.configHandlers.serverConfig;
 
 import webService.server.configuration.jsonUtilities.JsonUtility;
 import webService.server.configuration.jsonUtilities.recognisedWrappers.RecognisedFile;
@@ -32,10 +32,8 @@ public class ConfigInstance {
     public ConfigInstance(File jsonFile) {
         // Elenco dei campi obbligatori che devono essere presenti nel file di configurazione
         List<String> MANDATORY_FIELDS = Arrays.asList(
-                "successOutputDir",
-                "errorOutputDir",
-                "monitoredDir",
-                "monitorAtStart",
+                "formatsWithAlphaChannel",
+                "formatsRequiringIntermediateConversion",
                 "conversions"
         );
 

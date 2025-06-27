@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
-        return buildErrorResponse(9999, "Errore interno generico", ex);
+        return buildErrorResponse(9999, ex.getMessage(), ex);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(int code, String message, Exception ex) {

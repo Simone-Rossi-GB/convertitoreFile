@@ -66,4 +66,13 @@ public class InstanceConversionContextWriter {
     public void writeProtected(boolean isProtected) {
         JsonWriter.write(isProtected, "protected", jsonFile, rootReference);
     }
+
+    /**
+     * Scrive la preferenza per abilitare o meno le conversioni multiple.
+     *
+     * @param isMonitoringEnabledAtStart valore da scrivere nel campo "multipleConversion"
+     */
+    public void writeIsMultipleConversionEnabled(boolean isMonitoringEnabledAtStart) {
+        JsonWriter.write(isMonitoringEnabledAtStart, "multipleConversion", jsonFile, rootReference);
+    }
 }
