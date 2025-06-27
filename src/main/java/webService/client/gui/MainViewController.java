@@ -264,7 +264,11 @@ public class MainViewController {
         conversionSettingsTitle.setText(bundle.getString("label.conversionSettingsTitle"));
         configBtn.setText(bundle.getString("btn.configBtn"));
         conversionConfigBtn.setText(bundle.getString("btn.conversionConfigBtn"));
-        MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn"));
+        if (isMonitoring){
+            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " ON");
+        } else {
+            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " OFF");
+        }
     }
 
     private void updateLangButtonGraphic(Locale locale) {
@@ -301,12 +305,12 @@ public class MainViewController {
             // Quando monitora -> colore acquamarina come Directory
             MonitoringBtn.getStyleClass().removeAll("standard-btn");
             MonitoringBtn.getStyleClass().add("accent-btn");
-            MonitoringBtn.setText("Monitoring ON");
+            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" ON");
         } else {
             // Quando non monitora -> colore grigio standard
             MonitoringBtn.getStyleClass().removeAll("accent-btn");
             MonitoringBtn.getStyleClass().add("standard-btn");
-            MonitoringBtn.setText("Monitoring OFF");
+            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" OFF");
         }
     }
 
