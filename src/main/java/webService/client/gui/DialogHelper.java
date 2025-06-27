@@ -57,6 +57,7 @@ public class DialogHelper {
      */
     public static ChoiceDialog<String> createModernChoiceDialog(String defaultChoice, List<String> choices,
                                                                 String title, String header, String content, boolean isLightTheme) {
+        updateLanguage();
         ChoiceDialog<String> dialog = new ChoiceDialog<>(defaultChoice, choices);
         dialog.setTitle(title);
         dialog.setHeaderText(header);
@@ -64,8 +65,6 @@ public class DialogHelper {
 
         ButtonType buttonYes = new ButtonType(bundle.getString("btn.okButton") , ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonNo = new ButtonType(bundle.getString("btn.cancelButton") , ButtonBar.ButtonData.CANCEL_CLOSE);
-
-
 
         // Rimuove i pulsanti di default e aggiunge i tuoi
         dialog.getDialogPane().getButtonTypes().setAll(buttonYes, buttonNo);
