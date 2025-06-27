@@ -1,4 +1,4 @@
-package webService.server;
+package webService.server.converters;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
