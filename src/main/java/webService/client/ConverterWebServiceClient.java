@@ -162,7 +162,7 @@ public class ConverterWebServiceClient {
                 return new ConversionResult(true, "File convertito e salvato con successo: " + outputFile.getName(), null, renamedFile);
             } else {
                 // Gestisce risposte HTTP non di successo
-                String errorMessage = "Errore durante la conversione: " + response.getStatusCode();
+                String errorMessage = Arrays.toString(response.getBody());
                 logger.error(errorMessage);
                 return new ConversionResult(false, errorMessage);
             }

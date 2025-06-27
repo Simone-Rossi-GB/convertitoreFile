@@ -2,14 +2,14 @@
 
 ## Introduzione
 
-Questo servizio REST permette di interrogare lo stato del server, ottenere le possibili conversioni di file supportate, caricare file di configurazione e convertire file da un formato a un altro.
+Questo servizio REST permette di interrogare lo stato del server, ottenere le possibili conversioni di file supportate per un dato formato e convertire file da un formato ad un altro.
 
 Base URL: `/api/converter`  
 Cross-Origin abilitato per tutti i domini.
 
 ## Endpoints
 
-### 1. Stato del servizio
+### Stato del servizio
 
 **GET** `/status`
 
@@ -18,13 +18,13 @@ Restituisce lo stato attuale del servizio.
 
 **Request:** 
 
-nessun parametro
+Nessun parametro
 
 **Response 200:**
 
 `{   "status": "active" }`
 
-### 2. Possibili conversioni per estensione
+### Possibili conversioni per estensione
 
 **GET** `/conversions/{extension}`
 
@@ -39,23 +39,22 @@ Restituisce una lista di formati in cui è possibile convertire un file con una 
 
 es.`[   "doc",   "docx",   "jpg" ]`
 
-**Response 400:**  
-In caso di errore (es. estensione non supportata), restituisce una lista con il messaggio d'errore.
-
-### 3. Conversione file
+### Conversione file
 
 **POST** `/convert`
 
 **Descrizione:**  
-Converte un file caricato da un formato di origine al formato di destinazione specificato.
+Converte un file caricato da un formato di origine al formato di destinazione specificato, applicando le opzioni impostate nel file conversionConfig.json passato dal client.
 
 **Request:**
 
 - Parametri multipart/form-data:
   
-  - `file` (file): file da convertire
+  - `file` (file): File da convertire
   
-  - `targetFormat` (string): formato di destinazione (es. `pdf`, `docx`)
+  - `targetFormat` (string): Formato di destinazione (es. `pdf`, `docx`)
+  
+  - `configFile` (file): File JSON con i parametri utili alla conversione
 
 **Response 200:**
 
@@ -63,66 +62,81 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 
 - Headers:
   
-  - `Content-Type`: media type del file convertito
+  - `Content-Type`: Media type del file convertito
   
-  - `Content-Disposition`: attachment; filename="nomefile"
+  - `Content-Disposition`: Attachment; filename="nomefile"
   
-  - `Content-Length`: lunghezza in byte
+  - `Content-Length`: Lunghezza in byte
 
-**Response 500:**
+## Errori
 
-- In caso di errore di conversione, ritorna una lista con il messaggio d’errore.
+Gli errori vengono gestiti centralmente tramite un **Rest Controller Advice** che intercetta le eccezioni e ritorna una risposta con codice di errore mappato sulla base del tipo di eccezione.
 
-### 4. Upload file di configurazione base
+##### Response 500 – Errore Interno del Server
 
-**POST** `/configUpload`
+Tutti gli errori restituiscono lo status HTTP **500 Internal Server Error** con corpo JSON nel seguente formato:
+{
+  "errorCode": <codice numerico>,
+  "message": "Messaggio dell'eccezione",
+  "stackTrace": "Prima riga dello stack trace"
+}
 
-**Descrizione:**  
-Carica un file di configurazione JSON che aggiorna la configurazione base del sistema.
+##### Elenco dei codici di errore
 
-**Request:**
+###### **1001.**   IllegalExtensionException:
 
-- Parametro multipart/form-data:
-  
-  - `file` (file JSON)
+            Estensione del file non supportata o vietata.
 
-**Response 200:**  
-Messaggio di conferma con il path dove il file è stato salvato.
+###### **1002.**   FileMoveException:
 
-**Response 400 o 500:**  
-Messaggi di errore se il file è vuoto o non può essere salvato.
+            Errore durante lo spostamento o salvataggio del file.
 
+###### **1003.**   UnsupportedConversionException:
 
+            La conversione richiesta non è supportata.
 
-### 5. Upload file di configurazione conversion context
+###### **1004.**   IOException:
 
-**POST** `/conversionContextUpload`
+            Errore generico di input/output durante la conversione.
 
-**Descrizione:**  
-Carica un file JSON di configurazione per il contesto di conversione, aggiornando le regole o i parametri di conversione.
+###### **1005**.   BatchConversionException:
 
-**Request:**
+            Errore durante l'elaborazione di un lotto di file.
 
-- Parametro multipart/form-data:
-  
-  - `file` (file JSON)
+###### **1006.**   ConversionException:
 
-**Response 200:**  
-Messaggio di conferma con il path di salvataggio.
+            Errore generico durante il processo di conversione.
 
-**Response 400 o 500:**  
-Messaggi di errore in caso di problemi.
+###### **1007.**   FileCreationException:
+
+            Impossibile creare il file convertito.
+
+###### **1008.**   EmptyFileException:
+
+            Il file in input è vuoto.
+
+###### **1009.**   FormatsException:
+
+            Errore nei formati di input/output specificati.
+
+###### **1010.**   PasswordException:
+
+           Il file è protetto da password o non accessibile.
+
+###### **1011.**   NullPointerException:
+
+            Oggetto null.
+
+###### **9999.**   Exception:
+
+            Errore interno inatteso (variabile nulla o oggetto non inizializzato).
 
 ## Flusso tipico di utilizzo
 
-1. Il client Rileva un file da convertire.
+1. Il client fa una chiamata chiama `GET /conversions/{extension}` per ottenere i formati disponibili per la conversione.
 
-2. Il client chiama `GET /conversions/{extension}` per ottenere i formati disponibili per la conversione.
+2. Il server cerca nel file serverConfig.json le informazioni richieste e allega alla risposta la lista di estensioni per la conversione.
 
-3. L'utente sceglie il formato di destinazione tra quelli proposti.
+3. Il client fa una chiamata `POST /convert`, passando il file da convertire, l'estensione di destinazione e il file conversionContext.json, con i parametri validi solo per quella conversione.
 
-4. Il client carica il file da convertire tramite `POST /convert`, specificando il formato di destinazione.
-
-5. Il client riceve il file convertito come risposta.
-   
-   
+4. Il server invia una risposta con un'array di byte che rappresenta il contenuto del file convertito e il mediaType rilevato nell'header
