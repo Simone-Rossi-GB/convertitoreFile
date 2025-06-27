@@ -2,6 +2,7 @@ package webService.server;
 
 import org.apache.jena.reasoner.IllegalParameterException;
 import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.converters.PDFWatermarkApplier;
 import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -120,8 +121,7 @@ public class ConverterWebServiceController {
         if (convertedOutputFile == null || !convertedOutputFile.exists()) {
             throw new ConversionException("File convertito inesistente");
         }
-
-            //applico il watermark
+        //applico il watermark
         if (!ConversionContextReader.getWatermark().equals("")) {
             // Crea un file temporaneo per il PDF con watermark nella stessa directory di conversione
             Path tempFilePath = conversionTempDir.resolve("watermarked_" + convertedOutputFile.getName());
