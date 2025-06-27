@@ -58,8 +58,8 @@ public class EngineWebService {
      * @throws FileMoveException Errore nella gestione del file temporaneo
      * @throws UnsupportedConversionException conversione non supportata
      */
-    public File conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException, UnsupportedConversionException {
-        File outFile = null; // CORREZIONE: Inizializza sempre la variabile
+    public File conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException, UnsupportedConversionException, WatermarkException {
+        File outFile = null; // Inizializza sempre la variabile
         try {
             //Controlla se deve eseguire una conversione multipla
             if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
@@ -68,7 +68,7 @@ public class EngineWebService {
                 outFile = conversioneSingola(srcExt, outExt, srcFile);
             }
 
-            logger.info("Conversione completata con successo: {} -> {}", srcFile.getName(), outFile.getName());
+            logger.info("Conversione completata con successo: {} -> {}", srcFile.getAbsolutePath(), outFile.getAbsolutePath());
             return outFile;
 
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
@@ -77,6 +77,9 @@ public class EngineWebService {
         } catch (FormatsException | IllegalExtensionException e) {
             logger.error("Conversione non supportata: {}", e.getMessage());
             throw new UnsupportedConversionException(e.getMessage());
+        } catch(WatermarkException e){
+            logger.error("Conversione non supportata: {}", e.getMessage());
+            throw new WatermarkException(e.getMessage());
         } catch (IOException e) {
             logger.error("Errore I/O durante la conversione: {}", e.getMessage());
             // CORREZIONE: Distingui tra errori critici e non critici
@@ -106,7 +109,7 @@ public class EngineWebService {
      * @throws IllegalAccessException costruttore del convertitore non accessibile
      * @throws IOException errore nella gestione del file temp o dello zip
      */
-    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException, IllegalExtensionException {
+    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException, IllegalExtensionException, WatermarkException {
         ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
         ArrayList<File> convertedFiles = new ArrayList<>();
         for (File f : zippedFiles){
@@ -128,7 +131,7 @@ public class EngineWebService {
  * @throws IllegalAccessException costruttore del convertitore non accessibile
  * @throws IOException errore nella gestione del file temp
  */
-    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, WatermarkException {
         //Istanzia il convertitore adatto
         String converterClassName = checkParameters(srcExt, outExt, srcFile); // ritorna il nome del convertitore
         Class<?> clazz = Class.forName(converterClassName); // tramite il nome trova la classe

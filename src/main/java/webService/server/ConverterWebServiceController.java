@@ -1,7 +1,7 @@
 package webService.server;
 
 import org.apache.jena.reasoner.IllegalParameterException;
-import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.PDFWatermarkApplier;
 import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
@@ -117,25 +117,15 @@ public class ConverterWebServiceController {
         // Chiama EngineWebService per la conversione
         convertedOutputFile = engine.conversione(extension, targetFormat, inputFileForEngine);
 
+        logger.info("File convertito dal motore: {}", convertedOutputFile != null ? convertedOutputFile.getAbsolutePath() : "NULL");
+        if (convertedOutputFile != null) {
+            logger.info("File esiste: {}", convertedOutputFile.exists());
+            logger.info("Dimensione file: {}", convertedOutputFile.length());
+        }
+
         // Verifica che il file convertito esista
         if (convertedOutputFile == null || !convertedOutputFile.exists()) {
             throw new ConversionException("File convertito inesistente");
-        }
-        //applico il watermark
-        if (!ConversionContextReader.getWatermark().equals("") && targetFormat.matches("pdf")) {
-            // Crea un file temporaneo per il PDF con watermark nella stessa directory di conversione
-            Path tempFilePath = conversionTempDir.resolve("watermarked_" + convertedOutputFile.getName());
-            File tempFile = tempFilePath.toFile();
-
-            PDFWatermarkApplier.applyWatermark(convertedOutputFile.getPath(), tempFile.getPath(), ConversionContextReader.getWatermark().toString());
-
-            // Se il watermark è stato applicato con successo
-            if (tempFile.exists() && tempFile.length() > 0) {
-                // Elimina il file originale
-                convertedOutputFile.delete();
-                // convertedOutputFile ora punta al file con watermark
-                convertedOutputFile = tempFile;
-            }
         }
 
         // crea un array di byte per la risposta al client leggendo i byte del file convertito

@@ -1,15 +1,20 @@
 package webService.server.converters.mailConverters;
 
+import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
+import webService.server.converters.PDFWatermarkApplier;
+import webService.server.converters.exception.WatermarkException;
 
 import java.awt.Desktop;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +33,8 @@ public class MSGtoPDFconverter extends Converter {
     private File tempDir;
     private String originalBaseName;
 
-    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
-    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
+    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = false;
+    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per evitare il cleanup
 
     /**
      * Converte un file MSG in PDF utilizzando Chrome Headless.
@@ -48,7 +53,7 @@ public class MSGtoPDFconverter extends Converter {
 
         logger.info("Inizio conversione MSG to PDF con Chrome Headless: {}", msgFile.getName());
 
-        setupTempDirectory(msgFile);
+        tempDir = new File(msgFile.getParent());
 
         try {
             MAPIMessage message = parseMsgMessage(msgFile);
@@ -64,35 +69,61 @@ public class MSGtoPDFconverter extends Converter {
 
             logger.info("Conversione completata: {}", pdfFile.getName());
 
-            return pdfFile; // ritorna file convertito
+
+            if (!ConversionContextReader.getWatermark().isEmpty()) {
+                logger.info("Applying watermark to PDF...");
+
+                // Crea un file temporaneo per il PDF con watermark nella stessa directory
+                File tempFile = new File(pdfFile.getParent(), "watermarked_" + pdfFile.getName());
+
+                logger.info("Original file: {}", pdfFile.getAbsolutePath());
+                logger.info("Temp file for watermark: {}", tempFile.getAbsolutePath());
+
+                try {
+                    boolean success = PDFWatermarkApplier.applyWatermark(
+                            pdfFile,
+                            tempFile,
+                            ConversionContextReader.getWatermark()
+                    );
+
+                    logger.info("Watermark application completed, success: {}", success);
+
+                    if (success && tempFile.exists() && tempFile.length() > 0) {
+                        logger.info("Watermark applied successfully, replacing original file");
+
+                        //Usa Files.move() per sostituzione atomica
+                        try {
+                            Files.move(tempFile.toPath(), pdfFile.toPath(),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                            logger.info("File watermarkato sostituito correttamente");
+                            return pdfFile; // Ritorna sempre pdfFile
+                        } catch (IOException e) {
+                            logger.warn("Impossibile sostituire il file: {}", e.getMessage());
+                            throw new WatermarkException("Impossibile sostituire il file con watermark: " + e.getMessage());
+                        }
+                    } else {
+                        logger.warn("Watermark application failed - temp file not created or empty");
+                        throw new WatermarkException("Watermark non applicato correttamente");
+                    }
+                } catch (Exception e) {
+                    throw new WatermarkException("Impossibile applicare il watermark: " + e.getMessage());
+                }
+            }
+
+            return pdfFile;
 
         } catch (Exception e) {
             logger.error("Errore durante la conversione MSG", e);
             throw new IOException("Errore durante la conversione MSG: " + e.getMessage(), e);
-        } finally {
-            if (!DEBUG_KEEP_TEMP_FILES) {
-                cleanup();
-                logger.info("File temporanei eliminati.");
-            } else {
-                logger.info("File temporanei mantenuti per debugging nella directory: {}", tempDir.getAbsolutePath());
-            }
         }
-    }
-
-    /**
-     * Configura la directory temporanea per i file di lavoro della conversione.
-     * Crea una directory univoca basata sul nome del file e timestamp corrente.
-     *
-     * @param msgFile Il file MSG di origine
-     * @throws IOException Se non è possibile creare la directory temporanea
-     */
-    private void setupTempDirectory(File msgFile) throws IOException {
-        originalBaseName = msgFile.getName().replaceFirst("[.][^.]+$", "");
-        tempDir = new File("temp", originalBaseName + "_" + System.currentTimeMillis());
-        if (!tempDir.mkdirs()) {
-            throw new IOException("Impossibile creare directory temporanea: " + tempDir.getAbsolutePath());
-        }
-        logger.info("Directory temporanea creata: {}", tempDir.getAbsolutePath());
+//        finally {
+//            if (!DEBUG_KEEP_TEMP_FILES) {
+//                cleanup();
+//                logger.info("File temporanei eliminati.");
+//            } else {
+//                logger.info("File temporanei mantenuti per debugging nella directory: {}", tempDir.getAbsolutePath());
+//            }
+//        }
     }
 
     /**
@@ -584,6 +615,7 @@ public class MSGtoPDFconverter extends Converter {
                 .replace("'", "&#39;");
     }
 
+    @Deprecated
     /**
      * Pulisce i file temporanei e la directory di lavoro.
      * Elimina tutti i file nella directory temporanea e poi la directory stessa.
