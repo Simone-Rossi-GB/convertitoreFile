@@ -1,5 +1,6 @@
 package webService.server;
 
+import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -119,6 +120,23 @@ public class ConverterWebServiceController {
                 throw new ConversionException("File convertito inesistente");
             }
 
+            //applico il watermark
+        if (!ConversionContextReader.getWatermark().equals("")) {
+            // Crea un file temporaneo per il PDF con watermark nella stessa directory di conversione
+            Path tempFilePath = conversionTempDir.resolve("watermarked_" + convertedOutputFile.getName());
+            File tempFile = tempFilePath.toFile();
+
+            PDFWatermarkApplier.applyWatermark(convertedOutputFile.getPath(), tempFile.getPath(), ConversionContextReader.getWatermark().toString());
+
+            // Se il watermark è stato applicato con successo
+            if (tempFile.exists() && tempFile.length() > 0) {
+                // Elimina il file originale
+                convertedOutputFile.delete();
+                // convertedOutputFile ora punta al file con watermark
+                convertedOutputFile = tempFile;
+            }
+        }
+
             // crea un array di byte per la risposta al client leggendo i byte del file convertito
             byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
             logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
@@ -141,7 +159,6 @@ public class ConverterWebServiceController {
             logger.info("Conversione completata con successo per: {}", originalFilename);
             clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
-
     }
 
 

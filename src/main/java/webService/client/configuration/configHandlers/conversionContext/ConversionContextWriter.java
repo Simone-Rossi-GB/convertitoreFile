@@ -53,4 +53,11 @@ public class ConversionContextWriter extends ConversionContextData {
     public static void setProtected(boolean isProtected) {
         context.get().put("protected", isProtected);
     }
+
+    /**
+     * Imposta un watermark
+     *
+     * @param newWatermark password in chiaro
+     */
+    public static void setWatermark(String newWatermark) {context.get().put("watermark", newWatermark);}
 }
