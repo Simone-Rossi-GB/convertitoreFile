@@ -1,6 +1,6 @@
 {
   "data" : {
-    "destinationFormat" : "png",
+    "destinationFormat" : "tiff",
     "password" : "samplefiles",
     "protected" : true,
     "union" : false,

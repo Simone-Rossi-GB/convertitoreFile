@@ -1,15 +1,10 @@
 package webService.client.gui;
 
-import webService.client.configuration.configHandlers.config.ConfigData;
-import webService.client.configuration.configHandlers.config.ConfigInstance;
-import webService.client.configuration.configHandlers.config.ConfigReader;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextWriter;
-import webService.server.converters.exception.ConversionException;
-import webService.server.converters.exception.IllegalExtensionException;
+import webService.client.configuration.configHandlers.config.*;
+import webService.client.configuration.configHandlers.conversionContext.*;
+import webService.client.configuration.configExceptions.*;
+
 import webService.client.objects.DirectoryWatcher;
-import webService.client.objects.Log;
 import webService.server.converters.Zipper;
 import webService.client.objects.Utility;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +34,8 @@ import java.nio.file.StandardCopyOption;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
+import webService.server.converters.exception.ConversionException;
+import webService.server.converters.exception.IllegalExtensionException;
 
 import javax.xml.ws.WebServiceException;
 
@@ -94,6 +91,7 @@ public class MainViewController {
     private Thread watcherThread;
     private final String configFile = "src/main/java/webService/client/configuration/configFiles/config.json";
     private final String conversionContextFile = "src/main/java/webService/client/configuration/configFiles/conversionContext.json";
+    private InstanceConversionContextWriter iccw = null;
     private MainApp mainApp;
 
     /**
@@ -114,6 +112,7 @@ public class MainViewController {
         ConfigData.update(ci);
         loadConfiguration();
         ConversionContextInstance cci = new ConversionContextInstance(new File(conversionContextFile));
+        iccw = new InstanceConversionContextWriter(new File(conversionContextFile));
         ConversionContextData.update(cci);
         //Carica la configurazione di base
         loadConfiguration();
@@ -509,7 +508,8 @@ public class MainViewController {
             updateProgressInLog(filename, 40, "Invio paramtri al server...");
             Thread.sleep(200);
 
-            ConversionContextWriter.setDestinationFormat(targetFormat);
+            iccw.writeDestinationFormat(targetFormat);
+            ConversionContextData.update(new ConversionContextInstance(new File(conversionContextFile)));
             webServiceClient.sendConversionContextFile(new File(conversionContextFile));
 
             logger.info("Tentativo conversione tramite web service...");
