@@ -686,8 +686,8 @@ public class MainViewController {
                         finalFormats.get(0),
                         finalFormats,
                         "Seleziona Formato",
-                        "Converti " + srcFile.getName() + " in...",
-                        "Formato desiderato:",
+                        bundle.getString("label.formatChoiceMsg").replace("$", srcFile.getName()),
+                        bundle.getString("label.formatChoiceComboBox"),
                         isLightTheme
                 );
 
