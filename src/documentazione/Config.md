@@ -1,17 +1,28 @@
-# Gestione dei File di Configurazione
+# Config documentation - File di Configurazione
 
-## Panoramica
+## Introduzione
 
-Il sistema di gestione della configurazione è progettato per gestire parametri di configurazione tramite file JSON, supportando operazioni di lettura e scrittura sia lato client che lato server. La configurazione viene modificata dall'utente tramite un'interfaccia grafica dedicata nel client, successivamente sincronizzata con il server che la utilizza in modalità di sola lettura.
+Il sistema di gestione della configurazione è stato progettato per gestire parametri di configurazione tramite file JSON, supportando operazioni di lettura e scrittura lato client e di sola lettura lato server. 
+
+La configurazione può essere modificata dall'utente tramite un'interfaccia grafica dedicata nel client.
+
+Al momento della conversione al server viene inviato il file json con i parametri necessari alla conversione. Il file viene memorizzato in una cartella temporanea ed eliminato al termine dell'operazione.
 
 ## Architettura del Sistema
 
-### Flusso di Configurazione
+### Lato client
 
-1. **Client Side**: L'utente modifica la configurazione tramite GUI
-2. **Validazione**: Il sistema valida la struttura JSON e i campi obbligatori
-3. **Sincronizzazione**: I file vengono inviati al server all'avvio del client
-4. **Server Side**: Il server riceve e gestisce la configurazione in sola lettura
+- **config.json**: Contiene le informazioni relative alla cartella monitorata, a quelle di destinazione e ad altre opzioni utili all'applicazione lato client. Può essere modificato tramite un'apposita finestra dalla GUI.
+
+- **conversionContext.json**: Contiene le informazioni relative alle opzioni di conversione (es. password, watermark, compressione, ecc...). Può essere modificato tramite un'apposita finestra dalla GUI.
+
+### Lato server
+
+- **serverConfig.json**: Contiene le informazioni relative alle conversioni supportate e i percorsi delle rispettive classi da istanziare per effettuare la conversione. Non può essere modificato.
+
+- **conversionContext.json**: Contiene le informazioni relative alle opzioni di conversione (es. password, watermark, compressione, ecc...). Ciascuno è associato ad una singola richiesta di conversione e viene memorizzato in una cartella temporanea. Al termine della conversione viene eliminato.
+
+## Classi
 
 ### Data (Classe Base)
 
@@ -79,8 +90,9 @@ Il sistema utilizza `JsonStructureException` per segnalare problemi di struttura
 - **Campi mancanti**: Assenza di campi obbligatori
 - **Tipi incompatibili**: Valori con tipo diverso da quello atteso
 
-## Best Practices
+## Flusso tipico di utilizzo
 
-1. Creare sempre un' `Instance`  e fare un update prima di utilizzare la configurazione, in modo da caricarla correttamente.
-2. Per agire direttamente sul file JSON e non sulla mappa in memoria usare le classi `InstanceWriter` e `InstanceReader`
-3. Utilizzare le classi statiche per accesso concorrente
+1. Creare un' `Instance`  e fare un update prima di utilizzare la configurazione, in modo da caricarla correttamente.
+2. Utilizzare i metodi statici della classe `Reader`per leggere le informazioni dalla mappa condivisa.
+3. Usare i metodi statici della classe `InstanceWriter` per modificare direttamente il file json.
+4. Fare un update dell'`Instance` per aggiornare le informazioni nella mappa condivisa.
