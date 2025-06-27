@@ -62,8 +62,20 @@ public class DialogHelper {
         dialog.setHeaderText(header);
         dialog.setContentText(content);
 
+        ButtonType buttonYes = new ButtonType(bundle.getString("btn.okButton") , ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonNo = new ButtonType(bundle.getString("btn.cancelButton") , ButtonBar.ButtonData.CANCEL_CLOSE);
+
+
+
+        // Rimuove i pulsanti di default e aggiunge i tuoi
+        dialog.getDialogPane().getButtonTypes().setAll(buttonYes, buttonNo);
         // Applica il tema al dialog
         applyThemeToDialog(dialog, isLightTheme);
+        Stage alertStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        alertStage.initStyle(StageStyle.TRANSPARENT);
+        dialog.getDialogPane().getScene().setFill(Color.TRANSPARENT);
+
+
 
         return dialog;
     }
