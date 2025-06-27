@@ -163,7 +163,6 @@
     -fx-border-width: 1;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
-    -fx-font-weight: bold;
     -fx-min-width: 120px;  /* LARGHEZZA MINIMA PIÙ AMPIA */
     -fx-pref-width: 120px; /* LARGHEZZA PREFERITA */
     -fx-max-width: 120px;  /* LARGHEZZA MASSIMA */
@@ -186,7 +185,6 @@
     -fx-border-width: 1;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
-    -fx-font-weight: bold;
     -fx-min-width: 150px;  /* ANCORA PIÙ LARGO */
     -fx-pref-width: 150px;
     -fx-max-width: 150px;

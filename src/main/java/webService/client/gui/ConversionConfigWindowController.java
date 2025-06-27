@@ -61,10 +61,10 @@ public class ConversionConfigWindowController {
             bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         }
         loadCurrentConfiguration();
-        refreshUITexts(locale);
+        refreshUITexts();
     }
 
-    public void refreshUITexts(Locale locale) {
+    public void refreshUITexts() {
         conversionContextTitle.setText(bundle.getString("label.conversionContextTitle"));
         conversionContextDesc.setText(bundle.getString("label.conversionContextDesc"));
         configurationParameters.setText(bundle.getString("label.configurationParameters"));
@@ -117,16 +117,13 @@ public class ConversionConfigWindowController {
         // Carica i campi principali dalla configurazione
         txtPassword.setText(ConversionContextReader.getPassword());
 
-        union = ConversionContextReader.getIsUnion();
-        unionField.setText(String.valueOf(union));
+        txtWatermark.setText(ConversionContextReader.getWatermark());
+
         updateUnionToggleButton();
 
-        zippedOutput = ConversionContextReader.getIsZippedOutput();
-        zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
 
-        txtWatermark.setText(ConversionContextReader.getWatermark());
-        // DA FINIRE PER PROTECTED OUTPUT
+        updateProtectedOutputToggleButton();
 
         logger.info("Configurazione conversione caricata correttamente");
     }
