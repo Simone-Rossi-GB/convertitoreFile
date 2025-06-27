@@ -1,5 +1,8 @@
 package webService.client.gui;
 
+import webService.client.configuration.configHandlers.config.ConfigData;
+import webService.client.configuration.configHandlers.config.ConfigInstance;
+import webService.client.configuration.configHandlers.config.InstanceConfigWriter;
 import webService.client.configuration.configHandlers.conversionContext.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,10 +26,12 @@ public class ConversionConfigWindowController {
     @FXML public TextField txtPassword;
     @FXML public TextField protectedOutputField;
     @FXML public TextField txtWatermark;
+    @FXML public TextField multipleConversionField;
 
     @FXML public Button toggleUnionBtn;
     @FXML public Button toggleZippedOutputBtn;
     @FXML public Button toggleProtectedOutputBtn;
+    @FXML public Button toggleMultipleConversionBtn;
 
     @FXML public Button saveButton;
     @FXML public Button cancelButton;
@@ -47,6 +52,7 @@ public class ConversionConfigWindowController {
     private boolean union;
     private boolean zippedOutput;
     private boolean protectedOutput;
+    private boolean multipleConversions;
     private static Locale locale = null;
     private static ResourceBundle bundle;
 
@@ -119,11 +125,21 @@ public class ConversionConfigWindowController {
 
         txtWatermark.setText(ConversionContextReader.getWatermark());
 
+        union = ConversionContextReader.getIsUnion();
+        unionField.setText(String.valueOf(union));
         updateUnionToggleButton();
 
+        zippedOutput = ConversionContextReader.getIsZippedOutput();
+        zippedOutputField.setText(String.valueOf(zippedOutput));
         updateZippedOutputToggleButton();
 
+        protectedOutput = ConversionContextReader.getProtected();
+        protectedOutputField.setText(String.valueOf(protectedOutput));
         updateProtectedOutputToggleButton();
+
+        multipleConversions = ConversionContextReader.getIsMultipleConversionEnabled();
+        multipleConversionField.setText(String.valueOf(multipleConversions));
+        updateMultipleConversionButton();
 
         logger.info("Configurazione conversione caricata correttamente");
     }
@@ -155,13 +171,20 @@ public class ConversionConfigWindowController {
         updateUnionToggleButton();
     }
 
+    @FXML
+    private void toggleMultipleConversion(ActionEvent actionEvent) {
+        multipleConversions = !multipleConversions;
+        multipleConversionField.setText(String.valueOf(multipleConversions));
+        updateMultipleConversionButton();
+    }
+
     /**
      * Aggiorna l'interfaccia in base allo stato del flag union usando CSS classes.
      */
     private void updateUnionToggleButton() {
         if (union) {
             // STATO ATTIVO
-            toggleUnionBtn.setText(bundle.getString("btn.deactivate"));
+            toggleUnionBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -172,7 +195,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleUnionBtn.setText(bundle.getString("btn.activate"));
+            toggleUnionBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleUnionBtn mantiene solo la classe base
@@ -182,13 +205,37 @@ public class ConversionConfigWindowController {
         }
     }
 
+    private void updateMultipleConversionButton() {
+        if (multipleConversions) {
+            // STATO ATTIVO
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.inactive"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            multipleConversionField.getStyleClass().removeAll("active-state");
+            multipleConversionField.getStyleClass().add("active-state");
+
+        } else {
+            // STATO SPENTO
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.active"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            multipleConversionField.getStyleClass().removeAll("active-state");
+        }
+    }
+
     /**
      * Aggiorna l'interfaccia in base allo stato del flag zippedOutput usando CSS classes.
      */
     private void updateZippedOutputToggleButton() {
         if (zippedOutput) {
             // STATO ATTIVO
-            toggleZippedOutputBtn.setText(bundle.getString("btn.deactivate"));
+            toggleZippedOutputBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -199,7 +246,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleZippedOutputBtn.setText(bundle.getString("btn.activate"));
+            toggleZippedOutputBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -212,7 +259,7 @@ public class ConversionConfigWindowController {
     private void updateProtectedOutputToggleButton() {
         if (protectedOutput) {
             // STATO ATTIVO
-            toggleProtectedOutputBtn.setText(bundle.getString("btn.deactivate"));
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.inactive"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -223,7 +270,7 @@ public class ConversionConfigWindowController {
 
         } else {
             // STATO SPENTO
-            toggleProtectedOutputBtn.setText(bundle.getString("btn.activate"));
+            toggleProtectedOutputBtn.setText(bundle.getString("btn.active"));
 
             // NON cambiare colore del pulsante - rimane grigio
             // toggleZippedOutputBtn mantiene solo la classe base
@@ -246,6 +293,16 @@ public class ConversionConfigWindowController {
 
         logger.info("Configurazione di conversione salvata con successo");
 
+        InstanceConversionContextWriter wr = new InstanceConversionContextWriter(ConversionContextData.getJsonFile());
+        wr.writeIsUnionEnabled(union);
+        wr.writeIsZippedOutput(zippedOutput);
+        wr.writePassword(txtPassword.getText());
+        wr.writeProtected(protectedOutput);
+        wr.writeWatermark(txtWatermark.getText());
+
+        ConversionContextData.update(new ConversionContextInstance(ConversionContextData.getJsonFile()));
+
+        logger.info("Configurazione salvata con successo");
         // Chiude la finestra
         dialogStage.close();
     }

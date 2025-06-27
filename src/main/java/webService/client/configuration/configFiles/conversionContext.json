@@ -3,7 +3,7 @@
     "destinationFormat" : "doc",
     "password" : "samplefiles",
     "protected" : false,
-    "union" : true,
+    "union" : false,
     "zippedOutput" : false,
     "watermark" : "",
     "multipleConversion" : false

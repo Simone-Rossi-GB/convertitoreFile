@@ -115,7 +115,7 @@ public class ConverterWebServiceController {
             throw new ConversionException("File convertito inesistente");
         }
         //applico il watermark
-        if (!ConversionContextReader.getWatermark().equals("")) {
+        if (!ConversionContextReader.getWatermark().equals("") && targetFormat.matches("pdf")) {
             // Crea un file temporaneo per il PDF con watermark nella stessa directory di conversione
             Path tempFilePath = conversionTempDir.resolve("watermarked_" + convertedOutputFile.getName());
             File tempFile = tempFilePath.toFile();
