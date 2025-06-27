@@ -6,40 +6,32 @@ import converters.exception.ConversionException;
 import converters.exception.FileCreationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
 import java.nio.file.Files;
 import java.util.*;
 
 /**
  * Classe per la conversione di file Spreadsheet (.xls/.xlsx/.ods) in formato JSON.
- * Supporta la lettura di file Excel e OpenDocument Spreadsheet, estraendo i dati e salvandoli in un file JSON.
+ * Ora gestisce anche file Excel protetti da password.
  */
 public class SPREADSHEETtoJSONconverter extends Converter {
-    private static final Logger logger = LogManager.getLogger(SPREADSHEETtoJSONconverter.class); // Logger per la gestione degli errori e informazioni
+    private static final Logger logger = LogManager.getLogger(SPREADSHEETtoJSONconverter.class);
 
-    /**
-     * Metodo principale per la conversione di un file Spreadsheet in JSON.
-     *
-     * @param spreadsheetFile Il file Spreadsheet da convertire.
-     * @return Il file JSON generato.
-     * @throws IOException Se il file non esiste o si verifica un errore durante la conversione.
-     */
     @Override
     public File convert(File spreadsheetFile) throws IOException {
-        logger.info("Conversione iniziata con parametri:\n | outputFile.getPath() = {}", spreadsheetFile.getPath());
+        logger.info("Conversione iniziata con parametri:\n | inputFile.getPath() = {}", spreadsheetFile.getPath());
         File outputFile;
 
         try {
-            // Avvia la conversione del file
             outputFile = convertToJson(spreadsheetFile);
             if (outputFile.exists()) {
-                logger.info("File convertito aggiunto alla lista: {}", outputFile.getName());
+                logger.info("File convertito con successo: {}", outputFile.getName());
             } else {
                 logger.error("Conversione fallita: file JSON non creato correttamente");
             }
@@ -50,15 +42,7 @@ public class SPREADSHEETtoJSONconverter extends Converter {
         return outputFile;
     }
 
-    /**
-     * Determina il nome del file JSON e avvia la conversione.
-     *
-     * @param spreadsheetFile Il file Spreadsheet da convertire.
-     * @return Il file JSON generato.
-     * @throws IOException Se si verifica un errore durante la conversione.
-     */
     private File convertToJson(File spreadsheetFile) throws IOException {
-        // Usa il nome base del file e salva in src/temp/
         String baseName = spreadsheetFile.getName().replaceFirst("[.][^.]+$", "");
         File outputDir = new File("src/temp");
         if (!outputDir.exists()) {
@@ -69,27 +53,41 @@ public class SPREADSHEETtoJSONconverter extends Converter {
         return convertSpreadsheetToJson(spreadsheetFile, outputFile.getAbsolutePath());
     }
 
-    /**
-     * Converte un file Spreadsheet (.xls, .xlsx) in JSON.
-     *
-     * @param spreadsheetFile Il file Spreadsheet da convertire.
-     * @param outputPath Percorso del file JSON di output.
-     * @return Il file JSON generato.
-     * @throws IOException Se si verifica un errore durante la lettura o scrittura del file.
-     */
     private File convertSpreadsheetToJson(File spreadsheetFile, String outputPath) throws IOException {
         File outputFile = new File(outputPath);
 
-        try (InputStream fileStream = Files.newInputStream(spreadsheetFile.toPath());
-             Workbook workbook = new HSSFWorkbook(fileStream)) { // Crea un workbook per leggere il file Excel
+        try (InputStream inputStream = Files.newInputStream(spreadsheetFile.toPath())) {
+            Workbook workbook;
 
-            // Ottiene il primo foglio del file Spreadsheet
+            try {
+                workbook = WorkbookFactory.create(inputStream);
+            } catch (Exception e) {
+                logger.warn("Il file potrebbe essere protetto da password. Tentativo di apertura con password...");
+
+                String password = JOptionPane.showInputDialog(null, "Inserisci la password per il file: " + spreadsheetFile.getName(), "Password richiesta", JOptionPane.PLAIN_MESSAGE);
+                if (password == null || password.isEmpty()) {
+                    throw new IOException("Password non fornita, impossibile aprire il file.");
+                }
+
+                // Chiudiamo il primo stream e ne apriamo uno nuovo
+                inputStream.close();
+                try (InputStream protectedStream = Files.newInputStream(spreadsheetFile.toPath())) {
+                    workbook = WorkbookFactory.create(protectedStream, password);
+                } catch (Exception ex) {
+                    logger.error("Password errata o file corrotto: {}", ex.getMessage());
+                    throw new IOException("Password errata o file corrotto.");
+                }
+            }
+
+            if (workbook == null) {
+                throw new IOException("Impossibile aprire il file Excel.");
+            }
+
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
             List<String> headers = new ArrayList<>();
             List<Map<String, String>> dataList = new ArrayList<>();
 
-            // Estrae le intestazioni dalla prima riga
             if (rowIterator.hasNext()) {
                 Row headerRow = rowIterator.next();
                 for (Cell cell : headerRow) {
@@ -98,10 +96,8 @@ public class SPREADSHEETtoJSONconverter extends Converter {
                 }
             }
 
-            // Estrae i dati riga per riga
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-
                 if (isRowEmpty(row)) {
                     continue;
                 }
@@ -115,16 +111,13 @@ public class SPREADSHEETtoJSONconverter extends Converter {
                 dataList.add(rowData);
             }
 
-            // Crea la cartella di output se necessario
             createOutputDirectory(outputFile);
 
-            // Scrive il file JSON
             ObjectMapper mapper = new ObjectMapper();
             mapper.writerWithDefaultPrettyPrinter().writeValue(outputFile, dataList);
 
             logger.info("File creato: {} ({} bytes)", outputFile.getAbsolutePath(), outputFile.length());
 
-            // Verifica che il file sia stato creato correttamente
             if (outputFile.exists() && outputFile.length() > 0) {
                 return outputFile;
             } else {
@@ -135,15 +128,10 @@ public class SPREADSHEETtoJSONconverter extends Converter {
         } catch (Exception e) {
             cleanupFailedConversion(outputFile);
             logger.error("Errore durante la conversione: {}", e.getMessage(), e);
-            throw new ConnectException("Errore durante la conversione: " + e.getMessage());
+            throw new IOException("Errore durante la conversione: " + e.getMessage());
         }
     }
 
-    /**
-     * Crea la cartella di output se non esiste.
-     *
-     * @param outputFile File JSON di output.
-     */
     private void createOutputDirectory(File outputFile) {
         File parentDir = outputFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
@@ -155,11 +143,6 @@ public class SPREADSHEETtoJSONconverter extends Converter {
         }
     }
 
-    /**
-     * Pulisce i file creati in caso di conversione fallita.
-     *
-     * @param outputFile File JSON da eliminare.
-     */
     private void cleanupFailedConversion(File outputFile) {
         if (outputFile != null && outputFile.exists()) {
             boolean deleted = outputFile.delete();
@@ -170,47 +153,29 @@ public class SPREADSHEETtoJSONconverter extends Converter {
         }
     }
 
-    /**
-     * Estrae il valore di una cella come stringa.
-     *
-     * @param cell Cella da cui estrarre il valore.
-     * @return Il valore della cella come stringa.
-     */
     private String getCellValue(Cell cell) {
         if (cell == null) {
             return "";
         }
 
-        try {
-            return cell.getStringCellValue().trim();
-        } catch (Exception ignored) {}
-
-        try {
-            if (DateUtil.isCellDateFormatted(cell)) {
-                return cell.getDateCellValue().toString();
-            } else {
-                double numValue = cell.getNumericCellValue();
-                return numValue == Math.floor(numValue) && !Double.isInfinite(numValue) ? String.valueOf((long) numValue) : Double.toString(numValue);
-            }
-        } catch (Exception ignored) {}
-
-        try {
-            return Boolean.toString(cell.getBooleanCellValue());
-        } catch (Exception ignored) {}
-
-        try {
-            return cell.getCellFormula();
-        } catch (Exception ignored) {}
-
-        return "";
+        switch (cell.getCellType()) {
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return Double.toString(cell.getNumericCellValue());
+                }
+            case STRING:
+                return cell.getStringCellValue().trim();
+            case BOOLEAN:
+                return Boolean.toString(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
     }
 
-    /**
-     * Verifica se una riga è completamente vuota.
-     *
-     * @param row Riga da controllare.
-     * @return True se la riga è vuota, false altrimenti.
-     */
     private boolean isRowEmpty(Row row) {
         if (row == null) {
             return true;
