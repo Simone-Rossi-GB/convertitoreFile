@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -63,7 +64,24 @@ public class MainApp extends Application {
         root.getStyleClass().add(config.getTheme());
 
         // Configuro lo stage
-        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/ByteBridgeLogo.png"))));
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/app_icon.png"))));
+
+        try { // Icona per MacOS
+            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+                Class<?> appClass = Class.forName("com.apple.eawt.Application");
+                Object appInstance = appClass.getMethod("getApplication").invoke(null);
+
+                Class<?> imageClass = Class.forName("java.awt.Image");
+                java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(
+                        getClass().getResource("/icons/app_icon.png")
+                );
+
+                appClass.getMethod("setDockIconImage", imageClass).invoke(appInstance, icon);
+            }
+        } catch (Exception e) {
+            System.out.println("Dock icon non impostata: " + e.getMessage());
+        }
+
         stage.setTitle("ByteBridge");
         stage.setResizable(false);
         stage.initStyle(StageStyle.TRANSPARENT);
