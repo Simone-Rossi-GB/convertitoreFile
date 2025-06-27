@@ -163,7 +163,7 @@
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
                               <TextField fx:id="multipleConversionField" editable="false" prefWidth="100.0" styleClass="conversion-config-readonly-field" text="false" />
-                              <Button fx:id="toggleMultipleConversionBtn" onAction="#toggleUnion" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
+                              <Button fx:id="toggleMultipleConversionBtn" onAction="#toggleMultipleConversion" prefHeight="32.0" prefWidth="150.0" styleClass="conversion-config-toggle-btn" text="Abilita">
                                  <font>
                                     <Font name="System Bold" size="11.0" />
                                  </font>

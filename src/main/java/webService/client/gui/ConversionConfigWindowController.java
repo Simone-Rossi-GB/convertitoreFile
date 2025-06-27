@@ -26,10 +26,12 @@ public class ConversionConfigWindowController {
     @FXML public TextField txtPassword;
     @FXML public TextField protectedOutputField;
     @FXML public TextField txtWatermark;
+    @FXML public TextField multipleConversionField;
 
     @FXML public Button toggleUnionBtn;
     @FXML public Button toggleZippedOutputBtn;
     @FXML public Button toggleProtectedOutputBtn;
+    @FXML public Button toggleMultipleConversionBtn;
 
     @FXML public Button saveButton;
     @FXML public Button cancelButton;
@@ -50,6 +52,7 @@ public class ConversionConfigWindowController {
     private boolean union;
     private boolean zippedOutput;
     private boolean protectedOutput;
+    private boolean multipleConversions;
     private static Locale locale = null;
     private static ResourceBundle bundle;
 
@@ -158,6 +161,13 @@ public class ConversionConfigWindowController {
         updateUnionToggleButton();
     }
 
+    @FXML
+    private void toggleMultipleConversion(ActionEvent actionEvent) {
+        multipleConversions = !multipleConversions;
+        multipleConversionField.setText(String.valueOf(multipleConversions));
+        updateMultipleConversionButton();
+    }
+
     /**
      * Aggiorna l'interfaccia in base allo stato del flag union usando CSS classes.
      */
@@ -182,6 +192,30 @@ public class ConversionConfigWindowController {
 
             // Campo readonly diventa normale (grigio)
             unionField.getStyleClass().removeAll("active-state");
+        }
+    }
+
+    private void updateMultipleConversionButton() {
+        if (multipleConversions) {
+            // STATO ATTIVO
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.deactivate"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa attivo (azzurro)
+            multipleConversionField.getStyleClass().removeAll("active-state");
+            multipleConversionField.getStyleClass().add("active-state");
+
+        } else {
+            // STATO SPENTO
+            toggleMultipleConversionBtn.setText(bundle.getString("btn.activate"));
+
+            // NON cambiare colore del pulsante - rimane grigio
+            // toggleUnionBtn mantiene solo la classe base
+
+            // Campo readonly diventa normale (grigio)
+            multipleConversionField.getStyleClass().removeAll("active-state");
         }
     }
 
