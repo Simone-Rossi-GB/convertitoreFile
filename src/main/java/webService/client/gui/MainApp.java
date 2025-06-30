@@ -2,6 +2,7 @@ package webService.client.gui;
 
 import javafx.scene.image.Image;
 import webService.client.gui.jsonHandler.*;
+import webService.client.auth.AuthManager;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -12,6 +13,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.Locale;
@@ -21,96 +23,242 @@ import java.util.ResourceBundle;
 public class MainApp extends Application {
 
     private static Stage primaryStage;
-    private static Locale currentLocale; // valore iniziale
+    private static Stage loginStage;
+    private static Locale currentLocale;
     private static final Logger logger = LogManager.getLogger(MainApp.class);
+    private static AuthManager authManager;
 
     @Override
     public void start(Stage stage) throws Exception {
         JsonConfig config = ConfigManager.readConfig();
-        // Salvo lo stage primario per eventuali dialog/modal
         MainApp.primaryStage = stage;
-        // Carico l'FXML principale
+        MainApp.authManager = new AuthManager("http://localhost:8080");
+
         currentLocale = new Locale(config.getLang(), config.getLang().toUpperCase());
-        ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", currentLocale);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GraphicalMenu.fxml"), bundle);
-        Pane root = loader.load();
 
-        // Passo l'app al controller
-        MainViewController controller = loader.getController();
-        controller.setMainApp(this);
+        // AVVIA PRIMA LA SCHERMATA DI LOGIN
+        showLoginScreen();
+    }
 
-        // Creo la scena, senza dimensioni hard-coded (l'FXML le contiene)
-        Scene scene = new Scene(root);
-
-        // Carico i CSS per il tema principale e per i dialog moderni
-        scene.getStylesheets().addAll(
-                getClass().getResource("/styles/modern-main-theme.css").toExternalForm()
-        );
-
-        // **AGGIUNGIAMO IL CSS PER I DIALOG MODERNI GLOBALMENTE**
+    /**
+     * Mostra la schermata di login
+     */
+    public static void showLoginScreen() {
         try {
-            scene.getStylesheets().add(getClass().getResource("/css/modern-dialogs-theme.css").toExternalForm());
-            logger.info("CSS dialog moderni caricato globalmente da /css/");
-        } catch (Exception cssError) {
+            logger.info("======== AVVIO SCHERMATA LOGIN ========");
+
+            // Carica il bundle per la lingua
+            ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", currentLocale);
+
+            // Carica l'FXML del login
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/LoginScreen.fxml"), bundle);
+            VBox loginRoot = loader.load();
+
+            // Ottieni il controller del login
+            LoginController loginController = loader.getController();
+            loginController.setMainApp(MainApp.class); // Passa riferimento per callback
+
+            // Crea lo stage del login
+            loginStage = new Stage();
+            loginStage.setTitle("ByteBridge - Login");
+            loginStage.setResizable(false);
+            loginStage.initStyle(StageStyle.TRANSPARENT);
+
+            // Crea la scena del login
+            Scene loginScene = new Scene(loginRoot);
+            loginScene.setFill(Color.TRANSPARENT);
+
+            // Applica il tema
+            JsonConfig config = ConfigManager.readConfig();
+            loginRoot.getStyleClass().add(config.getTheme());
+
+            // Carica CSS per login
             try {
-                scene.getStylesheets().add(getClass().getResource("/styles/modern-dialogs-theme.css").toExternalForm());
-                logger.info("CSS dialog moderni caricato globalmente da /styles/");
-            } catch (Exception cssError2) {
-                logger.warn("Impossibile caricare CSS dialog moderni: " + cssError2.getMessage());
+                loginScene.getStylesheets().add(MainApp.class.getResource("/styles/login-theme.css").toExternalForm());
+                logger.info("CSS login caricato");
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare CSS login: " + cssError.getMessage());
             }
-        }
 
-        // Applico il tema di default
-        root.getStyleClass().add(config.getTheme());
+            // Angoli arrotondati
+            Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(loginRoot.widthProperty());
+            clip.heightProperty().bind(loginRoot.heightProperty());
+            loginRoot.setClip(clip);
 
-        // Configuro lo stage
-        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/app_icon.png"))));
+            // Configura e mostra lo stage del login
+            loginStage.setScene(loginScene);
+            loginStage.setWidth(450);
+            loginStage.setHeight(550);
+            loginStage.centerOnScreen();
+            loginStage.show();
 
-        try { // Icona per MacOS
-            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                Class<?> appClass = Class.forName("com.apple.eawt.Application");
-                Object appInstance = appClass.getMethod("getApplication").invoke(null);
-
-                Class<?> imageClass = Class.forName("java.awt.Image");
-                java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(
-                        getClass().getResource("/icons/app_icon.png")
-                );
-
-                appClass.getMethod("setDockIconImage", imageClass).invoke(appInstance, icon);
+            // Nasconde il main stage se è visibile
+            if (primaryStage != null && primaryStage.isShowing()) {
+                primaryStage.hide();
             }
+
         } catch (Exception e) {
-            System.out.println("Dock icon non impostata: " + e.getMessage());
+            logger.error("Errore nell'avvio della schermata di login: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        stage.setTitle("ByteBridge");
-        stage.setResizable(false);
-        stage.initStyle(StageStyle.TRANSPARENT);
-        scene.setFill(Color.TRANSPARENT);
-
-        Rectangle clip = new Rectangle();
-        clip.setArcWidth(20);
-        clip.setArcHeight(20);
-        clip.widthProperty().bind(root.widthProperty());
-        clip.heightProperty().bind(root.heightProperty());
-        root.setClip(clip);
-
-        stage.setWidth(900);       // Larghezza esatta
-        stage.setHeight(653);
-        stage.setScene(scene);
-        stage.show();
-
-        // Log di chiusura
-        stage.setOnCloseRequest(evt -> logger.info("Applicazione chiusa."));
-        logger.info("======== APPLICAZIONE AVVIATA ========");
     }
 
-    public static Stage getPrimaryStage() {
-        return primaryStage;
+    /**
+     * Mostra la schermata principale dopo login riuscito
+     */
+    public static void showMainApplication() {
+        try {
+            logger.info("======== AVVIO APPLICAZIONE PRINCIPALE ========");
+
+            // Chiudi la schermata di login
+            if (loginStage != null && loginStage.isShowing()) {
+                loginStage.close();
+            }
+
+            JsonConfig config = ConfigManager.readConfig();
+            ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", currentLocale);
+
+            // Carica l'FXML principale
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/GraphicalMenu.fxml"), bundle);
+            Pane root = loader.load();
+
+            // Passo l'app al controller
+            MainViewController controller = loader.getController();
+            controller.setMainApp(new MainApp()); // Crea istanza per compatibilità
+
+            // Crea la scena principale
+            Scene scene = new Scene(root);
+
+            // Carica i CSS
+            scene.getStylesheets().addAll(
+                    MainApp.class.getResource("/styles/modern-main-theme.css").toExternalForm()
+            );
+
+            try {
+                scene.getStylesheets().add(MainApp.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm());
+                logger.info("CSS dialog moderni caricato globalmente");
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare CSS dialog moderni: " + cssError.getMessage());
+            }
+
+            // Applica il tema di default
+            root.getStyleClass().add(config.getTheme());
+
+            // Configura l'icona
+            primaryStage.getIcons().add(new Image(Objects.requireNonNull(MainApp.class.getResourceAsStream("/icons/app_icon.png"))));
+
+            // Icona per MacOS
+            try {
+                if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+                    Class<?> appClass = Class.forName("com.apple.eawt.Application");
+                    Object appInstance = appClass.getMethod("getApplication").invoke(null);
+                    Class<?> imageClass = Class.forName("java.awt.Image");
+                    java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(
+                            MainApp.class.getResource("/icons/app_icon.png")
+                    );
+                    appClass.getMethod("setDockIconImage", imageClass).invoke(appInstance, icon);
+                }
+            } catch (Exception e) {
+                logger.debug("Dock icon non impostata: " + e.getMessage());
+            }
+
+            // Configura lo stage principale
+            primaryStage.setTitle("ByteBridge");
+            primaryStage.setResizable(false);
+            primaryStage.initStyle(StageStyle.TRANSPARENT);
+            scene.setFill(Color.TRANSPARENT);
+
+            Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(root.widthProperty());
+            clip.heightProperty().bind(root.heightProperty());
+            root.setClip(clip);
+
+            primaryStage.setWidth(900);
+            primaryStage.setHeight(653);
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+            primaryStage.show();
+
+            // Handler per logout quando si chiude l'app
+            primaryStage.setOnCloseRequest(evt -> {
+                authManager.logout();
+                logger.info("Applicazione chiusa con logout.");
+            });
+
+        } catch (Exception e) {
+            logger.error("Errore nell'avvio dell'applicazione principale: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Mostra la schermata di registrazione
+     */
+    public static void showRegisterScreen() {
+        try {
+            logger.info("======== AVVIO SCHERMATA REGISTRAZIONE ========");
+
+            ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", currentLocale);
+
+            // Carica l'FXML della registrazione
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/RegisterScreen.fxml"), bundle);
+            VBox registerRoot = loader.load();
+
+            // Ottieni il controller della registrazione
+            RegisterController registerController = loader.getController();
+            registerController.setMainApp(MainApp.class);
+
+            // Crea una nuova finestra per la registrazione
+            Stage registerStage = new Stage();
+            registerStage.setTitle("ByteBridge - Register");
+            registerStage.setResizable(false);
+            registerStage.initStyle(StageStyle.TRANSPARENT);
+            registerStage.initOwner(loginStage); // Modale rispetto al login
+
+            Scene registerScene = new Scene(registerRoot);
+            registerScene.setFill(Color.TRANSPARENT);
+
+            // Applica tema e CSS
+            JsonConfig config = ConfigManager.readConfig();
+            registerRoot.getStyleClass().add(config.getTheme());
+
+            try {
+                registerScene.getStylesheets().add(MainApp.class.getResource("/styles/login-theme.css").toExternalForm());
+            } catch (Exception cssError) {
+                logger.warn("Impossibile caricare CSS registrazione: " + cssError.getMessage());
+            }
+
+            // Angoli arrotondati
+            Rectangle clip = new Rectangle();
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            clip.widthProperty().bind(registerRoot.widthProperty());
+            clip.heightProperty().bind(registerRoot.heightProperty());
+            registerRoot.setClip(clip);
+
+            registerStage.setScene(registerScene);
+            registerStage.setWidth(500);
+            registerStage.setHeight(650);
+            registerStage.centerOnScreen();
+            registerStage.show();
+
+        } catch (Exception e) {
+            logger.error("Errore nell'avvio della schermata di registrazione: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Getters statici
+    public static Stage getPrimaryStage() { return primaryStage; }
+    public static Stage getLoginStage() { return loginStage; }
     public static Locale getCurrentLocale() { return currentLocale; }
-
     public static void setCurrentLocale(Locale locale) { currentLocale = locale; }
+    public static AuthManager getAuthManager() { return authManager; }
 
     public static void main(String[] args) {
         launch(args);
