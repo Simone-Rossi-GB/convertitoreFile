@@ -15,12 +15,10 @@
       "xlsx" : {
         "json" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
         "csv" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
-
       },
       "ods" : {
         "json" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
         "csv" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
-
       },
       "json" : {
         "xls" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
@@ -29,9 +27,9 @@
       },
       "csv" : {
         "json" : "webService.server.converters.jsonCsvConverters.CSVtoJSONconverter",
-        "xls" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
-        "xlsx" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
-        "ods" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter"
+        "xls" : "webService.server.converters.jsonCsvConverters.CSVtoSPREADSHEETconverter",
+        "xlsx" : "webService.server.converters.jsonCsvConverters.CSVtoSPREADSHEETconverter",
+        "ods" : "webService.server.converters.jsonCsvConverters.CSVtoSPREADSHEETconverter"
       },
       "eml" : {
         "pdf" : "webService.server.converters.mailConverters.EMLtoPDFconverter"
