@@ -53,7 +53,7 @@ public class FromICOimageConverter extends Converter {
         }
 
         outFile = new File(imgFile.getParent(), getBaseName(imgFile) + "." + outputExtension);
-        ICOEncoder.write(largest, outFile);
+        ImageIO.write(largest,outputExtension ,outFile);
 
         logger.info("Creazione file .{} completata: {}",outputExtension, outFile.getName());
         return outFile;
