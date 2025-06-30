@@ -78,11 +78,14 @@ public class VisualGuide {
 
         Rectangle fullScreen = new Rectangle(width, height);
         Rectangle hole = new Rectangle(
-                targetBounds.getMinX(),
-                targetBounds.getMinY(),
-                targetBounds.getWidth(),
-                targetBounds.getHeight()
+                targetBounds.getMinX() + 4.5,
+                targetBounds.getMinY() + 2,
+                targetBounds.getWidth() - 8.5,
+                targetBounds.getHeight() - 7
         );
+
+        hole.setArcWidth(20);
+        hole.setArcHeight(20);
 
         Shape spotlightShape = Shape.subtract(fullScreen, hole);
         spotlightShape.getStyleClass().add("visual-guide-spotlight");
