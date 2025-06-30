@@ -34,13 +34,6 @@ public class VisualGuide {
 
         messageLabel = new Label();
         messageLabel.getStyleClass().add("visual-guide-message");
-        ToggleButton toggleButton = (ToggleButton) root.lookup("#themeToggle");
-        boolean isLightTheme = toggleButton.isSelected();
-        if (isLightTheme) {
-            overlayPane.getStyleClass().add("light");
-        } else {
-            overlayPane.getStyleClass().remove("light");
-        }
 
         nextButton = new Button("Avanti");
         nextButton.getStyleClass().add("visual-guide-button");
