@@ -472,10 +472,6 @@ public class MainViewController {
             // Overlay per guida visuale
             Pane overlayPane = new Pane();
             overlayPane.setPickOnBounds(false);
-            overlayPane.setMouseTransparent(false);
-            overlayPane.setManaged(false);
-            overlayPane.prefWidthProperty().bind(configRoot.widthProperty());
-            overlayPane.prefHeightProperty().bind(configRoot.heightProperty());
 
             // Layout combinato
             StackPane layeredRoot = new StackPane(configRoot, overlayPane);

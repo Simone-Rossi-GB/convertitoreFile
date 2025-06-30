@@ -101,16 +101,14 @@ public class ConfigWindowController {
 
         List<GuideStep> steps = Arrays.asList(
                 new GuideStep(monitoredDirField, bundle.getString("tutorial.config.step1.message")),
-                new GuideStep(browseMonitoredBtn, bundle.getString("tutorial.config.step2.message")),
                 new GuideStep(successDirField, bundle.getString("tutorial.config.step3.message")),
-                new GuideStep(browseSuccessBtn, bundle.getString("tutorial.config.step4.message")),
                 new GuideStep(errorDirField, bundle.getString("tutorial.config.step5.message")),
-                new GuideStep(browseErrorBtn, bundle.getString("tutorial.config.step6.message")),
-                new GuideStep(toggleMonitorBtn, bundle.getString("tutorial.config.step7.message")),
-                new GuideStep(tutorialConfigPage, bundle.getString("tutorial.config.step8.message")),
-                new GuideStep(saveButton, bundle.getString("tutorial.config.step9.message")),
-                new GuideStep(cancelButton, bundle.getString("tutorial.config.step10.message"))
+                new GuideStep(toggleMonitorBtn, bundle.getString("tutorial.config.step7.message"))
         );
+        System.out.println("OverlayPane: " + overlayPane);
+        System.out.println("OverlayPane in scene: " + (overlayPane.getScene() != null));
+        System.out.println("Target bounds: " + monitoredDirField.localToScene(monitoredDirField.getBoundsInLocal()));
+
 
         VisualGuide guida = new VisualGuide(overlayPane, steps);
         guida.start();
@@ -149,7 +147,6 @@ public class ConfigWindowController {
 
     public void setOverlayPane(Pane overlayPane) {
         this.overlayPane = overlayPane;
-        Platform.runLater(this::avviaGuida); // avvia la guida dopo il rendering
     }
 
     /**

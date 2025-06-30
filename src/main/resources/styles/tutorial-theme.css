@@ -121,7 +121,6 @@
     -fx-line-spacing: 2 !important;
 }
 
-
 /* LIGHT THEME - PULSANTE SECONDARIO */
 .light .visual-guide-button-secondary {
     -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%) !important;
