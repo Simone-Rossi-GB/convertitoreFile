@@ -2,11 +2,11 @@ package webService.client.gui.tutorial;
 
 import javafx.scene.Node;
 
-class GuideStep {
+public class GuideStep {
     Node target;
     String message;
 
-    GuideStep(Node target, String message) {
+    public GuideStep(Node target, String message) {
         this.target = target;
         this.message = message;
     }

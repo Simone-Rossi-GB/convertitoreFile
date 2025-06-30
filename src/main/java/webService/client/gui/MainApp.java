@@ -1,6 +1,7 @@
 package webService.client.gui;
 
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import webService.client.gui.jsonHandler.*;
 
 import javafx.scene.paint.Color;
@@ -40,7 +41,13 @@ public class MainApp extends Application {
         controller.setMainApp(this);
 
         // Creo la scena, senza dimensioni hard-coded (l'FXML le contiene)
-        Scene scene = new Scene(root);
+        Pane overlayPane = new Pane(); // Per la guida visiva
+        overlayPane.setPickOnBounds(false); // Lascia passare eventi se vuoi
+
+        StackPane layeredRoot = new StackPane(root, overlayPane);
+        controller.setOverlayPane(overlayPane);
+
+        Scene scene = new Scene(layeredRoot);
 
         // Carico i CSS per il tema principale e per i dialog moderni
         scene.getStylesheets().addAll(

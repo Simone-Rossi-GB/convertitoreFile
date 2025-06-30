@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
-class VisualGuide {
+public class VisualGuide {
     private final Pane overlayPane;
     private final List<GuideStep> steps;
     private int currentStep = 0;

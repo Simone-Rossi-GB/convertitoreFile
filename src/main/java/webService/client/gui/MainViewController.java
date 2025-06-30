@@ -1,5 +1,7 @@
 package webService.client.gui;
 
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import webService.client.gui.jsonHandler.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +14,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
+import webService.client.gui.tutorial.GuideStep;
+import webService.client.gui.tutorial.VisualGuide;
 import webService.server.converters.Zipper;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
@@ -96,6 +100,11 @@ public class MainViewController {
     private Label failedConversionsLabel;
     @FXML
     private Label directoryLabelTitle;
+    @FXML
+    private Button startTutorialBtn;
+
+    private Pane overlayPane;
+    private Parent root;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -143,7 +152,7 @@ public class MainViewController {
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
-            Parent root = themeToggle.getScene().getRoot();
+            root = themeToggle.getScene().getRoot();
             root.getStyleClass().removeAll("dark", "light");
 
             // Logica diretta: se è selezionato → light, altrimenti → dark
@@ -153,6 +162,7 @@ public class MainViewController {
                 root.getStyleClass().add("dark");
             }
         });
+
         bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
         refreshUITexts();
         updateLangButtonGraphic(MainApp.getCurrentLocale());
@@ -167,6 +177,10 @@ public class MainViewController {
         header.setOnMouseDragged(event -> {
             MainApp.getPrimaryStage().setX(event.getScreenX() - dragDelta.x);
             MainApp.getPrimaryStage().setY(event.getScreenY() - dragDelta.y);
+        });
+
+        startTutorialBtn.setOnAction(e -> {
+            avviaGuida();
         });
 
         // 2) inizializzo engine e client
@@ -233,6 +247,19 @@ public class MainViewController {
 
             menu.getItems().add(item);
         }
+    }
+
+    public void avviaGuida() {
+        Node btn1 = root.lookup("#caricaFileBtn");
+        Node btn2 = root.lookup("#fileConvertitiBtn");
+
+        List<GuideStep> steps = Arrays.asList(
+                new GuideStep(btn1, "Questo è il primo pulsante."),
+                new GuideStep(btn2, "Questo è il secondo pulsante.")
+        );
+
+        VisualGuide guida = new VisualGuide(overlayPane, steps);
+        guida.start();
     }
 
     public void refreshUITexts() {
@@ -1008,6 +1035,10 @@ public class MainViewController {
             successfulConversionsCounter.setText(String.valueOf(fileConvertiti));
             failedConversionsCounter.setText(String.valueOf(fileScartati));
         });
+    }
+
+    public void setOverlayPane(Pane pane) {
+        overlayPane = pane;
     }
 
     /**
