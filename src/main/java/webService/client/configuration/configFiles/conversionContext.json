@@ -1,11 +1,11 @@
 {
   "data" : {
-    "destinationFormat" : "docx",
+    "destinationFormat" : "jpg",
     "password" : "samplefiles",
     "protected" : false,
     "union" : true,
     "zippedOutput" : false,
-    "watermark" : "",
+    "watermark" : "ciao",
     "multipleConversion" : false
   }
 }

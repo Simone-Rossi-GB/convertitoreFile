@@ -1,16 +1,23 @@
 package webService.server.converters.mailConverters;
 
+import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
 import webService.server.converters.Converter;
 import org.apache.james.mime4j.dom.*;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.message.DefaultMessageBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import webService.server.converters.PDFWatermarkApplier;
+import webService.server.converters.exception.WatermarkException;
+
 import java.awt.Desktop;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +36,7 @@ public class EMLtoPDFconverter extends Converter {
     private File tempDir;
     private String originalBaseName; // Campo per memorizzare il nome base originale del file EML
 
-    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = true;
+    private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = false;
     private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
 
     /**
@@ -42,14 +49,14 @@ public class EMLtoPDFconverter extends Converter {
      * @throws IOException Se si verificano errori durante la conversione
      */
     @Override
-    public File convert(File emlFile) throws IOException {
+    public File convert(File emlFile) throws IOException, WatermarkException {
         if (emlFile == null || !emlFile.exists()) {
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }
 
         logger.info("Inizio conversione EML to PDF con Chrome Headless: {}", emlFile.getName());
 
-        setupTempDirectory(emlFile);
+        tempDir = new File(emlFile.getParent());
 
         try {
             Message message = parseEmailMessage(emlFile);
@@ -60,38 +67,64 @@ public class EMLtoPDFconverter extends Converter {
 
             logger.info("Conversione completata: {}", pdfFile.getName());
 
-            return pdfFile; //ritorna file convertito
+            if (!ConversionContextReader.getWatermark().isEmpty()) {
+                logger.info("Applying watermark to PDF...");
+
+                // Crea un file temporaneo per il PDF con watermark nella stessa directory
+                File tempFile = new File(pdfFile.getParent(), "watermarked_" + pdfFile.getName());
+
+                logger.info("Original file: {}", pdfFile.getAbsolutePath());
+                logger.info("Temp file for watermark: {}", tempFile.getAbsolutePath());
+
+                try {
+                    boolean success = PDFWatermarkApplier.applyWatermark(
+                            pdfFile,
+                            tempFile,
+                            ConversionContextReader.getWatermark()
+                    );
+
+                    logger.info("Watermark application completed, success: {}", success);
+
+                    if (success && tempFile.exists() && tempFile.length() > 0) {
+                        logger.info("Watermark applied successfully, replacing original file");
+
+                        // Usa Files.move() per sostituzione atomica
+                        try {
+                            Files.move(tempFile.toPath(), pdfFile.toPath(),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                            logger.info("File watermarkato sostituito correttamente");
+                            //logger.info("tempfile: {}, pdffile: {}", tempFile.);
+
+                            return pdfFile; // Ritorna sempre pdfFile
+                        } catch (IOException e) {
+                            logger.warn("Impossibile sostituire il file: {}", e.getMessage());
+                            throw new WatermarkException("Impossibile sostituire il file con watermark: " + e.getMessage());
+                        }
+                    } else {
+                        logger.warn("Watermark application failed - temp file not created or empty");
+                        throw new WatermarkException("Watermark non applicato correttamente");
+                    }
+                } catch (Exception e) {
+                    throw new WatermarkException("Impossibile applicare il watermark: " + e.getMessage());
+                }
+            }
+
+            return pdfFile;
 
         } catch (Exception e) {
             logger.error("Errore durante la conversione", e);
             throw new IOException("Errore durante la conversione: " + e.getMessage(), e);
-        } finally {
-            if (!DEBUG_KEEP_TEMP_FILES) {
-                cleanup();
-                logger.info("File temporanei eliminati.");
-            } else {
-                logger.info("File temporanei mantenuti per debugging nella directory: {}", tempDir.getAbsolutePath());
-            }
         }
+//        finally {
+//            if (!DEBUG_KEEP_TEMP_FILES) {
+//                cleanup();
+//                logger.info("File temporanei eliminati.");
+//            } else {
+//                logger.info("File temporanei mantenuti per debugging nella directory: {}", tempDir.getAbsolutePath());
+//            }
+//        }
     }
 
-    /**
-     * Configura la directory temporanea per i file di lavoro della conversione.
-     * Crea una directory univoca basata sul nome del file e timestamp corrente.
-     *
-     * @param emlFile Il file EML di origine
-     * @throws IOException Se non è possibile creare la directory temporanea
-     */
-    private void setupTempDirectory(File emlFile) throws IOException {
-        // Estrai il nome base originale del file EML (senza estensione)
-        originalBaseName = emlFile.getName().replaceFirst("[.][^.]+$", "");
-        // Crea la directory temporanea con un timestamp per evitare collisioni
-        tempDir = new File("temp", originalBaseName + "_" + System.currentTimeMillis());
-        if (!tempDir.mkdirs()) {
-            throw new IOException("Impossibile creare directory temporanea: " + tempDir.getAbsolutePath());
-        }
-        logger.info("Directory temporanea creata: {}", tempDir.getAbsolutePath());
-    }
 
     /**
      * Effettua il parsing del file EML utilizzando Apache James Mime4J.
@@ -629,6 +662,7 @@ public class EMLtoPDFconverter extends Converter {
                 .replace("'", "&#39;");
     }
 
+    @Deprecated
     /**
      * Pulisce i file temporanei e la directory di lavoro.
      * Elimina tutti i file nella directory temporanea e poi la directory stessa.

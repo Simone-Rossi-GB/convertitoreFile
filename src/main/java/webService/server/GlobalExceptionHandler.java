@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorResponse> handleNullPointer(NullPointerException ex) {
-        return buildErrorResponse(1010, ex.getMessage(), ex);
+        return buildErrorResponse(1011, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(Exception.class)

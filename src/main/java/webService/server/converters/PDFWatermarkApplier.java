@@ -1,4 +1,4 @@
-package webService.server;
+package webService.server.converters;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -9,6 +9,8 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+
 import webService.server.converters.exception.WatermarkException;
 
 public class PDFWatermarkApplier {
@@ -16,14 +18,14 @@ public class PDFWatermarkApplier {
     /**
      * Applica un watermark testuale a ogni pagina di un documento PDF esistente.
      *
-     * @param inputPdfPath  Il percorso del file PDF di input.
-     * @param outputPdfPath Il percorso dove salvare il file PDF di output con il watermark.
+     * @param inputPdf  File PDF di input.
+     * @param outputPdf File PDF di output con il watermark.
      * @param watermarkText Il testo da usare come watermark.
      * @return true se il watermark è stato applicato con successo, false altrimenti.
      */
-    public static boolean applyWatermark(String inputPdfPath, String outputPdfPath, String watermarkText) throws WatermarkException{
+    public static boolean applyWatermark(File inputPdf, File outputPdf, String watermarkText) throws WatermarkException{
 
-        try (PDDocument document = PDDocument.load(new File(inputPdfPath))) {
+        try (PDDocument document = PDDocument.load(inputPdf)) {
 
             // Imposta font, dimensioni e colore per il watermark
             PDFont font = PDType1Font.HELVETICA_BOLD;
@@ -32,7 +34,7 @@ public class PDFWatermarkApplier {
 
             // Imposta la trasparenza (opacità) del watermark
             PDExtendedGraphicsState graphicsState = new PDExtendedGraphicsState();
-            graphicsState.setNonStrokingAlphaConstant(0.2f); // 20% di opacità
+            graphicsState.setNonStrokingAlphaConstant(0.4f); // 40% di opacità
             graphicsState.setAlphaSourceFlag(true);
 
             // Scorri tutte le pagine del documento e aggiungi il watermark
@@ -64,8 +66,8 @@ public class PDFWatermarkApplier {
             }
 
             // Salva il documento modificato
-            document.save(new File(outputPdfPath));
-            System.out.println("Watermark aggiunto con successo a " + outputPdfPath);
+            document.save(outputPdf);
+            System.out.println("Watermark aggiunto con successo a " + outputPdf.getPath());
             return true; // Ritorna true se tutto è andato a buon fine
 
         } catch (IOException e) {

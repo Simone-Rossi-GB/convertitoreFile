@@ -67,6 +67,10 @@ public class InstanceConversionContextWriter {
         JsonWriter.write(isProtected, "protected", jsonFile, rootReference);
     }
 
+    public void writeWatermark(String watermark) {
+        JsonWriter.write(watermark, "watermark", jsonFile, rootReference);
+    }
+
     /**
      * Scrive la preferenza per abilitare o meno le conversioni multiple.
      *

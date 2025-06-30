@@ -6,25 +6,19 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
-import webService.server.converters.exception.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
-import webService.client.objects.*;
 import webService.server.converters.Zipper;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.client.configuration.configHandlers.config.*;
 import webService.client.configuration.configHandlers.conversionContext.*;
-import webService.client.configuration.configExceptions.*;
 
 import webService.client.objects.DirectoryWatcher;
-import webService.server.converters.Zipper;
 import webService.client.objects.Utility;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -41,21 +35,16 @@ import java.awt.*;
 import javafx.scene.control.TextArea;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import webService.client.ConverterWebServiceClient;
 import webService.client.ConversionResult;
-import webService.server.converters.exception.ConversionException;
-import webService.server.converters.exception.IllegalExtensionException;
 import javafx.geometry.Side;
 
 
@@ -649,17 +638,6 @@ public class MainViewController {
         //Quando viene chiamato incrementa il numero di file ricevuti
         Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
-        srcExtension = Utility.getExtension(srcFile);
-
-        //Se c'è il flag prende l'estensione dei file contenuti e chiede il formato di destinazione uguale per tutti
-        if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip"))
-            try{
-                srcExtension = Zipper.extractFileExstension(srcFile);
-            } catch (IOException e) {
-                launchAlertError("Impossibile decomprimere il file");
-            }catch (IllegalExtensionException e){
-                launchAlertError("I file hanno formati diversi");
-            }
 
         List<String> formats = null;
         try {
@@ -844,16 +822,6 @@ public class MainViewController {
                         fileConvertiti++;
                         stampaRisultati();
                     });
-
-                    // Rimuovi il file originale dalla cartella monitorata
-                    try {
-                        if (srcFile.exists()) {
-                            srcFile.delete();
-                            logger.info("File originale rimosso dalla cartella monitorata: " + srcFile.getName());
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Non è stato possibile rimuovere il file originale: " + e.getMessage());
-                    }
 
                 } else {
                     // File non salvato correttamente

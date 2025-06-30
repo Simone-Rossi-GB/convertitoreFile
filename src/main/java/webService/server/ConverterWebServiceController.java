@@ -1,7 +1,8 @@
 package webService.server;
 
 import org.apache.jena.reasoner.IllegalParameterException;
-import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.converters.PDFWatermarkApplier;
 import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -58,17 +59,10 @@ public class ConverterWebServiceController {
      */
     @GetMapping("/conversions/{extension}")
     public ResponseEntity<List<String>> getPossibleConversions(@PathVariable String extension) {
-        try {
-            logger.info("Richiesta conversioni possibili per estensione: {}", extension);
-            List<String> conversions = engine.getPossibleConversions(extension);
-            // ritorno un json contenente una lista con le possibili conversioni da un determinato formato d'origine
-            return ResponseEntity.ok(conversions);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            //ritorno una lista immutabile con un solo elemento ovvero l'eccezione generata.
-            return ResponseEntity.badRequest()
-                    .body(Collections.singletonList(e.getMessage()));
-        }
+        logger.info("Richiesta conversioni possibili per estensione: {}", extension);
+        List<String> conversions = engine.getPossibleConversions(extension);
+        // ritorno un json contenente una lista con le possibili conversioni da un determinato formato d'origine
+        return ResponseEntity.ok(conversions);
     }
 
     /**
@@ -116,26 +110,15 @@ public class ConverterWebServiceController {
         // Chiama EngineWebService per la conversione
         convertedOutputFile = engine.conversione(extension, targetFormat, inputFileForEngine);
 
+        logger.info("File convertito dal motore: {}", convertedOutputFile != null ? convertedOutputFile.getAbsolutePath() : "NULL");
+        if (convertedOutputFile != null) {
+            logger.info("File esiste: {}", convertedOutputFile.exists());
+            logger.info("Dimensione file: {}", convertedOutputFile.length());
+        }
+
         // Verifica che il file convertito esista
         if (convertedOutputFile == null || !convertedOutputFile.exists()) {
             throw new ConversionException("File convertito inesistente");
-        }
-
-            //applico il watermark
-        if (!ConversionContextReader.getWatermark().equals("")) {
-            // Crea un file temporaneo per il PDF con watermark nella stessa directory di conversione
-            Path tempFilePath = conversionTempDir.resolve("watermarked_" + convertedOutputFile.getName());
-            File tempFile = tempFilePath.toFile();
-
-            PDFWatermarkApplier.applyWatermark(convertedOutputFile.getPath(), tempFile.getPath(), ConversionContextReader.getWatermark().toString());
-
-            // Se il watermark è stato applicato con successo
-            if (tempFile.exists() && tempFile.length() > 0) {
-                // Elimina il file originale
-                convertedOutputFile.delete();
-                // convertedOutputFile ora punta al file con watermark
-                convertedOutputFile = tempFile;
-            }
         }
 
         // crea un array di byte per la risposta al client leggendo i byte del file convertito

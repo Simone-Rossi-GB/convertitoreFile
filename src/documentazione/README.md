@@ -7,13 +7,13 @@ Il sistema consente la **conversione automatica di file** tramite monitoraggio d
 
 ## Funzionalità principali
 
-- Monitoraggio automatico di una directory sul client
-- Invio file da convertire al server tramite REST API
-- Conversione lato server
-- GUI lato client per gestione impostazioni
-- Aggiornamento impostazioni tramite JSON condivisi
-- Logging avanzato con barre di progresso
-- Separazione dei file convertiti con successo da quelli falliti
+- Monitoraggio automatico di una directory sul client.
+- Invio file da convertire al server tramite REST API.
+- Conversione lato server.
+- GUI lato client per gestione impostazioni.
+- Aggiornamento impostazioni tramite JSON condivisi.
+- Logging avanzato con barre di progresso.
+- Separazione dei file convertiti con successo da quelli falliti.
 
 ## Architettura
 
