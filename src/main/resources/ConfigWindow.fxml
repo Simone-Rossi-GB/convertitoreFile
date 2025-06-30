@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="750.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConfigWindowController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="750.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConfigWindowController">
 
     <children>
         <!-- MODERN HEADER -->
@@ -123,7 +118,6 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="710.0" spacing="10.0">
                                     <children>
-                                        <TextField fx:id="monitorAtStartField" editable="false" prefWidth="100.0" styleClass="config-readonly-field" text="false" />
                                         <Button fx:id="toggleMonitorBtn" onAction="#toggleMonitorAtStart" prefHeight="32.0" prefWidth="150.0" styleClass="config-toggle-btn" text="Cambia Valore">
                                             <font>
                                                 <Font name="System Bold" size="11.0" />
