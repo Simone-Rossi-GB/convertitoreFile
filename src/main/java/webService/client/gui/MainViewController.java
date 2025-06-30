@@ -157,13 +157,10 @@ public class MainViewController {
             root.getStyleClass().removeAll("dark", "light");
             // Logica diretta: se è selezionato → light, altrimenti → dark
             if (newV) {
-                System.out.println("Light Theme");
                 root.getStyleClass().add("light");
                 isLightTheme = true;
             } else {
-                System.out.println("Dark Theme");
                 root.getStyleClass().add("dark");
-                System.out.println();
                 isLightTheme = false;
             }
             updateIcons();
@@ -1077,7 +1074,6 @@ public class MainViewController {
         }
     }
     private ImageView imageViewFromPath(String theme, String path, int width, int height){
-        System.out.println("/icons/" + theme + path);
         ImageView icon = new ImageView(getClass().getResource("/icons/" + theme + path).toExternalForm());
         icon.setFitWidth(width);
         icon.setFitHeight(height);
