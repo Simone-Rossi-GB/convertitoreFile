@@ -1,8 +1,6 @@
 package webService.server.converters.jsonCsvConverters;
 
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.odftoolkit.odfdom.type.Color;
-import org.odftoolkit.simple.style.StyleTypeDefinitions;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.LogManager;
@@ -143,7 +141,6 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         int colNum = 0;
 
         CellStyle headerStyle = createStyle(workbook, true);
-        CellStyle rowStyle = createStyle(workbook, false);
 
         for (String key : colonneList) {
             Cell cell = (Cell) headerRow.createCell(colNum++);
