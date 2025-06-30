@@ -1,0 +1,30 @@
+services:
+  converter-service:
+    image: file-converter:latest  # Usa l'immagine invece di build
+    # build: .  # Commenta o rimuovi questa riga
+    container_name: file-converter-app
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx1g -Xms512m
+      - SERVER_ADDRESS=0.0.0.0
+    volumes:
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/converter/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - converter-network
+
+networks:
+  converter-network:
+    driver: bridge
+
+volumes:
+  app-logs:
+  app-temp:

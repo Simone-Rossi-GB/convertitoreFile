@@ -49,6 +49,13 @@ public interface JsonUtility {
      * @param mandatoryEntries lista dei campi obbligatori presenti nel nodo "data"
      * @throws JsonStructureException se il contenuto non è valido o mancano campi obbligatori
      */
+    /**
+     * Valida un input JSON verificando la sua correttezza strutturale e la presenza dei campi obbligatori.
+     *
+     * @param json input riconosciuto (es. {@code RecognisedFile}, {@code RecognisedString})
+     * @param mandatoryEntries lista dei campi obbligatori presenti nel nodo "data"
+     * @throws JsonStructureException se il contenuto non è valido o mancano campi obbligatori
+     */
     static <T extends RecognisedInput> void validateJsonFromStringOrFile(T json, List<String> mandatoryEntries) throws JsonStructureException {
         if (mandatoryEntries == null) {
             mandatoryEntries = new ArrayList<>();
@@ -56,30 +63,56 @@ public interface JsonUtility {
 
         try {
             JsonNode root;
-            try {
-                File tempFile = (File) json.getValue();
-                root = mapper.readTree(tempFile);
-            } catch (IOException ignored) {
-                String tempString = (String) json.getValue();
-                root = mapper.readTree(tempString);
-            }
+            Object value = json.getValue();
 
-            List<String> missingEntries = new ArrayList<>();
-            for (String entry : mandatoryEntries) {
-                if (!root.get("data").has(entry)) {
-                    missingEntries.add(entry);
+            // Determina il tipo di input e legge di conseguenza
+            if (value instanceof File) {
+                File file = (File) value;
+                if (!file.exists()) {
+                    throw new JsonStructureException("File non trovato: " + file.getPath());
                 }
+                root = mapper.readTree(file);
+                logger.info("JSON letto da file: {}", file.getName());
+            } else if (value instanceof String) {
+                String jsonString = (String) value;
+                root = mapper.readTree(jsonString);
+                logger.info("JSON letto da stringa");
+            } else {
+                throw new JsonStructureException("Tipo di input non supportato: " +
+                        (value != null ? value.getClass().getSimpleName() : "null"));
             }
 
-            if (!missingEntries.isEmpty()) {
-                throw new JsonStructureException("JSON mancante di campi obbligatori: " + String.join(", ", missingEntries));
+            // Validazione della struttura JSON
+            if (root == null) {
+                throw new JsonStructureException("JSON vuoto o non valido");
+            }
+
+            // Controlla se esiste il nodo "data" per la validazione dei campi obbligatori
+            JsonNode dataNode = root.get("data");
+            if (dataNode != null && mandatoryEntries != null && !mandatoryEntries.isEmpty()) {
+                List<String> missingEntries = new ArrayList<>();
+                for (String entry : mandatoryEntries) {
+                    if (!dataNode.has(entry)) {
+                        missingEntries.add(entry);
+                    }
+                }
+
+                if (!missingEntries.isEmpty()) {
+                    throw new JsonStructureException("JSON mancante di campi obbligatori: " + String.join(", ", missingEntries));
+                }
             }
 
             logger.info("JSON valido");
 
-        } catch (JsonStructureException | IOException e) {
-            logger.error("JSON non valido: {}", e.getMessage());
+        } catch (IOException e) {
+            logger.error("Errore nella lettura JSON: {}", e.getMessage());
             throw new JsonStructureException("JSON non valido: " + e.getMessage());
+        } catch (JsonStructureException e) {
+            // Rilancia le eccezioni JsonStructureException senza wrapping aggiuntivo
+            throw e;
+        } catch (Exception e) {
+            logger.error("Errore imprevisto durante la validazione JSON: {}", e.getMessage());
+            throw new JsonStructureException("Errore imprevisto: " + e.getMessage());
         }
     }
 

@@ -9,9 +9,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Gestisce la localizzazione e configurazione di Chrome Headless Shell per la conversione PDF.
- * Implementa il pattern Singleton e cerca automaticamente l'eseguibile Chrome nei percorsi
- * standard del sistema e nelle configurazioni personalizzate.
+ * Gestisce la localizzazione e configurazione di Chrome Headless per Docker.
+ * Ottimizzato per container Linux con Chrome preinstallato.
+ * Implementa il pattern Singleton e cerca automaticamente l'eseguibile Chrome.
  */
 public class ChromeManager {
 
@@ -40,35 +40,43 @@ public class ChromeManager {
 
     /**
      * Inizializza il ChromeManager caricando la configurazione e cercando l'eseguibile Chrome.
-     * Questo metodo viene chiamato automaticamente al primo accesso all'istanza singleton.
+     * Ottimizzato per ambiente Docker.
      */
     private static void initialize() {
         if (initialized) return;
 
         try {
-            // Carica configurazione
+            // Carica configurazione dalle risorse
             Properties config = loadConfig();
 
-            // Trova Chrome Headless Shell
+            // Trova Chrome (priorità a Docker paths)
             chromePath = findChromeExecutable(config);
 
             if (chromePath != null) {
-                logger.info("Chrome Headless Shell configurato: {}", chromePath);
+                logger.info("Chrome configurato per Docker: {}", chromePath);
+
+                // Test veloce per verificare che Chrome funzioni
+                if (testChrome(chromePath)) {
+                    logger.info("Chrome validato con successo");
+                } else {
+                    logger.warn("Chrome trovato ma non risponde correttamente");
+                    chromePath = null;
+                }
             } else {
-                logger.warn("Chrome Headless Shell non trovato - Converter non disponibile");
+                logger.warn("Chrome non trovato - Conversioni PDF non disponibili");
             }
 
             initialized = true;
 
         } catch (Exception e) {
-            logger.error("Errore nell'inizializzazione Chrome Headless Shell", e);
+            logger.error("Errore nell'inizializzazione Chrome", e);
+            chromePath = null;
             initialized = true; // Evita retry infiniti
         }
     }
 
     /**
-     * Carica le proprietà di configurazione da file converter.properties.
-     * Cerca prima nel classpath, poi nel filesystem locale.
+     * Carica le proprietà di configurazione da converter.properties nelle risorse.
      *
      * @return Oggetto Properties contenente la configurazione caricata
      * @throws IOException Se si verificano errori durante il caricamento del file
@@ -76,18 +84,15 @@ public class ChromeManager {
     private static Properties loadConfig() throws IOException {
         Properties config = new Properties();
 
-        // Prova a caricare dal classpath
+        // Carica sempre dalle risorse (post-build)
         try (InputStream is = ChromeManager.class.getClassLoader().getResourceAsStream("converter.properties")) {
             if (is != null) {
                 config.load(is);
-            }
-        }
-
-        // Prova a caricare converter.properties
-        File configFile = new File("src/main/java/webService/server/converters/mailConverters/converter.properties");
-        if (configFile.exists()) {
-            try (InputStream is = new java.io.FileInputStream(configFile)) {
-                config.load(is);
+                logger.debug("Configurazione Chrome caricata dalle risorse");
+            } else {
+                logger.warn("converter.properties non trovato nelle risorse, uso configurazione default");
+                // Imposta valori di default per Docker
+                setDefaultDockerConfig(config);
             }
         }
 
@@ -95,149 +100,79 @@ public class ChromeManager {
     }
 
     /**
-     * Cerca l'eseguibile Chrome utilizzando diverse strategie di ricerca.
-     * Prova in ordine: variabile d'ambiente, versione bundled, installazione di sistema.
+     * Imposta la configurazione di default ottimizzata per Docker.
      *
-     * @param config Configurazione caricata contenente i percorsi personalizzati
+     * @param config Oggetto Properties da popolare
+     */
+    private static void setDefaultDockerConfig(Properties config) {
+        // Percorsi standard per Docker Linux
+        config.setProperty("chrome.docker.paths",
+                "/usr/bin/google-chrome:/usr/bin/google-chrome-stable:/usr/bin/chromium-browser:/usr/bin/chromium");
+
+        // Argomenti ottimizzati per Docker
+        config.setProperty("chrome.args",
+                "--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-renderer-backgrounding --disable-features=TranslateUI --remote-debugging-port=0");
+
+        config.setProperty("chrome.timeout.seconds", "30");
+        config.setProperty("chrome.temp.cleanup", "true");
+    }
+
+    /**
+     * Cerca l'eseguibile Chrome utilizzando strategie ottimizzate per Docker.
+     * Priorità: variabile d'ambiente → paths Docker → PATH di sistema
+     *
+     * @param config Configurazione caricata
      * @return Il percorso assoluto dell'eseguibile Chrome, o null se non trovato
      */
     private static String findChromeExecutable(Properties config) {
-        String os = System.getProperty("os.name").toLowerCase();
-
-        // 1. Prova variabile d'ambiente
+        // 1. Variabile d'ambiente (massima priorità in Docker)
         String envPath = System.getenv("CHROME_PATH");
         if (isValidExecutable(envPath)) {
+            logger.debug("Chrome trovato da variabile d'ambiente: {}", envPath);
             return envPath;
         }
 
-        // 2. Prova Chrome Headless Shell bundled
-        String bundledPath = getBundledChromePath(os, config);
-        if (isValidExecutable(bundledPath)) {
-            return bundledPath;
-        }
+        // 2. Percorsi Docker standard dalla configurazione
+        String dockerPaths = config.getProperty("chrome.docker.paths",
+                "/usr/bin/google-chrome:/usr/bin/google-chrome-stable:/usr/bin/chromium-browser:/usr/bin/chromium");
 
-        // 3. Prova Chrome di sistema (fallback)
-        String systemPath = findSystemChrome(os, config);
-        if (isValidExecutable(systemPath)) {
-            return systemPath;
-        }
-
-        return null;
-    }
-
-    /**
-     * Ottiene il percorso dell'eseguibile Chrome bundled con l'applicazione.
-     * Usa la configurazione per determinare il percorso relativo specifico per il sistema operativo.
-     *
-     * @param os Nome del sistema operativo in lowercase
-     * @param config Configurazione contenente i percorsi per ogni OS
-     * @return Il percorso assoluto del Chrome bundled, o null se non configurato/trovato
-     */
-    private static String getBundledChromePath(String os, Properties config) {
-        String configKey;
-        if (os.contains("win")) {
-            configKey = "chrome.windows.path";
-        } else if (os.contains("mac")) {
-            configKey = "chrome.mac.path";
-        } else {
-            configKey = "chrome.linux.path";
-        }
-
-        String relativePath = config.getProperty(configKey);
-        if (relativePath != null) {
-            // Converti in percorso assoluto dalla directory dell'applicazione
-            File baseDir = new File(System.getProperty("user.dir"));
-            File chromeFile = new File(baseDir, relativePath);
-
-            return chromeFile.getAbsolutePath();
-        }
-
-        // Se non c'è config, prova percorsi predefiniti per Headless Shell
-        return getDefaultHeadlessShellPath(os);
-    }
-
-    /**
-     * Restituisce il percorso predefinito di Chrome Headless Shell per il sistema operativo corrente.
-     * Cerca nella struttura di directory standard lib/[os]/chrome-headless-shell.
-     *
-     * @param os Nome del sistema operativo in lowercase
-     * @return Il percorso assoluto del Chrome Headless Shell predefinito, o null se non trovato
-     */
-    private static String getDefaultHeadlessShellPath(String os) {
-        File baseDir = new File(System.getProperty("user.dir"));
-
-        if (os.contains("win")) {
-            // Windows: lib/windows/chrome-headless-shell.exe
-            File chromeExe = new File(baseDir, "lib/windows/chrome-headless-shell.exe");
-            if (chromeExe.exists()) {
-                return chromeExe.getAbsolutePath();
-            }
-        } else if (os.contains("mac")) {
-            // macOS: lib/mac/chrome-headless-shell
-            File chromeExe = new File(baseDir, "lib/mac/chrome-headless-shell");
-            if (chromeExe.exists()) {
-                return chromeExe.getAbsolutePath();
-            }
-        } else {
-            // Linux: lib/linux/chrome-headless-shell
-            File chromeExe = new File(baseDir, "lib/linux/chrome-headless-shell");
-            if (chromeExe.exists()) {
-                return chromeExe.getAbsolutePath();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Cerca l'installazione di Chrome di sistema utilizzando i percorsi di fallback configurati.
-     * Se la configurazione non specifica percorsi, cerca automaticamente nel PATH.
-     *
-     * @param os Nome del sistema operativo in lowercase
-     * @param config Configurazione contenente i percorsi di fallback per ogni OS
-     * @return Il percorso dell'installazione Chrome di sistema, o null se non trovata
-     */
-    private static String findSystemChrome(String os, Properties config) {
-        String configKey;
-        if (os.contains("win")) {
-            configKey = "chrome.fallback.windows";
-        } else if (os.contains("mac")) {
-            configKey = "chrome.fallback.mac";
-        } else {
-            configKey = "chrome.fallback.linux";
-        }
-
-        String fallbackPaths = config.getProperty(configKey, "");
-        String[] paths = fallbackPaths.split(";");
-
-        for (String path : paths) {
+        for (String path : dockerPaths.split(":")) {
             if (isValidExecutable(path.trim())) {
+                logger.debug("Chrome trovato nei percorsi Docker: {}", path.trim());
                 return path.trim();
             }
         }
 
-        // Prova anche PATH per Chrome Headless Shell e Chrome normale
-        return findInPath(os);
+        // 3. Fallback: cerca nel PATH di sistema
+        String pathChrome = findInPath();
+        if (pathChrome != null) {
+            logger.debug("Chrome trovato nel PATH: {}", pathChrome);
+            return pathChrome;
+        }
+
+        logger.error("Chrome non trovato in nessun percorso standard");
+        return null;
     }
 
     /**
-     * Cerca Chrome nel PATH di sistema utilizzando i comandi where/which del sistema operativo.
-     * Prova prima Chrome Headless Shell, poi fallback su Chrome normale.
+     * Cerca Chrome nel PATH di sistema usando which command.
+     * Ottimizzato per ambiente Linux Docker.
      *
-     * @param os Nome del sistema operativo in lowercase
      * @return Il percorso di Chrome trovato nel PATH, o null se non trovato
      */
-    private static String findInPath(String os) {
-        try {
-            String[] commands;
-            if (os.contains("win")) {
-                // Prova prima headless shell, poi chrome normale
-                String[] headlessCommands = {"where", "chrome-headless-shell.exe"};
-                String[] chromeCommands = {"where", "chrome.exe"};
+    private static String findInPath() {
+        String[] commands = {
+                "google-chrome",
+                "google-chrome-stable",
+                "chromium-browser",
+                "chromium"
+        };
 
-                // Prova headless shell
-                Process process = Runtime.getRuntime().exec(headlessCommands);
+        for (String command : commands) {
+            try {
+                Process process = Runtime.getRuntime().exec(new String[]{"which", command});
                 process.waitFor();
+
                 if (process.exitValue() == 0) {
                     try (java.io.BufferedReader reader = new java.io.BufferedReader(
                             new java.io.InputStreamReader(process.getInputStream()))) {
@@ -247,48 +182,32 @@ public class ChromeManager {
                         }
                     }
                 }
-
-                // Fallback su chrome normale
-                commands = chromeCommands;
-            } else {
-                // Unix: prova prima headless shell, poi chrome normale
-                String[] headlessCommands = {"which", "chrome-headless-shell"};
-                String[] chromeCommands = {"which", "google-chrome"};
-
-                // Prova headless shell
-                Process process = Runtime.getRuntime().exec(headlessCommands);
-                process.waitFor();
-                if (process.exitValue() == 0) {
-                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
-                            new java.io.InputStreamReader(process.getInputStream()))) {
-                        String path = reader.readLine();
-                        if (path != null && !path.trim().isEmpty()) {
-                            return path.trim();
-                        }
-                    }
-                }
-
-                // Fallback su chrome normale
-                commands = chromeCommands;
+            } catch (Exception e) {
+                logger.debug("Errore ricerca {} nel PATH: {}", command, e.getMessage());
             }
-
-            Process process = Runtime.getRuntime().exec(commands);
-            process.waitFor();
-
-            if (process.exitValue() == 0) {
-                try (java.io.BufferedReader reader = new java.io.BufferedReader(
-                        new java.io.InputStreamReader(process.getInputStream()))) {
-                    String path = reader.readLine();
-                    if (path != null && !path.trim().isEmpty()) {
-                        return path.trim();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Errore ricerca Chrome in PATH", e);
         }
 
         return null;
+    }
+
+    /**
+     * Test rapido per verificare che Chrome sia funzionante.
+     *
+     * @param chromePath Percorso di Chrome da testare
+     * @return true se Chrome risponde correttamente, false altrimenti
+     */
+    private static boolean testChrome(String chromePath) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(chromePath, "--version");
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            int exitCode = process.waitFor();
+            return exitCode == 0;
+        } catch (Exception e) {
+            logger.debug("Test Chrome fallito: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -325,26 +244,79 @@ public class ChromeManager {
     }
 
     /**
-     * Valida che Chrome sia disponibile e funzionante eseguendo un test rapido.
-     * Esegue il comando chrome --version per verificare che l'eseguibile risponda correttamente.
+     * Restituisce gli argomenti di Chrome ottimizzati per Docker.
+     *
+     * @return Array di argomenti per Chrome
+     */
+    public String[] getChromeArgs() {
+        try {
+            Properties config = loadConfig();
+            String args = config.getProperty("chrome.args",
+                    "--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --remote-debugging-port=0");
+            return args.split("\\s+");
+        } catch (Exception e) {
+            logger.warn("Errore caricamento argomenti Chrome, uso default: {}", e.getMessage());
+            return new String[]{"--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage"};
+        }
+    }
+
+    /**
+     * Valida che Chrome sia disponibile e funzionante eseguendo un test completo.
      *
      * @throws IOException Se Chrome non è disponibile o non risponde correttamente
      */
     public void validateChrome() throws IOException {
         if (!isChromeAvailable()) {
-            throw new IOException("Chrome Headless Shell non disponibile per conversione PDF");
+            throw new IOException("Chrome non disponibile per conversione PDF - Verifica installazione Docker");
         }
 
-        // Test veloce
+        // Test più approfondito con timeout
         try {
-            Process process = new ProcessBuilder(chromePath, "--version").start();
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new IOException("Chrome Headless Shell non risponde correttamente");
+            ProcessBuilder pb = new ProcessBuilder(chromePath, "--version");
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            boolean finished = process.waitFor(10, java.util.concurrent.TimeUnit.SECONDS);
+
+            if (!finished) {
+                process.destroyForcibly();
+                throw new IOException("Chrome non risponde entro il timeout");
             }
+
+            if (process.exitValue() != 0) {
+                throw new IOException("Chrome restituisce codice di errore: " + process.exitValue());
+            }
+
+            logger.info("Chrome validato con successo: {}", chromePath);
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IOException("Test Chrome Headless Shell interrotto", e);
+            throw new IOException("Test Chrome interrotto", e);
         }
+    }
+
+    /**
+     * Crea un ProcessBuilder configurato per Chrome con argomenti ottimizzati per Docker.
+     *
+     * @param additionalArgs Argomenti aggiuntivi specifici per l'operazione
+     * @return ProcessBuilder configurato
+     * @throws IOException Se Chrome non è disponibile
+     */
+    public ProcessBuilder createChromeProcess(String... additionalArgs) throws IOException {
+        if (!isChromeAvailable()) {
+            throw new IOException("Chrome non disponibile");
+        }
+
+        String[] baseArgs = getChromeArgs();
+        String[] allArgs = new String[1 + baseArgs.length + additionalArgs.length];
+
+        allArgs[0] = chromePath;
+        System.arraycopy(baseArgs, 0, allArgs, 1, baseArgs.length);
+        System.arraycopy(additionalArgs, 0, allArgs, 1 + baseArgs.length, additionalArgs.length);
+
+        ProcessBuilder pb = new ProcessBuilder(allArgs);
+        pb.redirectErrorStream(true);
+
+        return pb;
     }
 }

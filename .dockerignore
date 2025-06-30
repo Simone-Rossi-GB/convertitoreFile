@@ -1,0 +1,38 @@
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Build artifacts (exclude target except JAR)
+target/classes/
+target/generated-sources/
+target/maven-status/
+target/surefire-reports/
+target/test-classes/
+
+# Keep only the JAR
+!target/*.jar
+
+# Documentation
+*.md
+README.md
+docs/
+
+# Logs and temp files
+logs/
+temp/
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Maven wrapper (if not needed)
+.mvn/
+mvnw
+mvnw.cmd

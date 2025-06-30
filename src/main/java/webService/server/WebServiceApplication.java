@@ -11,6 +11,9 @@ import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
 
 @SpringBootApplication
 public class WebServiceApplication {
@@ -23,10 +26,34 @@ public class WebServiceApplication {
      * se non c'è istanzia e avvia il contesto di esecuzione dell'applicazione webservice
      * context --> applicazione webservice
      */
+
+
     public static void startWebService() {
-        //Inizializza i gestori dei file di configurazione
-        ConfigInstance ci = new ConfigInstance(new File("src/main/java/webService/server/configuration/serverConfig.json"));
-        ConfigData.update(ci);
+        try {
+            // Carica da classpath
+            InputStream configStream = WebServiceApplication.class.getClassLoader()
+                    .getResourceAsStream("serverConfig.json");
+
+            if (configStream != null) {
+                // Crea un file temporaneo
+                File tempConfigFile = File.createTempFile("serverConfig", ".json");
+                tempConfigFile.deleteOnExit();
+
+                // Usa Apache Commons IO per copiare
+                try (FileOutputStream fos = new FileOutputStream(tempConfigFile)) {
+                    IOUtils.copy(configStream, fos);
+                }
+
+                ConfigInstance ci = new ConfigInstance(tempConfigFile);
+                ConfigData.update(ci);
+                logger.info("Configurazione caricata dalle risorse");
+            } else {
+                logger.warn("File serverConfig.json non trovato nelle risorse");
+            }
+        } catch (Exception e) {
+            logger.error("Errore nel caricamento configurazione: {}", e.getMessage());
+        }
+
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
             logger.trace("Web Service: Web Service avviato su porta 8080");
