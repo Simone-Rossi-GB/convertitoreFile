@@ -1,6 +1,5 @@
 package webService.server;
 
-import com.twelvemonkeys.util.convert.ConversionException;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import webService.server.converters.Converter;

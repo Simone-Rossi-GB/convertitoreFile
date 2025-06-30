@@ -15,10 +15,11 @@ import java.io.*;
  * Utilizza Apache POI per la gestione dei fogli di calcolo e applica uno stile personalizzato alle celle.
  */
 public class CSVtoSPREADSHEETconverter extends Converter {
-    public static final Logger logger = LogManager.getLogger(CSVtoSPREADSHEETconverter.class); // Logger per la gestione degli errori e informazioni
+    // Logger per la gestione degli errori e informazioni
+    public static final Logger logger = LogManager.getLogger(CSVtoSPREADSHEETconverter.class);
 
     /**
-     * Metodo principale per la conversione di un file CSV in Spreadsheet (.xls).
+     * Metodo principale per la conversione di un file CSV in Spreadsheet.
      *
      * @param srcFile Il file CSV da convertire.
      * @return Il file Spreadsheet generato.
@@ -26,6 +27,7 @@ public class CSVtoSPREADSHEETconverter extends Converter {
      */
     @Override
     public File convert(File srcFile) throws Exception {
+        logger.info("Percorso file da convertire: " + srcFile.getAbsolutePath());
         // Controlla se il file esiste e non è corrotto
         if (!srcFile.exists() || !srcFile.isFile()) {
             logger.error("Errore durante la conversione");
@@ -37,14 +39,14 @@ public class CSVtoSPREADSHEETconverter extends Converter {
     }
 
     /**
-     * Converte un file CSV in un foglio Excel (.xls).
+     * Converte un file CSV in un foglio Excel.
      *
      * @param csvFile Il file CSV da convertire.
      * @return Il file Spreadsheet generato.
      * @throws IOException Se si verifica un errore durante la lettura o scrittura del file.
      */
     private File writeCsvToSheet(File csvFile) throws IOException {
-        // Crea un nuovo Workbook in formato .xls
+        // Crea un nuovo Workbook
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("Dati");
 
@@ -107,6 +109,7 @@ public class CSVtoSPREADSHEETconverter extends Converter {
         }
 
         workbook.close();
+        logger.info("Percorso file convertito: " + outputFile.getAbsolutePath());
         return outputFile;
     }
 
