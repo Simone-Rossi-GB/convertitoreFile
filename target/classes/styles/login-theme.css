@@ -1,0 +1,234 @@
+/* ===== LOGIN & REGISTER THEME CSS ===== */
+
+/* ROOT CONTAINERS */
+.login-container, .register-container {
+    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);
+}
+
+.light .login-container, .light .register-container {
+    -fx-background-color: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* HEADER STYLES */
+.login-header, .register-header {
+    -fx-padding: 20 0 10 0;
+}
+
+.login-title, .register-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 1);
+}
+
+.login-subtitle, .register-subtitle {
+    -fx-text-fill: rgba(255,255,255,0.9);
+    -fx-font-style: italic;
+}
+
+/* FORM STYLES */
+.login-form, .register-form {
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.dark .login-form, .dark .register-form {
+    -fx-background-color: rgba(45,45,45,0.95);
+}
+
+/* FIELD LABELS */
+.field-label {
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+}
+
+.dark .field-label {
+    -fx-text-fill: #ffffff;
+}
+
+/* INPUT FIELDS */
+.login-field, .register-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e1e8ed;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+.login-field:focused, .register-field:focused {
+    -fx-border-color: #667eea;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.3), 5, 0, 0, 0);
+}
+
+.dark .login-field, .dark .register-field {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #444444;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #999999;
+}
+
+.dark .login-field:focused, .dark .register-field:focused {
+    -fx-border-color: #667eea;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 5, 0, 0, 0);
+}
+
+/* BUTTONS */
+.login-btn, .register-btn {
+    -fx-background-color: linear-gradient(to bottom, #667eea, #5a67d8);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.login-btn:hover, .register-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a67d8, #4c51bf);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+}
+
+.login-btn:pressed, .register-btn:pressed {
+    -fx-background-color: linear-gradient(to bottom, #4c51bf, #3c366b);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.login-btn:disabled, .register-btn:disabled {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: #666666;
+    -fx-effect: none;
+    -fx-opacity: 0.7;
+}
+
+.secondary-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #667eea;
+    -fx-border-color: #667eea;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.secondary-btn:hover {
+    -fx-background-color: rgba(102,126,234,0.1);
+}
+
+.dark .secondary-btn {
+    -fx-text-fill: #7c8aed;
+    -fx-border-color: #7c8aed;
+}
+
+/* THEME AND LANGUAGE BUTTONS */
+.theme-btn, .lang-btn {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-text-fill: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+    -fx-cursor: hand;
+}
+
+.theme-btn:hover, .lang-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.3);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+/* MESSAGES */
+.error-message {
+    -fx-text-fill: #e53e3e;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(229,62,62,0.3), 2, 0, 0, 1);
+}
+
+.success-message {
+    -fx-text-fill: #38a169;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(56,161,105,0.3), 2, 0, 0, 1);
+}
+
+.note-text {
+    -fx-text-fill: rgba(255,255,255,0.8);
+    -fx-font-style: italic;
+}
+
+.version-info {
+    -fx-text-fill: rgba(255,255,255,0.7);
+}
+
+/* COMBO BOX */
+.register-field.combo-box {
+    -fx-background-color: #ffffff;
+}
+
+.dark .register-field.combo-box {
+    -fx-background-color: #2d2d2d;
+}
+
+.register-field.combo-box .list-cell {
+    -fx-text-fill: #333333;
+}
+
+.dark .register-field.combo-box .list-cell {
+    -fx-text-fill: #ffffff;
+}
+
+/* LANGUAGE MENU ITEMS */
+.lang-menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+}
+
+.lang-menu-item:hover {
+    -fx-background-color: rgba(102,126,234,0.2);
+    -fx-background-radius: 5;
+}
+
+.flag-icon {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0, 0, 1);
+}
+
+.flag-name {
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+}
+
+.dark .flag-name {
+    -fx-text-fill: #ffffff;
+}
+
+/* CONTEXT MENU STYLING */
+.context-menu {
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3);
+    -fx-border-color: #e1e8ed;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.dark .context-menu {
+    -fx-background-color: rgba(45,45,45,0.95);
+    -fx-border-color: #555555;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 500px) {
+    .login-container, .register-container {
+        -fx-padding: 20;
+    }
+
+    .login-field, .register-field {
+        -fx-pref-width: 250;
+    }
+
+    .login-btn, .register-btn, .secondary-btn {
+        -fx-pref-width: 250;
+    }
+}

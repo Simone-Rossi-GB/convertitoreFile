@@ -1,0 +1,402 @@
+/* modern-conversion-config-theme.css */
+/* Stili per Conversion Configuration Window - JavaFX */
+
+/* ROOT CONTAINER */
+.conversion-config-root-container {
+    -fx-background-color: #2d3142;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-font-family: "Inter", "Roboto", sans-serif;
+}
+
+/* HEADER SECTION */
+.conversion-config-header-container {
+    -fx-background-color: linear-gradient(to bottom, #3d4252 0%, #2d3142 100%);
+    -fx-background-radius: 16 16 0 0;
+    -fx-border-radius: 16 16 0 0;
+}
+
+.conversion-config-main-title {
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 2);
+    -fx-font-weight: bold;
+}
+
+/* SEPARATORS */
+.conversion-config-main-separator {
+    -fx-background-color: #4a5568;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.3;
+}
+
+.conversion-config-section-line {
+    -fx-background-color: #4a5568;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.5;
+}
+
+/* CONTENT AREAS */
+.conversion-config-content-area {
+    -fx-background-color: #2d3142;
+}
+
+.conversion-config-fields-container {
+    -fx-background-color: linear-gradient(to bottom, rgba(53,56,71,0.6) 0%, rgba(45,49,66,0.8) 100%);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(74,85,104,0.3);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+/* LABELS */
+.conversion-config-section-title {
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 3, 0, 0, 2);
+    -fx-font-weight: bold;
+}
+
+.conversion-config-field-label {
+    -fx-text-fill: #e2e8f0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+    -fx-font-weight: bold;
+}
+
+/* FIELD GROUPS */
+.conversion-config-field-group {
+    -fx-background-color: rgba(26,32,44,0.3);
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-border-color: rgba(74,85,104,0.2);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+/* TEXT FIELDS */
+.conversion-config-text-field {
+    -fx-background-color: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    -fx-text-fill: #e2e8f0;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-padding: 10 15 10 15;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-prompt-text-fill: #718096;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
+}
+
+.conversion-config-text-field:focused {
+    -fx-border-color: #4FD1C7;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 2);
+}
+
+/* READONLY FIELDS - FALSE STATE */
+.conversion-config-readonly-field {
+    -fx-background-color: linear-gradient(to bottom, #2d3748 0%, #4a5568 100%);
+    -fx-text-fill: #cbd5e0;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 1;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+
+/* READONLY FIELDS - TRUE STATE (ACTIVE) */
+.conversion-config-readonly-field.active-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
+    -fx-border-radius: 6 !important;
+    -fx-background-radius: 6 !important;
+    -fx-border-width: 2 !important;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1) !important;
+}
+
+/* ========================================= */
+/* TOGGLE BUTTONS - LOGICA CORRETTA         */
+/* ========================================= */
+
+/* TOGGLE BUTTONS - CLASSE activate-state: AZZURRO (per "btn.active") */
+.conversion-config-toggle-btn.activate-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.conversion-config-toggle-btn.activate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4);
+}
+
+/* TOGGLE BUTTONS - CLASSE deactivate-state: GRIGIO (per "btn.inactive") */
+.conversion-config-toggle-btn.deactivate-state {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.conversion-config-toggle-btn.deactivate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+}
+
+/* TOGGLE BUTTONS - CLASSE BASE (FALLBACK) */
+.conversion-config-toggle-btn {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.conversion-config-toggle-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+}
+
+/* FOOTER BUTTONS */
+.conversion-config-save-btn {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 8, 0, 0, 3);
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-min-width: 120px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+.conversion-config-save-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.5), 12, 0, 0, 4);
+}
+
+.conversion-config-cancel-btn {
+    -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4a5568;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 3);
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-min-width: 120px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+.conversion-config-cancel-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
+}
+
+/* =================================================================== */
+/* LIGHT THEME SUPPORT */
+/* =================================================================== */
+
+.light .conversion-config-root-container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+}
+
+.light .conversion-config-header-container {
+    -fx-background-color: linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%);
+}
+
+.light .conversion-config-main-title {
+    -fx-text-fill: #2d3748;
+    -fx-effect: none;
+}
+
+.light .conversion-config-content-area {
+    -fx-background-color: #f8f9fa;
+}
+
+.light .conversion-config-fields-container {
+    -fx-background-color: linear-gradient(to bottom, rgba(247,250,252,0.8) 0%, rgba(237,242,247,0.9) 100%);
+    -fx-border-color: rgba(226,232,240,0.5);
+}
+
+.light .conversion-config-section-title,
+.light .conversion-config-field-label {
+    -fx-text-fill: #2d3748;
+    -fx-effect: none;
+}
+
+.light .conversion-config-text-field {
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f7fafc 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+}
+
+.light .conversion-config-text-field:focused {
+    -fx-border-color: #4FD1C7;
+}
+
+/* LIGHT THEME - READONLY FIELD FALSE STATE */
+.light .conversion-config-readonly-field {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%) !important;
+    -fx-text-fill: #2d3748 !important;
+    -fx-border-color: #cbd5e0 !important;
+    -fx-border-radius: 6 !important;
+    -fx-background-radius: 6 !important;
+    -fx-border-width: 1 !important;
+}
+
+/* LIGHT THEME - READONLY FIELD TRUE STATE (RIMANE AZZURRO) */
+.light .conversion-config-readonly-field.active-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
+    -fx-border-radius: 6 !important;
+    -fx-background-radius: 6 !important;
+    -fx-border-width: 2 !important;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1) !important;
+}
+
+/* ========================================= */
+/* LIGHT THEME - TOGGLE BUTTONS CORRETTI    */
+/* ========================================= */
+
+/* LIGHT THEME - CLASSE activate-state: AZZURRO (per "btn.active") */
+.light .conversion-config-toggle-btn.activate-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.light .conversion-config-toggle-btn.activate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4);
+}
+
+/* LIGHT THEME - CLASSE deactivate-state: GRIGIO (per "btn.inactive") */
+.light .conversion-config-toggle-btn.deactivate-state {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.light .conversion-config-toggle-btn.deactivate-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
+}
+
+/* LIGHT THEME - TOGGLE BUTTONS - CLASSE BASE (FALLBACK) */
+.light .conversion-config-toggle-btn {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+.light .conversion-config-toggle-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 4);
+}
+
+.light .conversion-config-main-separator {
+    -fx-background-color: #e2e8f0;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.5;
+}
+
+.light .conversion-config-section-line {
+    -fx-background-color: #e2e8f0;
+    -fx-pref-height: 1;
+    -fx-opacity: 0.7;
+}
+
+.light .conversion-config-field-group {
+    -fx-background-color: rgba(247,250,252,0.5);
+    -fx-border-color: rgba(226,232,240,0.3);
+}
+
+.light .conversion-config-save-btn {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+}
+
+.light .conversion-config-save-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.5), 12, 0, 0, 4);
+}
+
+.light .conversion-config-cancel-btn {
+    -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #e2e8f0;
+}
+
+.light .conversion-config-cancel-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 4);
+}
