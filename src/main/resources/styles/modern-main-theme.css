@@ -401,3 +401,87 @@
     -fx-background-color: #e2e8f0;
     -fx-background-radius: 4;
 }
+
+/* === VISUAL TUTORIAL OVERLAY === */
+
+.visual-guide-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.5); /* sfondo semi-trasparente */
+}
+
+.visual-guide-highlight {
+    -fx-stroke: #4FD1C7; /* colore evidenziazione: aquamarine */
+    -fx-stroke-width: 3;
+    -fx-fill: rgba(79, 209, 199, 0.15); /* riempimento leggero */
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 10, 0.3, 0, 0);
+}
+
+.visual-guide-message {
+    -fx-background-color: #2d3748;
+    -fx-text-fill: white;
+    -fx-padding: 12;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-size: 13pt;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0.2, 0, 2);
+    -fx-max-width: 300;
+}
+
+.visual-guide-button {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%);
+    -fx-text-fill: white;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-padding: 6 12 6 12;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+}
+
+.visual-guide-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-translate-y: -1;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 3);
+}
+
+/* === LIGHT THEME OVERRIDE FOR VISUAL GUIDE === */
+.light .visual-guide-overlay {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+}
+
+.light .visual-guide-highlight {
+    -fx-stroke: #38B2AC;
+    -fx-stroke-width: 3;
+    -fx-fill: rgba(56, 178, 172, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(56, 178, 172, 0.4), 10, 0.3, 0, 0);
+}
+
+.light .visual-guide-message {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #38B2AC;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-font-size: 13pt;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0.2, 0, 2);
+}
+
+.light .visual-guide-button {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%);
+    -fx-text-fill: #2d3748;
+    -fx-border-color: #4FD1C7;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-padding: 6 12 6 12;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+.light .visual-guide-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #A0F0E0 0%, #81E6D9 100%);
+    -fx-translate-y: -1;
+    -fx-effect: dropshadow(gaussian, rgba(56, 178, 172, 0.3), 6, 0, 0, 3);
+}

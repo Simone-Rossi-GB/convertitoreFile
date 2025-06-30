@@ -1,8 +1,11 @@
 package webService.client.gui.tutorial;
 
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -17,22 +20,30 @@ public class VisualGuide {
     private Label messageLabel;
     private Button nextButton;
 
-    public VisualGuide(Pane overlayPane, List<GuideStep> steps) {
+    public VisualGuide(Pane overlayPane, List<GuideStep> steps, Parent root) {
         this.overlayPane = overlayPane;
         this.steps = steps;
-        initOverlay();
+        initOverlay(root);
     }
 
-    private void initOverlay() {
+    private void initOverlay(Parent root) {
+        overlayPane.getStyleClass().add("visual-guide-overlay");
+
         highlight = new Rectangle();
-        highlight.setStroke(Color.BLUE);
-        highlight.setStrokeWidth(3);
-        highlight.setFill(Color.rgb(0, 0, 255, 0.1));
+        highlight.getStyleClass().add("visual-guide-highlight");
 
         messageLabel = new Label();
-        messageLabel.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: black;");
+        messageLabel.getStyleClass().add("visual-guide-message");
+        ToggleButton toggleButton = (ToggleButton) root.lookup("#themeToggle");
+        boolean isLightTheme = toggleButton.isSelected();
+        if (isLightTheme) {
+            overlayPane.getStyleClass().add("light");
+        } else {
+            overlayPane.getStyleClass().remove("light");
+        }
 
         nextButton = new Button("Avanti");
+        nextButton.getStyleClass().add("visual-guide-button");
         nextButton.setOnAction(e -> showNextStep());
     }
 
@@ -47,6 +58,7 @@ public class VisualGuide {
         if (currentStep < steps.size()) {
             showStep(steps.get(currentStep));
         } else {
+            overlayPane.getStyleClass().clear();
             overlayPane.getChildren().clear(); // Fine guida
         }
     }

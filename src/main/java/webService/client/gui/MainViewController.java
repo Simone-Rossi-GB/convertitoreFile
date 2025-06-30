@@ -258,7 +258,7 @@ public class MainViewController {
                 new GuideStep(btn2, "Questo è il secondo pulsante.")
         );
 
-        VisualGuide guida = new VisualGuide(overlayPane, steps);
+        VisualGuide guida = new VisualGuide(overlayPane, steps, root);
         guida.start();
     }
 
