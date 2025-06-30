@@ -55,13 +55,13 @@
                                     <!-- All Directory Buttons Vertically -->
                                     <VBox alignment="CENTER" spacing="8.0" VBox.vgrow="ALWAYS">
                                         <children>
-                                            <Button fx:id="caricaFileBtn" graphicTextGap="8.0" prefHeight="32.0" prefWidth="160.0" styleClass="accent-btn" text="Input Folder">
+                                            <Button fx:id="caricaFileBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="32.0" prefWidth="170.0" styleClass="accent-btn" text="Input Folder">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
-                                            <Button fx:id="fileConvertitiBtn" graphicTextGap="8.0" prefHeight="32.0" prefWidth="160.0" styleClass="accent-btn" text="Output Folder">
+                                            <Button fx:id="fileConvertitiBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="32.0" prefWidth="170.0" styleClass="accent-btn" text="Output Folder" textAlignment="CENTER">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
-                                            <Button fx:id="conversioniFalliteBtn" graphicTextGap="8.0" prefHeight="32.0" prefWidth="160.0" styleClass="accent-btn" text="Error Folder">
+                                            <Button fx:id="conversioniFalliteBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="32.0" prefWidth="170.0" styleClass="accent-btn" text="Error Folder">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
                                         </children>
@@ -82,10 +82,10 @@
 
                                     <VBox alignment="CENTER" prefHeight="107.0" prefWidth="216.0" spacing="10.0">
                                         <children>
-                                            <Button fx:id="configBtn" graphicTextGap="8.0" prefHeight="32.0" prefWidth="160.0" styleClass="standard-btn" text="General Options">
+                                            <Button fx:id="configBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="32.0" prefWidth="170.0" styleClass="standard-btn" text="General Options">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
-                                            <Button fx:id="conversionConfigBtn" graphicTextGap="8.0" prefHeight="32.0" prefWidth="160.0" styleClass="standard-btn" text="Conversion Options">
+                                            <Button fx:id="conversionConfigBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="32.0" prefWidth="170.0" styleClass="standard-btn" text="Conversion Options">
                                                 <font><Font name="System Bold" size="12.0" /></font>
                                             </Button>
                                         </children>
@@ -99,7 +99,7 @@
                             <!-- Monitoring Button Section -->
                             <VBox alignment="TOP_CENTER" prefHeight="130.0" prefWidth="246.0" spacing="0" styleClass="monitoring-section">
                                 <children>
-                                    <Button fx:id="monitoringBtn" graphicTextGap="8.0" prefHeight="40.0" prefWidth="160.0" styleClass="standard-btn" text="Monitoring OFF">
+                                    <Button fx:id="monitoringBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" graphicTextGap="8.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="170.0" styleClass="standard-btn" text="Monitoring OFF">
                                         <font><Font name="System Bold" size="13.0" /></font>
                                     </Button>
                                 </children>
