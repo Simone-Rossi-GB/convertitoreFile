@@ -1,5 +1,8 @@
 package webService.server.converters.jsonCsvConverters;
 
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
+import org.odftoolkit.odfdom.type.Color;
+import org.odftoolkit.simple.style.StyleTypeDefinitions;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 
 import java.io.*;
@@ -24,13 +28,6 @@ public class JSONtoSPREADSHEETconverter extends Converter {
     public static final Logger logger = LogManager.getLogger(JSONtoSPREADSHEETconverter.class);
     private boolean[] flagEndColumns;
 
-    /**
-     * Metodo principale per la conversione del file JSON nel formato Spreadsheet desiderato.
-     *
-     * @param srcFile File JSON di input
-     * @return File Spreadsheet generato
-     * @throws IOException Se il file è assente o non valido
-     */
     @Override
     public File convert(File srcFile) throws IOException {
         if (!srcFile.exists() || !srcFile.isFile()) {
@@ -78,12 +75,6 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         return outputFile;
     }
 
-    /**
-     * Seleziona un workbook compatibile POI in base all'estensione richiesta.
-     *
-     * @param format Formato di destinazione ("xls" o "xlsx")
-     * @return Workbook POI
-     */
     private Workbook selectWorkbook(String format) {
         switch (format) {
             case "xls":
@@ -95,14 +86,6 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         }
     }
 
-    /**
-     * Scrive i dati JSON nel formato OpenDocument Spreadsheet (ODS).
-     *
-     * @param jsonObjects Lista di oggetti JSON
-     * @param srcFile     File di input
-     * @return File .ods generato
-     * @throws Exception Errore di scrittura del file ODS
-     */
     private File writeJsonToOds(List<JSONObject> jsonObjects, File srcFile) throws Exception {
         SpreadsheetDocument document = SpreadsheetDocument.newSpreadsheetDocument();
         Table sheet = document.getSheetByIndex(0);
@@ -111,7 +94,9 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         List<String> colonneList = getOrderedColumns(jsonObjects);
 
         for (int col = 0; col < colonneList.size(); col++) {
-            sheet.getCellByPosition(col, 0).setStringValue(colonneList.get(col));
+            Cell headerCell = sheet.getCellByPosition(col, 0);
+            headerCell.setStringValue(colonneList.get(col));
+            styleOdsCell(headerCell, true);
         }
 
         for (int row = 0; row < jsonObjects.size(); row++) {
@@ -119,7 +104,9 @@ public class JSONtoSPREADSHEETconverter extends Converter {
             for (int col = 0; col < colonneList.size(); col++) {
                 String key = colonneList.get(col);
                 String value = obj.optString(key, "");
-                sheet.getCellByPosition(col, row + 1).setStringValue(value);
+                Cell dataCell = sheet.getCellByPosition(col, row + 1);
+                dataCell.setStringValue(value);
+                styleOdsCell(dataCell, false);
             }
         }
 
@@ -129,13 +116,6 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         return outputFile;
     }
 
-    /**
-     * Legge un file JSON e restituisce il contenuto come stringa.
-     *
-     * @param jsonFile File da leggere
-     * @return Stringa contenente il JSON
-     * @throws IOException Se la lettura fallisce
-     */
     private String readJsonFile(File jsonFile) throws IOException {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
@@ -147,27 +127,12 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         }
     }
 
-    /**
-     * Estrae l'ordine originale delle colonne in base al primo oggetto JSON.
-     *
-     * @param jsonObjects Lista di oggetti JSON
-     * @return Lista ordinata di chiavi JSON
-     */
     private List<String> getOrderedColumns(List<JSONObject> jsonObjects) {
         if (jsonObjects.isEmpty()) return new ArrayList<>();
         JSONObject first = jsonObjects.get(0);
         return new ArrayList<>(first.keySet());
     }
 
-    /**
-     * Scrive i dati JSON in un foglio Excel, rimuovendo colonne vuote.
-     *
-     * @param jsonObjects Lista di oggetti JSON
-     * @param sheet       Foglio Excel da compilare
-     * @param workbook    Workbook POI
-     * @param colonneList Colonne ordinate
-     * @throws IOException Se la scrittura fallisce
-     */
     private void writeJsonToSheet(List<JSONObject> jsonObjects, Sheet sheet, Workbook workbook, List<String> colonneList) throws IOException {
         if (jsonObjects.isEmpty()) {
             logger.error("Il file JSON è vuoto");
@@ -181,9 +146,9 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         CellStyle rowStyle = createStyle(workbook, false);
 
         for (String key : colonneList) {
-            Cell cell = headerRow.createCell(colNum++);
-            cell.setCellValue(key);
-            cell.setCellStyle(headerStyle);
+            Cell cell = (Cell) headerRow.createCell(colNum++);
+            cell.setStringValue(key);
+            cell.setCellBackgroundColor((Color) headerStyle);
         }
 
         int rowNum = 1;
@@ -212,9 +177,9 @@ public class JSONtoSPREADSHEETconverter extends Converter {
                     }
 
                     if (flagEndColumns[colNum]) {
-                        Cell cell = row.createCell(colNum);
-                        cell.setCellValue(value);
-                        cell.setCellStyle(rowStyle);
+                        Cell cell = (Cell) row.createCell(colNum);
+                        cell.setStringValue(key);
+                        cell.setCellBackgroundColor((Color) headerStyle);
                     }
                 }
                 colNum++;
@@ -223,25 +188,12 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         }
     }
 
-    /**
-     * Ridimensiona automaticamente le colonne di un foglio Excel.
-     *
-     * @param sheet        Il foglio da ridimensionare
-     * @param columnCount  Numero di colonne da processare
-     */
     private void autoSizeColumns(Sheet sheet, int columnCount) {
         for (int colNum = 0; colNum < columnCount; colNum++) {
             sheet.autoSizeColumn(colNum);
         }
     }
 
-    /**
-     * Crea uno stile personalizzato per celle di intestazione o contenuto.
-     *
-     * @param workbook Workbook contenente lo stile
-     * @param isHeader True per stile di intestazione, False per contenuto
-     * @return CellStyle applicabile
-     */
     private CellStyle createStyle(Workbook workbook, boolean isHeader) {
         CellStyle style = workbook.createCellStyle();
         style.setAlignment(HorizontalAlignment.CENTER);
@@ -260,5 +212,22 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         style.setRightBorderColor(IndexedColors.BLACK.getIndex());
 
         return style;
+    }
+
+    /**
+     * Applica uno sfondo grigio alle celle ODS (solo intestazioni).
+     * I bordi non sono supportati da OdfToolkit in modo affidabile.
+     *
+     * @param cell     Cella ODS da modificare
+     * @param isHeader True se si tratta di intestazione
+     */
+    private void styleOdsCell(Cell cell, boolean isHeader) {
+        if (isHeader) {
+            try {
+                cell.setCellBackgroundColor("#D9D9D9"); // Simile a GREY_25_PERCENT
+            } catch (Exception e) {
+                logger.warn("Errore applicando sfondo intestazione ODS: " + e.getMessage());
+            }
+        }
     }
 }
