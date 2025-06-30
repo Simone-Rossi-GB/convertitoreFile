@@ -116,7 +116,11 @@
 
 .light .visual-guide-message {
     -fx-text-fill: #2d3748 !important;
+    -fx-font-size: 14px !important;
+    -fx-font-weight: 500 !important;
+    -fx-line-spacing: 2 !important;
 }
+
 
 /* LIGHT THEME - PULSANTE SECONDARIO */
 .light .visual-guide-button-secondary {
@@ -135,7 +139,7 @@
 }
 
 .light .visual-guide-button-skip:hover {
-    -fx-text-fill: #4a5568 !important;
+-fx-text-fill: #4a5568 !important;
 }
 
 /* LIGHT THEME - SPOTLIGHT PIÙ LEGGERO */
