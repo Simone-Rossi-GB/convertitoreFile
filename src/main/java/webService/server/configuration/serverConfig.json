@@ -28,7 +28,10 @@
         "ods" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter"
       },
       "csv" : {
-        "json" : "webService.server.converters.jsonCsvConverters.CSVtoJSONconverter"
+        "json" : "webService.server.converters.jsonCsvConverters.CSVtoJSONconverter",
+        "xls" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
+        "xlsx" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
+        "ods" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter"
       },
       "eml" : {
         "pdf" : "webService.server.converters.mailConverters.EMLtoPDFconverter"
