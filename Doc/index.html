@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Documentazione - bytesBridge</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Documentazione";
+        var mkdocs_page_input_path = "Doc.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> bytesBridge
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Documentazione</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#introduzione">Introduzione</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#lato-client">Lato client</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#lato-server">Lato server</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#classi-lato-server">Classi lato server</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#converterwebservicecontrollerjava">ConverterWebServiceController.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#funzioni-principali">Funzioni principali:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#enginewebservicejava">EngineWebService.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#funzioni-principali_1">Funzioni principali:</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#classi-lato-client">Classi lato client</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#converterwebserviceclientjava">ConverterWebServiceClient.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#funzioni-principali_2">Funzioni principali:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#conversionresultjava">ConversionResult.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#proprieta">Proprietà:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#directorywatcherjava">DirectoryWatcher.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#funzioni-principali_3">Funzioni principali:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mainviewcontrollerjava">MainViewController.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#funzioni-principali_4">Funzioni principali:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limiti">Limiti</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../manuale_utente/">Manuale Utente</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../WebService/">Web Service</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../API/">API</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Config/">Configurazione</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">bytesBridge</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Documentazione</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="documentation-bytesbridge">Documentation - bytesBridge</h1>
+<h2 id="introduzione">Introduzione</h2>
+<p>Il progetto prevede un'applicazione lato client che riceve i file, permette all'utente di impostare le opzioni per la conversione e li invia ad un server che espone un servizio do conversione.</p>
+<h3 id="lato-client">Lato client</h3>
+<p>L'applicazione prevede un servizio che monitora una cartella in modo da rilevare quando viene aggiunto un file.</p>
+<p>La cartella monitorata, quelle di destinazione e altri parametri utili possono essere modificati dall'utente tramite apposite finestre.</p>
+<p>In caso di conversione riuscita il file originale rimane nella cartella monitorata e il risultato viene salvato in una differente, destinata ai file convertiti.</p>
+<p>In caso di conversione fallita il file originale viene spostato dalla cartella monitorata a quella dedicata alle operazioni fallite.</p>
+<h3 id="lato-server">Lato server</h3>
+<p>Il server espone un servizio di conversione gestito da un motore centrale.</p>
+<p>La conversione avviene appoggiandosi su una cartella temporanea che viene eliminata al termine delle operazioni.</p>
+<p>Il motore centrale si occupa di individuare il convertitore da utilizzare e il tipo di conversione utilizzare (singola o multipla in caso di cartelle compresse).</p>
+<h2 id="classi-lato-server">Classi lato server</h2>
+<h3 id="converterwebservicecontrollerjava">ConverterWebServiceController.java</h3>
+<p>Controller REST Spring Boot che espone API per conversioni file via web service.</p>
+<h4 id="funzioni-principali">Funzioni principali:</h4>
+<p><strong><code>getStatus()</code></strong></p>
+<ul>
+<li><strong>Endpoint</strong>: GET <code>/api/webService.client.objects/status</code>.</li>
+<li><strong>Funzione</strong>: Verifica che il web service sia attivo.</li>
+<li><strong>Ritorna</strong>: JSON con <code>{"status": "active"}</code>.</li>
+</ul>
+<p><strong><code>getPossibleConversions(@PathVariable String extension)</code></strong></p>
+<ul>
+<li><strong>Endpoint</strong>: GET <code>/api/webService.client.objects/conversions/{extension}</code>.</li>
+<li><strong>Funzione</strong>: Restituisce i formati di destinazione disponibili per una data estensione.</li>
+<li><strong>Input</strong>: Estensione file (es. "pdf").</li>
+<li><strong>Output</strong>: Lista di estensioni supportate per la conversione.</li>
+</ul>
+<p><strong><code>convertFile()</code></strong></p>
+<ul>
+<li><strong>Endpoint</strong>: POST <code>/api/webService.client.objects/convert</code>.</li>
+<li><strong>Funzione</strong>: Converte un file caricato nel formato richiesto.</li>
+<li><strong>Parametri</strong>:</li>
+<li><code>file</code>: File da convertire (MultipartFile).</li>
+<li><code>targetFormat</code>: Formato di destinazione.</li>
+<li><code>configFile</code> : File di configurazione con parametri utili alla conversione.</li>
+</ul>
+<p><strong>Flusso tipico di utilizzo</strong>:</p>
+<ol>
+<li>Crea directory temporanea univoca con UUID.</li>
+<li>Salva il file di configurazione nella directory temporanea.</li>
+<li>Salva il file caricato nella directory temporanea.</li>
+<li>Chiama <code>EngineWebService</code> per la conversione effettiva.</li>
+<li>Legge il file convertito e lo restituisce come array di byte.</li>
+<li>Pulisce automaticamente tutti i file temporanei nel <code>finally</code>.</li>
+</ol>
+<h3 id="enginewebservicejava">EngineWebService.java</h3>
+<p>Motore centrale di conversione che individua automaticamente il convertitore da usare e il tipo di conversione da effettuare (singola o multipla in caso di cartelle compresse).</p>
+<h4 id="funzioni-principali_1">Funzioni principali:</h4>
+<p><strong><code>getPossibleConversions(String extension)</code></strong></p>
+<ul>
+<li>Consulta il file serverConfig.json per determinare i formati di destinazione disponibili.</li>
+<li>Restituisce la lista di estensioni supportate per la conversione.</li>
+</ul>
+<p><strong><code>conversioneSingola(srcExt, outExt, srcFile, outputDirectory)</code></strong></p>
+<ul>
+<li>Istanzia il convertitore corretto sulla base dei formati di partenza e destinazione.</li>
+<li>Elimina il file temporaneo al termine della conversione.</li>
+</ul>
+<p><strong><code>conversioneMultipla(srcExt, outExt, srcFile, outputDirectory)</code></strong></p>
+<ul>
+<li>Decomprime la cartella compressa.</li>
+<li>Chiama <code>conversioneSingola</code> per ciascuno dei file.</li>
+</ul>
+<p><strong><code>conversioneMultipla(srcExt, outExt, srcFile, outputDirectory)</code></strong></p>
+<ul>
+<li>
+<p>Legge dal file conversionContext.json se è abilitata la conversione multipla.</p>
+</li>
+<li>
+<p>Individua se eseguire una conversione singola o una conversione multipla.</p>
+</li>
+</ul>
+<h2 id="classi-lato-client">Classi lato client</h2>
+<h3 id="converterwebserviceclientjava">ConverterWebServiceClient.java</h3>
+<p>Client per comunicare con il web service da applicazioni esterne.</p>
+<h4 id="funzioni-principali_2">Funzioni principali:</h4>
+<p><strong><code>isServiceAvailable()</code></strong></p>
+<ul>
+<li>Testa la connettività al web service.</li>
+<li>Chiama l'endpoint <code>/status</code> e verifica la risposta.</li>
+<li>Gestisce eccezioni di rete e timeout.</li>
+</ul>
+<p><strong><code>getPossibleConversions(String extension)</code></strong></p>
+<ul>
+<li>Richiede al web service i formati disponibili per una estensione.</li>
+<li>Converte la risposta da array a <code>List&lt;String&gt;</code>.</li>
+<li>Gestisce errori HTTP e di rete.</li>
+</ul>
+<p><strong><code>convertFile()</code></strong></p>
+<ul>
+<li>
+<p>Verifica disponibilità servizio</p>
+</li>
+<li>
+<p>Prepara richiesta multipart con file e parametri.</p>
+</li>
+<li>
+<p>Esegue POST al web serviceRiceve array di byte del file convertito.</p>
+</li>
+<li>
+<p>Salva il file localmente nel percorso specificato.</p>
+</li>
+<li>
+<p>Gestione errori completa: Errori HTTP, di rete, I/O.</p>
+</li>
+<li>
+<p>Ritorna <code>ConversionResult</code> con stato e messaggio.</p>
+</li>
+</ul>
+<h3 id="conversionresultjava">ConversionResult.java</h3>
+<p>Classe per incapsulare il risultato di una conversione.</p>
+<h4 id="proprieta">Proprietà:</h4>
+<ul>
+<li><code>success</code>: Boolean che indica successo/fallimento.</li>
+<li><code>message</code>: Messaggio descrittivo per successi.</li>
+<li><code>error</code>: Messaggio di errore dettagliato.</li>
+</ul>
+<h3 id="directorywatcherjava">DirectoryWatcher.java</h3>
+<p>Fornisce un servizio di monitoraggio su una cartella </p>
+<h4 id="funzioni-principali_3">Funzioni principali:</h4>
+<p><code>registerAll(Path start)</code></p>
+<ul>
+<li>
+<p>Effettua un controllo ricorsivo su tutte le sottocartelle a partire da quella passata come parametro.</p>
+</li>
+<li>
+<p>Registra in una mappa Il path di ciascuna cartella associato ad una <code>WatchKey</code></p>
+</li>
+</ul>
+<h3 id="mainviewcontrollerjava">MainViewController.java</h3>
+<p>Controller principale della GUI dell'applicazione.</p>
+<h4 id="funzioni-principali_4">Funzioni principali:</h4>
+<p><strong><code>launchDialogConversion(File srcFile)</code></strong></p>
+<ul>
+<li>Funzione chiamata quando viene rilevato un nuovo file.</li>
+<li>Chiede al server i formati disponibili per la conversione.</li>
+<li>Mostra un dialog per selezione formato.</li>
+<li>Fa una chiamata <code>POST</code> al server per effettuare la conversione.</li>
+</ul>
+<p><strong><code>openConfigurationWindow() / openConversionConfigurationWindow()</code></strong></p>
+<ul>
+<li>Aprono finestre per modificare rispettivamente i file config.json e conversionConfig.json.</li>
+<li>Sono associati a controller che modificano i file json e ricaricano le rispettive mappe condivise.</li>
+</ul>
+<h3 id="limiti">Limiti</h3>
+<p><strong>PDF</strong>: max 27 pagine.</p>
+<p><strong>File generici</strong>: max 100 MB.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../manuale_utente/" class="btn btn-neutral float-right" title="Manuale Utente">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../manuale_utente/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Manuale Utente - bytesBridge</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Manuale Utente";
+        var mkdocs_page_input_path = "manuale_utente.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> bytesBridge
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Doc/">Documentazione</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Manuale Utente</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#primo-avvio">Primo Avvio</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#requisiti-di-sistema">Requisiti di Sistema</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#come-funziona-lapplicazione">Come Funziona l'Applicazione</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#il-processo-di-conversione">Il Processo di Conversione</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#interfaccia-principale">Interfaccia Principale</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#indicatori-di-stato">Indicatori di Stato</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#statistiche">Statistiche</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gestione-delle-cartelle">Gestione delle Cartelle</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cartella-monitorata-input">Cartella Monitorata (Input)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cartella-file-convertiti-success">Cartella File Convertiti (Success)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cartella-conversioni-fallite-error">Cartella Conversioni Fallite (Error)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configurazione">Configurazione</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#configurazione-base-pulsante-config">Configurazione Base (Pulsante "Config")</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#configurazione-conversioni-pulsante-conversion-config">Configurazione Conversioni (Pulsante "Conversion Config")</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#come-convertire-i-file">Come Convertire i File</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#formati-supportati">Formati Supportati</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gestione-errori-e-problemi">Gestione Errori e Problemi</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#indicatori-di-problemi">Indicatori di Problemi</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cause-comuni-di-errore">Cause Comuni di Errore</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#file-originali">File Originali</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#consigli-per-un-uso-ottimale">Consigli per un Uso Ottimale</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#organizzazione">Organizzazione</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#flusso-di-utilizzo-consigliato">Flusso di utilizzo Consigliato</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../WebService/">Web Service</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../API/">API</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Config/">Configurazione</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">bytesBridge</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Manuale Utente</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="manuale-utente-file-converter-manager">Manuale Utente - File Converter Manager</h1>
+<h2 id="primo-avvio">Primo Avvio</h2>
+<h3 id="requisiti-di-sistema">Requisiti di Sistema</h3>
+<ul>
+<li>Java 8 o superiore.</li>
+<li>Permessi di lettura/scrittura sulle cartelle che userai.</li>
+</ul>
+<h2 id="come-funziona-lapplicazione">Come Funziona l'Applicazione</h2>
+<p>File Converter Manager è un'applicazione che converte automaticamente i file da un formato all'altro. Funziona monitorando una cartella: quando inserisci un file, l'app lo rileva e ti chiede in che formato convertirlo.</p>
+<h3 id="il-processo-di-conversione">Il Processo di Conversione</h3>
+<ol>
+<li><strong>Inserisci</strong> il file nella cartella monitorata.</li>
+<li><strong>Scegli</strong> il formato di destinazione dal popup.</li>
+<li><strong>Attendi</strong> che il server converta il file.</li>
+<li><strong>Trova</strong> il file convertito nella cartella "File Convertiti".</li>
+</ol>
+<h2 id="interfaccia-principale">Interfaccia Principale</h2>
+<h3 id="indicatori-di-stato">Indicatori di Stato</h3>
+<ul>
+<li><strong>Bottone Verde</strong> (in basso a destra): Monitoraggio attivo.</li>
+<li><strong>Bottone Rosso</strong> (in alto a basso): Monitoraggio disattivato.</li>
+<li><strong>Log dell'Applicazione</strong>: Mostra in tempo reale cosa sta facendo l'app.</li>
+</ul>
+<h3 id="statistiche">Statistiche</h3>
+<p>L'applicazione tiene traccia di:</p>
+<ul>
+<li><strong>File Rilevati</strong>: Quanti file hai inserito.</li>
+<li><strong>Conversioni Riuscite</strong>: Quanti file sono stati convertiti con successo.</li>
+<li><strong>Conversioni Fallite</strong>: Quanti file hanno avuto problemi.</li>
+</ul>
+<h2 id="gestione-delle-cartelle">Gestione delle Cartelle</h2>
+<p>L'applicazione usa tre cartelle principali:</p>
+<h3 id="cartella-monitorata-input">Cartella Monitorata (Input)</h3>
+<ul>
+<li>Qui inserisci i file da convertire.</li>
+<li>L'app monitora costantemente questa cartella.</li>
+<li><strong>Accesso rapido</strong>: Pulsante "Carica File".</li>
+</ul>
+<h3 id="cartella-file-convertiti-success">Cartella File Convertiti (Success)</h3>
+<ul>
+<li>I file convertiti con successo finiscono qui.</li>
+<li><strong>Accesso rapido</strong>: Pulsante "File Convertiti".</li>
+</ul>
+<h3 id="cartella-conversioni-fallite-error">Cartella Conversioni Fallite (Error)</h3>
+<ul>
+<li>I file che non si riescono a convertire finiscono qui.</li>
+<li><strong>Accesso rapido</strong>: Pulsante "Conversioni Fallite".</li>
+</ul>
+<h2 id="configurazione">Configurazione</h2>
+<h3 id="configurazione-base-pulsante-config">Configurazione Base (Pulsante "Config")</h3>
+<p><strong>Cartelle Personalizzate</strong></p>
+<ul>
+<li>Puoi cambiare il percorso di tutte e tre le cartelle.</li>
+<li>Usa i pulsanti "Sfoglia..." per selezionare cartelle diverse.</li>
+</ul>
+<p><strong>Monitoraggio Automatico</strong></p>
+<ul>
+<li>Attiva/disattiva l'avvio automatico del monitoraggio.</li>
+<li>Se attivo, al prossimo avvio l'app inizierà subito a monitorare.</li>
+</ul>
+<h3 id="configurazione-conversioni-pulsante-conversion-config">Configurazione Conversioni (Pulsante "Conversion Config")</h3>
+<p><strong>Password per File Protetti</strong></p>
+<ul>
+<li>Se devi convertire PDF o documenti protetti da password inserisci la password qui prima di iniziare la conversione.</li>
+<li><strong>Privacy</strong>: La password è usata solo per la conversione, mai salvata o condivisa.</li>
+</ul>
+<p><strong>Unione Pagine PDF</strong></p>
+<ul>
+<li>Quando converti PDF in immagini.</li>
+<li><strong>OFF</strong>: Ogni pagina diventa un'immagine separata.</li>
+<li><strong>ON</strong>: Tutte le pagine diventano un'unica immagine lunga.</li>
+</ul>
+<p><strong>Output Zippato</strong></p>
+<ul>
+<li><strong>OFF</strong>: Ricevi il file convertito direttamente.</li>
+<li><strong>ON</strong>: Il file convertito viene messo in un archivio zip.</li>
+<li>Utile per ridurre le dimensioni o organizzare meglio i file.</li>
+</ul>
+<p><strong>Conversione multpla</strong></p>
+<ul>
+<li>
+<p>Quando devi convertire una cartella compressa.</p>
+</li>
+<li>
+<p><strong>OFF</strong>: Viene convertito il singolo file zip.</p>
+</li>
+<li>
+<p><strong>ON</strong>: Vengono convertiti tutti i file contenuti nella cartella compressa.</p>
+</li>
+</ul>
+<h2 id="come-convertire-i-file">Come Convertire i File</h2>
+<ol>
+<li><strong>Attiva il monitoraggio</strong> (pulsante "Avvia Monitoraggio" se il punto è rosso).</li>
+<li><strong>Clicca "Carica File"</strong> per aprire la cartella monitorata.</li>
+<li><strong>Copia/sposta il tuo file</strong> nella cartella.</li>
+<li><strong>Scegli il formato</strong> dal popup che appare.</li>
+<li><strong>Attendi</strong> - vedrai il progresso nel log.</li>
+<li><strong>Trova il file convertito</strong> nella cartella "Success".</li>
+</ol>
+<h3 id="formati-supportati">Formati Supportati</h3>
+<ul>
+<li>L'app rileva automaticamente il formato del file originale.</li>
+<li>Mostra solo i formati di destinazione disponibili.</li>
+</ul>
+<h2 id="gestione-errori-e-problemi">Gestione Errori e Problemi</h2>
+<h3 id="indicatori-di-problemi">Indicatori di Problemi</h3>
+<ul>
+<li><strong>Popup di errore</strong>: Spiega brevemente cosa è andato storto.</li>
+<li><strong>File nella cartella Error</strong>: Conversioni fallite.</li>
+</ul>
+<h3 id="cause-comuni-di-errore">Cause Comuni di Errore</h3>
+<ul>
+<li>File corrotto o non leggibile.</li>
+<li>Formato non supportato per la conversione richiesta.</li>
+<li>File troppo grande.</li>
+<li>File protetto senza password corretta.</li>
+<li>Problemi di connessione al server.</li>
+</ul>
+<h3 id="file-originali">File Originali</h3>
+<ul>
+<li>I tuoi file originali <strong>non vengono mai cancellati</strong>.</li>
+<li>Puoi trovarli nella cartella monitorata o in quella dedicata alle conversioni fallite.</li>
+</ul>
+<h2 id="consigli-per-un-uso-ottimale">Consigli per un Uso Ottimale</h2>
+<h3 id="organizzazione">Organizzazione</h3>
+<ul>
+<li>Crea una cartella dedicata solo per le conversioni.</li>
+<li>Mantieni le tre cartelle (input, success, error) nella stessa directory principale.</li>
+<li>Svuota periodicamente le cartelle per evitare accumuli.</li>
+</ul>
+<h3 id="flusso-di-utilizzo-consigliato">Flusso di utilizzo Consigliato</h3>
+<ol>
+<li><strong>Configura</strong> le opzioni di conversione se necessario.</li>
+<li><strong>Attiva</strong> il monitoraggio.</li>
+<li><strong>Copia</strong> i file nella cartella monitorata.</li>
+<li><strong>Configura</strong> le opzioni di conversione se necessario.</li>
+<li><strong>Controlla</strong> il log per seguire il progresso.</li>
+<li><strong>Organizza</strong> i file convertiti dalla cartella success.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Doc/" class="btn btn-neutral float-left" title="Documentazione"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../WebService/" class="btn btn-neutral float-right" title="Web Service">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Doc/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../WebService/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

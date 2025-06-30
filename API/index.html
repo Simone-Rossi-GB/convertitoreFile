@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>API - bytesBridge</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "API";
+        var mkdocs_page_input_path = "API.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> bytesBridge
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Doc/">Documentazione</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../manuale_utente/">Manuale Utente</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../WebService/">Web Service</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">API</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#introduzione">Introduzione</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#endpoints">Endpoints</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#stato-del-servizio">Stato del servizio</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#possibili-conversioni-per-estensione">Possibili conversioni per estensione</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#conversione-file">Conversione file</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#errori">Errori</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#response-500-errore-interno-del-server">Response 500 – Errore Interno del Server</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#elenco-dei-codici-di-errore">Elenco dei codici di errore</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#1001-illegalextensionexception">1001. IllegalExtensionException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1002-filemoveexception">1002. FileMoveException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1003-unsupportedconversionexception">1003. UnsupportedConversionException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1004-ioexception">1004. IOException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1005-batchconversionexception">1005. BatchConversionException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1006-conversionexception">1006. ConversionException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1007-filecreationexception">1007. FileCreationException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1008-emptyfileexception">1008. EmptyFileException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1009-formatsexception">1009. FormatsException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1010-passwordexception">1010. PasswordException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#1011-nullpointerexception">1011. NullPointerException:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#9999-exception">9999. Exception:</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#flusso-tipico-di-utilizzo">Flusso tipico di utilizzo</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Config/">Configurazione</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">bytesBridge</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">API</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="api-documentation-converter-web-service">API Documentation - Converter Web Service</h1>
+<h2 id="introduzione">Introduzione</h2>
+<p>Questo servizio REST permette di interrogare lo stato del server, ottenere le possibili conversioni di file supportate per un dato formato e convertire file da un formato ad un altro.</p>
+<p>Base URL: <code>/api/converter</code><br />
+Cross-Origin abilitato per tutti i domini.</p>
+<h2 id="endpoints">Endpoints</h2>
+<h3 id="stato-del-servizio">Stato del servizio</h3>
+<p><strong>GET</strong> <code>/status</code></p>
+<p><strong>Descrizione:</strong><br />
+Restituisce lo stato attuale del servizio.</p>
+<p><strong>Request:</strong> </p>
+<p>Nessun parametro</p>
+<p><strong>Response 200:</strong></p>
+<p><code>{   "status": "active" }</code></p>
+<h3 id="possibili-conversioni-per-estensione">Possibili conversioni per estensione</h3>
+<p><strong>GET</strong> <code>/conversions/{extension}</code></p>
+<p><strong>Descrizione:</strong><br />
+Restituisce una lista di formati in cui è possibile convertire un file con una data estensione di partenza.</p>
+<p><strong>Path Parameters:</strong></p>
+<ul>
+<li><code>extension</code> (string): estensione del file di partenza (es. <code>pdf</code>, <code>jpg</code>)</li>
+</ul>
+<p><strong>Response 200:</strong></p>
+<p>es.<code>[   "doc",   "docx",   "jpg" ]</code></p>
+<h3 id="conversione-file">Conversione file</h3>
+<p><strong>POST</strong> <code>/convert</code></p>
+<p><strong>Descrizione:</strong><br />
+Converte un file caricato da un formato di origine al formato di destinazione specificato, applicando le opzioni impostate nel file conversionConfig.json passato dal client.</p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>
+<p>Parametri multipart/form-data:</p>
+</li>
+<li>
+<p><code>file</code> (file): File da convertire</p>
+</li>
+<li>
+<p><code>targetFormat</code> (string): Formato di destinazione (es. <code>pdf</code>, <code>docx</code>)</p>
+</li>
+<li>
+<p><code>configFile</code> (file): File JSON con i parametri utili alla conversione</p>
+</li>
+</ul>
+<p><strong>Response 200:</strong></p>
+<ul>
+<li>
+<p>File convertito come allegato</p>
+</li>
+<li>
+<p>Headers:</p>
+</li>
+<li>
+<p><code>Content-Type</code>: Media type del file convertito</p>
+</li>
+<li>
+<p><code>Content-Disposition</code>: Attachment; filename="nomefile"</p>
+</li>
+<li>
+<p><code>Content-Length</code>: Lunghezza in byte</p>
+</li>
+</ul>
+<h2 id="errori">Errori</h2>
+<p>Gli errori vengono gestiti centralmente tramite un <strong>Rest Controller Advice</strong> che intercetta le eccezioni e ritorna una risposta con codice di errore mappato sulla base del tipo di eccezione.</p>
+<h5 id="response-500-errore-interno-del-server">Response 500 – Errore Interno del Server</h5>
+<p>Tutti gli errori restituiscono lo status HTTP <strong>500 Internal Server Error</strong> con corpo JSON nel seguente formato:
+{
+  "errorCode": <codice numerico>,
+  "message": "Messaggio dell'eccezione",
+  "stackTrace": "Prima riga dello stack trace"
+}</p>
+<h5 id="elenco-dei-codici-di-errore">Elenco dei codici di errore</h5>
+<h6 id="1001-illegalextensionexception"><strong>1001.</strong>   IllegalExtensionException:</h6>
+<p>Estensione del file non supportata o vietata.</p>
+<h6 id="1002-filemoveexception"><strong>1002.</strong>   FileMoveException:</h6>
+<p>Errore durante lo spostamento o salvataggio del file.</p>
+<h6 id="1003-unsupportedconversionexception"><strong>1003.</strong>   UnsupportedConversionException:</h6>
+<p>La conversione richiesta non è supportata.</p>
+<h6 id="1004-ioexception"><strong>1004.</strong>   IOException:</h6>
+<p>Errore generico di input/output durante la conversione.</p>
+<h6 id="1005-batchconversionexception"><strong>1005</strong>.   BatchConversionException:</h6>
+<p>Errore durante l'elaborazione di un lotto di file.</p>
+<h6 id="1006-conversionexception"><strong>1006.</strong>   ConversionException:</h6>
+<p>Errore generico durante il processo di conversione.</p>
+<h6 id="1007-filecreationexception"><strong>1007.</strong>   FileCreationException:</h6>
+<p>Impossibile creare il file convertito.</p>
+<h6 id="1008-emptyfileexception"><strong>1008.</strong>   EmptyFileException:</h6>
+<p>Il file in input è vuoto.</p>
+<h6 id="1009-formatsexception"><strong>1009.</strong>   FormatsException:</h6>
+<p>Errore nei formati di input/output specificati.</p>
+<h6 id="1010-passwordexception"><strong>1010.</strong>   PasswordException:</h6>
+<p>Il file è protetto da password o non accessibile.</p>
+<h6 id="1011-nullpointerexception"><strong>1011.</strong>   NullPointerException:</h6>
+<p>Oggetto null.</p>
+<h6 id="9999-exception"><strong>9999.</strong>   Exception:</h6>
+<p>Errore interno inatteso (variabile nulla o oggetto non inizializzato).</p>
+<h2 id="flusso-tipico-di-utilizzo">Flusso tipico di utilizzo</h2>
+<ol>
+<li>
+<p>Il client fa una chiamata chiama <code>GET /conversions/{extension}</code> per ottenere i formati disponibili per la conversione.</p>
+</li>
+<li>
+<p>Il server cerca nel file serverConfig.json le informazioni richieste e allega alla risposta la lista di estensioni per la conversione.</p>
+</li>
+<li>
+<p>Il client fa una chiamata <code>POST /convert</code>, passando il file da convertire, l'estensione di destinazione e il file conversionContext.json, con i parametri validi solo per quella conversione.</p>
+</li>
+<li>
+<p>Il server invia una risposta con un'array di byte che rappresenta il contenuto del file convertito e il mediaType rilevato nell'header</p>
+</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../WebService/" class="btn btn-neutral float-left" title="Web Service"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Config/" class="btn btn-neutral float-right" title="Configurazione">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../WebService/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Config/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

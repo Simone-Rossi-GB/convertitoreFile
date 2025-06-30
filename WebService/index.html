@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Web Service - bytesBridge</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Web Service";
+        var mkdocs_page_input_path = "WebService.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> bytesBridge
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Doc/">Documentazione</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../manuale_utente/">Manuale Utente</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Web Service</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#panoramica-del-progetto">Panoramica del Progetto</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#architettura-del-sistema">Architettura del Sistema</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#struttura-del-progetto">Struttura del Progetto</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#componenti-server">Componenti Server</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-webserviceapplicationjava">1. WebServiceApplication.java</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-converterwebservicecontrollerjava">2. ConverterWebServiceController.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#get-apiconverterstatus">GET /api/converter/status</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#get-apiconverterconversionsextension">GET /api/converter/conversions/{extension}</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#post-apiconverterconvert">POST /api/converter/convert</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-enginewebservicejava">3. EngineWebService.java</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#getpossibleconversionsstring-extension">getPossibleConversions(String extension)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#conversionestring-srcext-string-outext-file-srcfile">conversione(String srcExt, String outExt, File srcFile)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#conversione-multipla">Conversione Multipla</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#conversione-singola">Conversione Singola</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-globalexceptionhandlerjava">4. GlobalExceptionHandler.java</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-errorresponsejava">5. ErrorResponse.java</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#flusso-di-conversione">Flusso di Conversione</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-richiesta-formati-disponibili">1. Richiesta Formati Disponibili</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-conversione-file">2. Conversione File</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gestione-file-temporanei">Gestione File Temporanei</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gestione-degli-errori">Gestione degli Errori</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-validazione-input">1. Validazione Input</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-gestione-eccezioni-di-conversione">2. Gestione Eccezioni di Conversione</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-risposte-http-strutturate">3. Risposte HTTP Strutturate</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sicurezza-e-performance">Sicurezza e Performance</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gestione-concorrenza">Gestione Concorrenza</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#validazione-file">Validazione File</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configurazione">Configurazione</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-configurazione-server-serverconfigjson">1. Configurazione Server (serverConfig.json)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-configurazione-conversione-conversioncontext">2. Configurazione Conversione (conversionContext)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#estendibilita">Estendibilità</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#aggiunta-nuovi-convertitori">Aggiunta Nuovi Convertitori</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#aggiunta-nuovi-formati">Aggiunta Nuovi Formati</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../API/">API</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Config/">Configurazione</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">bytesBridge</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Web Service</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="documentazione-converter-webservice">Documentazione Converter WebService</h1>
+<h2 id="panoramica-del-progetto">Panoramica del Progetto</h2>
+<p>Il Converter WebService è un'applicazione distribuita che permette la conversione di file attraverso un'architettura client-server. Il sistema è composto da un'applicazione client che monitora una cartella locale e da un servizio web REST che gestisce le conversioni dei file.</p>
+<h3 id="architettura-del-sistema">Architettura del Sistema</h3>
+<pre><code>Client Application (JavaFX) ←→ WebService REST API (Spring Boot) ←→ Conversion Engine
+</code></pre>
+<p>Il progetto segue un'architettura a microservizi dove:</p>
+<ul>
+<li><strong>Client</strong>: Interfaccia grafica per la selezione dei file e delle opzioni di conversione</li>
+<li><strong>WebService</strong>: API REST per la gestione delle richieste di conversione</li>
+<li><strong>Engine</strong>: Motore di conversione che gestisce la logica di trasformazione dei file</li>
+</ul>
+<h2 id="struttura-del-progetto">Struttura del Progetto</h2>
+<pre><code>file-webService.client.objects-project/
+├── pom.xml
+├── config/
+│   └── config.json
+├── src/main/java/
+│   ├── webService.client.gui/              # Interfaccia utente client
+│   │   ├── MainApp.java
+│   │   ├── MainViewController.java
+│   │   └── ConfigWindowController.java
+│   ├── webService.client.objects/          # Logica client
+│   │   ├── Engine.java
+│   │   ├── ConverterConfig.java
+│   │   ├── DirectoryWatcher.java
+│   │   └── Log.java
+│   ├── webService.server/                  # Componenti server
+│   │   ├── WebServiceApplication.java
+│   │   ├── ConverterWebServiceController.java
+│   │   ├── EngineWebService.java
+│   │   ├── GlobalExceptionHandler.java
+│   │   └── ErrorResponse.java
+│   └── webService.server.converters/       # Convertitori specifici
+│       └── Converter.java (interface)
+├── src/main/resources/
+│   ├── GraphicalMenu.fxml
+│   ├── ConfigWindow.fxml
+│   └── application.properties
+└── temp/
+    ├── uploads/
+    └── outputs/
+</code></pre>
+<h2 id="componenti-server">Componenti Server</h2>
+<h3 id="1-webserviceapplicationjava">1. WebServiceApplication.java</h3>
+<p>Classe principale dell'applicazione Spring Boot che gestisce il ciclo di vita del servizio web.</p>
+<p><strong>Funzionalità principali:</strong></p>
+<ul>
+<li>Avvio e arresto del servizio web</li>
+<li>Inizializzazione dei gestori di configurazione</li>
+<li>Controllo dello stato del servizio</li>
+</ul>
+<p><strong>Metodi pubblici:</strong></p>
+<pre><code class="language-java">public static void startWebService()    // Avvia il servizio web
+public static void stopWebService()     // Ferma il servizio web  
+public static boolean isRunning()       // Verifica se il servizio è attivo
+</code></pre>
+<h3 id="2-converterwebservicecontrollerjava">2. ConverterWebServiceController.java</h3>
+<p>Controller REST che espone le API per la conversione dei file. Gestisce le richieste HTTP e orchestra il processo di conversione.</p>
+<p><strong>Endpoints disponibili:</strong></p>
+<h4 id="get-apiconverterstatus">GET <code>/api/converter/status</code></h4>
+<p>Restituisce lo stato del servizio web.</p>
+<p><strong>Risposta:</strong></p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;active&quot;
+}
+</code></pre>
+<h4 id="get-apiconverterconversionsextension">GET <code>/api/converter/conversions/{extension}</code></h4>
+<p>Ottiene le possibili conversioni per un formato specifico.</p>
+<p><strong>Parametri:</strong></p>
+<ul>
+<li><code>extension</code>: Estensione del file di partenza</li>
+</ul>
+<p><strong>Risposta:</strong></p>
+<pre><code class="language-json">[&quot;pdf&quot;, &quot;docx&quot;, &quot;txt&quot;]
+</code></pre>
+<h4 id="post-apiconverterconvert">POST <code>/api/converter/convert</code></h4>
+<p>Effettua la conversione di un file.</p>
+<p><strong>Parametri:</strong></p>
+<ul>
+<li><code>file</code>: File da convertire (MultipartFile)</li>
+<li><code>targetFormat</code>: Formato di destinazione</li>
+<li><code>configFile</code>: File di configurazione per la conversione</li>
+</ul>
+<p><strong>Risposta:</strong> File convertito come array di byte con headers appropriati</p>
+<p><strong>Processo di conversione:</strong></p>
+<ol>
+<li>Creazione directory temporanea univoca</li>
+<li>Upload del file di configurazione</li>
+<li>Salvataggio del file di input nella directory temporanea</li>
+<li>Chiamata al motore di conversione</li>
+<li>Preparazione della risposta HTTP con file convertito</li>
+<li>Pulizia dei file temporanei</li>
+</ol>
+<h3 id="3-enginewebservicejava">3. EngineWebService.java</h3>
+<p>Motore di conversione che gestisce la logica di trasformazione dei file. Supporta conversioni singole e multiple (tramite archivi ZIP).</p>
+<p><strong>Funzionalità principali:</strong></p>
+<h4 id="getpossibleconversionsstring-extension"><code>getPossibleConversions(String extension)</code></h4>
+<p>Restituisce i formati disponibili per la conversione da un formato specifico.</p>
+<h4 id="conversionestring-srcext-string-outext-file-srcfile"><code>conversione(String srcExt, String outExt, File srcFile)</code></h4>
+<p>Esegue la conversione del file:</p>
+<ul>
+<li>Verifica se è richiesta una conversione multipla (file ZIP)</li>
+<li>Gestisce conversioni singole o multiple</li>
+<li>Utilizza il pattern Strategy per selezionare il convertitore appropriato</li>
+</ul>
+<h4 id="conversione-multipla">Conversione Multipla</h4>
+<p>Per file ZIP contiene più file dello stesso formato:</p>
+<ol>
+<li>Estrazione dei file dall'archivo</li>
+<li>Conversione di ogni file individualmente</li>
+<li>Ricompressione dei file convertiti</li>
+</ol>
+<h4 id="conversione-singola">Conversione Singola</h4>
+<p>Per file individuali:</p>
+<ol>
+<li>Selezione del convertitore tramite reflection</li>
+<li>Istanziazione dinamica del convertitore</li>
+<li>Esecuzione della conversione</li>
+<li>Pulizia dei file temporanei</li>
+</ol>
+<h3 id="4-globalexceptionhandlerjava">4. GlobalExceptionHandler.java</h3>
+<p>Gestore globale delle eccezioni che fornisce risposte strutturate per tutti gli errori del sistema.</p>
+<p><strong>Eccezioni gestite:</strong></p>
+<ul>
+<li><code>IllegalExtensionException</code> (Codice: 1001)</li>
+<li><code>FileMoveException</code> (Codice: 1002)</li>
+<li><code>UnsupportedConversionException</code> (Codice: 1003)</li>
+<li><code>IOException</code> (Codice: 1004)</li>
+<li><code>BatchConversionException</code> (Codice: 1005)</li>
+<li><code>ConversionException</code> (Codice: 1006)</li>
+<li><code>FileCreationException</code> (Codice: 1007)</li>
+<li><code>EmptyFileException</code> (Codice: 1008)</li>
+<li><code>FormatsException</code> (Codice: 1009)</li>
+<li><code>PasswordException</code> (Codice: 1010)</li>
+<li><code>NullPointerException</code> (Codice: 1011)</li>
+<li><code>Exception</code> generica (Codice: 9999)</li>
+</ul>
+<p><strong>Formato risposta errore:</strong></p>
+<pre><code class="language-json">{
+  &quot;errorCode&quot;: 1001,
+  &quot;message&quot;: &quot;Descrizione dell'errore&quot;,
+  &quot;stackTrace&quot;: &quot;Prima riga dello stack trace&quot;
+}
+</code></pre>
+<h3 id="5-errorresponsejava">5. ErrorResponse.java</h3>
+<p>Classe DTO per la rappresentazione strutturata degli errori nelle risposte JSON.</p>
+<p><strong>Campi:</strong></p>
+<ul>
+<li><code>errorCode</code>: Codice numerico identificativo dell'errore</li>
+<li><code>message</code>: Messaggio descrittivo dell'errore</li>
+<li><code>stackTrace</code>: Prima riga dello stack trace per il debugging</li>
+</ul>
+<h2 id="flusso-di-conversione">Flusso di Conversione</h2>
+<h3 id="1-richiesta-formati-disponibili">1. Richiesta Formati Disponibili</h3>
+<pre><code>Client → GET /api/converter/conversions/{extension} → Server
+Server → Consulta configurazione → Restituisce lista formati
+</code></pre>
+<h3 id="2-conversione-file">2. Conversione File</h3>
+<pre><code>Client → POST /api/converter/convert → Server
+Server → Crea directory temporanea
+Server → Salva file di input e configurazione
+Server → Chiama EngineWebService.conversione()
+EngineWebService → Seleziona convertitore dinamicamente
+EngineWebService → Esegue conversione
+Server → Prepara risposta HTTP con file convertito
+Server → Pulisce file temporanei
+Server → Restituisce file al client
+</code></pre>
+<h2 id="gestione-file-temporanei">Gestione File Temporanei</h2>
+<p>Il sistema utilizza directory temporanee univoche per ogni conversione:</p>
+<ol>
+<li><strong>Creazione</strong>: <code>Files.createTempDirectory("conversion-" + UUID.randomUUID() + "-")</code></li>
+<li><strong>Utilizzo</strong>: Salvataggio file di input e configurazione</li>
+<li><strong>Pulizia</strong>: Eliminazione automatica di file e directory al termine della conversione</li>
+</ol>
+<p>Questa strategia garantisce:</p>
+<ul>
+<li>Isolamento delle conversioni concorrenti</li>
+<li>Prevenzione di conflitti di nomi file</li>
+<li>Pulizia automatica in caso di errori</li>
+</ul>
+<h2 id="gestione-degli-errori">Gestione degli Errori</h2>
+<p>Il sistema implementa una gestione strutturata degli errori su più livelli:</p>
+<h3 id="1-validazione-input">1. Validazione Input</h3>
+<ul>
+<li>Controllo esistenza e validità dei file</li>
+<li>Verifica supporto formati</li>
+<li>Validazione parametri richiesti</li>
+</ul>
+<h3 id="2-gestione-eccezioni-di-conversione">2. Gestione Eccezioni di Conversione</h3>
+<ul>
+<li>Eccezioni specifiche per ogni tipo di errore</li>
+<li>Logging dettagliato per debugging</li>
+<li>Rollback automatico in caso di fallimento</li>
+</ul>
+<h3 id="3-risposte-http-strutturate">3. Risposte HTTP Strutturate</h3>
+<ul>
+<li>Codici di errore standardizzati</li>
+<li>Messaggi descrittivi per l'utente</li>
+<li>Stack trace per il debugging (solo primo livello)</li>
+</ul>
+<h2 id="sicurezza-e-performance">Sicurezza e Performance</h2>
+<h3 id="gestione-concorrenza">Gestione Concorrenza</h3>
+<ul>
+<li>Directory temporanee univoche per conversioni parallele</li>
+<li>Pulizia automatica dei file temporanei</li>
+<li>Gestione safe dell'eliminazione file</li>
+</ul>
+<h3 id="validazione-file">Validazione File</h3>
+<ul>
+<li>Controllo tipo MIME tramite libreria Apache Tika</li>
+<li>Validazione estensioni supportate</li>
+<li>Controllo esistenza e integrità file</li>
+</ul>
+<h3 id="logging">Logging</h3>
+<ul>
+<li>Logging strutturato con Log4j2</li>
+<li>Tracciamento completo delle operazioni</li>
+<li>Livelli di log configurabili (TRACE, INFO, WARN, ERROR)</li>
+</ul>
+<h2 id="configurazione">Configurazione</h2>
+<p>Il sistema utilizza due tipi di configurazione:</p>
+<h3 id="1-configurazione-server-serverconfigjson">1. Configurazione Server (<code>serverConfig.json</code>)</h3>
+<p>Definisce i convertitori disponibili e le mappature formato → classe:</p>
+<pre><code class="language-json">{
+  &quot;conversions&quot;: {
+    &quot;pdf&quot;: {
+      &quot;docx&quot;: &quot;webService.server.converters.PdfToDocxConverter&quot;,
+      &quot;txt&quot;: &quot;webService.server.converters.PdfToTxtConverter&quot;
+    }
+  }
+}
+</code></pre>
+<h3 id="2-configurazione-conversione-conversioncontext">2. Configurazione Conversione (<code>conversionContext</code>)</h3>
+<p>Parametri specifici per ogni conversione (caricata dinamicamente dal client):</p>
+<ul>
+<li>Abilitazione conversioni multiple</li>
+<li>Parametri specifici del convertitore</li>
+<li>Opzioni di formattazione</li>
+</ul>
+<h2 id="estendibilita">Estendibilità</h2>
+<h3 id="aggiunta-nuovi-convertitori">Aggiunta Nuovi Convertitori</h3>
+<ol>
+<li>Estendere la classe astratta <code>Converter</code></li>
+<li>Opzionale: estendere la classe astratta <code>ConverterDocumentsWithPassword</code></li>
+<li>Aggiungere la mappatura in <code>serverConfig.json</code></li>
+<li>Il sistema caricherà dinamicamente la classe tramite reflection</li>
+</ol>
+<h3 id="aggiunta-nuovi-formati">Aggiunta Nuovi Formati</h3>
+<ol>
+<li>Implementare il convertitore specifico</li>
+<li>Aggiornare la configurazione dei formati supportati</li>
+<li>Opzionale: aggiungere validazioni specifiche nel <code>GlobalExceptionHandler</code></li>
+</ol>
+<p>Questa architettura modulare permette l'estensione del sistema senza modifiche al codice esistente, seguendo il principio Open/Closed del SOLID design.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../manuale_utente/" class="btn btn-neutral float-left" title="Manuale Utente"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../API/" class="btn btn-neutral float-right" title="API">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../manuale_utente/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../API/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Configurazione - bytesBridge</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Configurazione";
+        var mkdocs_page_input_path = "Config.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> bytesBridge
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Doc/">Documentazione</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../manuale_utente/">Manuale Utente</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../WebService/">Web Service</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../API/">API</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Configurazione</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#introduzione">Introduzione</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#architettura-del-sistema">Architettura del Sistema</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#lato-client">Lato client</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#lato-server">Lato server</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#classi">Classi</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#data-classe-base">Data (Classe Base)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#instance">Instance</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#reader">Reader</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#writer">Writer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#instancereader">InstanceReader</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#instancewriter">InstanceWriter</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gestione-degli-errori">Gestione degli Errori</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#flusso-tipico-di-utilizzo">Flusso tipico di utilizzo</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">bytesBridge</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Configurazione</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="config-documentation-file-di-configurazione">Config documentation - File di Configurazione</h1>
+<h2 id="introduzione">Introduzione</h2>
+<p>Il sistema di gestione della configurazione è stato progettato per gestire parametri di configurazione tramite file JSON, supportando operazioni di lettura e scrittura lato client e di sola lettura lato server. </p>
+<p>La configurazione può essere modificata dall'utente tramite un'interfaccia grafica dedicata nel client.</p>
+<p>Al momento della conversione al server viene inviato il file json con i parametri necessari alla conversione. Il file viene memorizzato in una cartella temporanea ed eliminato al termine dell'operazione.</p>
+<h2 id="architettura-del-sistema">Architettura del Sistema</h2>
+<p><img alt="Logo progetto" src="C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\documentazione\architettura.png" /></p>
+<h3 id="lato-client">Lato client</h3>
+<ul>
+<li>
+<p><strong>config.json</strong>: Contiene le informazioni relative alla cartella monitorata, a quelle di destinazione e ad altre opzioni utili all'applicazione lato client. Può essere modificato tramite un'apposita finestra dalla GUI.</p>
+</li>
+<li>
+<p><strong>conversionContext.json</strong>: Contiene le informazioni relative alle opzioni di conversione (es. password, watermark, compressione, ecc...). Può essere modificato tramite un'apposita finestra dalla GUI.</p>
+</li>
+</ul>
+<h3 id="lato-server">Lato server</h3>
+<ul>
+<li>
+<p><strong>serverConfig.json</strong>: Contiene le informazioni relative alle conversioni supportate e i percorsi delle rispettive classi da istanziare per effettuare la conversione. Non può essere modificato.</p>
+</li>
+<li>
+<p><strong>conversionContext.json</strong>: Contiene le informazioni relative alle opzioni di conversione (es. password, watermark, compressione, ecc...). Ciascuno è associato ad una singola richiesta di conversione e viene memorizzato in una cartella temporanea. Al termine della conversione viene eliminato.</p>
+</li>
+</ul>
+<h2 id="classi">Classi</h2>
+<h3 id="data-classe-base">Data (Classe Base)</h3>
+<p>Classe astratta che fornisce l'infrastruttura comune per la gestione dei dati di configurazione:</p>
+<p><strong>Caratteristiche principali:</strong></p>
+<ul>
+<li>Mantiene un riferimento thread-safe al file JSON corrente</li>
+<li>Gestisce una mappa condivisa (<code>configDataMap</code>) contenente i dati parsati</li>
+<li>Fornisce caching del nodo radice per evitare riletture multiple</li>
+<li>Include logging per tracciamento delle operazioni</li>
+</ul>
+<p><strong>Metodi chiave:</strong></p>
+<ul>
+<li><code>update(ConfigInstance configInstance)</code>: Aggiorna la configurazione caricando un nuovo file o ricaricando quello modificato</li>
+<li><code>getJsonFile()</code>: Restituisce il file JSON attualmente attivo</li>
+</ul>
+<h3 id="instance">Instance</h3>
+<p>Rappresenta un'istanza validata di configurazione associata a un file JSON specifico.</p>
+<p><strong>Funzionalità:</strong></p>
+<ul>
+<li><strong>Validazione automatica</strong>: Verifica la presenza di tutti i campi obbligatori durante la creazione</li>
+<li><strong>Campi obbligatori validati</strong>:</li>
+<li><code>successOutputDir</code>: Directory per conversioni riuscite</li>
+<li><code>errorOutputDir</code>: Directory per conversioni fallite</li>
+<li><code>monitoredDir</code>: Directory da monitorare</li>
+<li><code>monitorAtStart</code>: Flag per avvio automatico monitoraggio</li>
+<li><code>conversions</code>: Struttura delle conversioni supportate</li>
+</ul>
+<h3 id="reader">Reader</h3>
+<p>Fornisce accesso di sola lettura ai parametri di configurazione tramite metodi statici.</p>
+<p><strong>Importante</strong>: Le modifiche vengono lette solo dalla mappa in memoria.</p>
+<h3 id="writer">Writer</h3>
+<p>Permette la modifica dinamica dei parametri di configurazione in memoria.</p>
+<p><strong>Importante</strong>: Le modifiche vengono applicate solo alla mappa in memoria. Per la persistenza su disco è necessario utilizzare <code>JsonWriter</code>.</p>
+<h3 id="instancereader">InstanceReader</h3>
+<p>Lettore specializzato per operazioni su file specifici, mantenendo un proprio riferimento al nodo radice.</p>
+<p><strong>Vantaggi:</strong></p>
+<ul>
+<li>Isolamento per file: ogni istanza gestisce un file diverso</li>
+<li>Caching ottimizzato per istanza</li>
+<li>Supporto per operazioni concorrenti su file diversi</li>
+</ul>
+<p><strong>Metodi mirror</strong>: Fornisce gli stessi metodi di <code>Reader</code> ma per l'istanza specifica.</p>
+<h3 id="instancewriter">InstanceWriter</h3>
+<p>Writer specializzato per file specifici con persistenza automatica.</p>
+<h2 id="gestione-degli-errori">Gestione degli Errori</h2>
+<p>Il sistema utilizza <code>JsonStructureException</code> per segnalare problemi di struttura o contenuto:</p>
+<ul>
+<li><strong>File malformato</strong>: JSON non valido</li>
+<li><strong>Campi mancanti</strong>: Assenza di campi obbligatori</li>
+<li><strong>Tipi incompatibili</strong>: Valori con tipo diverso da quello atteso</li>
+</ul>
+<h2 id="flusso-tipico-di-utilizzo">Flusso tipico di utilizzo</h2>
+<ol>
+<li>Creare un' <code>Instance</code>  e fare un update prima di utilizzare la configurazione, in modo da caricarla correttamente.</li>
+<li>Utilizzare i metodi statici della classe <code>Reader</code>per leggere le informazioni dalla mappa condivisa.</li>
+<li>Usare i metodi statici della classe <code>InstanceWriter</code> per modificare direttamente il file json.</li>
+<li>Fare un update dell'<code>Instance</code> per aggiornare le informazioni nella mappa condivisa.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../API/" class="btn btn-neutral float-left" title="API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../API/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
