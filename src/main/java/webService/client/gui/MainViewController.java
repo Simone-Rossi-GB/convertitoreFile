@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
+import webService.client.objects.exceptions.LanguageBundleException;
 import webService.server.converters.Zipper;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
@@ -138,7 +139,7 @@ public class MainViewController {
      * Inizializza il controller, i listener e carica la configurazione.
      */
     @FXML
-    private void initialize() throws IOException {
+    private void initialize() throws IOException, LanguageBundleException {
         JsonConfig jsonConfig = ConfigManager.readConfig();
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
@@ -153,7 +154,11 @@ public class MainViewController {
                 root.getStyleClass().add("dark");
             }
         });
-        bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
+        try {
+            bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
+        }catch (NullPointerException | MissingResourceException e){
+            throw new LanguageBundleException("Impossibile caricare il bundle per le lingue");
+        }
         refreshUITexts();
         updateLangButtonGraphic(MainApp.getCurrentLocale());
         initializeLanguageMenu();
@@ -327,7 +332,7 @@ public class MainViewController {
     @FXML
     private void toggleMonitoring() throws IOException {
         if (monitoredFolderPath == null) {
-            launchAlertError("Engine non inizializzato.");
+            launchAlertError("Cartella da monitorare non selezionata.");
             return;
         }
 
@@ -666,11 +671,8 @@ public class MainViewController {
                 });
             });
         } catch (Exception e) { // Exception ammessa nel programma
+            moveFileToErrorFolder(srcFile);
             launchAlertError(e.getMessage());
-            Platform.runLater(() -> {
-                fileScartati++;
-                stampaRisultati();
-            });
             return;
         }
     }
@@ -741,8 +743,8 @@ public class MainViewController {
             updateProgressInLog(filename, 10, "Verifica servizio...");
             if (!webServiceClient.isServiceAvailable()) {
                 addFinalLogMessage(filename + " - Servizio non disponibile");
-                aggiornaCounterScartati();
                 moveFileToErrorFolder(srcFile);
+                launchAlertError(filename + " - Servizio non disponibile");
                 return;
             }
 
@@ -750,16 +752,11 @@ public class MainViewController {
             updateProgressInLog(filename, 20, "Caricamento file...");
             Thread.sleep(300);
 
-            // CORREZIONE: Calcola il nome del file convertito con la nuova estensione
-            String baseFileName = srcFile.getName();
-            int lastDotIndex = baseFileName.lastIndexOf('.');
-            if (lastDotIndex > 0) {
-                baseFileName = baseFileName.substring(0, lastDotIndex);
-            }
+            String baseFileName = Utility.getBaseName(srcFile);
             String convertedFileName = baseFileName + "." + targetFormat;
             File outputDestinationFile = new File(convertedFolderPath, convertedFileName);
 
-            // Fase 4: Invio al server il conversion context
+            // Fase 4: Aggiorno il conversion context
             updateProgressInLog(filename, 40, "Invio parametri al server...");
             Thread.sleep(200);
 
@@ -770,6 +767,7 @@ public class MainViewController {
             // Fase 5: Conversione in corso
             updateProgressInLog(filename, 60, "Conversione in corso...");
             ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, conversionContextFile);
+            outputDestinationFile = result.getResult();
 
             // Fase 6: Elaborazione risultato
             updateProgressInLog(filename, 80, "Elaborazione risultato...");
@@ -786,7 +784,7 @@ public class MainViewController {
                 // DEBUGGING: Log per capire cosa sta succedendo
                 logger.info("Verifica file convertito:");
                 logger.info("  - Nome originale: {}", srcFile.getName());
-                logger.info("  - Nome convertito atteso: {}", convertedFileName);
+                logger.info("  - Nome convertito atteso: {}", outputDestinationFile.getName());
                 logger.info("  - Percorso completo: {}", outputDestinationFile.getAbsolutePath());
                 logger.info("  - File esiste: {}", fileExists);
 
@@ -814,7 +812,7 @@ public class MainViewController {
                     updateProgressInLog(filename, 100, "Completato!");
                     Thread.sleep(100);
 
-                    addFinalLogMessage("✅ Conversione riuscita: " + filename + " → " + outputDestinationFile.getName());
+                    addFinalLogMessage("Conversione riuscita: " + filename + " → " + outputDestinationFile.getName());
                     launchAlertSuccess(srcFile); // Alert success
 
                     // AGGIORNA CONTATORE SUCCESSI
@@ -826,30 +824,30 @@ public class MainViewController {
                 } else {
                     // File non salvato correttamente
                     updateProgressInLog(filename, 100, "Errore: file non trovato");
-                    addFinalLogMessage("❌ Errore: " + filename + " - File convertito non trovato in " + convertedFolderPath);
-                    aggiornaCounterScartati();
+                    addFinalLogMessage("Errore: " + filename + " - File convertito non trovato in " + convertedFolderPath);
+                    launchAlertError("Errore: file non trovato");
                     moveFileToErrorFolder(srcFile);
                 }
             } else {
                 // Web service ha restituito errore
                 updateProgressInLog(filename, 100, "Errore dal server");
-                addFinalLogMessage("❌ Errore server: " + filename + " - " + result.getError());
-                aggiornaCounterScartati();
+                addFinalLogMessage("Errore server: " + filename + " - " + result.getMessage());
+                launchAlertError(result.getMessage());
                 moveFileToErrorFolder(srcFile);
             }
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateProgressInLog(filename, 100, "Interrotto");
-            addFinalLogMessage("⚠️ Conversione interrotta: " + filename);
-            aggiornaCounterScartati();
+            addFinalLogMessage("Conversione interrotta: " + filename);
+            launchAlertError("Conversione interrotta: " + filename);
             moveFileToErrorFolder(srcFile);
 
         } catch (Exception e) {
             updateProgressInLog(filename, 100, "Errore imprevisto");
-            addFinalLogMessage("❌ Errore imprevisto: " + filename + " - " + e.getMessage());
-            logger.error("Errore durante conversione di " + filename, e);
-            aggiornaCounterScartati();
+            addFinalLogMessage("Errore imprevisto: " + filename + " - " + e.getMessage());
+            logger.error("Errore durante conversione di " + filename + ": " + e.getMessage());
+            launchAlertError(e.getMessage());
             moveFileToErrorFolder(srcFile);
         }
     }
@@ -962,7 +960,7 @@ public class MainViewController {
         Platform.runLater(() -> {
             // Usa il metodo helper per rilevare automaticamente il tema
             boolean isLightTheme = DialogHelper.detectCurrentTheme();
-
+            aggiornaCounterScartati();
             Alert alert = DialogHelper.createModernAlert(
                     Alert.AlertType.ERROR,
                     "Errore",
