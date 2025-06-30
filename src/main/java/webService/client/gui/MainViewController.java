@@ -154,7 +154,7 @@ public class MainViewController {
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
             root = themeToggle.getScene().getRoot();
             root.getStyleClass().removeAll("dark", "light");
-
+            updateIcons();
             // Logica diretta: se è selezionato → light, altrimenti → dark
             if (newV) {
                 root.getStyleClass().add("light");
@@ -1052,12 +1052,14 @@ public class MainViewController {
         } else {
             theme = "darkIcons/";
         }
-        caricaFileBtn.setGraphic(imageViewFromPath(theme, "folderIcon.png"));
+        caricaFileBtn.setGraphic(imageViewFromPath(theme, "folderIcon.png", 20, 20));
+        fileConvertitiBtn.setGraphic(imageViewFromPath(theme, "successIcon.png", 20, 20));
     }
-    private ImageView imageViewFromPath(String theme, String path){
+    private ImageView imageViewFromPath(String theme, String path, int width, int height){
+        System.out.println("/icons/" + theme + path);
         ImageView icon = new ImageView(getClass().getResource("/icons/" + theme + path).toExternalForm());
-        icon.setFitWidth(16);
-        icon.setFitHeight(16);
+        icon.setFitWidth(width);
+        icon.setFitHeight(height);
         return icon;
     }
 
