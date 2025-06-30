@@ -1,6 +1,5 @@
 package webService.client.gui;
 
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import webService.client.gui.jsonHandler.*;
 import javafx.geometry.Insets;
@@ -77,7 +76,7 @@ public class MainViewController {
     @FXML
     private Button langButton;
     @FXML
-    private Button MonitoringBtn;
+    private Button monitoringBtn;
     @FXML
     private Button configBtn;
     @FXML
@@ -149,6 +148,7 @@ public class MainViewController {
     @FXML
     private void initialize() throws IOException {
         JsonConfig jsonConfig = ConfigManager.readConfig();
+        updateIcons();
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -250,12 +250,13 @@ public class MainViewController {
     }
 
     public void avviaGuida() {
-        Node btn1 = root.lookup("#caricaFileBtn");
-        Node btn2 = root.lookup("#fileConvertitiBtn");
-
         List<GuideStep> steps = Arrays.asList(
-                new GuideStep(btn1, "Questo è il primo pulsante."),
-                new GuideStep(btn2, "Questo è il secondo pulsante.")
+                new GuideStep(caricaFileBtn, "Questo è il primo pulsante."),
+                new GuideStep(fileConvertitiBtn, "Questo è il secondo pulsante."),
+                new GuideStep(conversioniFalliteBtn, "Questo è il terzo pulsante."),
+                new GuideStep(configBtn, "Questo è il quarto pulsante."),
+                new GuideStep(conversionConfigBtn, "Questo è il quinto pulsante."),
+                new GuideStep(monitoringBtn, "Questo è il sesto pulsante.")
         );
 
         VisualGuide guida = new VisualGuide(overlayPane, steps);
@@ -276,9 +277,9 @@ public class MainViewController {
         configBtn.setText(bundle.getString("btn.configBtn"));
         conversionConfigBtn.setText(bundle.getString("btn.conversionConfigBtn"));
         if (isMonitoring){
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " ON");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " ON");
         } else {
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " OFF");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " OFF");
         }
     }
 
@@ -314,14 +315,14 @@ public class MainViewController {
     private void updateMonitoringButtonStyle() {
         if (isMonitoring) {
             // Quando monitora -> colore acquamarina come Directory
-            MonitoringBtn.getStyleClass().removeAll("standard-btn");
-            MonitoringBtn.getStyleClass().add("accent-btn");
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" ON");
+            monitoringBtn.getStyleClass().removeAll("standard-btn");
+            monitoringBtn.getStyleClass().add("accent-btn");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" ON");
         } else {
             // Quando non monitora -> colore grigio standard
-            MonitoringBtn.getStyleClass().removeAll("accent-btn");
-            MonitoringBtn.getStyleClass().add("standard-btn");
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" OFF");
+            monitoringBtn.getStyleClass().removeAll("accent-btn");
+            monitoringBtn.getStyleClass().add("standard-btn");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" OFF");
         }
     }
 
@@ -330,7 +331,7 @@ public class MainViewController {
      */
     private void setupEventHandlers() {
         // Handler per il pulsante toggle monitoraggio
-        MonitoringBtn.setOnAction(e -> {
+        monitoringBtn.setOnAction(e -> {
             try {
                 toggleMonitoring();
             } catch (IOException ex) {
@@ -1043,6 +1044,21 @@ public class MainViewController {
 
     public void setRoot(Parent root) {
         this.root = root;
+    }
+    private void updateIcons(){
+        String theme;
+        if (themeToggle.isSelected()){
+            theme = "lightIcons/";
+        } else {
+            theme = "darkIcons/";
+        }
+        caricaFileBtn.setGraphic(imageViewFromPath(theme, "folderIcon.png"));
+    }
+    private ImageView imageViewFromPath(String theme, String path){
+        ImageView icon = new ImageView(getClass().getResource("/icons/" + theme + path).toExternalForm());
+        icon.setFitWidth(16);
+        icon.setFitHeight(16);
+        return icon;
     }
 
     /**
