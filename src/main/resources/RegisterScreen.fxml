@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="650.0" prefWidth="500.0" styleClass="root-dark" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.RegisterController">
+    <children>
+
+        <!-- HEADER BAR -->
+        <HBox fx:id="header" alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="500.0" spacing="10" styleClass="header-bar">
+            <children>
+                <Label styleClass="app-title" text="ByteBridge - Register">
+                    <font><Font name="System Bold" size="18.0" /></font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <ToggleButton fx:id="themeToggle" onAction="#toggleTheme" prefHeight="30.0" prefWidth="50.0" styleClass="theme-toggle-btn" text="☾/☀">
+                    <font><Font name="DejaVu Sans" size="12.0" /></font>
+                </ToggleButton>
+                <Button fx:id="langButton" onAction="#showLanguageMenu" prefHeight="30.0" prefWidth="30.0" styleClass="theme-toggle-btn" />
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="25.0" right="15.0" top="15.0" />
+            </padding>
+        </HBox>
+
+        <!-- SEPARATOR LINE -->
+        <Separator prefWidth="500.0" styleClass="main-separator" />
+
+        <!-- MAIN REGISTER CONTENT -->
+        <ScrollPane fitToWidth="true" styleClass="log-scroll" VBox.vgrow="ALWAYS">
+            <content>
+                <VBox alignment="CENTER" spacing="15.0" styleClass="main-container">
+                    <children>
+
+                        <!-- TITLE SECTION -->
+                        <VBox alignment="CENTER" spacing="8.0" styleClass="login-header">
+                            <children>
+                                <Label fx:id="titleLabel" styleClass="section-title" text="Create Account">
+                                    <font><Font name="System Bold" size="22.0" /></font>
+                                </Label>
+                                <Label fx:id="subtitleLabel" styleClass="developer-info" text="Join ByteBridge File Converter">
+                                    <font><Font name="System Italic" size="12.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <!-- REGISTRATION FORM -->
+                        <VBox alignment="CENTER" spacing="12.0" styleClass="login-form">
+                            <children>
+
+                                <!-- Full Name Field -->
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label fx:id="fullNameLabel" styleClass="stat-label" text="Full Name:">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <TextField fx:id="fullNameField" prefHeight="32.0" prefWidth="320.0" promptText="Enter your full name" styleClass="standard-field">
+                                            <font><Font size="11.0" /></font>
+                                        </TextField>
+                                    </children>
+                                </VBox>
+
+                                <!-- Username Field -->
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label fx:id="usernameLabel" styleClass="stat-label" text="Username:">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <TextField fx:id="usernameField" prefHeight="32.0" prefWidth="320.0" promptText="Choose a username" styleClass="standard-field">
+                                            <font><Font size="11.0" /></font>
+                                        </TextField>
+                                    </children>
+                                </VBox>
+
+                                <!-- Email Field -->
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label fx:id="emailLabel" styleClass="stat-label" text="Email:">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <TextField fx:id="emailField" prefHeight="32.0" prefWidth="320.0" promptText="Enter your email address" styleClass="standard-field">
+                                            <font><Font size="11.0" /></font>
+                                        </TextField>
+                                    </children>
+                                </VBox>
+
+                                <!-- Password Field -->
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label fx:id="passwordLabel" styleClass="stat-label" text="Password:">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <PasswordField fx:id="passwordField" prefHeight="32.0" prefWidth="320.0" promptText="Create a strong password" styleClass="standard-field">
+                                            <font><Font size="11.0" /></font>
+                                        </PasswordField>
+                                    </children>
+                                </VBox>
+
+                                <!-- Confirm Password Field -->
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label fx:id="confirmPasswordLabel" styleClass="stat-label" text="Confirm Password:">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <PasswordField fx:id="confirmPasswordField" prefHeight="32.0" prefWidth="320.0" promptText="Re-enter your password" styleClass="standard-field">
+                                            <font><Font size="11.0" /></font>
+                                        </PasswordField>
+                                    </children>
+                                </VBox>
+
+                                <!-- Role Selection -->
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label fx:id="roleLabel" styleClass="stat-label" text="Role:">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <ComboBox fx:id="roleComboBox" prefHeight="32.0" prefWidth="320.0" promptText="Select user role" styleClass="standard-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- Error/Success Messages -->
+                                <VBox alignment="CENTER" spacing="5.0">
+                                    <children>
+                                        <Label fx:id="errorLabel" styleClass="error-message" text="" visible="false">
+                                            <font><Font name="System" size="10.0" /></font>
+                                        </Label>
+                                        <Label fx:id="successLabel" styleClass="success-message" text="" visible="false">
+                                            <font><Font name="System" size="10.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+
+                                <!-- Buttons -->
+                                <VBox alignment="CENTER" spacing="8.0">
+                                    <children>
+                                        <Button fx:id="registerButton" onAction="#handleRegister" prefHeight="35.0" prefWidth="320.0" styleClass="accent-btn" text="Create Account">
+                                            <font><Font name="System Bold" size="12.0" /></font>
+                                        </Button>
+                                        <Button fx:id="backToLoginButton" onAction="#handleBackToLogin" prefHeight="30.0" prefWidth="320.0" styleClass="standard-btn" text="Back to Login">
+                                            <font><Font name="System" size="11.0" /></font>
+                                        </Button>
+                                    </children>
+                                </VBox>
+
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="25.0" right="25.0" top="15.0" />
+                            </padding>
+                        </VBox>
+
+                        <!-- NOTE -->
+                        <Label fx:id="noteLabel" styleClass="developer-info" text="Note: Admin approval required for new accounts">
+                            <font><Font name="System Italic" size="9.0" /></font>
+                        </Label>
+
+                    </children>
+                    <padding>
+                        <Insets bottom="20.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+
+        <!-- SEPARATOR LINE -->
+        <Separator prefWidth="500.0" styleClass="main-separator" />
+
+        <!-- FOOTER -->
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="500.0" styleClass="footer-bar">
+            <children>
+                <Label styleClass="developer-info" text="File Converter v1.0 - Registration System">
+                    <font><Font name="System Italic" size="10.0" /></font>
+                </Label>
+            </children>
+            <padding>
+                <Insets bottom="15.0" top="15.0" />
+            </padding>
+        </HBox>
+
+    </children>
+</VBox>

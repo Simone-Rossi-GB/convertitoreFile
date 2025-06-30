@@ -3,34 +3,34 @@ package webService.server.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import okhttp3.*;
 
-import javax.security.auth.message.AuthException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Gestore dell'autenticazione lato client
+ * Gestore dell'autenticazione lato client (Java 8 compatibile con OkHttp)
  */
 public class AuthManager {
 
     private static final Logger logger = LogManager.getLogger(AuthManager.class);
     private final String baseUrl;
-    private final HttpClient httpClient;
+    private final OkHttpClient httpClient;
     private final ObjectMapper objectMapper;
 
     private String authToken;
     private User currentUser;
     private LocalDateTime tokenExpiry;
 
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     public AuthManager(String baseUrl) {
         this.baseUrl = baseUrl;
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
+        this.httpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
         this.objectMapper = new ObjectMapper();
 
@@ -46,36 +46,63 @@ public class AuthManager {
 
             String requestBody = objectMapper.writeValueAsString(loginRequest);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/api/auth/login"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .timeout(Duration.ofSeconds(30))
+            Request request = new Request.Builder()
+                    .url(baseUrl + "/api/converter/login")
+                    .post(RequestBody.create(JSON, requestBody))
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
 
-            if (response.statusCode() == 200) {
-                AuthResponse authResponse = objectMapper.readValue(response.body(), AuthResponse.class);
+                    // Parse the JSON response manually since it's a Map structure
+                    @SuppressWarnings("unchecked")
+                    java.util.Map<String, Object> responseMap = objectMapper.readValue(responseBody, java.util.Map.class);
 
-                // Salva i dati di autenticazione
-                this.authToken = authResponse.getToken();
-                this.currentUser = authResponse.getUser();
-                this.tokenExpiry = authResponse.getExpiresAt();
+                    if (Boolean.TRUE.equals(responseMap.get("success"))) {
+                        String token = (String) responseMap.get("token");
+                        @SuppressWarnings("unchecked")
+                        java.util.Map<String, Object> userMap = (java.util.Map<String, Object>) responseMap.get("user");
+                        Long expiresAtMillis = ((Number) responseMap.get("expiresAt")).longValue();
 
-                logger.info("Login riuscito per utente: {}", loginRequest.getUsername());
-                return authResponse;
+                        // Convert user map to User object
+                        User user = objectMapper.convertValue(userMap, User.class);
 
-            } else if (response.statusCode() == 401) {
-                logger.warn("Login fallito - credenziali non valide per utente: {}", loginRequest.getUsername());
-                throw new AuthException("Credenziali non valide");
+                        // Convert timestamp to LocalDateTime
+                        LocalDateTime expiresAt = LocalDateTime.ofInstant(
+                                java.time.Instant.ofEpochMilli(expiresAtMillis),
+                                java.time.ZoneId.systemDefault()
+                        );
 
-            } else {
-                logger.error("Errore server durante login: HTTP {}", response.statusCode());
-                throw new AuthException("Errore del server durante l'autenticazione");
+                        // Salva i dati di autenticazione
+                        this.authToken = token;
+                        this.currentUser = user;
+                        this.tokenExpiry = expiresAt;
+
+                        // Create AuthResponse
+                        AuthResponse authResponse = new AuthResponse();
+                        authResponse.setToken(token);
+                        authResponse.setUser(user);
+                        authResponse.setExpiresAt(expiresAt);
+
+                        logger.info("Login riuscito per utente: {}", loginRequest.getUsername());
+                        return authResponse;
+                    } else {
+                        String message = (String) responseMap.get("message");
+                        throw new AuthException(message != null ? message : "Login failed");
+                    }
+
+                } else if (response.code() == 401) {
+                    logger.warn("Login fallito - credenziali non valide per utente: {}", loginRequest.getUsername());
+                    throw new AuthException("Credenziali non valide");
+
+                } else {
+                    logger.error("Errore server durante login: HTTP {}", response.code());
+                    throw new AuthException("Errore del server durante l'autenticazione");
+                }
             }
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Errore di connessione durante login: {}", e.getMessage());
             throw new AuthException("Impossibile connettersi al server di autenticazione");
         }
@@ -94,38 +121,39 @@ public class AuthManager {
 
             String requestBody = objectMapper.writeValueAsString(registerRequest);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/api/auth/register"))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + authToken)
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .timeout(Duration.ofSeconds(30))
+            Request request = new Request.Builder()
+                    .url(baseUrl + "/api/converter/register")
+                    .post(RequestBody.create(JSON, requestBody))
+                    .addHeader("Authorization", "Bearer " + authToken)
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    logger.info("Registrazione riuscita per utente: {}", registerRequest.getUsername());
+                    return true;
 
-            if (response.statusCode() == 200) {
-                logger.info("Registrazione riuscita per utente: {}", registerRequest.getUsername());
-                return true;
+                } else if (response.code() == 400) {
+                    // Estrai il messaggio di errore dal JSON di risposta
+                    try {
+                        String responseBody = response.body().string();
+                        @SuppressWarnings("unchecked")
+                        java.util.Map<String, Object> errorMap = objectMapper.readValue(responseBody, java.util.Map.class);
+                        String message = (String) errorMap.get("message");
+                        throw new AuthException(message != null ? message : "Dati di registrazione non validi");
+                    } catch (Exception e) {
+                        throw new AuthException("Dati di registrazione non validi");
+                    }
 
-            } else if (response.statusCode() == 400) {
-                // Estrai il messaggio di errore dal JSON di risposta
-                try {
-                    ErrorResponse errorResponse = objectMapper.readValue(response.body(), ErrorResponse.class);
-                    throw new AuthException(errorResponse.getMessage());
-                } catch (Exception e) {
-                    throw new AuthException("Dati di registrazione non validi");
+                } else if (response.code() == 403) {
+                    throw new AuthException("Non hai i permessi per registrare nuovi utenti");
+
+                } else {
+                    logger.error("Errore server durante registrazione: HTTP {}", response.code());
+                    throw new AuthException("Errore del server durante la registrazione");
                 }
-
-            } else if (response.statusCode() == 403) {
-                throw new AuthException("Non hai i permessi per registrare nuovi utenti");
-
-            } else {
-                logger.error("Errore server durante registrazione: HTTP {}", response.statusCode());
-                throw new AuthException("Errore del server durante la registrazione");
             }
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Errore di connessione durante registrazione: {}", e.getMessage());
             throw new AuthException("Impossibile connettersi al server");
         }
@@ -139,15 +167,15 @@ public class AuthManager {
             if (authToken != null) {
                 logger.info("Tentativo di logout per utente: {}", currentUser != null ? currentUser.getUsername() : "unknown");
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/api/auth/logout"))
-                        .header("Authorization", "Bearer " + authToken)
-                        .POST(HttpRequest.BodyPublishers.noBody())
-                        .timeout(Duration.ofSeconds(10))
+                Request request = new Request.Builder()
+                        .url(baseUrl + "/api/converter/logout")
+                        .post(RequestBody.create(null, new byte[0])) // Empty body
+                        .addHeader("Authorization", "Bearer " + authToken)
                         .build();
 
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                logger.info("Logout completato");
+                try (Response response = httpClient.newCall(request).execute()) {
+                    logger.info("Logout completato con status: {}", response.code());
+                }
             }
         } catch (Exception e) {
             logger.warn("Errore durante logout: {}", e.getMessage());
@@ -184,22 +212,21 @@ public class AuthManager {
         }
 
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/api/auth/verify"))
-                    .header("Authorization", "Bearer " + authToken)
-                    .GET()
-                    .timeout(Duration.ofSeconds(10))
+            Request request = new Request.Builder()
+                    .url(baseUrl + "/api/converter/verify")
+                    .get()
+                    .addHeader("Authorization", "Bearer " + authToken)
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200) {
-                logger.debug("Token verificato con successo");
-                return true;
-            } else {
-                logger.warn("Token non valido, status: {}", response.statusCode());
-                clearAuthData();
-                return false;
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    logger.debug("Token verificato con successo");
+                    return true;
+                } else {
+                    logger.warn("Token non valido, status: {}", response.code());
+                    clearAuthData();
+                    return false;
+                }
             }
 
         } catch (Exception e) {
@@ -237,14 +264,14 @@ public class AuthManager {
      */
     public boolean isServiceAvailable() {
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/api/converter/status"))
-                    .GET()
-                    .timeout(Duration.ofSeconds(5))
+            Request request = new Request.Builder()
+                    .url(baseUrl + "/api/converter/status")
+                    .get()
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            return response.statusCode() == 200;
+            try (Response response = httpClient.newCall(request).execute()) {
+                return response.isSuccessful();
+            }
 
         } catch (Exception e) {
             logger.debug("Servizio non disponibile: {}", e.getMessage());
