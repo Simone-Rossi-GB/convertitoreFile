@@ -3,7 +3,7 @@ package webService.server.converters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
-import webService.client.objects.Utility;
+import webService.server.Utility;
 import webService.server.converters.compressedFilesConverters.ZIPtoTARGZconverter;
 
 import java.io.File;

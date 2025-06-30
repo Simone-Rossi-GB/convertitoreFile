@@ -1,6 +1,6 @@
 package webService.server.converters.mailConverters;
 
-import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
 import webService.server.converters.Converter;
 import org.apache.james.mime4j.dom.*;

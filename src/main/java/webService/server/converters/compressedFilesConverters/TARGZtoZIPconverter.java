@@ -1,6 +1,6 @@
 package webService.server.converters.compressedFilesConverters;
 
-import webService.client.objects.Utility;
+import webService.server.Utility;
 import webService.server.converters.Converter;
 import webService.server.converters.exception.ConversionException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

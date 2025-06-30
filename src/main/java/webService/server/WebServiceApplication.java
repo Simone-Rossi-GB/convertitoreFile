@@ -27,7 +27,6 @@ public class WebServiceApplication {
         //Inizializza i gestori dei file di configurazione
         ConfigInstance ci = new ConfigInstance(new File("src/main/java/webService/server/configuration/serverConfig.json"));
         ConfigData.update(ci);
-        logger.warn(ConfigReader.getConversions().get("pdf"));
         if (context == null || !context.isActive()) {
             context = SpringApplication.run(WebServiceApplication.class);
             logger.trace("Web Service: Web Service avviato su porta 8080");

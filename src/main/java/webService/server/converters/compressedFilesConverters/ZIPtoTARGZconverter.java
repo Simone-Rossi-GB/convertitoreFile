@@ -3,7 +3,7 @@ package webService.server.converters.compressedFilesConverters;
 import webService.server.converters.ConverterDocumentsWithPasword;
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.PasswordException;
-import webService.client.objects.Utility;
+import webService.server.Utility;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

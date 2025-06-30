@@ -2,8 +2,8 @@ package webService.server.configuration.jsonUtilities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import webService.client.configuration.configExceptions.JsonStructureException;
-import webService.client.configuration.jsonUtilities.JsonReader;
+import webService.server.configuration.configExceptions.JsonStructureException;
+import webService.server.configuration.jsonUtilities.JsonReader;
 
 import java.io.File;
 import java.util.HashMap;

@@ -27,7 +27,7 @@ public class ConfigInstance {
      * Costruttore che inizializza l'istanza di configurazione e valida il contenuto del file JSON.
      *
      * @param jsonFile file di configurazione da validare
-     * @throws webService.client.configuration.configExceptions.JsonStructureException se il file non contiene tutti i campi obbligatori
+     * @throws webService.server.configuration.configExceptions.JsonStructureException se il file non contiene tutti i campi obbligatori
      */
     public ConfigInstance(File jsonFile) {
         // Elenco dei campi obbligatori che devono essere presenti nel file di configurazione

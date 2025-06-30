@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Classe di utilità per accedere ai dati di configurazione letti dal file JSON.
  * <p>
- * Estende {@link webService.client.configuration.configHandlers.config.ConfigData} e fornisce metodi statici per leggere valori specifici dalla mappa
+ * Estende {@link webService.server.configuration.configHandlers.serverConfig.ConfigData} e fornisce metodi statici per leggere valori specifici dalla mappa
  * {@code configDataMap}, che viene inizializzata tramite {@code ConfigData.update(...)}.
  */
 public class ConfigReader extends ConfigData {

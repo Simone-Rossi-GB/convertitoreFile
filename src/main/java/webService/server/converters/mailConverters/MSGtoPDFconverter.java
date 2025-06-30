@@ -1,6 +1,6 @@
 package webService.server.converters.mailConverters;
 
-import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

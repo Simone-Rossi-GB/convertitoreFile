@@ -1,6 +1,6 @@
 package webService.server.configuration.jsonUtilities.recognisedWrappers;
 
-import webService.client.configuration.jsonUtilities.recognisedWrappers.RecognisedInput;
+import webService.server.configuration.jsonUtilities.recognisedWrappers.RecognisedInput;
 
 import java.io.File;
 

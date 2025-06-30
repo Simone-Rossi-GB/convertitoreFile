@@ -2,8 +2,8 @@ package webService.server.configuration.configHandlers.conversionContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import webService.client.configuration.jsonUtilities.JsonUtility;
-import webService.client.configuration.jsonUtilities.recognisedWrappers.RecognisedFile;
+import webService.server.configuration.jsonUtilities.JsonUtility;
+import webService.server.configuration.jsonUtilities.recognisedWrappers.RecognisedFile;
 
 import java.io.File;
 import java.util.Arrays;

@@ -2,11 +2,11 @@ package webService.server.configuration.jsonUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import webService.client.configuration.configExceptions.JsonFileNotFoundException;
-import webService.client.configuration.configExceptions.JsonStructureException;
-import webService.client.configuration.configExceptions.JsonWriteException;
+import webService.server.configuration.configExceptions.JsonFileNotFoundException;
+import webService.server.configuration.configExceptions.JsonStructureException;
+import webService.server.configuration.configExceptions.JsonWriteException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import webService.client.configuration.jsonUtilities.JsonUtility;
+import webService.server.configuration.jsonUtilities.JsonUtility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

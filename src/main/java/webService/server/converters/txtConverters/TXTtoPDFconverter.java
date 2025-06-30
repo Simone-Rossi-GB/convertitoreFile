@@ -2,7 +2,7 @@ package webService.server.converters.txtConverters;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
-import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
 import webService.server.converters.PDFWatermarkApplier;
 import org.apache.logging.log4j.Logger;

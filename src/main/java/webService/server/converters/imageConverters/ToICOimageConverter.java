@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static webService.client.objects.Utility.getBaseName;
+import static webService.server.Utility.getBaseName;
 import static webService.server.converters.imageConverters.ImageConverterUtility.removeAlphaChannel;
 
 public class ToICOimageConverter extends Converter {

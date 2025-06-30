@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static webService.client.objects.Utility.getBaseName;
+import static webService.server.Utility.getBaseName;
 import static webService.server.converters.imageConverters.ImageConverterUtility.removeAlphaChannel;
 
 public class FromICOimageConverter extends Converter {

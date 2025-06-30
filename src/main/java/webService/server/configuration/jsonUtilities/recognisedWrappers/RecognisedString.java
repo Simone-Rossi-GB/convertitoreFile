@@ -1,12 +1,12 @@
 package webService.server.configuration.jsonUtilities.recognisedWrappers;
 
-import webService.client.configuration.jsonUtilities.recognisedWrappers.RecognisedInput;
+import webService.server.configuration.jsonUtilities.recognisedWrappers.RecognisedInput;
 
 /**
  * Wrapper per rappresentare una {@link String} come input riconosciuto
  * nelle operazioni di parsing, validazione o scrittura di contenuti JSON.
  * <p>
- * Implementa {@link webService.client.configuration.jsonUtilities.recognisedWrappers.RecognisedInput} per fornire accesso tipizzato al valore grezzo
+ * Implementa {@link webService.server.configuration.jsonUtilities.recognisedWrappers.RecognisedInput} per fornire accesso tipizzato al valore grezzo
  * e favorire polimorfismo in metodi generici che trattano diversi tipi di input.
  */
 public class RecognisedString implements RecognisedInput {
