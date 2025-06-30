@@ -128,6 +128,8 @@ public class MainViewController {
     private final ContextMenu menu = new ContextMenu();
     private ResourceBundle bundle;
 
+    private boolean isLightTheme;
+
     private final Map<String, Locale> localeMap = new HashMap<>();
     {
         localeMap.put("it.png", new Locale("it", "IT"));
@@ -148,20 +150,22 @@ public class MainViewController {
     @FXML
     private void initialize() throws IOException {
         JsonConfig jsonConfig = ConfigManager.readConfig();
-        updateIcons();
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
+        isLightTheme = themeToggle.isSelected();
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
-            root = themeToggle.getScene().getRoot();
             root.getStyleClass().removeAll("dark", "light");
-            updateIcons();
             // Logica diretta: se è selezionato → light, altrimenti → dark
             if (newV) {
                 root.getStyleClass().add("light");
+                isLightTheme = true;
             } else {
                 root.getStyleClass().add("dark");
+                isLightTheme = false;
             }
+            updateIcons();
         });
+        updateIcons();
 
         bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
         refreshUITexts();
@@ -197,7 +201,6 @@ public class MainViewController {
         iccw = new InstanceConversionContextWriter(new File(conversionContextFile));
         ConversionContextData.update(cci);
         //Carica la configurazione di base
-        loadConfiguration();
         if (monitorAtStart) {
             toggleMonitoring();
         }
@@ -313,16 +316,23 @@ public class MainViewController {
      * Aggiorna lo stile del pulsante monitoraggio in base allo stato
      */
     private void updateMonitoringButtonStyle() {
+
         if (isMonitoring) {
             // Quando monitora -> colore acquamarina come Directory
             monitoringBtn.getStyleClass().removeAll("standard-btn");
             monitoringBtn.getStyleClass().add("accent-btn");
             monitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" ON");
+            if (isLightTheme) {
+                monitoringBtn.setGraphic(imageViewFromPath("darkIcons/", "monitoringIcon.png", 20, 20));
+            }
         } else {
             // Quando non monitora -> colore grigio standard
             monitoringBtn.getStyleClass().removeAll("accent-btn");
             monitoringBtn.getStyleClass().add("standard-btn");
             monitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" OFF");
+            if (isLightTheme) {
+                monitoringBtn.setGraphic(imageViewFromPath("lightIcons/", "monitoringIcon.png", 20, 20));
+            }
         }
     }
 
@@ -1047,16 +1057,23 @@ public class MainViewController {
     }
     private void updateIcons(){
         String theme;
-        if (themeToggle.isSelected()){
+        if (isLightTheme){
             theme = "lightIcons/";
         } else {
             theme = "darkIcons/";
         }
         caricaFileBtn.setGraphic(imageViewFromPath(theme, "folderIcon.png", 20, 20));
         fileConvertitiBtn.setGraphic(imageViewFromPath(theme, "successIcon.png", 20, 20));
+        conversioniFalliteBtn.setGraphic(imageViewFromPath(theme, "errorIcon.png", 20, 20));
+        configBtn.setGraphic(imageViewFromPath(theme, "generalSettingsIcon.png", 20, 20));
+        conversionConfigBtn.setGraphic(imageViewFromPath(theme, "conversionSettingsIcon.png", 20, 20));
+        if (isMonitoring) {
+            monitoringBtn.setGraphic(imageViewFromPath("darkIcons/", "monitoringIcon.png", 20, 20));
+        } else {
+            monitoringBtn.setGraphic(imageViewFromPath(theme, "monitoringIcon.png", 20, 20));
+        }
     }
     private ImageView imageViewFromPath(String theme, String path, int width, int height){
-        System.out.println("/icons/" + theme + path);
         ImageView icon = new ImageView(getClass().getResource("/icons/" + theme + path).toExternalForm());
         icon.setFitWidth(width);
         icon.setFitHeight(height);
