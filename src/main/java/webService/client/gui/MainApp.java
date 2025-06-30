@@ -44,9 +44,13 @@ public class MainApp extends Application {
         Pane overlayPane = new Pane(); // Per la guida visiva
         overlayPane.setPickOnBounds(false); // Lascia passare eventi se vuoi
 
+        // Applico il tema di default
+        root.getStyleClass().add(config.getTheme());
+        overlayPane.getStyleClass().add(config.getTheme());
+        controller.setRoot(root);
+
         StackPane layeredRoot = new StackPane(root, overlayPane);
         controller.setOverlayPane(overlayPane);
-        controller.setRoot(root);
 
         Scene scene = new Scene(layeredRoot);
 
@@ -68,9 +72,6 @@ public class MainApp extends Application {
                 logger.warn("Impossibile caricare CSS dialog moderni: " + cssError2.getMessage());
             }
         }
-
-        // Applico il tema di default
-        root.getStyleClass().add(config.getTheme());
 
         // Configuro lo stage
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/app_icon.png"))));

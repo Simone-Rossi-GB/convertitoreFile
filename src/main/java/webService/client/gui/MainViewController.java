@@ -160,13 +160,18 @@ public class MainViewController {
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
         isLightTheme = themeToggle.isSelected();
         themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
+            System.out.println("Palle: "+root);
             root.getStyleClass().removeAll("dark", "light");
+            overlayPane.getStyleClass().removeAll("dark", "light");
+
             // Logica diretta: se è selezionato → light, altrimenti → dark
             if (newV) {
                 root.getStyleClass().add("light");
+                overlayPane.getStyleClass().add("light");
                 isLightTheme = true;
             } else {
                 root.getStyleClass().add("dark");
+                overlayPane.getStyleClass().add("dark");
                 isLightTheme = false;
             }
             updateIcons();
