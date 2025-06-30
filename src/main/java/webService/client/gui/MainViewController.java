@@ -1041,6 +1041,10 @@ public class MainViewController {
         overlayPane = pane;
     }
 
+    public void setRoot(Parent root) {
+        this.root = root;
+    }
+
     /**
      * Setta il riferimento all'app principale.
      *

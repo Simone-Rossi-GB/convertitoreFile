@@ -179,7 +179,7 @@
             <!-- FOOTER BAR -->
             <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="900.0" spacing="10" styleClass="footer-bar">
                 <children>
-               <Button fx:id="startTutorialBtn" mnemonicParsing="false" text=" ? " />
+               <Button fx:id="startTutorialBtn" mnemonicParsing="false" styleClass="theme-toggle-btn" text=" ? " />
                     <ToggleButton fx:id="themeToggle" prefHeight="49.0" prefWidth="60.0" styleClass="theme-toggle-btn" text="☾/☀">
                   <font>
                      <Font name="DejaVu Sans" size="13.5" />

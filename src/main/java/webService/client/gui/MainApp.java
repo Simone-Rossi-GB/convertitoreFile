@@ -46,6 +46,7 @@ public class MainApp extends Application {
 
         StackPane layeredRoot = new StackPane(root, overlayPane);
         controller.setOverlayPane(overlayPane);
+        controller.setRoot(root);
 
         Scene scene = new Scene(layeredRoot);
 
