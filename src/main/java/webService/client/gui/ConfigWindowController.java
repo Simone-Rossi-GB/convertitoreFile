@@ -38,7 +38,6 @@ public class ConfigWindowController {
     @FXML private TextField monitoredDirField;
     @FXML private TextField successDirField;
     @FXML private TextField errorDirField;
-    @FXML private TextField monitorAtStartField;
 
     // Pulsanti per sfogliare le directory
     @FXML private Button browseMonitoredBtn;
@@ -198,7 +197,6 @@ public class ConfigWindowController {
         errorDirField.setText(ConfigReader.getErrorOutputDir());
 
         monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
-        monitorAtStartField.setText(String.valueOf(monitorAtStart));
 
         logger.info("Configurazione caricata correttamente");
     }
@@ -256,25 +254,29 @@ public class ConfigWindowController {
     @FXML
     private void toggleMonitorAtStart(ActionEvent event) {
         monitorAtStart = !monitorAtStart;
-        monitorAtStartField.setText(String.valueOf(monitorAtStart));
         updateMonitorToggleButton();
     }
 
     private void updateMonitorToggleButton() {
         ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         if (monitorAtStart) {
-            // ATTIVO - Solo il testo cambia, bottone rimane grigio
-            toggleMonitorBtn.setText(bundle.getString("btn.inactive"));
-
-            // Usa classe CSS invece di stile inline
-            monitorAtStartField.getStyleClass().removeAll("active-state");
-            monitorAtStartField.getStyleClass().add("active-state");
-        } else {
-            // SPENTO - Solo il testo cambia, bottone rimane grigio
+            // ATTIVO - Mostra "ATTIVO" e applica stile azzurro
             toggleMonitorBtn.setText(bundle.getString("btn.active"));
 
-            // Rimuovi classe CSS
-            monitorAtStartField.getStyleClass().removeAll("active-state");
+            // Rimuovi la classe normale e aggiungi quella attiva
+            toggleMonitorBtn.getStyleClass().removeAll("config-toggle-btn");
+            if (!toggleMonitorBtn.getStyleClass().contains("active-state")) {
+                toggleMonitorBtn.getStyleClass().add("active-state");
+            }
+        } else {
+            // INATTIVO - Mostra "INATTIVO" e applica stile grigio
+            toggleMonitorBtn.setText(bundle.getString("btn.inactive"));
+
+            // Rimuovi la classe attiva e usa quella normale
+            toggleMonitorBtn.getStyleClass().removeAll("active-state");
+            if (!toggleMonitorBtn.getStyleClass().contains("config-toggle-btn")) {
+                toggleMonitorBtn.getStyleClass().add("config-toggle-btn");
+            }
         }
     }
 
