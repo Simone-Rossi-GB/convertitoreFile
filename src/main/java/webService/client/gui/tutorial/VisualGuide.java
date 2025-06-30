@@ -70,7 +70,7 @@ public class VisualGuide {
         messageLabel.setLayoutY(rootBounds.getMinY());
 
         nextButton.setLayoutX(messageLabel.getLayoutX());
-        nextButton.setLayoutY(messageLabel.getLayoutY() + 40);
+        nextButton.setLayoutY(messageLabel.getLayoutY() + 47);
 
         overlayPane.getChildren().setAll(highlight, messageLabel, nextButton);
     }
