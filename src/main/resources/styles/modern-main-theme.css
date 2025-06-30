@@ -404,8 +404,8 @@
 
 /* === VISUAL TUTORIAL OVERLAY === */
 
-.visual-guide-overlay {
-    -fx-background-color: rgba(0, 0, 0, 0.5); /* sfondo semi-trasparente */
+.visual-guide-spotlight {
+    -fx-fill: rgba(0, 0, 0, 0.5); /* sfondo semi-trasparente */
 }
 
 .visual-guide-highlight {
@@ -446,8 +446,8 @@
 }
 
 /* === LIGHT THEME OVERRIDE FOR VISUAL GUIDE === */
-.light .visual-guide-overlay {
-    -fx-background-color: rgba(255, 255, 255, 0.5);
+.light .visual-guide-spotlight {
+    -fx-fill: rgba(255, 255, 255, 0.4);
 }
 
 .light .visual-guide-highlight {

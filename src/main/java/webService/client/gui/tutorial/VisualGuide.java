@@ -9,6 +9,11 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Circle;
+
 
 import java.util.List;
 
@@ -16,22 +21,17 @@ public class VisualGuide {
     private final Pane overlayPane;
     private final List<GuideStep> steps;
     private int currentStep = 0;
-    private Rectangle highlight;
+    private Shape spotlight;
     private Label messageLabel;
     private Button nextButton;
 
-    public VisualGuide(Pane overlayPane, List<GuideStep> steps, Parent root) {
+    public VisualGuide(Pane overlayPane, List<GuideStep> steps) {
         this.overlayPane = overlayPane;
         this.steps = steps;
-        initOverlay(root);
+        initOverlay();
     }
 
-    private void initOverlay(Parent root) {
-        overlayPane.getStyleClass().add("visual-guide-overlay");
-
-        highlight = new Rectangle();
-        highlight.getStyleClass().add("visual-guide-highlight");
-
+    private void initOverlay() {
         messageLabel = new Label();
         messageLabel.getStyleClass().add("visual-guide-message");
 
@@ -60,10 +60,8 @@ public class VisualGuide {
         Bounds bounds = step.target.localToScene(step.target.getBoundsInLocal());
         Bounds rootBounds = overlayPane.sceneToLocal(bounds);
 
-        highlight.setX(rootBounds.getMinX());
-        highlight.setY(rootBounds.getMinY());
-        highlight.setWidth(rootBounds.getWidth());
-        highlight.setHeight(rootBounds.getHeight());
+        // Crea spotlight dinamico
+        spotlight = createSpotlight(rootBounds);
 
         messageLabel.setText(step.message);
         messageLabel.setLayoutX(rootBounds.getMaxX() + 10);
@@ -72,6 +70,22 @@ public class VisualGuide {
         nextButton.setLayoutX(messageLabel.getLayoutX());
         nextButton.setLayoutY(messageLabel.getLayoutY() + 40);
 
-        overlayPane.getChildren().setAll(highlight, messageLabel, nextButton);
+        overlayPane.getChildren().setAll(spotlight, messageLabel, nextButton);
+    }
+    private Shape createSpotlight(Bounds targetBounds) {
+        double width = overlayPane.getWidth();
+        double height = overlayPane.getHeight();
+
+        Rectangle fullScreen = new Rectangle(width, height);
+        Rectangle hole = new Rectangle(
+                targetBounds.getMinX(),
+                targetBounds.getMinY(),
+                targetBounds.getWidth(),
+                targetBounds.getHeight()
+        );
+
+        Shape spotlightShape = Shape.subtract(fullScreen, hole);
+        spotlightShape.getStyleClass().add("visual-guide-spotlight");
+        return spotlightShape;
     }
 }
