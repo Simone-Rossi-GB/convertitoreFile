@@ -21,7 +21,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
     private static final Logger logger = LogManager.getLogger(PDFtoJPGconverter.class);
 
     private static final int DPI = 300; // DPI dell'immagine renderizzata
-    private static final int MAX_PAGES = 50; // numero massimo di pagine
+    private static final int MAX_PAGES = 27; // numero massimo di pagine
 
     /**
      * Metodo per unire le pagine del pdf una sotto l'altra in un'unica immagine
