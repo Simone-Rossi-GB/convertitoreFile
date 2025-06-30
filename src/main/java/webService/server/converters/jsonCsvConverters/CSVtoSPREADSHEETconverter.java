@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 
@@ -46,28 +47,24 @@ public class CSVtoSPREADSHEETconverter extends Converter {
      * @throws IOException Se si verifica un errore durante la lettura o scrittura del file.
      */
     private File writeCsvToSheet(File csvFile) throws IOException {
-        // Crea un nuovo Workbook
-        Workbook workbook = new HSSFWorkbook();
+        String format = ConversionContextReader.getDestinationFormat().toLowerCase();
+        Workbook workbook = createWorkbook(format);
         Sheet sheet = workbook.createSheet("Dati");
 
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) { // Legge il file CSV riga per riga
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             String line;
-            int rowNum = 0; // Contatore delle righe
-            int colCount = 0; // Contatore delle colonne
-
-            // Crea gli stili per le celle
+            int rowNum = 0;
+            int colCount = 0;
             CellStyle headerStyle = createStyle(workbook, true);
             CellStyle cellStyle = createStyle(workbook, false);
 
             while ((line = br.readLine()) != null) {
-                Row row = sheet.createRow(rowNum++); // Crea una nuova riga nel foglio Excel
-                String[] values = line.split(","); // Divide la riga CSV in valori separati da virgola
-                int colNum = 0; // Contatore delle colonne
+                Row row = sheet.createRow(rowNum++);
+                String[] values = line.split(",");
+                int colNum = 0;
 
                 for (int i = 0; i < values.length; i++) {
-                    String value = values[i].trim(); // Rimuove spazi inutili
-
-                    // Gestisce valori tra virgolette che contengono virgole
+                    String value = values[i].trim();
                     if (value.startsWith("\"")) {
                         StringBuilder concatenatedValue = new StringBuilder(value);
                         while (!value.endsWith("\"") && i + 1 < values.length) {
@@ -76,34 +73,26 @@ public class CSVtoSPREADSHEETconverter extends Converter {
                         }
                         value = concatenatedValue.toString();
                         if (value.startsWith("\"") && value.endsWith("\"")) {
-                            value = value.substring(1, value.length() - 1); // Rimuove le virgolette
+                            value = value.substring(1, value.length() - 1);
                         }
                     }
 
-                    // Crea una cella e assegna il valore
                     Cell cell = row.createCell(colNum++);
                     cell.setCellValue(value);
-                    cell.setCellStyle(rowNum == 1 ? headerStyle : cellStyle); // Applica lo stile corretto
+                    cell.setCellStyle(rowNum == 1 ? headerStyle : cellStyle);
                 }
 
-                // Aggiorna il numero massimo di colonne
                 colCount = Math.max(colCount, colNum);
             }
 
-            // Ridimensiona automaticamente le colonne
             for (int colNum = 0; colNum < colCount; colNum++) {
                 sheet.autoSizeColumn(colNum);
             }
-        } catch (IOException e) {
-            logger.error("Errore durante la conversione");
-            throw new IOException("Errore durante conversione: " + e.getMessage(), e);
         }
 
-        // Genera il nome del file di output
-        String outputFileName = csvFile.getName().replaceAll("\\.csv$", "") + "." + ConversionContextReader.getDestinationFormat();
+        String outputFileName = csvFile.getName().replaceAll("\\.csv$", "") + "." + format;
         File outputFile = new File(csvFile.getParent(), outputFileName);
 
-        // Scrive il file Excel
         try (FileOutputStream fileOut = new FileOutputStream(outputFile)) {
             workbook.write(fileOut);
         }
@@ -111,6 +100,19 @@ public class CSVtoSPREADSHEETconverter extends Converter {
         workbook.close();
         logger.info("Percorso file convertito: " + outputFile.getAbsolutePath());
         return outputFile;
+    }
+
+    private Workbook createWorkbook(String format) {
+        switch (format) {
+            case "xls":
+                return new HSSFWorkbook();
+            case "xlsx":
+                return new XSSFWorkbook();
+            case "ods":
+                throw new UnsupportedOperationException("Il formato ODS richiede un'implementazione alternativa (es. OdfToolkit)");
+            default:
+                throw new IllegalArgumentException("Formato sconosciuto: " + format);
+        }
     }
 
     /**
