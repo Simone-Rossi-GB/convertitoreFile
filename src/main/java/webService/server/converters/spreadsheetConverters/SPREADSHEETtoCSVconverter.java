@@ -26,7 +26,6 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
 
     @Override
     public File convertProtectedFile(File spreadsheetFile, String password) throws IllegalArgumentException, ConversionException {
-        System.out.println("=================||INIZIO CONVERTITORE||=======================");
         System.out.println("password: " + password);
 
         // Controlla se il file esiste e non è corrotto
@@ -44,14 +43,11 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
             logger.info(isProtected ? "Il file è protetto da password, tentativo di apertura con password..." : "Il file NON è protetto da password, apertura normale...");
 
             // Determina il formato e avvia la conversione
-            System.out.println("==========================||prima getFileFormat||=================================");
             outputFile = getFileFormat(spreadsheetFile, isProtected ? password : null);
-            System.out.println("==========================||dopo getFileFormat||=================================");
 
 
             // Controlla se il file CSV è stato creato correttamente
             if (outputFile.exists()) {
-                System.out.println("===========================|| outputFile esiste ||==================================");
 
                 logger.info("File convertito con successo: {}", outputFile.getName());
             } else {
@@ -62,12 +58,11 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
             logger.error("Errore durante la conversione: {}", e.getMessage());
             throw new ConversionException("Errore nella conversione Spreadsheet to CSV");
         }
-        System.out.println("====================||return outputFile||=======================");
+        logger.info("File convertito correttamente");
         return outputFile;
     }
 
     private File getFileFormat(File spreadsheetFile, String password) throws Exception {
-        System.out.println("===========================|||| dentro getFileFormat |||==================================");
 
         String fileName = spreadsheetFile.getName().toLowerCase();
         File csvFile = new File(spreadsheetFile.getParent(), fileName.replaceAll("\\.xlsx$|\\.xls$|\\.ods$", "") + ".csv");
@@ -80,7 +75,6 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
         } else {
             throw new IllegalArgumentException("Formato non supportato: " + fileName);
         }
-        System.out.println("========================||||return csvFile|||============================");
         return csvFile;
     }
 
@@ -89,35 +83,25 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
     }
 
     private void convertExcelToCsv(File excelFile, File csvFile, String password) throws IOException, EmptyFileException {
-        System.out.println("==========================|||dentro convertExcelToCsv||===================================");
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(csvFile))) {
-            System.out.println("===========================||| dentro try 1 ||==================================");
             Workbook workbook = null;
-            System.out.println("===========================||| workbook creato ||==================================");
 
             String fileName = excelFile.getName().toLowerCase();
-            System.out.println("===========================||| fileName creato ||==================================");
 
             try {
-                System.out.println("===========================||| dentro try 2 ||==================================");
 
                 if (password != null && !password.isEmpty()) {
-                    System.out.println("===========================||| esiste password ||==================================");
 
                     try (FileInputStream fileInputStream = new FileInputStream(excelFile.getAbsoluteFile())) {
-                        System.out.println("===========================||| dentro try 3 ||==================================");
 
                         if (fileName.endsWith(".xls")) {
-                            System.out.println("===========================||| if(xls) ||==================================");
 
                             // File Excel 97-2003 (.xls)
                             Biff8EncryptionKey.setCurrentUserPassword(password);
-                            System.out.println("===========================||| gestione crittografia xls ||==================================");
 
                             try {
                                 workbook = new HSSFWorkbook(fileInputStream);
-                                System.out.println("===========================||| workbook xls protetto ||==================================");
                             } catch (Exception ex) {
                                 System.err.println("Errore: Crittografia non supportata per XLS.");
                                 logger.error("Errore nell'apertura file protetto: {}", ex.getMessage());
@@ -125,31 +109,26 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
                             }
 
                         } else if (fileName.endsWith(".xlsx")) {
-                            System.out.println("===========================||| if(xlsx) ||==================================");
 
                             try {
                                 workbook = WorkbookFactory.create(fileInputStream, password);
-                                System.out.println("===========================||| workbook xlsx protetto ||==================================");
-                            } catch (Exception ex) {
+                            } catch (Exception e) {
                                 System.err.println("Errore: Crittografia non supportata per XLSX.");
-                                logger.error("Errore nell'apertura file protetto: {}", ex.getMessage());
+                                logger.error("Errore nell'apertura file protetto: {}", e.getMessage());
                                 throw new IOException("Crittografia non supportata per XLSX.");
                             }
                         }
                     }
                 } else {
-                    System.out.println("===========================||| file non protetto ||==================================");
 
                     // Se il file NON è protetto, lo apre normalmente
                     try (InputStream inputStream = Files.newInputStream(excelFile.toPath())) {
-                        System.out.println("===========================||| dentro try 4 ||==================================");
 
                         try {
                             workbook = WorkbookFactory.create(inputStream);
-                            System.out.println("===========================||| apre workbook generico excel ||==================================");
-                        } catch (Exception ex) {
+                        } catch (Exception e) {
                             System.err.println("Errore: Il file potrebbe essere corrotto o non supportato.");
-                            logger.error("Errore nell'apertura file non protetto: {}", ex.getMessage());
+                            logger.error("Errore nell'apertura file non protetto: {}", e.getMessage());
                             throw new IOException("Errore nell'apertura file non protetto.");
                         }
                     }
@@ -160,9 +139,7 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
                     logger.error("Impossibile aprire il file Excel: crittografia non supportata");
                     throw new IOException("Impossibile aprire il file Excel: crittografia non supportata");
                 }
-                System.out.println("===========================||| workbook esiste ||==================================");
 
-                System.out.println("===========================||| inizia scrittura csv ||==================================");
                 // Itera sulle righe e celle, convertendo i dati in CSV
                 Sheet sheet = workbook.getSheetAt(0);
                 for (org.apache.poi.ss.usermodel.Row row : sheet) {
@@ -172,10 +149,8 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
                     }
                     writer.println(rowString.length() > 0 ? rowString.substring(0, rowString.length() - 1) : "");
                 }
-                System.out.println("===========================|| termina scrittura csv ||==================================");
             } finally {
                 if (workbook != null) {
-                    System.out.println("===========================|| chiude workbook ||==================================");
                     workbook.close(); // Chiude il workbook per evitare memory leaks
                 }
             }

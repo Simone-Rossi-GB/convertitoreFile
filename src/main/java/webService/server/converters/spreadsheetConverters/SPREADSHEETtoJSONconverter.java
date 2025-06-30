@@ -51,19 +51,16 @@ public class SPREADSHEETtoJSONconverter extends ConverterDocumentsWithPasword {
             logger.error("Errore durante la conversione: {}", e.getMessage());
             throw new ConversionException("Errore nella conversione Spreadsheet to JSON");
         }
+        logger.info("File convertito correttamente");
         return outputFile;
     }
 
     private File convertToJson(File spreadsheetFile, String password) throws IOException {
         String baseName = spreadsheetFile.getName().replaceFirst("[.][^.]+$", "");
-        File outputDir = new File("src/temp");
-        if (!outputDir.exists()) {
-            outputDir.mkdirs();
-        }
-
-        File outputFile = new File(outputDir, baseName + ".json");
-        return convertSpreadsheetToJson(spreadsheetFile, outputFile.getAbsolutePath(), password);
+        String outputPath = new File("src/temp", baseName + ".json").getAbsolutePath();
+        return convertSpreadsheetToJson(spreadsheetFile, outputPath, password);
     }
+
 
     private File convertSpreadsheetToJson(File spreadsheetFile, String outputPath, String password) throws IOException {
         File outputFile = new File(outputPath);
@@ -87,6 +84,7 @@ public class SPREADSHEETtoJSONconverter extends ConverterDocumentsWithPasword {
             }
 
             if (workbook == null) {
+                logger.error("Errore durante la conversione: impossibile aprire il file");
                 throw new IOException("Impossibile aprire il file Excel: crittografia non supportata");
             }
 
