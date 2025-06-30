@@ -1,6 +1,7 @@
 package webService.client.gui;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import webService.client.gui.jsonHandler.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -101,9 +102,14 @@ public class MainViewController {
     private Label directoryLabelTitle;
     @FXML
     private Button startTutorialBtn;
+    @FXML
+    private Parent root;
+
+    public Parent getRoot() {
+        return root;
+    }
 
     private Pane overlayPane;
-    private Parent root;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -187,8 +193,9 @@ public class MainViewController {
             avviaGuida();
         });
 
+
         // 2) inizializzo engine e client
-        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+        webServiceClient = new ConverterWebServiceClient("http://172.20.10.3:8080");
 
         // 3) UI setup e configurazione
         setupEventHandlers();
@@ -253,13 +260,14 @@ public class MainViewController {
     }
 
     public void avviaGuida() {
+        // Crea i passi del tutorial con solo il messaggio (senza titolo per ora)
         List<GuideStep> steps = Arrays.asList(
-                new GuideStep(caricaFileBtn, "Questo è il primo pulsante."),
-                new GuideStep(fileConvertitiBtn, "Questo è il secondo pulsante."),
-                new GuideStep(conversioniFalliteBtn, "Questo è il terzo pulsante."),
-                new GuideStep(configBtn, "Questo è il quarto pulsante."),
-                new GuideStep(conversionConfigBtn, "Questo è il quinto pulsante."),
-                new GuideStep(monitoringBtn, "Questo è il sesto pulsante.")
+                new GuideStep(caricaFileBtn, bundle.getString("tutorial.step1.message")),
+                new GuideStep(fileConvertitiBtn, bundle.getString("tutorial.step2.message")),
+                new GuideStep(conversioniFalliteBtn, bundle.getString("tutorial.step3.message")),
+                new GuideStep(configBtn, bundle.getString("tutorial.step4.message")),
+                new GuideStep(conversionConfigBtn, bundle.getString("tutorial.step5.message")),
+                new GuideStep(monitoringBtn, bundle.getString("tutorial.step6.message"))
         );
 
         VisualGuide guida = new VisualGuide(overlayPane, steps);
@@ -444,79 +452,90 @@ public class MainViewController {
         try {
             addLogMessage("Apertura editor configurazione...");
 
-            //Carica il file FXML
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
-            VBox configWindow = loader.load();
+            // Carica l'FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ConfigWindow.fxml"));
+            VBox configRoot = loader.load();
 
-            // Crea lo stage per la finestra di configurazione
+            // Crea lo stage
             Stage configStage = new Stage();
             configStage.setTitle("Editor Configurazione");
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
             configStage.setResizable(false);
-
-            // DIMENSIONI PIÙ PICCOLE
-            configStage.setWidth(598);
-            configStage.setHeight(780);
-
-            // Crea la scene
-            Scene scene = new Scene(configWindow);
-
             configStage.initStyle(StageStyle.TRANSPARENT);
+
+            // Overlay per guida visuale
+            Pane overlayPane = new Pane();
+            overlayPane.setPickOnBounds(false);
+            overlayPane.setMouseTransparent(false);
+            overlayPane.setManaged(false);
+            overlayPane.prefWidthProperty().bind(configRoot.widthProperty());
+            overlayPane.prefHeightProperty().bind(configRoot.heightProperty());
+
+            // Layout combinato
+            StackPane layeredRoot = new StackPane(configRoot, overlayPane);
+            Scene scene = new Scene(layeredRoot);
             scene.setFill(Color.TRANSPARENT);
 
-            javafx.scene.shape.Rectangle clip = new Rectangle();
+            // Clip stondato
+            Rectangle clip = new Rectangle();
             clip.setArcWidth(20);
             clip.setArcHeight(20);
-            clip.widthProperty().bind(configWindow.widthProperty());
-            clip.heightProperty().bind(configWindow.heightProperty());
-            configWindow.setClip(clip);
+            clip.widthProperty().bind(configRoot.widthProperty());
+            clip.heightProperty().bind(configRoot.heightProperty());
+            configRoot.setClip(clip);
 
-            // **APPLICA IL TEMA CORRENTE ALLA CONFIG WINDOW**
-            boolean isLightTheme = themeToggle.isSelected();
-            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
-            if (isLightTheme) {
-                configWindow.getStyleClass().add("light");
+            // Applica il tema attivo
+            if (themeToggle != null && themeToggle.isSelected()) {
+                configRoot.getStyleClass().add("light");
             } else {
-                configWindow.getStyleClass().add("dark");
+                configRoot.getStyleClass().add("dark");
             }
 
-            // **Carica il CSS per il tema moderno**
+            // Aggiungi CSS
             try {
-                scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
+                scene.getStylesheets().addAll(
+                        getClass().getResource("/styles/modern-main-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/modern-config-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
+                );
                 logger.info("CSS moderno caricato per la finestra di configurazione");
             } catch (Exception cssError) {
                 logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
-                // Fallback - prova percorso alternativo
                 try {
                     scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
-                    logger.info("CSS moderno caricato da percorso alternativo");
-                } catch (Exception cssError2) {
-                    logger.error("CSS non trovato in nessun percorso: " + cssError2.getMessage());
+                    logger.info("CSS caricato da percorso alternativo");
+                } catch (Exception fallbackError) {
+                    logger.error("CSS non trovato: " + fallbackError.getMessage());
                 }
             }
 
             configStage.setScene(scene);
 
-            // Ottiene il controller e passa i riferimenti necessari
+            // Ottieni il controller e passa overlay + stage
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
+            controller.setOverlayPane(overlayPane); // 👉 passaggio chiave!
+            // Puoi anche avviare direttamente la guida qui:
+            // Platform.runLater(controller::avviaGuida);
 
-            // Mostra la finestra e attendi la chiusura
+            // Mostra e attendi chiusura
             addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
 
-            // Ricarica la configurazione dopo la chiusura della finestra
+            // Dopo la chiusura
             addLogMessage("Editor configurazione chiuso");
             loadConfiguration();
             interruptWatcher();
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
+
         } catch (IOException e) {
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
+            logger.error("Errore apertura editor configurazione", e);
         }
     }
+
 
     /**
      * Apre la finestra per modificare il file conversionContext.json
@@ -564,7 +583,10 @@ public class MainViewController {
 
             // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
             try {
-                scene.getStylesheets().add(getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm());
+                scene.getStylesheets().addAll(
+                        getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
+                );
                 logger.info("CSS moderno caricato per la finestra di configurazione conversione");
             } catch (Exception cssError) {
                 logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
