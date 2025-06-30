@@ -172,7 +172,7 @@ public class ConversionConfigWindowController {
         // Rimuovi tutte le classi di stato precedenti
         toggleUnionBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
 
-        if (union) {
+        if (!union) {
             // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
             toggleUnionBtn.setText(bundle.getString("btn.inactive"));
             toggleUnionBtn.getStyleClass().add("deactivate-state");
@@ -190,7 +190,7 @@ public class ConversionConfigWindowController {
         // Rimuovi tutte le classi di stato precedenti
         toggleMultipleConversionBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
 
-        if (multipleConversions) {
+        if (!multipleConversions) {
             // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
             toggleMultipleConversionBtn.setText(bundle.getString("btn.inactive"));
             toggleMultipleConversionBtn.getStyleClass().add("deactivate-state");
@@ -208,7 +208,7 @@ public class ConversionConfigWindowController {
         // Rimuovi tutte le classi di stato precedenti
         toggleZippedOutputBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
 
-        if (zippedOutput) {
+        if (!zippedOutput) {
             // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
             toggleZippedOutputBtn.setText(bundle.getString("btn.inactive"));
             toggleZippedOutputBtn.getStyleClass().add("deactivate-state");
@@ -226,7 +226,7 @@ public class ConversionConfigWindowController {
         // Rimuovi tutte le classi di stato precedenti
         toggleProtectedOutputBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
 
-        if (protectedOutput) {
+        if (!protectedOutput) {
             // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
             toggleProtectedOutputBtn.setText(bundle.getString("btn.inactive"));
             toggleProtectedOutputBtn.getStyleClass().add("deactivate-state");
