@@ -38,7 +38,7 @@ public class GenericImageConverter extends Converter {
         if (formatsWithAlpha.contains(originalExtension) ^ formatsWithAlpha.contains(outputExtension.toLowerCase())) {
             image = removeAlphaChannel(image);
         }
-        outFile = new File("src/temp", getBaseName(imgFile) + "." + outputExtension);
+        outFile = new File(imgFile.getParent(), getBaseName(imgFile) + "." + outputExtension);
         logger.info("File temporaneo creato correttamente");
 
         ImageIO.write(image, outputExtension, outFile);

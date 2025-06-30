@@ -56,13 +56,8 @@ public class SPREADSHEETtoJSONconverter extends ConverterDocumentsWithPasword {
 
     private File convertToJson(File spreadsheetFile, String password) throws IOException {
         String baseName = spreadsheetFile.getName().replaceFirst("[.][^.]+$", "");
-        File outputDir = new File("src/temp");
-        if (!outputDir.exists()) {
-            outputDir.mkdirs();
-        }
-
-        File outputFile = new File(outputDir, baseName + ".json");
-        return convertSpreadsheetToJson(spreadsheetFile, outputFile.getAbsolutePath(), password);
+        String outputPath = new File("src/temp", baseName + ".json").getAbsolutePath();
+        return convertSpreadsheetToJson(spreadsheetFile, outputPath, password);
     }
 
     private File convertSpreadsheetToJson(File spreadsheetFile, String outputPath, String password) throws IOException {

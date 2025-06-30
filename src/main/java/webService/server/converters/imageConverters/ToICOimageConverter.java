@@ -42,7 +42,7 @@ public class ToICOimageConverter extends Converter {
             image = removeAlphaChannel(image);
         }
 
-        outFile = new File("src/temp", getBaseName(imgFile) + "." + outputExtension);
+        outFile = new File(imgFile.getParent(), getBaseName(imgFile) + "." + outputExtension);
         logger.info("File temporaneo creato correttamente");
 
         ICOEncoder.write(image, outFile);
