@@ -1,5 +1,7 @@
 package webService.client.gui;
 
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import webService.client.configuration.configExceptions.JsonStructureException;
 import webService.client.configuration.configHandlers.config.*;
 import javafx.scene.layout.VBox;
@@ -17,12 +19,16 @@ import javafx.stage.Stage;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import webService.client.gui.tutorial.GuideStep;
+import webService.client.gui.tutorial.VisualGuide;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -44,6 +50,7 @@ public class ConfigWindowController {
     @FXML private Button browseSuccessBtn;
     @FXML private Button browseErrorBtn;
     @FXML private Button toggleMonitorBtn;
+    @FXML private Button tutorialConfigPage;
 
     @FXML private Label configTitle;
     @FXML private Label configTitleDesc;
@@ -65,6 +72,11 @@ public class ConfigWindowController {
     private static Locale locale = null;
     private static ResourceBundle bundle;
 
+    private Pane overlayPane;
+    @FXML
+    private Parent root;
+
+
     /**
      * Inizializza il controller della finestra di configurazione.
      */
@@ -80,6 +92,28 @@ public class ConfigWindowController {
         }
         updateMonitorToggleButton();
         refreshUITexts(locale);
+        tutorialConfigPage.setOnAction(e -> {
+            avviaGuida();
+        });
+    }
+
+    public void avviaGuida(){
+
+        List<GuideStep> steps = Arrays.asList(
+                new GuideStep(monitoredDirField, bundle.getString("tutorial.config.step1.message")),
+                new GuideStep(browseMonitoredBtn, bundle.getString("tutorial.config.step2.message")),
+                new GuideStep(successDirField, bundle.getString("tutorial.config.step3.message")),
+                new GuideStep(browseSuccessBtn, bundle.getString("tutorial.config.step4.message")),
+                new GuideStep(errorDirField, bundle.getString("tutorial.config.step5.message")),
+                new GuideStep(browseErrorBtn, bundle.getString("tutorial.config.step6.message")),
+                new GuideStep(toggleMonitorBtn, bundle.getString("tutorial.config.step7.message")),
+                new GuideStep(tutorialConfigPage, bundle.getString("tutorial.config.step8.message")),
+                new GuideStep(saveButton, bundle.getString("tutorial.config.step9.message")),
+                new GuideStep(cancelButton, bundle.getString("tutorial.config.step10.message"))
+        );
+
+        VisualGuide guida = new VisualGuide(overlayPane, steps);
+        guida.start();
     }
 
     public void refreshUITexts(Locale locale) {
@@ -111,6 +145,11 @@ public class ConfigWindowController {
         monitoredDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, monitoredDirField));
         successDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, successDirField));
         errorDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, errorDirField));
+    }
+
+    public void setOverlayPane(Pane overlayPane) {
+        this.overlayPane = overlayPane;
+        Platform.runLater(this::avviaGuida); // avvia la guida dopo il rendering
     }
 
     /**

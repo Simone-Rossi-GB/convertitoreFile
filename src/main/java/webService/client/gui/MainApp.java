@@ -52,7 +52,8 @@ public class MainApp extends Application {
 
         // Carico i CSS per il tema principale e per i dialog moderni
         scene.getStylesheets().addAll(
-                getClass().getResource("/styles/modern-main-theme.css").toExternalForm()
+                getClass().getResource("/styles/modern-main-theme.css").toExternalForm(),
+                getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
         );
 
         // **AGGIUNGIAMO IL CSS PER I DIALOG MODERNI GLOBALMENTE**
