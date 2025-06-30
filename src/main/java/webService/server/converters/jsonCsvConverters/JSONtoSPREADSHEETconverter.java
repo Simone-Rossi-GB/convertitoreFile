@@ -1,6 +1,6 @@
 package webService.server.converters.jsonCsvConverters;
 
-import webService.client.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,64 +12,62 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Classe per la conversione di un file JSON in un file Spreadsheet (.xls/.xlsx/.ods).
+ * Utilizza Apache POI per la gestione dei fogli di calcolo e applica uno stile personalizzato alle celle.
+ * Inoltre, implementa una logica per eliminare le colonne vuote, migliorando la leggibilità del file Excel generato.
+ */
 public class JSONtoSPREADSHEETconverter extends Converter {
-    public static final Logger logger = LogManager.getLogger(JSONtoSPREADSHEETconverter.class);
-    private final TreeMap<String, Short> coloriCelle = new TreeMap<>();
+    public static final Logger logger = LogManager.getLogger(JSONtoSPREADSHEETconverter.class); // Logger per la gestione degli errori e informazioni
+    private boolean[] flagEndColumns; // Array di flag per controllare le colonne vuote
 
-    private boolean reverseOrder = true; // Flag per determinare la direzione
-    private String mapFollower; // Contatore per l'indice dei colori
-    private boolean[] flagElementi; // Array di flag per controllare gli elementi
-
-    private void colorBuilding() {
-        // Popola la mappa coloriCelle con i valori forniti
-        coloriCelle.put("06065D", IndexedColors.BLUE.getIndex());
-        coloriCelle.put("0504AA", IndexedColors.INDIGO.getIndex());
-        coloriCelle.put("2337C6", IndexedColors.BLUE_GREY.getIndex());
-        coloriCelle.put("395A7F", IndexedColors.GREY_40_PERCENT.getIndex());
-        coloriCelle.put("4169E1", IndexedColors.ROYAL_BLUE.getIndex());
-        coloriCelle.put("0A9396", IndexedColors.TEAL.getIndex());
-        coloriCelle.put("90E0EF", IndexedColors.LIGHT_BLUE.getIndex());
-        coloriCelle.put("C4C4DF", IndexedColors.LAVENDER.getIndex());
-        coloriCelle.put("FFFFFF", IndexedColors.WHITE.getIndex());
-    }
-
-
+    /**
+     * Metodo principale per la conversione di un file JSON in un file Spreadsheet.
+     *
+     * @param srcFile Il file JSON da convertire.
+     * @return Il file Spreadsheet generato.
+     * @throws IOException Se il file non esiste o si verifica un errore durante la conversione.
+     */
     @Override
     public File convert(File srcFile) throws IOException {
-        colorBuilding();
+        // Controlla se il file esiste e non è corrotto
         if (!srcFile.exists() || !srcFile.isFile()) {
-            logger.error("File non valido");
-            throw new IOException("Il file JSON non esiste o non è valido.");
+            logger.error("File vuoto o corrotto");
+            throw new IOException("Il file vuoto o corrotto");
         }
 
-        // Leggi il file JSON
+        // Legge il contenuto del file JSON
         String jsonContent = readJsonFile(srcFile);
         JSONArray jsonArray = new JSONArray(jsonContent);
 
-        // Inizializza i flagElementi in base al numero di colonne della prima posizione
-        JSONObject firstObject = jsonArray.getJSONObject(0);
-        flagElementi = new boolean[firstObject.keySet().size()];
-        // Tutti i flag inizializzati a true
-        Arrays.fill(flagElementi, true);
+        // Converte JSONArray in una lista per mantenere l'ordine originale
+        List<JSONObject> jsonObjects = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            jsonObjects.add(jsonArray.getJSONObject(i));
+        }
 
-        // Crea il file Excel
-        Workbook workbook = new HSSFWorkbook(); // Formato .xls
+        // Crea un nuovo Workbook in formato .xls
+        Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("Dati");
 
-        // Determina il numero massimo di colonne
-        Set<String> colonne = getMaxColumns(jsonArray);
+        // Ottiene le colonne dal JSON
+        Set<String> colonne = getKeyColumn(jsonObjects);
 
-        // Scrivi i dati nel file Excel
-        writeJsonToSheet(jsonArray, sheet, workbook, colonne);
+        // Inizializza flagEndColumns con tutti i valori a true
+        flagEndColumns = new boolean[colonne.size()];
+        Arrays.fill(flagEndColumns, true);
 
-        // Adatta automaticamente la larghezza delle colonne
+        // Scrive i dati nel foglio
+        writeJsonToSheet(jsonObjects, sheet, workbook, colonne);
+
+        // Ridimensiona automaticamente le colonne
         autoSizeColumns(sheet, colonne.size());
 
-        // Genera il nome del file di output con la stessa base del file JSON
+        // Genera il nome del file di output
         String outputFileName = srcFile.getName().replaceAll("\\.json$", "") + "." + ConversionContextReader.getDestinationFormat();
         File outputFile = new File(srcFile.getParent(), outputFileName);
 
-        // Salva il file Excel
+        // Scrive il file Excel
         try (FileOutputStream fileOut = new FileOutputStream(outputFile)) {
             workbook.write(fileOut);
         }
@@ -79,64 +77,108 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         return outputFile;
     }
 
-    private String readJsonFile(File file) throws IOException {
+    /**
+     * Legge il contenuto di un file JSON e lo restituisce come stringa.
+     *
+     * @param jsonFile Il file JSON da leggere.
+     * @return Il contenuto del file JSON come stringa.
+     * @throws IOException Se il file è vuoto o corrotto.
+     */
+    private String readJsonFile(File jsonFile) throws IOException {
         StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                content.append(line);
+                content.append(line).append("\n");
             }
+            return content.toString();
+        } catch (IOException e) {
+            logger.error("File vuoto o corrotto");
+            throw new IOException("File vuoto o corrotto");
         }
-        return content.toString();
     }
 
-    private Set<String> getMaxColumns(JSONArray jsonArray) {
-        Set<String> colonne = new HashSet<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
+    /**
+     * Determina le colonne del file Excel in base alle chiavi presenti nel JSON.
+     *
+     * @param jsonObjects Lista di oggetti JSON.
+     * @return Set di colonne da includere nel file Excel.
+     */
+    private Set<String> getKeyColumn(List<JSONObject> jsonObjects) {
+        Set<String> colonne = new LinkedHashSet<>(); // Mantiene l'ordine originale
+        for (JSONObject jsonObject : jsonObjects) {
             colonne.addAll(jsonObject.keySet());
         }
         return colonne;
     }
 
-    private void writeJsonToSheet(JSONArray jsonArray, Sheet sheet, Workbook workbook, Set<String> colonne) throws IOException {
-        if (jsonArray.isEmpty()) {
+    /**
+     * Scrive i dati JSON nel foglio Excel, eliminando le colonne vuote.
+     *
+     * @param jsonObjects Lista di oggetti JSON.
+     * @param sheet Foglio Excel in cui scrivere i dati.
+     * @param workbook Workbook contenente il foglio.
+     * @param colonne Set di colonne da includere.
+     * @throws IOException Se il file JSON è vuoto o corrotto.
+     */
+    private void writeJsonToSheet(List<JSONObject> jsonObjects, Sheet sheet, Workbook workbook, Set<String> colonne) throws IOException {
+        if (jsonObjects.isEmpty()) {
             logger.error("Il file JSON è vuoto");
             throw new IOException("Il file è vuoto o corrotto");
         }
 
-        // Creazione dell'intestazione
+        // Crea la riga di intestazione con i nomi delle colonne
         Row headerRow = sheet.createRow(0);
         int colNum = 0;
-        for (String key : colonne) {
-            Cell cell = headerRow.createCell(colNum++);
-            cell.setCellValue(key);
-            cell.setCellStyle(createStyle(workbook, true)); // Stile per l'intestazione
+
+        // Inverte l'ordine delle colonne per mantenere la struttura originale
+        List<String> colonneList = new ArrayList<>();
+        List<String> listAppoggio = new ArrayList<>(colonne);
+        for (int index = listAppoggio.size() - 1; index >= 0; index--) {
+            colonneList.add(listAppoggio.get(index));
         }
 
-        // Scrittura dei dati
+        // Crea gli stili per le celle
+        CellStyle headerStyle = createStyle(workbook, true);
+        CellStyle rowStyle = createStyle(workbook, false);
+
+        // Scrive le intestazioni delle colonne
+        for (String key : colonneList) {
+            Cell cell = headerRow.createCell(colNum++);
+            cell.setCellValue(key);
+            cell.setCellStyle(headerStyle);
+        }
+
         int rowNum = 1;
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+        // Scrive i dati nel foglio Excel
+        for (JSONObject jsonObject : jsonObjects) {
             Row row = sheet.createRow(rowNum);
             colNum = 0;
 
-            // Incrementa arrayFollower solo all'inizio di ogni nuova riga
-            updateMapFollower();
+            for (String key : colonneList) {
+                if (flagEndColumns[colNum]) {
+                    String value = jsonObject.optString(key, "");
 
-            CellStyle rowStyle = createStyle(workbook, false); // Stile uniforme per tutta la riga
+                    if (value.isEmpty()) {
+                        boolean hasValue = false;
+                        for (int j = rowNum; j < jsonObjects.size(); j++) {
+                            JSONObject nextObject = jsonObjects.get(j);
+                            if (!nextObject.optString(key, "").isEmpty()) {
+                                hasValue = true;
+                                break;
+                            }
+                        }
 
-            for (String key : colonne) {
-                // Controlla il flag prima di scrivere nella cella
-                if (flagElementi[colNum]) {
-                    String value = jsonObject.optString(key, null);
-                    if (value != null && !value.isEmpty()) {
+                        if (!hasValue) {
+                            flagEndColumns[colNum] = false;
+                        }
+                    }
+
+                    if (flagEndColumns[colNum]) {
                         Cell cell = row.createCell(colNum);
                         cell.setCellValue(value);
-                        cell.setCellStyle(rowStyle); // Applica lo stesso stile a tutte le celle della riga
-                    } else {
-                        // Se il valore è vuoto, aggiorna il flag a false
-                        flagElementi[colNum] = false;
+                        cell.setCellStyle(rowStyle);
                     }
                 }
                 colNum++;
@@ -145,41 +187,25 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         }
     }
 
+    /**
+     * Ridimensiona automaticamente le colonne del foglio Excel.
+     *
+     * @param sheet Foglio Excel.
+     * @param columnCount Numero totale di colonne.
+     */
     private void autoSizeColumns(Sheet sheet, int columnCount) {
         for (int colNum = 0; colNum < columnCount; colNum++) {
             sheet.autoSizeColumn(colNum);
         }
     }
 
-    private void updateMapFollower() {
-        // Ottieni l'insieme ordinato delle chiavi
-        Set<String> keys = coloriCelle.keySet();
-        List<String> keyList = new ArrayList<>(keys); // Converti in una lista per accedere agli indici
-
-        // Trova l'indice corrente di mapFollower
-        int currentIndex = keyList.indexOf(mapFollower);
-
-        // Determina il prossimo indice in base alla direzione
-        if (reverseOrder) {
-            currentIndex++; // Vai avanti
-            if (currentIndex >= keyList.size()) {
-                // Se superi l'ultima chiave, inverti la direzione
-                reverseOrder = false;
-                currentIndex = keyList.size() - 2; // Torna indietro di uno
-            }
-        } else {
-            currentIndex--; // Vai indietro
-            if (currentIndex < 0) {
-                // Se superi la prima chiave, inverti la direzione
-                reverseOrder = true;
-                currentIndex = 1; // Vai avanti di uno
-            }
-        }
-
-        // Aggiorna mapFollower con la nuova chiave
-        mapFollower = keyList.get(currentIndex);
-    }
-
+    /**
+     * Crea uno stile per le celle, con intestazioni colorate.
+     *
+     * @param workbook Workbook in cui applicare lo stile.
+     * @param isHeader True se lo stile è per l'intestazione, false per le celle normali.
+     * @return Lo stile creato.
+     */
     private CellStyle createStyle(Workbook workbook, boolean isHeader) {
         CellStyle style = workbook.createCellStyle();
 
@@ -187,16 +213,20 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
 
-        if (isHeader) {
-            // Stile speciale per l'intestazione
-            style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        } else {
-            // Applica il colore corrispondente
-            short colorIndex = coloriCelle.get(mapFollower);
-            style.setFillForegroundColor(colorIndex);
-        }
-
+        // Imposta il colore di sfondo
+        style.setFillForegroundColor(isHeader ? IndexedColors.GREY_25_PERCENT.getIndex() : IndexedColors.WHITE.getIndex());
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // Aggiunta dei bordi neri su tutti i lati
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        style.setRightBorderColor(IndexedColors.BLACK.getIndex());
+
         return style;
     }
 }

@@ -9,13 +9,18 @@
         "jpg" : "webService.server.converters.pdfConverters.PDFtoJPGconverter"
       },
       "xls" : {
-        "json" : "webService.server.converters.spreadsheetConverters.XLStoJSONconverter"
+        "json" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
+        "csv" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
       },
       "xlsx" : {
-        "json" : "webService.server.converters.spreadsheetConverters.XLSXtoJSONconverter"
+        "json" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
+        "csv" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
+
       },
       "ods" : {
-        "json" : "webService.server.converters.spreadsheetConverters.ODStoJSONconverter"
+        "json" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoJSONconverter",
+        "csv" : "webService.server.converters.spreadsheetConverters.SPREADSHEETtoCSVconverter"
+
       },
       "json" : {
         "xls" : "webService.server.converters.jsonCsvConverters.JSONtoSPREADSHEETconverter",
