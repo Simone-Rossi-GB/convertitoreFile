@@ -1,9 +1,7 @@
 package webService.client.gui;
 
-import jdk.jfr.internal.tool.Main;
 import webService.client.configuration.configExceptions.JsonStructureException;
 import webService.client.configuration.configHandlers.config.*;
-import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;

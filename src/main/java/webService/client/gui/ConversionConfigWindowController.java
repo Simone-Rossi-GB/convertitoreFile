@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.crypto.spec.PSource;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -59,16 +58,12 @@ public class ConversionConfigWindowController {
     @FXML
     private void initialize() {
         // Non più stili inline - tutto gestito da CSS
-        System.out.println("A");
         if (locale == null || !locale.getLanguage().equals(MainApp.getCurrentLocale().getLanguage())){
             locale = MainApp.getCurrentLocale();
             bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         }
-        System.out.println("B");
         loadCurrentConfiguration();
-        System.out.println("C");
         refreshUITexts();
-        System.out.println("D");
     }
 
     public void refreshUITexts() {
@@ -121,30 +116,20 @@ public class ConversionConfigWindowController {
      * Carica e mostra la configurazione corrente nei campi dell'interfaccia.
      */
     private void loadCurrentConfiguration() {
-        System.out.println("bombo");
         // Carica i campi principali dalla configurazione
         txtPassword.setText(ConversionContextReader.getPassword());
-        System.out.println("dio");
 
         txtWatermark.setText(ConversionContextReader.getWatermark());
-        System.out.println("sulla");
 
         union = ConversionContextReader.getIsUnion();
         System.out.println(union);
-        System.out.println("sedia");
         updateUnionToggleButton();
-        System.out.println("mentre");
 
         zippedOutput = ConversionContextReader.getIsZippedOutput();
-        System.out.println("cago");
         updateZippedOutputToggleButton();
-        System.out.println("E");
         protectedOutput = ConversionContextReader.getProtected();
-        System.out.println("E2");
         updateProtectedOutputToggleButton();
-        System.out.println("F");
         multipleConversions = ConversionContextReader.getIsMultipleConversionEnabled();
-        System.out.println("F2");
         updateMultipleConversionButton();
 
         logger.info("Configurazione conversione caricata correttamente");
@@ -186,7 +171,6 @@ public class ConversionConfigWindowController {
     private void updateUnionToggleButton() {
         // Rimuovi tutte le classi di stato precedenti
         toggleUnionBtn.getStyleClass().removeAll("activate-state", "deactivate-state");
-        System.out.println("cago");
 
         if (union) {
             // STATO ATTIVO - mostra "Disattiva" - pulsante AZZURRO
@@ -196,7 +180,6 @@ public class ConversionConfigWindowController {
             // STATO SPENTO - mostra "Attiva" - pulsante GRIGIO
             toggleUnionBtn.setText(bundle.getString("btn.active"));
             toggleUnionBtn.getStyleClass().add("activate-state");
-            System.out.println("ciao bro");
         }
     }
 
