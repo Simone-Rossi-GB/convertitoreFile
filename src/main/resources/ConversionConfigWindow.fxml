@@ -44,7 +44,7 @@
                         </Label>
 
                         <Separator styleClass="conversion-config-section-line" />
-                  <HBox alignment="TOP_CENTER" prefHeight="36.0" prefWidth="710.0">
+                  <HBox alignment="TOP_CENTER" prefHeight="59.0" prefWidth="710.0">
                      <children>
       
                               <!-- Password Field -->
@@ -170,16 +170,29 @@
                 <!-- ACTION BUTTONS FOOTER -->
                 <HBox alignment="CENTER" prefHeight="76.0" prefWidth="750.0" spacing="20.0" styleClass="conversion-config-fields-container">
                     <children>
-                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" styleClass="conversion-config-save-btn" text="Salva">
-                            <font>
-                                <Font name="System Bold" size="13.0" />
-                            </font>
-                        </Button>
-                        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" styleClass="conversion-config-cancel-btn" text="Chiudi">
-                            <font>
-                                <Font name="System Bold" size="13.0" />
-                            </font>
-                        </Button>
+                  <HBox prefHeight="46.0" prefWidth="462.0">
+                     <children>
+                        <Button fx:id="tutorialConfigPage" mnemonicParsing="false" prefHeight="25.0" prefWidth="35.0" styleClass="theme-toggle-btn" text=" ? " />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="420.0">
+                     <children>
+                              <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" styleClass="conversion-config-save-btn" text="Salva">
+                                  <font>
+                                      <Font name="System Bold" size="13.0" />
+                                  </font>
+                              </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="612.0">
+                     <children>
+                              <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" styleClass="conversion-config-cancel-btn" text="Chiudi">
+                                  <font>
+                                      <Font name="System Bold" size="13.0" />
+                                  </font>
+                              </Button>
+                     </children>
+                  </HBox>
                     </children>
                     <padding>
                         <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />

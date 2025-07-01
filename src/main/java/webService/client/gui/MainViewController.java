@@ -159,7 +159,7 @@ public class MainViewController {
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
         isLightTheme = themeToggle.isSelected();
-        themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
+       themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
             System.out.println("Palle: "+root);
             root.getStyleClass().removeAll("dark", "light");
             overlayPane.getStyleClass().removeAll("dark", "light");
@@ -176,6 +176,7 @@ public class MainViewController {
             }
             updateIcons();
         });
+
         updateIcons();
 
         bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
@@ -588,6 +589,7 @@ public class MainViewController {
             // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
             try {
                 scene.getStylesheets().addAll(
+                        getClass().getResource("/styles/modern-main-theme.css").toExternalForm(),
                         getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm(),
                         getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
                 );

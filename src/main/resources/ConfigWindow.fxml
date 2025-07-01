@@ -46,7 +46,7 @@
                         <Separator styleClass="config-section-line" />
 
                         <!-- Input Folder -->
-                        <VBox spacing="6.0" styleClass="config-field-group">
+                        <VBox prefHeight="57.0" prefWidth="576.0" spacing="6.0" styleClass="config-field-group">
                             <children>
                                 <Label fx:id="monitoredDirectoryLabel" styleClass="config-field-label" text="Cartella Monitorata (Input)">
                                     <font>
