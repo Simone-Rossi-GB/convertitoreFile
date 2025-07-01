@@ -193,6 +193,7 @@ public class ConverterWebServiceController {
             Path filePath = tempDirectory.resolve(Objects.requireNonNull(file.getOriginalFilename()));
             file.transferTo(filePath);
             ConversionContextInstance cci = new ConversionContextInstance(filePath.toFile());
+            logger.info("cci creato correttamente");
             ConversionContextData.update(cci);
             logger.info("Cofigurazione conversion config caricata con successo");
         } catch (IOException e) {

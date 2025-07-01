@@ -125,29 +125,50 @@ public class ChromeManager {
      * @return Il percorso assoluto dell'eseguibile Chrome, o null se non trovato
      */
     private static String findChromeExecutable(Properties config) {
-        // 1. Variabile d'ambiente (massima priorità in Docker)
+        // 1. Variabile d'ambiente CHROME_PATH (massima priorità)
         String envPath = System.getenv("CHROME_PATH");
         if (isValidExecutable(envPath)) {
-            logger.debug("Chrome trovato da variabile d'ambiente: {}", envPath);
+            logger.info("Chrome trovato da variabile d'ambiente: {}", envPath);
             return envPath;
         }
 
-        // 2. Percorsi Docker standard dalla configurazione
+        // 2. Symlink generico /usr/bin/chrome (creato dal Dockerfile)
+        String genericPath = "/usr/bin/chrome";
+        if (isValidExecutable(genericPath)) {
+            logger.info("Chrome trovato tramite symlink generico: {}", genericPath);
+            return genericPath;
+        }
+
+        // 3. Percorsi Docker standard dalla configurazione
         String dockerPaths = config.getProperty("chrome.docker.paths",
-                "/usr/bin/google-chrome:/usr/bin/google-chrome-stable:/usr/bin/chromium-browser:/usr/bin/chromium");
+                "/usr/bin/google-chrome-stable:/usr/bin/google-chrome:/usr/bin/chromium-browser:/usr/bin/chromium");
 
         for (String path : dockerPaths.split(":")) {
             if (isValidExecutable(path.trim())) {
-                logger.debug("Chrome trovato nei percorsi Docker: {}", path.trim());
+                logger.info("Chrome trovato nei percorsi Docker: {}", path.trim());
                 return path.trim();
             }
         }
 
-        // 3. Fallback: cerca nel PATH di sistema
+        // 4. Fallback: cerca nel PATH di sistema
         String pathChrome = findInPath();
         if (pathChrome != null) {
-            logger.debug("Chrome trovato nel PATH: {}", pathChrome);
+            logger.info("Chrome trovato nel PATH: {}", pathChrome);
             return pathChrome;
+        }
+
+        // 5. DEBUG: Lista tutti i possibili eseguibili
+        logger.error("Chrome non trovato. Eseguibili disponibili:");
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"ls", "-la", "/usr/bin/"});
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(process.getInputStream()))) {
+                reader.lines()
+                        .filter(line -> line.contains("chrome") || line.contains("chromium"))
+                        .forEach(line -> logger.error("  {}", line));
+            }
+        } catch (Exception e) {
+            logger.error("Impossibile listare /usr/bin/");
         }
 
         logger.error("Chrome non trovato in nessun percorso standard");

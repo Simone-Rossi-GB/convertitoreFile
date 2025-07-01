@@ -25,10 +25,10 @@ public class ConversionContextInstance {
                 "union",
                 "zippedOutput"
         );
-        this.jsonFile = jsonFile;
+        this.jsonFile = new File(jsonFile.getAbsolutePath());
         // Esegue la validazione della struttura del JSON
-        JsonUtility.validateJsonFromStringOrFile(new RecognisedFile(jsonFile), MANDATORY_FIELDS);
-        logger.info("{} validato correttamente", jsonFile.getPath());
+        JsonUtility.validateJsonFromStringOrFile(new RecognisedFile(this.jsonFile), MANDATORY_FIELDS);
+        logger.info("{} validato correttamente", this.jsonFile.getPath());
     }
 
     public File getJsonFile() {

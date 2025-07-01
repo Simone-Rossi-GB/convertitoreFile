@@ -1,30 +1,40 @@
 services:
   converter-service:
-    image: file-converter:latest  # Usa l'immagine invece di build
-    #build: .  # Commenta o rimuovi questa riga
+    image: file-converter:latest
     container_name: file-converter-app
     ports:
-      - "8080:8080"
+      - "0.0.0.0:8080:8080"
     environment:
       - JAVA_OPTS=-Xmx1g -Xms1024m
-      - SERVER_ADDRESS=0.0.0.0
+      - SERVER_ADDRESS=0.0.0.0  # Ascolta su tutte le interfacce
+      - SERVER_PORT=8080
+      
+      # Chrome environment variables
+      - CHROME_PATH=/usr/bin/chrome
+      - CHROME_ARGS=--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-renderer-backgrounding --disable-features=TranslateUI --remote-debugging-port=0
+
     volumes:
       - ./logs:/app/logs
       - ./temp:/app/temp
+      - /usr/share/fonts:/usr/share/fonts:ro
+
+    # Configurazioni per Chrome
+    shm_size: 2gb
+    security_opt:
+      - seccomp:unconfined
+    
     restart: unless-stopped
+    
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/converter/status"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+
     networks:
       - converter-network
 
 networks:
   converter-network:
     driver: bridge
-
-volumes:
-  app-logs:
-  app-temp:

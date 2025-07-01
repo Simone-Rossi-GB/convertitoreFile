@@ -254,7 +254,6 @@
         "jpg" : "webService.server.converters.imageConverters.GenericImageConverter",
         "png" : "webService.server.converters.imageConverters.GenericImageConverter"
       }
-    },
-    "monitoredOutputDir" : "src/input"
+    }
   }
 }
