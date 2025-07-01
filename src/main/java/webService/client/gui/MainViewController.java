@@ -14,12 +14,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
+import webService.client.objects.Zipper;
+import webService.client.objects.exceptions.ConversionException;
+import webService.client.objects.exceptions.IllegalExtensionException;
 import webService.client.objects.exceptions.LanguageBundleException;
 import webService.client.gui.tutorial.GuideStep;
 import webService.client.gui.tutorial.VisualGuide;
-import webService.server.converters.Zipper;
-import webService.server.converters.exception.ConversionException;
-import webService.server.converters.exception.IllegalExtensionException;
 import webService.client.configuration.configHandlers.config.*;
 import webService.client.configuration.configHandlers.conversionContext.*;
 

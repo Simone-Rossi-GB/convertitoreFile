@@ -612,3 +612,7 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-01 10:45:45 INFO  LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-07-01 10:45:45 INFO  HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-07-01 10:45:45 INFO  HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-07-01 14:51:05 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-01 14:51:05 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-01 14:51:06 INFO  LoginController - LoginController inizializzato
+2025-07-01 14:51:06 INFO  MainApp - CSS login caricato

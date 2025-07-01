@@ -18,7 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import webService.client.objects.ErrorResponse;
-import webService.server.Utility;
+import webService.client.objects.Utility;
 import webService.client.objects.exceptions.FileMoveException;
 
 import javax.xml.ws.WebServiceException;

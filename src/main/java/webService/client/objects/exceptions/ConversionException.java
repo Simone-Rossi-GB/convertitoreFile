@@ -1,0 +1,7 @@
+package webService.client.objects.exceptions;
+
+public class ConversionException extends RuntimeException {
+    public ConversionException(String message) {
+        super(message);
+    }
+}

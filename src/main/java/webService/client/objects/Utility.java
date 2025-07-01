@@ -3,7 +3,7 @@ package webService.client.objects;
 import java.io.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import webService.server.converters.exception.IllegalExtensionException;
+import webService.client.objects.exceptions.IllegalExtensionException;
 
 public class Utility {
 

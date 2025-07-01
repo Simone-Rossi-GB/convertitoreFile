@@ -1,6 +1,6 @@
 package webService.client.configuration.configHandlers.conversionContext;
 
-import webService.server.configuration.configExceptions.JsonStructureException;
+import webService.client.configuration.configExceptions.JsonStructureException;
 
 /**
  * Fornisce metodi di accesso ai dati presenti nel contesto di conversione corrente per il thread.
