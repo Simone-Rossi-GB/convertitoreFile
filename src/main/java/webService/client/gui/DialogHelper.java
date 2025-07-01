@@ -1,5 +1,6 @@
 package webService.client.gui;
 
+import javafx.scene.Parent;
 import webService.client.gui.jsonHandler.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
@@ -20,6 +21,8 @@ public class DialogHelper {
     private static final Logger logger = LogManager.getLogger(DialogHelper.class);
     private static Locale locale = null;
     private static ResourceBundle bundle;
+
+    private static Parent root;
 
     /**
      * Crea un Alert moderno con il tema appropriato
@@ -163,7 +166,7 @@ public class DialogHelper {
                     MainApp.getPrimaryStage().getScene() != null &&
                     MainApp.getPrimaryStage().getScene().getRoot() != null) {
 
-                return MainApp.getPrimaryStage().getScene().getRoot().getStyleClass().contains("light");
+                return root.getStyleClass().contains("light");
             }
         } catch (Exception e) {
             logger.debug("Impossibile rilevare tema da primaryStage: " + e.getMessage());
@@ -186,6 +189,10 @@ public class DialogHelper {
             locale = MainApp.getCurrentLocale();
             bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         }
+    }
+
+    public static void setRoot(Parent newRoot) {
+        root = newRoot;
     }
 
     /**

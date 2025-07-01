@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="750.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConfigWindowController">
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="598.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConfigWindowController">
 
     <children>
         <!-- MODERN HEADER -->
@@ -51,7 +51,7 @@
                         <Separator styleClass="config-section-line" />
 
                         <!-- Input Folder -->
-                        <VBox spacing="6.0" styleClass="config-field-group">
+                        <VBox prefHeight="57.0" prefWidth="576.0" spacing="6.0" styleClass="config-field-group">
                             <children>
                                 <Label fx:id="monitoredDirectoryLabel" styleClass="config-field-label" text="Cartella Monitorata (Input)">
                                     <font>
@@ -123,7 +123,6 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="710.0" spacing="10.0">
                                     <children>
-                                        <TextField fx:id="monitorAtStartField" editable="false" prefWidth="100.0" styleClass="config-readonly-field" text="false" />
                                         <Button fx:id="toggleMonitorBtn" onAction="#toggleMonitorAtStart" prefHeight="32.0" prefWidth="150.0" styleClass="config-toggle-btn" text="Cambia Valore">
                                             <font>
                                                 <Font name="System Bold" size="11.0" />
@@ -140,16 +139,36 @@
               <!-- ACTION BUTTONS FOOTER -->
               <HBox alignment="CENTER" prefHeight="76.0" prefWidth="750.0" spacing="20.0" styleClass="config-fields-container">
                   <children>
-                      <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" styleClass="config-save-btn" text="Salva">
-                          <font>
-                              <Font name="System Bold" size="13.0" />
-                          </font>
-                      </Button>
-                      <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" styleClass="config-cancel-btn" text="Chiudi">
-                          <font>
-                              <Font name="System Bold" size="13.0" />
-                          </font>
-                      </Button>
+                  <HBox prefHeight="36.0" prefWidth="189.0">
+                     <children>
+                        <Button fx:id="tutorialConfigPage" mnemonicParsing="false" prefHeight="26.0" prefWidth="36.0" styleClass="theme-toggle-btn" text="?">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="226.0">
+                     <children>
+                            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveConfiguration" prefHeight="40.0" prefWidth="120.0" styleClass="config-save-btn" text="Salva">
+                                <font>
+                                    <Font name="System Bold" size="13.0" />
+                                </font>
+                            </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="348.0">
+                     <children>
+                            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelAndClose" prefHeight="40.0" prefWidth="120.0" styleClass="config-cancel-btn" text="Chiudi">
+                                <font>
+                                    <Font name="System Bold" size="13.0" />
+                                </font>
+                            </Button>
+                     </children>
+                  </HBox>
                   </children>
                   <padding>
                       <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />

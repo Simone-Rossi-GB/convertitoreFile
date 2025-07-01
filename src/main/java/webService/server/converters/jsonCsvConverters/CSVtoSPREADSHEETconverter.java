@@ -6,6 +6,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.Converter;
@@ -18,65 +19,35 @@ import java.io.*;
  * Applica uno stile personalizzato alle celle.
  */
 public class CSVtoSPREADSHEETconverter extends Converter {
-    // Logger per la gestione degli errori e informazioni
     public static final Logger logger = LogManager.getLogger(CSVtoSPREADSHEETconverter.class);
 
-    /**
-     * Metodo principale per la conversione di un file CSV in Spreadsheet.
-     *
-     * @param srcFile Il file CSV da convertire.
-     * @return Il file Spreadsheet generato.
-     * @throws Exception Se il file non esiste o si verifica un errore durante la conversione.
-     */
     @Override
     public File convert(File srcFile) throws Exception {
         logger.info("Percorso file da convertire: " + srcFile.getAbsolutePath());
 
-        // Verifica l'esistenza e la validità del file sorgente
         if (!srcFile.exists() || !srcFile.isFile()) {
             logger.error("Errore durante la conversione");
             throw new IllegalArgumentException("Il file è vuoto o corrotto.");
         }
 
-        // Ottiene il formato di destinazione richiesto
         String format = ConversionContextReader.getDestinationFormat().toLowerCase();
 
-        // Se si tratta di ODS, utilizza un metodo dedicato
         if (format.equals("ods")) {
             return odsWriter(srcFile);
         }
 
-        // Altrimenti procede con Apache POI
         Workbook workbook = formatSelector(format);
         return writeCsvToSheet(srcFile, workbook, format);
     }
 
-    /**
-     * Metodo che seleziona e restituisce un Workbook compatibile con Apache POI in base al formato.
-     *
-     * @param format Formato richiesto (xls o xlsx).
-     * @return Workbook corrispondente.
-     */
     private Workbook formatSelector(String format) {
         switch (format) {
-            case "xls":
-                return new HSSFWorkbook();
-            case "xlsx":
-                return new XSSFWorkbook();
-            default:
-                throw new IllegalArgumentException("Formato non supportato da Apache POI: " + format);
+            case "xls": return new HSSFWorkbook();
+            case "xlsx": return new XSSFWorkbook();
+            default: throw new IllegalArgumentException("Formato non supportato da Apache POI: " + format);
         }
     }
 
-    /**
-     * Converte un file CSV in un foglio di calcolo (xls o xlsx) utilizzando Apache POI.
-     *
-     * @param csvFile  Il file CSV da convertire.
-     * @param workbook Il workbook POI dove scrivere i dati.
-     * @param format   Formato di destinazione.
-     * @return Il file Spreadsheet generato.
-     * @throws IOException Se si verifica un errore durante la lettura o scrittura.
-     */
     private File writeCsvToSheet(File csvFile, Workbook workbook, String format) throws IOException {
         Sheet sheet = workbook.createSheet("Dati");
 
@@ -96,7 +67,6 @@ public class CSVtoSPREADSHEETconverter extends Converter {
                 for (int i = 0; i < values.length; i++) {
                     String value = values[i].trim();
 
-                    // Gestione valori tra virgolette che includono virgole
                     if (value.startsWith("\"")) {
                         StringBuilder concatenatedValue = new StringBuilder(value);
                         while (!value.endsWith("\"") && i + 1 < values.length) {
@@ -109,21 +79,19 @@ public class CSVtoSPREADSHEETconverter extends Converter {
                         }
                     }
 
-                    Cell cell = row.createCell(colNum++);
-                    cell.setCellValue(value);
-                    cell.setCellStyle(rowNum == 1 ? headerStyle : cellStyle);
+                    Cell cell = (Cell) row.createCell(colNum++);
+                    ((org.apache.poi.ss.usermodel.Cell) cell).setCellValue(value);
+                    ((org.apache.poi.ss.usermodel.Cell) cell).setCellStyle(rowNum == 1 ? headerStyle : cellStyle);
                 }
 
                 colCount = Math.max(colCount, colNum);
             }
 
-            // Ridimensionamento automatico colonne
             for (int colNum = 0; colNum < colCount; colNum++) {
                 sheet.autoSizeColumn(colNum);
             }
         }
 
-        // Scrittura file di output
         String outputFileName = csvFile.getName().replaceAll("\\.csv$", "") + "." + format;
         File outputFile = new File(csvFile.getParent(), outputFileName);
 
@@ -136,13 +104,6 @@ public class CSVtoSPREADSHEETconverter extends Converter {
         return outputFile;
     }
 
-    /**
-     * Metodo dedicato alla conversione CSV → ODS tramite OdfToolkit.
-     *
-     * @param csvFile Il file CSV da convertire.
-     * @return Il file ODS generato.
-     * @throws Exception Se si verifica un errore durante la generazione ODS.
-     */
     private File odsWriter(File csvFile) throws Exception {
         SpreadsheetDocument document = SpreadsheetDocument.newSpreadsheetDocument();
         Table sheet = document.getSheetByIndex(0);
@@ -156,6 +117,7 @@ public class CSVtoSPREADSHEETconverter extends Converter {
                 String[] values = line.split(",");
                 for (int colNum = 0; colNum < values.length; colNum++) {
                     String value = values[colNum].trim();
+
                     if (value.startsWith("\"")) {
                         StringBuilder concatenatedValue = new StringBuilder(value);
                         while (!value.endsWith("\"") && colNum + 1 < values.length) {
@@ -167,7 +129,10 @@ public class CSVtoSPREADSHEETconverter extends Converter {
                             value = value.substring(1, value.length() - 1);
                         }
                     }
-                    sheet.getCellByPosition(colNum, rowNum).setStringValue(value);
+
+                    Cell cell = sheet.getCellByPosition(colNum, rowNum);
+                    cell.setStringValue(value);
+                    styleOdsCell(cell, rowNum == 0);
                 }
                 rowNum++;
             }
@@ -181,26 +146,18 @@ public class CSVtoSPREADSHEETconverter extends Converter {
     }
 
     /**
-     * Crea uno stile per le celle, con intestazioni evidenziate.
-     *
-     * @param workbook Workbook in cui creare lo stile.
-     * @param isHeader True se lo stile è per l’intestazione.
-     * @return Lo stile cella configurato.
+     * Crea uno stile per le celle in formato Excel, con intestazioni evidenziate e bordi neri.
      */
     private CellStyle createStyle(Workbook workbook, boolean isHeader) {
         CellStyle style = workbook.createCellStyle();
-
-        // Allineamento contenuti
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
 
-        // Colore intestazione
         if (isHeader) {
             style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         }
 
-        // Bordatura
         style.setBorderTop(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
@@ -212,4 +169,26 @@ public class CSVtoSPREADSHEETconverter extends Converter {
 
         return style;
     }
+
+    /**
+     * Applica sfondo grigio alle celle intestazione ODS.
+     * Nota: OdfToolkit non supporta l'applicazione dei bordi visibili.
+     *
+     * @param cell     La cella da stilizzare
+     * @param isHeader True se intestazione
+     */
+    private void styleOdsCell(Cell cell, boolean isHeader) {
+        if (isHeader) {
+            try {
+                cell.setCellBackgroundColor("#D9D9D9"); // Grigio chiaro
+            } catch (Exception e) {
+                logger.warn("Impossibile applicare sfondo intestazione ODS: " + e.getMessage());
+            }
+        }
+    }
+
+
+
+
+
 }

@@ -1,5 +1,7 @@
 package webService.client.gui;
 
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import webService.client.configuration.configExceptions.JsonStructureException;
 import webService.client.configuration.configHandlers.config.*;
 import javafx.scene.layout.VBox;
@@ -17,12 +19,16 @@ import javafx.stage.Stage;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import webService.client.gui.tutorial.GuideStep;
+import webService.client.gui.tutorial.VisualGuide;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -38,13 +44,13 @@ public class ConfigWindowController {
     @FXML private TextField monitoredDirField;
     @FXML private TextField successDirField;
     @FXML private TextField errorDirField;
-    @FXML private TextField monitorAtStartField;
 
     // Pulsanti per sfogliare le directory
     @FXML private Button browseMonitoredBtn;
     @FXML private Button browseSuccessBtn;
     @FXML private Button browseErrorBtn;
     @FXML private Button toggleMonitorBtn;
+    @FXML private Button tutorialConfigPage;
 
     @FXML private Label configTitle;
     @FXML private Label configTitleDesc;
@@ -66,6 +72,9 @@ public class ConfigWindowController {
     private static Locale locale = null;
     private static ResourceBundle bundle;
 
+    private Pane overlayPane;
+
+
     /**
      * Inizializza il controller della finestra di configurazione.
      */
@@ -81,6 +90,22 @@ public class ConfigWindowController {
         }
         updateMonitorToggleButton();
         refreshUITexts(locale);
+        tutorialConfigPage.setOnAction(e -> {
+            avviaGuida();
+        });
+    }
+
+    public void avviaGuida(){
+
+        List<GuideStep> steps = Arrays.asList(
+                new GuideStep(monitoredDirField, bundle.getString("tutorial.config.step1.message")),
+                new GuideStep(successDirField, bundle.getString("tutorial.config.step2.message")),
+                new GuideStep(errorDirField, bundle.getString("tutorial.config.step3.message")),
+                new GuideStep(toggleMonitorBtn, bundle.getString("tutorial.config.step4.message"))
+        );
+
+        VisualGuide guida = new VisualGuide(overlayPane, steps);
+        guida.start();
     }
 
     public void refreshUITexts(Locale locale) {
@@ -112,6 +137,10 @@ public class ConfigWindowController {
         monitoredDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, monitoredDirField));
         successDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, successDirField));
         errorDirField.textProperty().addListener((obs, oldVal, newVal) -> validateDirectoryPath(newVal, errorDirField));
+    }
+
+    public void setOverlayPane(Pane overlayPane) {
+        this.overlayPane = overlayPane;
     }
 
     /**
@@ -198,7 +227,6 @@ public class ConfigWindowController {
         errorDirField.setText(ConfigReader.getErrorOutputDir());
 
         monitorAtStart = ConfigReader.getIsMonitoringEnabledAtStart();
-        monitorAtStartField.setText(String.valueOf(monitorAtStart));
 
         logger.info("Configurazione caricata correttamente");
     }
@@ -256,25 +284,29 @@ public class ConfigWindowController {
     @FXML
     private void toggleMonitorAtStart(ActionEvent event) {
         monitorAtStart = !monitorAtStart;
-        monitorAtStartField.setText(String.valueOf(monitorAtStart));
         updateMonitorToggleButton();
     }
 
     private void updateMonitorToggleButton() {
         ResourceBundle bundle = ResourceBundle.getBundle("languages.MessagesBundle", locale);
         if (monitorAtStart) {
-            // ATTIVO - Solo il testo cambia, bottone rimane grigio
-            toggleMonitorBtn.setText(bundle.getString("btn.inactive"));
-
-            // Usa classe CSS invece di stile inline
-            monitorAtStartField.getStyleClass().removeAll("active-state");
-            monitorAtStartField.getStyleClass().add("active-state");
-        } else {
-            // SPENTO - Solo il testo cambia, bottone rimane grigio
+            // ATTIVO - Mostra "ATTIVO" e applica stile azzurro
             toggleMonitorBtn.setText(bundle.getString("btn.active"));
 
-            // Rimuovi classe CSS
-            monitorAtStartField.getStyleClass().removeAll("active-state");
+            // Rimuovi la classe normale e aggiungi quella attiva
+            toggleMonitorBtn.getStyleClass().removeAll("config-toggle-btn");
+            if (!toggleMonitorBtn.getStyleClass().contains("active-state")) {
+                toggleMonitorBtn.getStyleClass().add("active-state");
+            }
+        } else {
+            // INATTIVO - Mostra "INATTIVO" e applica stile grigio
+            toggleMonitorBtn.setText(bundle.getString("btn.inactive"));
+
+            // Rimuovi la classe attiva e usa quella normale
+            toggleMonitorBtn.getStyleClass().removeAll("active-state");
+            if (!toggleMonitorBtn.getStyleClass().contains("config-toggle-btn")) {
+                toggleMonitorBtn.getStyleClass().add("config-toggle-btn");
+            }
         }
     }
 

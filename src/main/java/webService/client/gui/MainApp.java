@@ -1,6 +1,7 @@
 package webService.client.gui;
 
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import webService.client.gui.jsonHandler.*;
 import webService.client.auth.AuthManager;
 
@@ -129,23 +130,40 @@ public class MainApp extends Application {
             MainViewController controller = loader.getController();
             controller.setMainApp(new MainApp()); // Crea istanza per compatibilità
 
-            // Crea la scena principale
-            Scene scene = new Scene(root);
+            // Creo la scena, senza dimensioni hard-coded (l'FXML le contiene)
+            Pane overlayPane = new Pane(); // Per la guida visiva
+            overlayPane.setPickOnBounds(false); // Lascia passare eventi se vuoi
 
-            // Carica i CSS
+            // Applico il tema di default
+            root.getStyleClass().add(config.getTheme());
+            overlayPane.getStyleClass().add(config.getTheme());
+            controller.setRoot(root);
+            DialogHelper.setRoot(root);
+
+            StackPane layeredRoot = new StackPane(root, overlayPane);
+            controller.setOverlayPane(overlayPane);
+
+            // Crea la scena principale con StackPane
+            Scene scene = new Scene(layeredRoot);
+
+            // Carica i CSS per il tema principale e per i dialog moderni
             scene.getStylesheets().addAll(
-                    MainApp.class.getResource("/styles/modern-main-theme.css").toExternalForm()
+                    MainApp.class.getResource("/styles/modern-main-theme.css").toExternalForm(),
+                    MainApp.class.getResource("/styles/tutorial-theme.css").toExternalForm()
             );
 
+            // **AGGIUNGIAMO IL CSS PER I DIALOG MODERNI GLOBALMENTE**
             try {
-                scene.getStylesheets().add(MainApp.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm());
-                logger.info("CSS dialog moderni caricato globalmente");
+                scene.getStylesheets().add(MainApp.class.getResource("/css/modern-dialogs-theme.css").toExternalForm());
+                logger.info("CSS dialog moderni caricato globalmente da /css/");
             } catch (Exception cssError) {
-                logger.warn("Impossibile caricare CSS dialog moderni: " + cssError.getMessage());
+                try {
+                    scene.getStylesheets().add(MainApp.class.getResource("/styles/modern-dialogs-theme.css").toExternalForm());
+                    logger.info("CSS dialog moderni caricato globalmente da /styles/");
+                } catch (Exception cssError2) {
+                    logger.warn("Impossibile caricare CSS dialog moderni: " + cssError2.getMessage());
+                }
             }
-
-            // Applica il tema di default
-            root.getStyleClass().add(config.getTheme());
 
             // Configura l'icona
             primaryStage.getIcons().add(new Image(Objects.requireNonNull(MainApp.class.getResourceAsStream("/icons/app_icon.png"))));

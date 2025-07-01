@@ -1,5 +1,7 @@
 package webService.client.gui;
 
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import webService.client.gui.jsonHandler.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,6 +15,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.StageStyle;
 import webService.client.objects.exceptions.LanguageBundleException;
+import webService.client.gui.tutorial.GuideStep;
+import webService.client.gui.tutorial.VisualGuide;
 import webService.server.converters.Zipper;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.IllegalExtensionException;
@@ -74,7 +78,7 @@ public class MainViewController {
     @FXML
     private Button langButton;
     @FXML
-    private Button MonitoringBtn;
+    private Button monitoringBtn;
     @FXML
     private Button configBtn;
     @FXML
@@ -97,6 +101,16 @@ public class MainViewController {
     private Label failedConversionsLabel;
     @FXML
     private Label directoryLabelTitle;
+    @FXML
+    private Button startTutorialBtn;
+    @FXML
+    private Parent root;
+
+    public Parent getRoot() {
+        return root;
+    }
+
+    private Pane overlayPane;
 
     // Riferimento all'applicazione principale
     private MainApp mainApp;
@@ -107,6 +121,8 @@ public class MainViewController {
     private int fileRicevuti = 0;
     private int fileConvertiti = 0;
     private int fileScartati = 0;
+
+    private boolean isLightTheme;
 
     private ConverterWebServiceClient webServiceClient;
 
@@ -143,22 +159,33 @@ public class MainViewController {
         JsonConfig jsonConfig = ConfigManager.readConfig();
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
-        themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
-            Parent root = themeToggle.getScene().getRoot();
+        isLightTheme = themeToggle.isSelected();
+       themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
+            System.out.println("Palle: "+root);
             root.getStyleClass().removeAll("dark", "light");
+            overlayPane.getStyleClass().removeAll("dark", "light");
 
             // Logica diretta: se è selezionato → light, altrimenti → dark
             if (newV) {
                 root.getStyleClass().add("light");
+                overlayPane.getStyleClass().add("light");
+                isLightTheme = true;
             } else {
                 root.getStyleClass().add("dark");
+                overlayPane.getStyleClass().add("dark");
+                isLightTheme = false;
             }
+            updateIcons();
         });
         try {
             bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
         }catch (NullPointerException | MissingResourceException e){
             throw new LanguageBundleException("Impossibile caricare il bundle per le lingue");
         }
+
+        updateIcons();
+
+        bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
         refreshUITexts();
         updateLangButtonGraphic(MainApp.getCurrentLocale());
         initializeLanguageMenu();
@@ -174,9 +201,14 @@ public class MainViewController {
             MainApp.getPrimaryStage().setY(event.getScreenY() - dragDelta.y);
         });
 
+        startTutorialBtn.setOnAction(e -> {
+            avviaGuida();
+        });
+
+
         // 2) inizializzo engine e client
         webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
-
+        logger.info(webServiceClient.isServiceAvailable());
         // 3) UI setup e configurazione
         setupEventHandlers();
         logger.info("Applicazione avviata. Caricamento configurazione...");
@@ -188,7 +220,6 @@ public class MainViewController {
         iccw = new InstanceConversionContextWriter(new File(conversionContextFile));
         ConversionContextData.update(cci);
         //Carica la configurazione di base
-        loadConfiguration();
         if (monitorAtStart) {
             toggleMonitoring();
         }
@@ -240,6 +271,21 @@ public class MainViewController {
         }
     }
 
+    public void avviaGuida() {
+        // Crea i passi del tutorial con solo il messaggio (senza titolo per ora)
+        List<GuideStep> steps = Arrays.asList(
+                new GuideStep(caricaFileBtn, bundle.getString("tutorial.step1.message")),
+                new GuideStep(fileConvertitiBtn, bundle.getString("tutorial.step2.message")),
+                new GuideStep(conversioniFalliteBtn, bundle.getString("tutorial.step3.message")),
+                new GuideStep(configBtn, bundle.getString("tutorial.step4.message")),
+                new GuideStep(conversionConfigBtn, bundle.getString("tutorial.step5.message")),
+                new GuideStep(monitoringBtn, bundle.getString("tutorial.step6.message"))
+        );
+
+        VisualGuide guida = new VisualGuide(overlayPane, steps);
+        guida.start();
+    }
+
     public void refreshUITexts() {
         mainTitleLabel.setText(bundle.getString("label.mainTitle"));
         logAreaTitle.setText(bundle.getString("label.logAreaTitle"));
@@ -254,9 +300,9 @@ public class MainViewController {
         configBtn.setText(bundle.getString("btn.configBtn"));
         conversionConfigBtn.setText(bundle.getString("btn.conversionConfigBtn"));
         if (isMonitoring){
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " ON");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " ON");
         } else {
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " OFF");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn") + " OFF");
         }
     }
 
@@ -290,16 +336,23 @@ public class MainViewController {
      * Aggiorna lo stile del pulsante monitoraggio in base allo stato
      */
     private void updateMonitoringButtonStyle() {
+
         if (isMonitoring) {
             // Quando monitora -> colore acquamarina come Directory
-            MonitoringBtn.getStyleClass().removeAll("standard-btn");
-            MonitoringBtn.getStyleClass().add("accent-btn");
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" ON");
+            monitoringBtn.getStyleClass().removeAll("standard-btn");
+            monitoringBtn.getStyleClass().add("accent-btn");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" ON");
+            if (isLightTheme) {
+                monitoringBtn.setGraphic(imageViewFromPath("darkIcons/", "monitoringIcon.png", 20, 20));
+            }
         } else {
             // Quando non monitora -> colore grigio standard
-            MonitoringBtn.getStyleClass().removeAll("accent-btn");
-            MonitoringBtn.getStyleClass().add("standard-btn");
-            MonitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" OFF");
+            monitoringBtn.getStyleClass().removeAll("accent-btn");
+            monitoringBtn.getStyleClass().add("standard-btn");
+            monitoringBtn.setText(bundle.getString("btn.MonitoringBtn")+" OFF");
+            if (isLightTheme) {
+                monitoringBtn.setGraphic(imageViewFromPath("lightIcons/", "monitoringIcon.png", 20, 20));
+            }
         }
     }
 
@@ -308,7 +361,7 @@ public class MainViewController {
      */
     private void setupEventHandlers() {
         // Handler per il pulsante toggle monitoraggio
-        MonitoringBtn.setOnAction(e -> {
+        monitoringBtn.setOnAction(e -> {
             try {
                 toggleMonitoring();
             } catch (IOException ex) {
@@ -411,79 +464,89 @@ public class MainViewController {
         try {
             addLogMessage("Apertura editor configurazione...");
 
-            //Carica il file FXML
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/ConfigWindow.fxml"));
-            VBox configWindow = loader.load();
+            // Carica l'FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ConfigWindow.fxml"));
+            VBox configRoot = loader.load();
 
-            // Crea lo stage per la finestra di configurazione
+            // Crea lo stage
             Stage configStage = new Stage();
             configStage.setTitle("Editor Configurazione");
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
             configStage.setResizable(false);
-
-            // DIMENSIONI PIÙ PICCOLE
-            configStage.setWidth(598);
-            configStage.setHeight(780);
-
-            // Crea la scene
-            Scene scene = new Scene(configWindow);
-
             configStage.initStyle(StageStyle.TRANSPARENT);
+
+            // Overlay per guida visuale
+            Pane overlayPane = new Pane();
+            overlayPane.setPickOnBounds(false);
+
+
+            // Layout combinato
+            StackPane layeredRoot = new StackPane(configRoot, overlayPane);
+            Scene scene = new Scene(layeredRoot);
             scene.setFill(Color.TRANSPARENT);
 
-            javafx.scene.shape.Rectangle clip = new Rectangle();
+            // Clip stondato
+            Rectangle clip = new Rectangle();
             clip.setArcWidth(20);
             clip.setArcHeight(20);
-            clip.widthProperty().bind(configWindow.widthProperty());
-            clip.heightProperty().bind(configWindow.heightProperty());
-            configWindow.setClip(clip);
+            clip.widthProperty().bind(configRoot.widthProperty());
+            clip.heightProperty().bind(configRoot.heightProperty());
+            configRoot.setClip(clip);
 
-            // **APPLICA IL TEMA CORRENTE ALLA CONFIG WINDOW**
-            boolean isLightTheme = themeToggle.isSelected();
-            // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
-            if (isLightTheme) {
-                configWindow.getStyleClass().add("light");
+            // Applica il tema attivo
+            if (themeToggle != null && themeToggle.isSelected()) {
+                configRoot.getStyleClass().add("light");
+                overlayPane.getStyleClass().add("light");
             } else {
-                configWindow.getStyleClass().add("dark");
+                configRoot.getStyleClass().add("dark");
+                overlayPane.getStyleClass().add("dark");
             }
 
-            // **Carica il CSS per il tema moderno**
+            // Aggiungi CSS
             try {
-                scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
+                scene.getStylesheets().addAll(
+                        getClass().getResource("/styles/modern-main-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/modern-config-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
+                );
                 logger.info("CSS moderno caricato per la finestra di configurazione");
             } catch (Exception cssError) {
                 logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
-                // Fallback - prova percorso alternativo
                 try {
                     scene.getStylesheets().add(getClass().getResource("/styles/modern-config-theme.css").toExternalForm());
-                    logger.info("CSS moderno caricato da percorso alternativo");
-                } catch (Exception cssError2) {
-                    logger.error("CSS non trovato in nessun percorso: " + cssError2.getMessage());
+                    logger.info("CSS caricato da percorso alternativo");
+                } catch (Exception fallbackError) {
+                    logger.error("CSS non trovato: " + fallbackError.getMessage());
                 }
             }
 
             configStage.setScene(scene);
 
-            // Ottiene il controller e passa i riferimenti necessari
+            // Ottieni il controller e passa overlay + stage
             ConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
+            controller.setOverlayPane(overlayPane); // 👉 passaggio chiave!
+            // Puoi anche avviare direttamente la guida qui:
+            // Platform.runLater(controller::avviaGuida);
 
-            // Mostra la finestra e attendi la chiusura
+            // Mostra e attendi chiusura
             addLogMessage("Editor configurazione aperto");
             configStage.showAndWait();
 
-            // Ricarica la configurazione dopo la chiusura della finestra
+            // Dopo la chiusura
             addLogMessage("Editor configurazione chiuso");
             loadConfiguration();
             interruptWatcher();
             watcherThread = new Thread(new DirectoryWatcher(monitoredFolderPath, this));
             watcherThread.start();
+
         } catch (IOException e) {
             launchAlertError("Impossibile aprire l'editor di configurazione: " + e.getMessage());
+            logger.error("Errore apertura editor configurazione", e);
         }
     }
+
 
     /**
      * Apre la finestra per modificare il file conversionContext.json
@@ -508,8 +571,12 @@ public class MainViewController {
             configStage.setWidth(750);
             configStage.setHeight(880);
 
-            // Crea la scene
-            Scene scene = new Scene(configWindow);
+            Pane overlayPane = new Pane();
+            overlayPane.setPickOnBounds(false);
+
+            StackPane layeredRoot = new StackPane(configWindow, overlayPane);
+            Scene scene = new Scene(layeredRoot);
+            scene.setFill(Color.TRANSPARENT);
 
             // STILE TRASPARENTE E ANGOLI ARROTONDATI
             configStage.initStyle(StageStyle.TRANSPARENT);
@@ -521,17 +588,24 @@ public class MainViewController {
             clip.widthProperty().bind(configWindow.widthProperty());
             clip.heightProperty().bind(configWindow.heightProperty());
             configWindow.setClip(clip);
+
             boolean isLightTheme = themeToggle.isSelected();
             // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
             if (isLightTheme) {
                 configWindow.getStyleClass().add("light");
+                overlayPane.getStyleClass().add("light");
             } else {
                 configWindow.getStyleClass().add("dark");
+                overlayPane.getStyleClass().add("dark");
             }
 
             // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
             try {
-                scene.getStylesheets().add(getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm());
+                scene.getStylesheets().addAll(
+                        getClass().getResource("/styles/modern-main-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/modern-conversion-config-theme.css").toExternalForm(),
+                        getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
+                );
                 logger.info("CSS moderno caricato per la finestra di configurazione conversione");
             } catch (Exception cssError) {
                 logger.warn("Impossibile caricare il CSS moderno: " + cssError.getMessage());
@@ -546,10 +620,13 @@ public class MainViewController {
 
             configStage.setScene(scene);
 
-            // Ottieni il controller e passa i riferimenti necessari
             ConversionConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
+            controller.setOverlayPane(overlayPane);
+
+            // Ottieni il controller e passa i riferimenti necessari
             // Mostra la finestra e attendi la chiusura
+
             logger.info("Editor configurazione conversione aperto");
             configStage.showAndWait();
         }catch (IOException e) {
@@ -676,7 +753,6 @@ public class MainViewController {
         //Quando viene chiamato incrementa il numero di file ricevuti
         Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
-
         List<String> formats = null;
         try {
             srcExtension = extractSrcExtension(srcFile);
@@ -720,7 +796,7 @@ public class MainViewController {
     private String extractSrcExtension(File file) throws IOException, IllegalExtensionException {
         String srcExtension = Utility.getExtension(file);
         //Se è impostata la conversione multipla prende l'estensione dei file contenuti se è uguale per tutti
-        if(webService.server.configuration.configHandlers.conversionContext.ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
+        if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
             try {
                 srcExtension = Zipper.extractFileExstension(file);
             } catch (IOException e) {
@@ -1039,6 +1115,38 @@ public class MainViewController {
             successfulConversionsCounter.setText(String.valueOf(fileConvertiti));
             failedConversionsCounter.setText(String.valueOf(fileScartati));
         });
+    }
+
+    public void setOverlayPane(Pane pane) {
+        overlayPane = pane;
+    }
+
+    public void setRoot(Parent root) {
+        this.root = root;
+    }
+    private void updateIcons(){
+        String theme;
+        if (isLightTheme){
+            theme = "lightIcons/";
+        } else {
+            theme = "darkIcons/";
+        }
+        caricaFileBtn.setGraphic(imageViewFromPath(theme, "folderIcon.png", 20, 20));
+        fileConvertitiBtn.setGraphic(imageViewFromPath(theme, "successIcon.png", 20, 20));
+        conversioniFalliteBtn.setGraphic(imageViewFromPath(theme, "errorIcon.png", 20, 20));
+        configBtn.setGraphic(imageViewFromPath(theme, "generalSettingsIcon.png", 20, 20));
+        conversionConfigBtn.setGraphic(imageViewFromPath(theme, "conversionSettingsIcon.png", 20, 20));
+        if (isMonitoring) {
+            monitoringBtn.setGraphic(imageViewFromPath("darkIcons/", "monitoringIcon.png", 20, 20));
+        } else {
+            monitoringBtn.setGraphic(imageViewFromPath(theme, "monitoringIcon.png", 20, 20));
+        }
+    }
+    private ImageView imageViewFromPath(String theme, String path, int width, int height){
+        ImageView icon = new ImageView(getClass().getResource("/icons/" + theme + path).toExternalForm());
+        icon.setFitWidth(width);
+        icon.setFitHeight(height);
+        return icon;
     }
 
     /**
