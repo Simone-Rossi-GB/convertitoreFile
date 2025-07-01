@@ -49,21 +49,13 @@ RUN useradd -ms /bin/bash appuser && \
     mkdir -p /app && \
     chown appuser:appuser /app
 
-USER appuser
 WORKDIR /app
 
-# Copia il JAR
+# Copia il JAR COME ROOT e poi cambia ownership
 COPY target/file-type-converter-*.jar app.jar
+RUN chown appuser:appuser app.jar
 
-# Directory temporanee
-RUN mkdir -p temp/uploads temp/outputs logs
-
-EXPOSE 8080
-
-# Environment variables
-ENV JAVA_OPTS="-Xmx1g -Xms512m"
-
-# Script di avvio che rileva il browser
+# Script di avvio che rileva il browser (COME ROOT)
 RUN echo '#!/bin/bash\n\
 if [ -f "/usr/bin/google-chrome" ]; then\n\
     export CHROME_PATH="/usr/bin/google-chrome"\n\
@@ -76,7 +68,19 @@ else\n\
     exit 1\n\
 fi\n\
 java $JAVA_OPTS -Dserver.address=0.0.0.0 -jar app.jar' > start.sh && \
-chmod +x start.sh
+chmod +x start.sh && \
+chown appuser:appuser start.sh
+
+# ADESSO cambia utente
+# USER appuser
+
+# Directory temporanee (ora come appuser)
+RUN mkdir -p temp/uploads temp/outputs logs
+
+EXPOSE 8080
+
+# Environment variables
+ENV JAVA_OPTS="-Xmx1g -Xms1024m"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

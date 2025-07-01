@@ -79,9 +79,10 @@ public class CSVtoSPREADSHEETconverter extends Converter {
                         }
                     }
 
-                    Cell cell = (Cell) row.createCell(colNum++);
-                    ((org.apache.poi.ss.usermodel.Cell) cell).setCellValue(value);
-                    ((org.apache.poi.ss.usermodel.Cell) cell).setCellStyle(rowNum == 1 ? headerStyle : cellStyle);
+                    org.apache.poi.ss.usermodel.Cell cell = row.createCell(colNum++);
+                    cell.setCellValue(value);
+                    cell.setCellStyle(rowNum == 1 ? headerStyle : cellStyle);
+
                 }
 
                 colCount = Math.max(colCount, colNum);

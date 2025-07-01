@@ -1,12 +1,12 @@
 services:
   converter-service:
     image: file-converter:latest  # Usa l'immagine invece di build
-    # build: .  # Commenta o rimuovi questa riga
+    #build: .  # Commenta o rimuovi questa riga
     container_name: file-converter-app
     ports:
       - "8080:8080"
     environment:
-      - JAVA_OPTS=-Xmx1g -Xms512m
+      - JAVA_OPTS=-Xmx1g -Xms1024m
       - SERVER_ADDRESS=0.0.0.0
     volumes:
       - ./logs:/app/logs
