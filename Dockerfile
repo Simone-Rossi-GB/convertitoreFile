@@ -110,7 +110,7 @@ USER appuser
 EXPOSE 8080
 
 # Environment variables
-ENV JAVA_OPTS="-Xmx1g -Xms1024m"
+ENV JAVA_OPTS="-Xmx5g -Xms4096m"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

@@ -91,7 +91,7 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
                 images.add(image);
                 //Se non devono essere unite crea un file per ciascuna
                 if (!union) {
-                    File tempFile = new File("src/temp/" + baseName + "_page_" + (i + 1) + ".jpg");
+                    File tempFile = new File(pdfFile.getParent(), baseName + "_page_" + (i + 1) + ".jpg");
                     ImageIO.write(image, "jpg", tempFile);
                     pages.add(tempFile);
                 }
