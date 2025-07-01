@@ -560,13 +560,18 @@ public class MainViewController {
             configStage.initModality(Modality.WINDOW_MODAL);
             configStage.initOwner(MainApp.getPrimaryStage());
             configStage.setResizable(false);
+            configStage.initStyle(StageStyle.TRANSPARENT);
 
             // DIMENSIONI AGGIORNATE
             configStage.setWidth(750);
             configStage.setHeight(880);
 
-            // Crea la scene
-            Scene scene = new Scene(configWindow);
+            Pane overlayPane = new Pane();
+            overlayPane.setPickOnBounds(false);
+
+            StackPane layeredRoot = new StackPane(configWindow, overlayPane);
+            Scene scene = new Scene(layeredRoot);
+            scene.setFill(Color.TRANSPARENT);
 
             // STILE TRASPARENTE E ANGOLI ARROTONDATI
             configStage.initStyle(StageStyle.TRANSPARENT);
@@ -578,12 +583,15 @@ public class MainViewController {
             clip.widthProperty().bind(configWindow.widthProperty());
             clip.heightProperty().bind(configWindow.heightProperty());
             configWindow.setClip(clip);
+
             boolean isLightTheme = themeToggle.isSelected();
             // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
             if (isLightTheme) {
                 configWindow.getStyleClass().add("light");
+                overlayPane.getStyleClass().add("light");
             } else {
                 configWindow.getStyleClass().add("dark");
+                overlayPane.getStyleClass().add("dark");
             }
 
             // **Carica il CSS MODERNO con fallback come per la ConfigWindow**
@@ -607,10 +615,13 @@ public class MainViewController {
 
             configStage.setScene(scene);
 
-            // Ottieni il controller e passa i riferimenti necessari
             ConversionConfigWindowController controller = loader.getController();
             controller.setDialogStage(configStage);
+            controller.setOverlayPane(overlayPane);
+
+            // Ottieni il controller e passa i riferimenti necessari
             // Mostra la finestra e attendi la chiusura
+
             logger.info("Editor configurazione conversione aperto");
             configStage.showAndWait();
         }catch (IOException e) {

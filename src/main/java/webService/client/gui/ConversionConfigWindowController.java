@@ -1,5 +1,6 @@
 package webService.client.gui;
 
+import javafx.scene.layout.Pane;
 import webService.client.configuration.configHandlers.config.ConfigData;
 import webService.client.configuration.configHandlers.config.ConfigInstance;
 import webService.client.configuration.configHandlers.config.InstanceConfigWriter;
@@ -11,7 +12,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import webService.client.gui.tutorial.GuideStep;
+import webService.client.gui.tutorial.VisualGuide;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -40,6 +45,7 @@ public class ConversionConfigWindowController {
     @FXML public Label unionLabel;
     @FXML public Label zippedLabel;
     @FXML public Label protectedLabel;
+    @FXML public Button tutorialConfigConverisionPage;
 
     @FXML private VBox conversionConfigHeaderContainer;
 
@@ -51,6 +57,8 @@ public class ConversionConfigWindowController {
     private boolean multipleConversions;
     private static Locale locale = null;
     private static ResourceBundle bundle;
+
+    private Pane overlayPane;
 
     /**
      * Inizializza il controller della finestra di configurazione.
@@ -64,6 +72,23 @@ public class ConversionConfigWindowController {
         }
         loadCurrentConfiguration();
         refreshUITexts();
+        tutorialConfigConverisionPage.setOnAction(e -> {
+            avviaGuida();
+        });
+    }
+
+    private void avviaGuida() {
+        List<GuideStep> steps = Arrays.asList(
+                new GuideStep(txtPassword, bundle.getString("tutorial.config.step1.message")),
+                new GuideStep(toggleProtectedOutputBtn, bundle.getString("tutorial.config.step3.message")),
+                new GuideStep(toggleUnionBtn, bundle.getString("tutorial.config.step5.message")),
+                new GuideStep(toggleZippedOutputBtn, bundle.getString("tutorial.config.step7.message")),
+                new GuideStep(toggleMultipleConversionBtn, bundle.getString("tutorial.config.step7.message")),
+                new GuideStep(txtWatermark, bundle.getString("tutorial.config.step7.message"))
+        );
+
+        VisualGuide guida = new VisualGuide(overlayPane, steps);
+        guida.start();
     }
 
     public void refreshUITexts() {
@@ -81,6 +106,9 @@ public class ConversionConfigWindowController {
         cancelButton.setText(bundle.getString("btn.closeButton"));
     }
 
+    public void setOverlayPane(Pane overlayPane) {
+        this.overlayPane = overlayPane;
+    }
     /**
      * Imposta lo stage e configura il drag della finestra
      */

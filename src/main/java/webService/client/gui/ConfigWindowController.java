@@ -73,8 +73,6 @@ public class ConfigWindowController {
     private static ResourceBundle bundle;
 
     private Pane overlayPane;
-    @FXML
-    private Parent root;
 
 
     /**
