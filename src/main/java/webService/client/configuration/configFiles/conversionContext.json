@@ -1,6 +1,6 @@
 {
   "data" : {
-    "destinationFormat" : "pdf",
+    "destinationFormat" : "docx",
     "password" : "samplefiles",
     "protected" : true,
     "union" : true,

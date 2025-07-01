@@ -1,73 +1,131 @@
 package webService.server.configuration.configHandlers.conversionContext;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import webService.server.configuration.configExceptions.JsonStructureException;
+
+import java.util.HashMap;
 
 /**
  * Fornisce metodi di accesso ai dati presenti nel contesto di conversione corrente per il thread.
- * <p>
- * Estende {@link ConversionContextData} e consente di leggere parametri rilevanti
- * utilizzati durante i processi di conversione, come formato di destinazione o opzioni di output.
+ * FIXED: Aggiunto logging e null check robusti
  */
 public class ConversionContextReader extends ConversionContextData {
+    private static final Logger logger = LogManager.getLogger(ConversionContextReader.class);
+
+    /**
+     * Ottiene un valore dal context con gestione errori robusta.
+     */
+    private static Object getContextValue(String key, Object defaultValue) {
+        try {
+            HashMap<String, Object> currentContext = getCurrentContext();
+            if (currentContext == null) {
+                logger.error("Context è null per thread: {}", Thread.currentThread().getName());
+                return defaultValue;
+            }
+
+            if (!currentContext.containsKey(key)) {
+                logger.error("Chiave '{}' non trovata nel context. Chiavi disponibili: {}", key, currentContext.keySet());
+                return defaultValue;
+            }
+
+            Object value = currentContext.get(key);
+            logger.debug("Valore per chiave '{}': {}", key, value);
+            return value != null ? value : defaultValue;
+
+        } catch (Exception e) {
+            logger.error("Errore accesso context per chiave '{}': ", key, e);
+            return defaultValue;
+        }
+    }
 
     /**
      * Restituisce il formato di destinazione per la conversione.
-     *
-     * @return estensione o nome del formato (es. "pdf", "jpeg")
      */
     public static String getDestinationFormat() {
-        return context.get().get("destinationFormat").toString();
+        Object value = getContextValue("destinationFormat", "pdf");
+        String result = value.toString();
+        logger.info("getDestinationFormat() = {}", result);
+        return result;
     }
 
     /**
-     * Restituisce la password da utilizzare per operazioni protette (es. compressione cifrata).
-     *
-     * @return stringa contenente la password
+     * Restituisce la password da utilizzare per operazioni protette.
      */
     public static String getPassword() {
-        return context.get().get("password").toString();
+        Object value = getContextValue("password", "");
+        return value.toString();
     }
 
     /**
-     * Indica se i file devono essere uniti in un’unica entità di output.
-     *
-     * @return {@code true} se è richiesta l’unione; {@code false} altrimenti
+     * Indica se i file devono essere uniti in un'unica entità di output.
      */
     public static boolean getIsUnion() {
-        return (boolean) context.get().get("union");
+        Object value = getContextValue("union", false);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        // Fallback per string boolean
+        return Boolean.parseBoolean(value.toString());
     }
 
     /**
      * Indica se l'output della conversione deve essere compresso in un archivio ZIP.
-     *
-     * @return {@code true} se l’output va zippato; {@code false} in caso contrario
      */
     public static boolean getIsZippedOutput() {
-        return (boolean) context.get().get("zippedOutput");
+        Object value = getContextValue("zippedOutput", false);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        return Boolean.parseBoolean(value.toString());
     }
 
     /**
      * Indica se i file convertiti devono essere protetti da password quando possibile.
-     *
-     * @return {@code true} se è richiesta la protezione; {@code false} altrimenti
      */
     public static boolean getProtected() {
-        return (boolean) context.get().get("protected");
+        Object value = getContextValue("protected", false);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        return Boolean.parseBoolean(value.toString());
     }
 
     /**
      * Restituisce il watermark da applicare
-     *
-     * @return stringa contenente il watermark
      */
-    public static String getWatermark() {return context.get().get("watermark").toString();}
+    public static String getWatermark() {
+        Object value = getContextValue("watermark", "");
+        return value.toString();
+    }
 
     /**
      * Indica se la conversione multipla è abilitata.
-     *
-     * @return {@code true} se sono consentite conversioni multiple, {@code false} altrimenti
      */
     public static Boolean getIsMultipleConversionEnabled() throws JsonStructureException {
-        return (Boolean) context.get().get("multipleConversion");
+        Object value = getContextValue("multipleConversion", false);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        return Boolean.parseBoolean(value.toString());
+    }
+
+    /**
+     * Metodo di debug per verificare stato del context
+     */
+    public static void debugContext() {
+        logger.info("=== DEBUG CONTEXT ===");
+        logger.info("Thread: {}", Thread.currentThread().getName());
+        logger.info("JsonFile: {}", getJsonFile() != null ? getJsonFile().getAbsolutePath() : "null");
+
+        HashMap<String, Object> currentContext = getCurrentContext();
+        if (currentContext != null) {
+            logger.info("Context size: {}", currentContext.size());
+            logger.info("Context keys: {}", currentContext.keySet());
+            currentContext.forEach((k, v) -> logger.info("  {} = {}", k, v));
+        } else {
+            logger.error("Context è NULL!");
+        }
+        logger.info("=== END DEBUG ===");
     }
 }

@@ -207,7 +207,8 @@ public class MainViewController {
 
 
         // 2) inizializzo engine e client
-        webServiceClient = new ConverterWebServiceClient("http://172.20.10.3:8080");
+        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
+        logger.info(webServiceClient.isServiceAvailable());
         // 3) UI setup e configurazione
         setupEventHandlers();
         logger.info("Applicazione avviata. Caricamento configurazione...");
@@ -719,7 +720,6 @@ public class MainViewController {
         //Quando viene chiamato incrementa il numero di file ricevuti
         Platform.runLater(() -> {fileRicevuti++; stampaRisultati();});
         String srcExtension;
-
         List<String> formats = null;
         try {
             srcExtension = extractSrcExtension(srcFile);
@@ -763,7 +763,7 @@ public class MainViewController {
     private String extractSrcExtension(File file) throws IOException, IllegalExtensionException {
         String srcExtension = Utility.getExtension(file);
         //Se è impostata la conversione multipla prende l'estensione dei file contenuti se è uguale per tutti
-        if(webService.server.configuration.configHandlers.conversionContext.ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
+        if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(file).equals("zip")) {
             try {
                 srcExtension = Zipper.extractFileExstension(file);
             } catch (IOException e) {
