@@ -2,7 +2,6 @@ package webService.client.gui;
 
 import javafx.scene.Parent;
 import webService.client.auth.AuthManager;
-import webService.client.auth.LoginRequest;
 import webService.client.gui.jsonHandler.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -100,50 +99,13 @@ public class LoginController {
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            showError(bundle.getString("login.error.emptyFields"));
-            return;
+        if (authManager.login(username, password)) {
+            // LOGIN OK → apri app principale
+            MainApp.showMainApplication();
+        } else {
+            // LOGIN FALLITO → mostra errore
+            showError("Credenziali non valide");
         }
-
-        // Disabilita il pulsante durante il login
-        loginButton.setDisable(true);
-        loginButton.setText(bundle.getString("login.button.loading"));
-        hideError();
-
-        // Login asincrono
-        LoginRequest loginRequest = new LoginRequest(username, password);
-
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                return authManager.login(loginRequest);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).thenAccept(authResponse -> {
-            Platform.runLater(() -> {
-                logger.info("Login riuscito per utente: {}", username);
-
-                // Salva il token per le future richieste
-                authManager.setAuthToken(authResponse.getToken());
-
-                // Avvia l'applicazione principale
-                MainApp.showMainApplication();
-            });
-        }).exceptionally(throwable -> {
-            Platform.runLater(() -> {
-                logger.warn("Login fallito per utente {}: {}", username, throwable.getMessage());
-                showError(bundle.getString("login.error.invalidCredentials"));
-
-                // Re-abilita il pulsante
-                loginButton.setDisable(false);
-                loginButton.setText(bundle.getString("login.button.text"));
-
-                // Pulisce la password
-                passwordField.clear();
-                passwordField.requestFocus();
-            });
-            return null;
-        });
     }
 
     @FXML

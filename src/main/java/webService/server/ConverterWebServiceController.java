@@ -307,25 +307,36 @@ public class ConverterWebServiceController {
     }
 
     /**
-     * Endpoint per registrare un nuovo utente (solo admin)
+     * Endpoint per registrare un nuovo utente
      */
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(
             @Valid @RequestBody RegisterRequest registerRequest,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
         try {
-            String token = authHeader.replace("Bearer ", "");
-            User currentUser = authService.getCurrentUser(token);
+            logger.info("Tentativo di registrazione per utente: {}", registerRequest.getUsername());
 
-            // Solo admin può registrare nuovi utenti
-            if (!"ADMIN".equals(currentUser.getRole())) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", "Access denied. Admin role required.");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            // registrazione pubblica con controllo se c'è un token valido
+            if (authHeader != null && !authHeader.isEmpty()) {
+                try {
+                    String token = authHeader.replace("Bearer ", "");
+                    User currentUser = authService.getCurrentUser(token);
+
+                    // Se sei già autenticato e non sei admin, non puoi registrare altri
+                    if (!"ADMIN".equals(currentUser.getRole())) {
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("success", false);
+                        response.put("message", "Access denied. Admin role required for authenticated registration.");
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                    }
+                } catch (Exception e) {
+                    // Token non valido, procedi con registrazione pubblica
+                    logger.debug("Token non valido per registrazione: {}", e.getMessage());
+                }
             }
 
+            // Registrazione pubblica o da admin
             User newUser = authService.registerUser(registerRequest);
 
             Map<String, Object> response = new HashMap<>();
@@ -337,13 +348,14 @@ public class ConverterWebServiceController {
             return ResponseEntity.ok(response);
 
         } catch (AuthException e) {
+            logger.warn("Registrazione fallita per {}: {}", registerRequest.getUsername(), e.getMessage());
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
         } catch (Exception e) {
-            logger.error("Errore durante registrazione: {}", e.getMessage());
+            logger.error("Errore durante registrazione per {}: {}", registerRequest.getUsername(), e.getMessage());
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Internal server error");

@@ -1,234 +1,219 @@
-/* ===== LOGIN & REGISTER THEME CSS ===== */
+/* ========== CORREZIONI PER I PULSANTI ========== */
 
-/* ROOT CONTAINERS */
-.login-container, .register-container {
-    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -fx-background-radius: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);
+/* Dimensioni fisse per i pulsanti - NIENTE CAMBI AL HOVER */
+.standard-btn, .accent-btn, .theme-toggle-btn {
+    -fx-min-width: -1;
+    -fx-min-height: -1;
+    -fx-max-width: -1;
+    -fx-max-height: -1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    /* IMPORTANTE: Non cambiare padding, margin o size al hover */
 }
 
-.light .login-container, .light .register-container {
-    -fx-background-color: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+/* Pulsanti standard - grigio */
+.standard-btn {
+    -fx-background-color: #4a4a4a;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #666666;
+    -fx-border-width: 1;
 }
 
-/* HEADER STYLES */
-.login-header, .register-header {
-    -fx-padding: 20 0 10 0;
+.standard-btn:hover {
+    -fx-background-color: #555555;
+    /* NIENTE cambi di dimensione */
 }
 
-.login-title, .register-title {
-    -fx-text-fill: white;
+.standard-btn:pressed {
+    -fx-background-color: #3a3a3a;
+}
+
+/* Pulsanti accent - acquamarina */
+.accent-btn {
+    -fx-background-color: #2dd4bf;
+    -fx-text-fill: #000000;
+    -fx-border-color: #14b8a6;
+    -fx-border-width: 1;
+}
+
+.accent-btn:hover {
+    -fx-background-color: #14b8a6;
+    /* NIENTE cambi di dimensione */
+}
+
+.accent-btn:pressed {
+    -fx-background-color: #0d9488;
+}
+
+/* Pulsanti theme toggle */
+.theme-toggle-btn {
+    -fx-background-color: #4a4a4a;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #666666;
+    -fx-border-width: 1;
+}
+
+.theme-toggle-btn:hover {
+    -fx-background-color: #555555;
+    /* NIENTE cambi di dimensione */
+}
+
+/* Campi di input */
+.standard-field {
+    -fx-background-color: #3a3a3a;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #666666;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8;
+}
+
+.standard-field:focused {
+    -fx-border-color: #2dd4bf;
+    -fx-border-width: 2;
+}
+
+/* ========== TEMA DARK ========== */
+.root-dark {
+    -fx-background-color: #1e1e1e;
+}
+
+.main-container {
+    -fx-background-color: #1e1e1e;
+}
+
+.header-bar {
+    -fx-background-color: #2a2a2a;
+}
+
+.footer-bar {
+    -fx-background-color: #2a2a2a;
+}
+
+.login-header {
+    -fx-background-color: transparent;
+}
+
+.login-form {
+    -fx-background-color: transparent;
+}
+
+/* ========== TEMA LIGHT ========== */
+.root-light {
+    -fx-background-color: #f8f9fa;
+}
+
+.light .main-container {
+    -fx-background-color: #f8f9fa;
+}
+
+.light .header-bar {
+    -fx-background-color: #e9ecef;
+}
+
+.light .footer-bar {
+    -fx-background-color: #e9ecef;
+}
+
+.light .standard-btn {
+    -fx-background-color: #e9ecef;
+    -fx-text-fill: #000000;
+    -fx-border-color: #ced4da;
+}
+
+.light .standard-btn:hover {
+    -fx-background-color: #dee2e6;
+}
+
+.light .standard-field {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+    -fx-border-color: #ced4da;
+}
+
+.light .theme-toggle-btn {
+    -fx-background-color: #e9ecef;
+    -fx-text-fill: #000000;
+    -fx-border-color: #ced4da;
+}
+
+.light .theme-toggle-btn:hover {
+    -fx-background-color: #dee2e6;
+}
+
+/* ========== TESTI E LABEL ========== */
+.app-title {
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 1);
 }
 
-.login-subtitle, .register-subtitle {
-    -fx-text-fill: rgba(255,255,255,0.9);
+.light .app-title {
+    -fx-text-fill: #000000;
+}
+
+.section-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.light .section-title {
+    -fx-text-fill: #000000;
+}
+
+.stat-label {
+    -fx-text-fill: #cccccc;
+    -fx-font-weight: bold;
+}
+
+.light .stat-label {
+    -fx-text-fill: #333333;
+}
+
+.developer-info {
+    -fx-text-fill: #888888;
     -fx-font-style: italic;
 }
 
-/* FORM STYLES */
-.login-form, .register-form {
-    -fx-background-color: rgba(255,255,255,0.95);
-    -fx-background-radius: 15;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
-}
-
-.dark .login-form, .dark .register-form {
-    -fx-background-color: rgba(45,45,45,0.95);
-}
-
-/* FIELD LABELS */
-.field-label {
-    -fx-text-fill: #333333;
-    -fx-font-weight: bold;
-}
-
-.dark .field-label {
-    -fx-text-fill: #ffffff;
-}
-
-/* INPUT FIELDS */
-.login-field, .register-field {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #e1e8ed;
-    -fx-border-width: 1;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 8 12 8 12;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 3, 0, 0, 1);
-}
-
-.login-field:focused, .register-field:focused {
-    -fx-border-color: #667eea;
-    -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.3), 5, 0, 0, 0);
-}
-
-.dark .login-field, .dark .register-field {
-    -fx-background-color: #2d2d2d;
-    -fx-border-color: #444444;
-    -fx-text-fill: #ffffff;
-    -fx-prompt-text-fill: #999999;
-}
-
-.dark .login-field:focused, .dark .register-field:focused {
-    -fx-border-color: #667eea;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 5, 0, 0, 0);
-}
-
-/* BUTTONS */
-.login-btn, .register-btn {
-    -fx-background-color: linear-gradient(to bottom, #667eea, #5a67d8);
-    -fx-text-fill: white;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
-    -fx-cursor: hand;
-}
-
-.login-btn:hover, .register-btn:hover {
-    -fx-background-color: linear-gradient(to bottom, #5a67d8, #4c51bf);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
-}
-
-.login-btn:pressed, .register-btn:pressed {
-    -fx-background-color: linear-gradient(to bottom, #4c51bf, #3c366b);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
-}
-
-.login-btn:disabled, .register-btn:disabled {
-    -fx-background-color: #cccccc;
+.light .developer-info {
     -fx-text-fill: #666666;
-    -fx-effect: none;
-    -fx-opacity: 0.7;
 }
 
-.secondary-btn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #667eea;
-    -fx-border-color: #667eea;
-    -fx-border-width: 1;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-cursor: hand;
+/* ========== SEPARATORI ========== */
+.main-separator {
+    -fx-background-color: #444444;
 }
 
-.secondary-btn:hover {
-    -fx-background-color: rgba(102,126,234,0.1);
+.light .main-separator {
+    -fx-background-color: #dee2e6;
 }
 
-.dark .secondary-btn {
-    -fx-text-fill: #7c8aed;
-    -fx-border-color: #7c8aed;
-}
-
-/* THEME AND LANGUAGE BUTTONS */
-.theme-btn, .lang-btn {
-    -fx-background-color: rgba(255,255,255,0.2);
-    -fx-text-fill: white;
-    -fx-background-radius: 15;
-    -fx-border-radius: 15;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
-    -fx-cursor: hand;
-}
-
-.theme-btn:hover, .lang-btn:hover {
-    -fx-background-color: rgba(255,255,255,0.3);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
-}
-
-/* MESSAGES */
+/* ========== MESSAGGI DI ERRORE/SUCCESSO ========== */
 .error-message {
-    -fx-text-fill: #e53e3e;
+    -fx-text-fill: #ff6b6b;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(229,62,62,0.3), 2, 0, 0, 1);
 }
 
 .success-message {
-    -fx-text-fill: #38a169;
+    -fx-text-fill: #51cf66;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(56,161,105,0.3), 2, 0, 0, 1);
 }
 
-.note-text {
-    -fx-text-fill: rgba(255,255,255,0.8);
-    -fx-font-style: italic;
-}
-
-.version-info {
-    -fx-text-fill: rgba(255,255,255,0.7);
-}
-
-/* COMBO BOX */
-.register-field.combo-box {
-    -fx-background-color: #ffffff;
-}
-
-.dark .register-field.combo-box {
-    -fx-background-color: #2d2d2d;
-}
-
-.register-field.combo-box .list-cell {
-    -fx-text-fill: #333333;
-}
-
-.dark .register-field.combo-box .list-cell {
-    -fx-text-fill: #ffffff;
-}
-
-/* LANGUAGE MENU ITEMS */
-.lang-menu-item {
+/* ========== SCROLLPANE ========== */
+.log-scroll {
     -fx-background-color: transparent;
-    -fx-padding: 5 10 5 10;
-    -fx-cursor: hand;
+    -fx-border-color: transparent;
 }
 
-.lang-menu-item:hover {
-    -fx-background-color: rgba(102,126,234,0.2);
-    -fx-background-radius: 5;
+.log-scroll .viewport {
+    -fx-background-color: transparent;
 }
 
-.flag-icon {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0, 0, 1);
+.log-scroll .scroll-bar {
+    -fx-background-color: #444444;
 }
 
-.flag-name {
-    -fx-text-fill: #333333;
-    -fx-font-weight: bold;
-}
-
-.dark .flag-name {
-    -fx-text-fill: #ffffff;
-}
-
-/* CONTEXT MENU STYLING */
-.context-menu {
-    -fx-background-color: rgba(255,255,255,0.95);
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3);
-    -fx-border-color: #e1e8ed;
-    -fx-border-width: 1;
-    -fx-border-radius: 8;
-}
-
-.dark .context-menu {
-    -fx-background-color: rgba(45,45,45,0.95);
-    -fx-border-color: #555555;
-}
-
-/* RESPONSIVE ADJUSTMENTS */
-@media (max-width: 500px) {
-    .login-container, .register-container {
-        -fx-padding: 20;
-    }
-
-    .login-field, .register-field {
-        -fx-pref-width: 250;
-    }
-
-    .login-btn, .register-btn, .secondary-btn {
-        -fx-pref-width: 250;
-    }
+.light .log-scroll .scroll-bar {
+    -fx-background-color: #ced4da;
 }

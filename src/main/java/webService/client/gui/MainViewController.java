@@ -620,19 +620,52 @@ public class MainViewController {
     }
 
     /**
-     * Termina l'applicazione
+     * Termina l'applicazione con logout automatico
      */
     private void exitApplication() {
-        boolean isLightTheme = themeToggle.isSelected();
-        // **APPLICA IL TEMA CORRENTE ALLA CONVERSION CONFIG WINDOW**
-        if (isLightTheme) {
-            ConfigManager.writeConfig(new JsonConfig("light",MainApp.getCurrentLocale().getLanguage()));
-        } else {
-            ConfigManager.writeConfig(new JsonConfig("dark" ,MainApp.getCurrentLocale().getLanguage()));
-        }
+        logger.info("Avvio procedura di chiusura applicazione...");
         addLogMessage("Chiusura dell'applicazione...");
-        interruptWatcher();
-        Platform.exit();
+
+        try {
+            // 1. LOGOUT AUTOMATICO se autenticato
+            if (MainApp.getAuthManager() != null && MainApp.getAuthManager().isAuthenticated()) {
+                logger.info("Logout automatico in corso...");
+                addLogMessage("Logout automatico...");
+                MainApp.getAuthManager().logout();
+                addLogMessage("Logout completato");
+            }
+
+            // 2. Salva configurazione tema
+            boolean isLightTheme = themeToggle.isSelected();
+            if (isLightTheme) {
+                ConfigManager.writeConfig(new JsonConfig("light", MainApp.getCurrentLocale().getLanguage()));
+            } else {
+                ConfigManager.writeConfig(new JsonConfig("dark", MainApp.getCurrentLocale().getLanguage()));
+            }
+            addLogMessage("Configurazione salvata");
+
+            // 3. Interrompi thread di monitoraggio
+            addLogMessage("Interruzione monitoraggio...");
+            interruptWatcher();
+
+            // 4. Piccola pausa per completare operazioni
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // 5. Chiudi applicazione
+            addLogMessage("Chiusura completata");
+            logger.info("Applicazione chiusa correttamente");
+            Platform.exit();
+
+        } catch (Exception e) {
+            logger.error("Errore durante chiusura: {}", e.getMessage());
+            addLogMessage("Errore durante chiusura: " + e.getMessage());
+            // Forza la chiusura anche in caso di errore
+            Platform.exit();
+        }
     }
 
     /**

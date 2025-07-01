@@ -2,7 +2,6 @@ package webService.client.gui;
 
 import javafx.scene.Parent;
 import webService.client.auth.AuthManager;
-import webService.client.auth.RegisterRequest;
 import webService.client.gui.jsonHandler.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,10 +15,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -32,7 +28,6 @@ public class RegisterController {
     @FXML private Label emailLabel;
     @FXML private Label passwordLabel;
     @FXML private Label confirmPasswordLabel;
-    @FXML private Label roleLabel;
     @FXML private Label noteLabel;
     @FXML private Label errorLabel;
     @FXML private Label successLabel;
@@ -42,7 +37,6 @@ public class RegisterController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
-    @FXML private ComboBox<String> roleComboBox;
 
     @FXML private Button registerButton;
     @FXML private Button backToLoginButton;
@@ -57,7 +51,7 @@ public class RegisterController {
 
     // Pattern per validazione email
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
     );
 
     private final Map<String, Locale> localeMap = new HashMap<>();
@@ -90,11 +84,6 @@ public class RegisterController {
         JsonConfig config = ConfigManager.readConfig();
         boolean isLight = "light".equals(config.getTheme());
         themeToggle.setSelected(isLight);
-
-        // Imposta valori di default per ComboBox
-        roleComboBox.getItems().clear();
-        roleComboBox.getItems().addAll("USER", "ADMIN");
-        roleComboBox.setValue("USER"); // Default a USER
 
         // Focus iniziale
         Platform.runLater(() -> fullNameField.requestFocus());
@@ -178,48 +167,55 @@ public class RegisterController {
         String username = usernameField.getText().trim();
         String email = emailField.getText().trim();
         String password = passwordField.getText();
-        String role = roleComboBox.getValue();
+        String role = "USER"; // Sempre USER per default
 
         // Disabilita il pulsante durante la registrazione
         registerButton.setDisable(true);
         registerButton.setText(bundle.getString("register.button.loading"));
         hideMessages();
 
-        // Registrazione asincrona
-        RegisterRequest registerRequest = new RegisterRequest(username, email, password, fullName, role);
-
+        // Registrazione asincrona con SimpleAuthManager
         CompletableFuture.supplyAsync(() -> {
-            try {
-                return authManager.register(registerRequest);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            // Chiamata diretta al SimpleAuthManager - niente classi intermedie
+            return authManager.register(fullName, username, email, password, role);
         }).thenAccept(success -> {
             Platform.runLater(() -> {
-                logger.info("Registrazione riuscita per utente: {}", username);
-                showSuccess(bundle.getString("register.success.message"));
+                if (success) {
+                    logger.info("Registrazione riuscita per utente: {}", username);
+                    showSuccess(bundle.getString("register.success.message"));
 
-                // Pulisce i campi
-                clearFields();
+                    // Pulisce i campi
+                    clearFields();
 
-                // Re-abilita il pulsante
-                registerButton.setDisable(false);
-                registerButton.setText(bundle.getString("register.button.text"));
+                    // Re-abilita il pulsante
+                    registerButton.setDisable(false);
+                    registerButton.setText(bundle.getString("register.button.text"));
 
-                // Torna al login dopo 2 secondi
-                Platform.runLater(() -> {
-                    try {
-                        Thread.sleep(2000);
-                        handleBackToLogin();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                });
+                    // Torna al login dopo 2 secondi
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Platform.runLater(() -> {
+                                handleBackToLogin();
+                                timer.cancel();
+                            });
+                        }
+                    }, 2000);
+
+                } else {
+                    logger.warn("Registrazione fallita per utente: {}", username);
+                    showError(bundle.getString("register.error.failed"));
+
+                    // Re-abilita il pulsante
+                    registerButton.setDisable(false);
+                    registerButton.setText(bundle.getString("register.button.text"));
+                }
             });
         }).exceptionally(throwable -> {
             Platform.runLater(() -> {
-                logger.warn("Registrazione fallita per utente {}: {}", username, throwable.getMessage());
-                showError(throwable.getMessage());
+                logger.error("Errore durante registrazione per utente {}: {}", username, throwable.getMessage());
+                showError(bundle.getString("register.error.connection"));
 
                 // Re-abilita il pulsante
                 registerButton.setDisable(false);
@@ -276,7 +272,6 @@ public class RegisterController {
         emailField.clear();
         passwordField.clear();
         confirmPasswordField.clear();
-        roleComboBox.setValue("USER");
 
         // Reset stili
         fullNameField.setStyle("");
@@ -380,7 +375,6 @@ public class RegisterController {
         emailLabel.setText(bundle.getString("register.email"));
         passwordLabel.setText(bundle.getString("register.password"));
         confirmPasswordLabel.setText(bundle.getString("register.confirmPassword"));
-        roleLabel.setText(bundle.getString("register.role"));
         registerButton.setText(bundle.getString("register.button.text"));
         backToLoginButton.setText(bundle.getString("register.backToLogin"));
         noteLabel.setText(bundle.getString("register.note"));
