@@ -79,12 +79,12 @@ public class ConversionConfigWindowController {
 
     private void avviaGuida() {
         List<GuideStep> steps = Arrays.asList(
-                new GuideStep(txtPassword, bundle.getString("tutorial.config.step1.message")),
-                new GuideStep(toggleProtectedOutputBtn, bundle.getString("tutorial.config.step3.message")),
-                new GuideStep(toggleUnionBtn, bundle.getString("tutorial.config.step5.message")),
-                new GuideStep(toggleZippedOutputBtn, bundle.getString("tutorial.config.step7.message")),
-                new GuideStep(toggleMultipleConversionBtn, bundle.getString("tutorial.config.step7.message")),
-                new GuideStep(txtWatermark, bundle.getString("tutorial.config.step7.message"))
+                new GuideStep(txtPassword, bundle.getString("tutorial.configConversion.step1.message")),
+                new GuideStep(toggleProtectedOutputBtn, bundle.getString("tutorial.configConversion.step2.message")),
+                new GuideStep(toggleUnionBtn, bundle.getString("tutorial.configConversion.step3.message")),
+                new GuideStep(toggleZippedOutputBtn, bundle.getString("tutorial.configConversion.step4.message")),
+                new GuideStep(toggleMultipleConversionBtn, bundle.getString("tutorial.configConversion.step5.message")),
+                new GuideStep(txtWatermark, bundle.getString("tutorial.configConversion.step6.message"))
         );
 
         VisualGuide guida = new VisualGuide(overlayPane, steps);
