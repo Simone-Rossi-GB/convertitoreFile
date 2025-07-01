@@ -200,7 +200,7 @@ public class MainViewController {
 
 
         // 2) inizializzo engine e client
-        webServiceClient = new ConverterWebServiceClient("http://172.20.10.3:8080");
+        webServiceClient = new ConverterWebServiceClient("http://localhost:8080");
 
         // 3) UI setup e configurazione
         setupEventHandlers();

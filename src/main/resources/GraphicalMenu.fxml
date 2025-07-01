@@ -7,6 +7,8 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
@@ -18,18 +20,46 @@
         <VBox prefHeight="654.0" prefWidth="900.0" spacing="0" styleClass="main-container">
 
             <!-- HEADER BAR -->
-            <HBox fx:id="header" alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="900.0" spacing="10" styleClass="header-bar">
+            <HBox fx:id="header" alignment="BOTTOM_LEFT" prefHeight="32.0" prefWidth="900.0" spacing="10" styleClass="header-bar">
                 <children>
-                    <Label fx:id="mainTitleLabel" styleClass="app-title" text="File Converter Manager">
-                        <font><Font name="System Bold" size="22.0" /></font>
-                    </Label>
+               <ImageView fitHeight="38.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@icons/app_icon.png" />
+                  </image>
+                  <HBox.margin>
+                     <Insets bottom="2.0" />
+                  </HBox.margin>
+               </ImageView>
+               <VBox prefHeight="32.0" prefWidth="222.0">
+                  <children>
+                          <Label fx:id="mainTitleLabel" prefHeight="31.0" prefWidth="128.0" styleClass="app-title" text="ByteBridge">
+                              <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                          </Label>
+                     <Label styleClass="app-title" text="Il ponte digitale per ogni conversione">
+                        <font>
+                           <Font name="System Bold Italic" size="9.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </VBox>
                     <Region HBox.hgrow="ALWAYS" />
-                    <Button fx:id="exitBtn" prefHeight="32.0" prefWidth="35.0" styleClass="standard-btn" text="×">
-                        <font><Font name="DejaVu Sans" size="16.0" /></font>
-                    </Button>
+               <HBox alignment="CENTER_RIGHT" prefHeight="49.0" prefWidth="46.0">
+                  <children>
+                          <Button fx:id="exitBtn" prefHeight="32.0" prefWidth="35.0" styleClass="standard-btn" text="×">
+                              <font>
+                           <Font name="DejaVu Sans" size="16.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets top="2.0" />
+                        </HBox.margin>
+                          </Button>
+                  </children>
+               </HBox>
                 </children>
                 <padding>
-                    <Insets bottom="15.0" left="25.0" right="15.0" top="15.0" />
+                    <Insets bottom="5.0" left="15.0" right="15.0" top="3.0" />
                 </padding>
             </HBox>
 
