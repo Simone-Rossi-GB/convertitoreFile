@@ -61,12 +61,13 @@ public class ConversionContextWriter extends ConversionContextData {
      */
     public static void setWatermark(String newWatermark) {context.get().put("watermark", newWatermark);}
 
+
     /**
      * Abilita o disabilita la possibilità di effettuare conversioni multiple.
      *
      * @param isMultipleConversionEnabled valore booleano per "multipleConversion"
      */
-    public void setIsMultipleConversionEnabled(boolean isMultipleConversionEnabled) {
+    public static void setIsMultipleConversionEnabled(boolean isMultipleConversionEnabled) {
         context.get().put("multipleConversion", isMultipleConversionEnabled);
     }
 }

@@ -275,6 +275,8 @@ public class ConversionConfigWindowController {
         ConversionContextWriter.setIsZippedOutput(zippedOutput);
         ConversionContextWriter.setPassword(txtPassword.getText());
         ConversionContextWriter.setWatermark(txtWatermark.getText());
+        ConversionContextWriter.setProtected(protectedOutput);
+        ConversionContextWriter.setIsMultipleConversionEnabled(multipleConversions);
 
         logger.info("Configurazione di conversione salvata con successo");
 
@@ -284,6 +286,7 @@ public class ConversionConfigWindowController {
         wr.writePassword(txtPassword.getText());
         wr.writeProtected(protectedOutput);
         wr.writeWatermark(txtWatermark.getText());
+        wr.writeIsMultipleConversionEnabled(multipleConversions);
 
         ConversionContextData.update(new ConversionContextInstance(ConversionContextData.getJsonFile()));
 
