@@ -214,7 +214,7 @@ public class VisualGuide {
             }
             // Altrimenti a sinistra
             else if (targetBounds.getMinX() - messageWidth - 20 >= 0) {
-                x = targetBounds.getMinX() - messageWidth - 20;
+                x = targetBounds.getMinX() - messageWidth - 50;
             }
             // Altrimenti centrato orizzontalmente
             else {
