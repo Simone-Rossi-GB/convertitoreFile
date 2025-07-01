@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="598.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConfigWindowController">
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="598.0" spacing="0" styleClass="config-root-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="webService.client.gui.ConfigWindowController">
 
     <children>
         <!-- MODERN HEADER -->
@@ -136,7 +141,7 @@
                   <children>
                   <HBox prefHeight="36.0" prefWidth="189.0">
                      <children>
-                        <Button fx:id="tutorialConfigPage" mnemonicParsing="false" prefHeight="25.0" prefWidth="35.0" styleClass="theme-toggle-btn" text=" ? ">
+                        <Button fx:id="tutorialConfigPage" mnemonicParsing="false" prefHeight="26.0" prefWidth="36.0" styleClass="theme-toggle-btn" text="?">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
