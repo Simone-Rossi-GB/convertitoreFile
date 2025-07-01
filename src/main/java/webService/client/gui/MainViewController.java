@@ -473,6 +473,7 @@ public class MainViewController {
             Pane overlayPane = new Pane();
             overlayPane.setPickOnBounds(false);
 
+
             // Layout combinato
             StackPane layeredRoot = new StackPane(configRoot, overlayPane);
             Scene scene = new Scene(layeredRoot);
@@ -489,8 +490,10 @@ public class MainViewController {
             // Applica il tema attivo
             if (themeToggle != null && themeToggle.isSelected()) {
                 configRoot.getStyleClass().add("light");
+                overlayPane.getStyleClass().add("light");
             } else {
                 configRoot.getStyleClass().add("dark");
+                overlayPane.getStyleClass().add("dark");
             }
 
             // Aggiungi CSS

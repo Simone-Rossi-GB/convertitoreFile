@@ -184,7 +184,7 @@
     -fx-background-radius: 8;
     -fx-border-width: 1;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
+
     -fx-min-width: 150px;
     -fx-pref-width: 150px;
     -fx-max-width: 150px;
@@ -199,7 +199,7 @@
     -fx-background-radius: 8 !important;
     -fx-border-width: 2 !important;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 8, 0, 0, 3) !important;
+
     -fx-min-width: 150px;
     -fx-pref-width: 150px;
     -fx-max-width: 150px;
@@ -208,13 +208,13 @@
 /* HOVER per stato INATTIVO */
 .config-toggle-btn:hover {
     -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+
 }
 
 /* HOVER per stato ATTIVO */
 .active-state:hover {
     -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%) !important;
-    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4) !important;
+
 }
 
 /* JSON EDITOR */
