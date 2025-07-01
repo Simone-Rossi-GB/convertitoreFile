@@ -98,9 +98,9 @@ public class ConfigWindowController {
     public void avviaGuida(){
 
         List<GuideStep> steps = Arrays.asList(
-                new GuideStep(browseMonitoredBtn, bundle.getString("tutorial.config.step1.message")),
-                new GuideStep(browseSuccessBtn, bundle.getString("tutorial.config.step3.message")),
-                new GuideStep(browseErrorBtn, bundle.getString("tutorial.config.step5.message")),
+                new GuideStep(monitoredDirField, bundle.getString("tutorial.config.step1.message")),
+                new GuideStep(successDirField, bundle.getString("tutorial.config.step3.message")),
+                new GuideStep(errorDirField, bundle.getString("tutorial.config.step5.message")),
                 new GuideStep(toggleMonitorBtn, bundle.getString("tutorial.config.step7.message"))
         );
 
