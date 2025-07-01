@@ -105,10 +105,6 @@ public class ConfigWindowController {
                 new GuideStep(errorDirField, bundle.getString("tutorial.config.step5.message")),
                 new GuideStep(toggleMonitorBtn, bundle.getString("tutorial.config.step7.message"))
         );
-        System.out.println("OverlayPane: " + overlayPane);
-        System.out.println("OverlayPane in scene: " + (overlayPane.getScene() != null));
-        System.out.println("Target bounds: " + monitoredDirField.localToScene(monitoredDirField.getBoundsInLocal()));
-
 
         VisualGuide guida = new VisualGuide(overlayPane, steps);
         guida.start();

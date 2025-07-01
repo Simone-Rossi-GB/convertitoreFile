@@ -48,6 +48,7 @@ public class MainApp extends Application {
         root.getStyleClass().add(config.getTheme());
         overlayPane.getStyleClass().add(config.getTheme());
         controller.setRoot(root);
+        DialogHelper.setRoot(root);
 
         StackPane layeredRoot = new StackPane(root, overlayPane);
         controller.setOverlayPane(overlayPane);
