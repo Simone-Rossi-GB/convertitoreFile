@@ -175,8 +175,8 @@
     -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.7), 12, 0, 0, 4);
 }
 
-/* TOGGLE BUTTON - ALLARGATO E STABILE */
-.config-toggle-btn, .config-toggle-btn-active {
+/* TOGGLE BUTTON - Stato INATTIVO (grigio) */
+.config-toggle-btn {
     -fx-background-color: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
     -fx-text-fill: white;
     -fx-border-color: #4a5568;
@@ -184,17 +184,37 @@
     -fx-background-radius: 8;
     -fx-border-width: 1;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2);
-    -fx-min-width: 150px;  /* ANCORA PIÙ LARGO */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+    -fx-min-width: 150px;
     -fx-pref-width: 150px;
     -fx-max-width: 150px;
 }
 
-/* HOVER STABILE ANCHE PER TOGGLE */
-.config-toggle-btn:hover, .config-toggle-btn-active:hover {
+/* TOGGLE BUTTON - Stato ATTIVO (azzurro) */
+.active-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
+    -fx-border-radius: 8 !important;
+    -fx-background-radius: 8 !important;
+    -fx-border-width: 2 !important;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+/* HOVER per stato INATTIVO */
+.config-toggle-btn:hover {
     -fx-background-color: linear-gradient(to bottom, #5a6578 0%, #3d4758 100%);
-    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 3);
+}
+
+/* HOVER per stato ATTIVO */
+.active-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%) !important;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 6, 0, 0, 3);
 }
 
 /* JSON EDITOR */
@@ -394,20 +414,46 @@
     -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.3), 4, 0, 0, 1) !important;
 }
 
-/* LIGHT THEME - TOGGLE BUTTON ALLARGATO E STABILE */
-.light .config-toggle-btn, .light .config-toggle-btn-active {
+/* LIGHT THEME - TOGGLE BUTTON Stato INATTIVO (grigio chiaro) */
+.light .config-toggle-btn {
     -fx-background-color: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e0 100%);
     -fx-text-fill: #2d3748;
     -fx-border-color: #e2e8f0;
-    -fx-min-width: 150px;  /* STESSA LARGHEZZA DEL DARK THEME */
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+    -fx-min-width: 150px;
     -fx-pref-width: 150px;
     -fx-max-width: 150px;
 }
 
-.light .config-toggle-btn:hover, .light .config-toggle-btn-active:hover {
+/* LIGHT THEME - TOGGLE BUTTON Stato ATTIVO (azzurro) */
+.light .active-state {
+    -fx-background-color: linear-gradient(to bottom, #4FD1C7 0%, #38B2AC 100%) !important;
+    -fx-text-fill: white !important;
+    -fx-border-color: #4FD1C7 !important;
+    -fx-border-radius: 8 !important;
+    -fx-background-radius: 8 !important;
+    -fx-border-width: 2 !important;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.4), 8, 0, 0, 3) !important;
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
+    -fx-max-width: 150px;
+}
+
+/* LIGHT THEME - HOVER per stato INATTIVO */
+.light .config-toggle-btn:hover {
     -fx-background-color: linear-gradient(to bottom, #cbd5e0 0%, #a0aec0 100%);
-    /* NESSUN MOVIMENTO - SOLO OMBRA PIÙ INTENSA */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 4);
+}
+
+/* LIGHT THEME - HOVER per stato ATTIVO */
+.light .active-state:hover {
+    -fx-background-color: linear-gradient(to bottom, #81E6D9 0%, #4FD1C7 100%) !important;
+    -fx-effect: dropshadow(gaussian, rgba(79, 209, 199, 0.6), 12, 0, 0, 4) !important;
 }
 
 .light .config-json-scroll,

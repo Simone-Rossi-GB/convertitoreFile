@@ -1,6 +1,7 @@
 package webService.client.gui;
 
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import webService.client.gui.jsonHandler.*;
 
 import javafx.scene.paint.Color;
@@ -40,11 +41,24 @@ public class MainApp extends Application {
         controller.setMainApp(this);
 
         // Creo la scena, senza dimensioni hard-coded (l'FXML le contiene)
-        Scene scene = new Scene(root);
+        Pane overlayPane = new Pane(); // Per la guida visiva
+        overlayPane.setPickOnBounds(false); // Lascia passare eventi se vuoi
+
+        // Applico il tema di default
+        root.getStyleClass().add(config.getTheme());
+        overlayPane.getStyleClass().add(config.getTheme());
+        controller.setRoot(root);
+        DialogHelper.setRoot(root);
+
+        StackPane layeredRoot = new StackPane(root, overlayPane);
+        controller.setOverlayPane(overlayPane);
+
+        Scene scene = new Scene(layeredRoot);
 
         // Carico i CSS per il tema principale e per i dialog moderni
         scene.getStylesheets().addAll(
-                getClass().getResource("/styles/modern-main-theme.css").toExternalForm()
+                getClass().getResource("/styles/modern-main-theme.css").toExternalForm(),
+                getClass().getResource("/styles/tutorial-theme.css").toExternalForm()
         );
 
         // **AGGIUNGIAMO IL CSS PER I DIALOG MODERNI GLOBALMENTE**
@@ -59,9 +73,6 @@ public class MainApp extends Application {
                 logger.warn("Impossibile caricare CSS dialog moderni: " + cssError2.getMessage());
             }
         }
-
-        // Applico il tema di default
-        root.getStyleClass().add(config.getTheme());
 
         // Configuro lo stage
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/app_icon.png"))));

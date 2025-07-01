@@ -2,9 +2,9 @@
   "data" : {
     "destinationFormat" : "pdf",
     "password" : "samplefiles",
-    "protected" : false,
+    "protected" : true,
     "union" : true,
-    "zippedOutput" : false,
+    "zippedOutput" : true,
     "watermark" : "ciao",
     "multipleConversion" : false
   }
