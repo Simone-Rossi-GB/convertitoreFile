@@ -5,6 +5,7 @@ import javafx.animation.ScaleTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -199,24 +200,33 @@ public class VisualGuide {
 
         double x, y;
 
-        // Prova a posizionare a destra del target
-        if (targetBounds.getMaxX() + messageWidth + 20 <= overlayWidth) {
-            x = targetBounds.getMaxX() + 20;
-        }
-        // Altrimenti a sinistra
-        else if (targetBounds.getMinX() - messageWidth - 20 >= 0) {
-            x = targetBounds.getMinX() - messageWidth - 20;
-        }
-        // Altrimenti centrato orizzontalmente
-        else {
-            x = (overlayWidth - messageWidth) / 2;
-        }
+        Node targetNode = steps.get(currentStep).getTarget();
+        boolean isTextField = targetNode.getClass().getSimpleName().equals("TextField");
 
-        // Posizionamento verticale
-        if (targetBounds.getMinY() + messageHeight <= overlayHeight) {
-            y = targetBounds.getMinY();
+        if (isTextField) {
+            // Posiziona sotto il TextField
+            x = targetBounds.getMinX();
+            y = targetBounds.getMaxY() + 10;
         } else {
-            y = targetBounds.getMaxY() - messageHeight;
+            // Default: prova a posizionare a destra
+            if (targetBounds.getMaxX() + messageWidth + 20 <= overlayWidth) {
+                x = targetBounds.getMaxX() + 20;
+            }
+            // Altrimenti a sinistra
+            else if (targetBounds.getMinX() - messageWidth - 20 >= 0) {
+                x = targetBounds.getMinX() - messageWidth - 20;
+            }
+            // Altrimenti centrato orizzontalmente
+            else {
+                x = (overlayWidth - messageWidth) / 2;
+            }
+
+            // Verticale: sopra o sotto a seconda dello spazio
+            if (targetBounds.getMinY() + messageHeight <= overlayHeight) {
+                y = targetBounds.getMinY();
+            } else {
+                y = targetBounds.getMaxY() - messageHeight;
+            }
         }
 
         // Assicurati che rimanga nei bounds
