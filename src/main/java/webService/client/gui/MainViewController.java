@@ -122,6 +122,8 @@ public class MainViewController {
     private int fileConvertiti = 0;
     private int fileScartati = 0;
 
+    private boolean isLightTheme;
+
     private ConverterWebServiceClient webServiceClient;
 
     private String monitoredFolderPath = "Non configurata";
