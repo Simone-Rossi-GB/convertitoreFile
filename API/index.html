@@ -901,12 +901,13 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <h2 id="errori">Errori</h2>
 <p>Gli errori vengono gestiti centralmente tramite un <strong>Rest Controller Advice</strong> che intercetta le eccezioni e ritorna una risposta con codice di errore mappato sulla base del tipo di eccezione.</p>
 <h5 id="response-500-errore-interno-del-server">Response 500 – Errore Interno del Server</h5>
-<p>Tutti gli errori restituiscono lo status HTTP <strong>500 Internal Server Error</strong> con corpo JSON nel seguente formato:
-{
-  "errorCode": <codice numerico>,
-  "message": "Messaggio dell'eccezione",
-  "stackTrace": "Prima riga dello stack trace"
-}</p>
+<p>Tutti gli errori restituiscono lo status HTTP <strong>500 Internal Server Error</strong> con corpo JSON nel seguente formato:</p>
+<pre><code class="language-json">{
+ &quot;errorCode&quot;: &lt;codice numerico&gt;,
+ &quot;message&quot;: &quot;Descrizione dell'errore&quot;,
+ &quot;stackTrace&quot;: &quot;Prima riga dello stack trace&quot;
+}
+</code></pre>
 <h5 id="elenco-dei-codici-di-errore">Elenco dei codici di errore</h5>
 <h6 id="1001-illegalextensionexception"><strong>1001.</strong>   IllegalExtensionException:</h6>
 <p>Estensione del file non supportata o vietata.</p>

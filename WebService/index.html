@@ -562,31 +562,7 @@ public static boolean isRunning()       // Verifica se il servizio è attivo
 <li>Esecuzione della conversione</li>
 <li>Pulizia dei file temporanei</li>
 </ol>
-<h3 id="4-globalexceptionhandlerjava">4. GlobalExceptionHandler.java</h3>
-<p>Gestore globale delle eccezioni che fornisce risposte strutturate per tutti gli errori del sistema.</p>
-<p><strong>Eccezioni gestite:</strong></p>
-<ul>
-<li><code>IllegalExtensionException</code> (Codice: 1001)</li>
-<li><code>FileMoveException</code> (Codice: 1002)</li>
-<li><code>UnsupportedConversionException</code> (Codice: 1003)</li>
-<li><code>IOException</code> (Codice: 1004)</li>
-<li><code>BatchConversionException</code> (Codice: 1005)</li>
-<li><code>ConversionException</code> (Codice: 1006)</li>
-<li><code>FileCreationException</code> (Codice: 1007)</li>
-<li><code>EmptyFileException</code> (Codice: 1008)</li>
-<li><code>FormatsException</code> (Codice: 1009)</li>
-<li><code>PasswordException</code> (Codice: 1010)</li>
-<li><code>NullPointerException</code> (Codice: 1011)</li>
-<li><code>Exception</code> generica (Codice: 9999)</li>
-</ul>
-<p><strong>Formato risposta errore:</strong></p>
-<pre><code class="language-json">{
-  &quot;errorCode&quot;: 1001,
-  &quot;message&quot;: &quot;Descrizione dell'errore&quot;,
-  &quot;stackTrace&quot;: &quot;Prima riga dello stack trace&quot;
-}
-</code></pre>
-<h3 id="5-errorresponsejava">5. ErrorResponse.java</h3>
+<h3 id="4-errorresponsejava">4. ErrorResponse.java</h3>
 <p>Classe DTO per la rappresentazione strutturata degli errori nelle risposte JSON.</p>
 <p><strong>Campi:</strong></p>
 <ul>
@@ -662,27 +638,7 @@ Server → Restituisce file al client
 <li>Tracciamento completo delle operazioni</li>
 <li>Livelli di log configurabili (TRACE, INFO, WARN, ERROR)</li>
 </ul>
-<h2 id="configurazione">Configurazione</h2>
-<p>Il sistema utilizza due tipi di configurazione:</p>
-<h3 id="1-configurazione-server-serverconfigjson">1. Configurazione Server (<code>serverConfig.json</code>)</h3>
-<p>Definisce i convertitori disponibili e le mappature formato → classe:</p>
-<pre><code class="language-json">{
-  &quot;conversions&quot;: {
-    &quot;pdf&quot;: {
-      &quot;docx&quot;: &quot;webService.server.converters.PdfToDocxConverter&quot;,
-      &quot;txt&quot;: &quot;webService.server.converters.PdfToTxtConverter&quot;
-    }
-  }
-}
-</code></pre>
-<h3 id="2-configurazione-conversione-conversioncontext">2. Configurazione Conversione (<code>conversionContext</code>)</h3>
-<p>Parametri specifici per ogni conversione (caricata dinamicamente dal client):</p>
-<ul>
-<li>Abilitazione conversioni multiple</li>
-<li>Parametri specifici del convertitore</li>
-<li>Opzioni di formattazione</li>
-</ul>
-<h2 id="estendibilita">Estendibilità</h2>
+<h2 id="estensibilita">Estensibilità</h2>
 <h3 id="aggiunta-nuovi-convertitori">Aggiunta Nuovi Convertitori</h3>
 <ol>
 <li>Estendere la classe astratta <code>Converter</code></li>
