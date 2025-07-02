@@ -77,9 +77,7 @@ public class Zipper {
         File outputZip = new File(files.get(0).getParent(), "file.zip");
         ZipFile zipFile = new ZipFile(outputZip, ConversionContextReader.getPassword().toCharArray());
 
-        ZipParameters parameters = new ZipParameters();
-        parameters.setEncryptFiles(true);
-        parameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD);
+        zipFile.setPassword(ConversionContextReader.getPassword().toCharArray());
 
         for (File f : files) {
             if (!f.exists() || !f.isFile()) {
@@ -87,7 +85,7 @@ public class Zipper {
                 continue;
             }
 
-            zipFile.addFile(f, parameters);
+            zipFile.addFile(f);
 
             if (!f.delete()) {
                 throw new FileMoveException("Impossibile eliminare il file temporaneo");
