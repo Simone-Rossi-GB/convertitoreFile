@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="immagini funzionano">
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/ConverterWebServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/ConverterWebServiceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/EngineWebService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/EngineWebService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/WebServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/WebServiceApplication.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="webService" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MainApp.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "Spring Boot.WebServiceApplication.executor": "Run",
+    "git-widget-placeholder": "docker",
+    "last_opened_file_path": "/Users/simo/Documents/GitHub/convertitoreFileDocker/src/main/java/webService/server",
+    "node.js.selected.package.tslint": "(autodetect)"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/webService/server" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/webService/server" />
+      <recent name="$PROJECT_DIR$/src/main/java/webService" />
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.WebServiceApplication">
+    <configuration name="MainApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="webService.client.gui.MainApp" />
+      <module name="file-type-converter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="webService.client.gui.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WebServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="file-type-converter" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="webService.server.WebServiceApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="webService.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.WebServiceApplication" />
+        <item itemvalue="Application.MainApp" />
+        <item itemvalue="Application.MainApp" />
+        <item itemvalue="Application.MainApp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="immagini funzionano">
+      <option name="closed" value="true" />
+      <created>1751468408720</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1751468408720</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="immagini funzionano" />
+    <option name="LAST_COMMIT_MESSAGE" value="immagini funzionano" />
+  </component>
+</project>

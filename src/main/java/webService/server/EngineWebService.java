@@ -1,7 +1,5 @@
 package webService.server;
 
-import com.twelvemonkeys.util.convert.ConversionException;
-import webService.server.configuration.configExceptions.JsonStructureException;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import webService.server.converters.Converter;
@@ -30,7 +28,7 @@ public class EngineWebService {
      * @throws NullPointerException Se viene passata una stringa nulla o non esiste il config
      * @throws IllegalArgumentException Non viene passata un'estensione
      */
-    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException, UnsupportedConversionException, JsonStructureException {
+    public List<String> getPossibleConversions(String extension) throws IllegalArgumentException, NullPointerException, UnsupportedConversionException {
         if (extension == null) {
             logger.error("Parametro extension nullo");
             throw new IllegalArgumentException("L'oggetto extension non esiste");
@@ -180,15 +178,12 @@ public class EngineWebService {
      */
     private String checkParameters(String srcExt, String outExt, File srcFile) throws IllegalArgumentException, UnsupportedConversionException {
         if (srcExt == null) {
-            logger.error("ERRORE: srcExt nullo");
             throw new IllegalArgumentException("L'oggetto srcExt non esiste");
         }
         if (outExt == null) {
-            logger.error("ERRORE: outExt nullo");
             throw new IllegalArgumentException("L'oggetto outExt non esiste");
         }
         if (srcFile == null) {
-            logger.error("ERRORE: srcFile nullo");
             throw new IllegalArgumentException("L'oggetto srcFile non esiste");
         }
 
@@ -197,7 +192,6 @@ public class EngineWebService {
         Map<String, Map<String, String>> conversions = ConfigReader.getConversions();
 
         if (conversions == null || !conversions.containsKey(srcExt)) {
-            logger.error("ERRORE: Conversione da {} non supportata", srcExt);
             throw new UnsupportedConversionException(srcExt + " non supportato per la conversione");
         }
 
@@ -209,11 +203,8 @@ public class EngineWebService {
         String converterClassName = possibleConversions.get(outExt);
 
         if (converterClassName == null) { // se non esiste un convertitore lanciamo un eccezione
-            logger.error("ERRORE: Conversione da {} a {} non supportata", srcExt, outExt);
             throw new UnsupportedConversionException("Impossibile convertire un file " + srcExt + " in uno " + outExt);
         }
-
-        logger.info("Parametri validi. Conversione da {} a {} tramite {}", srcExt, outExt, converterClassName);
 
         // ritorniamo il nome della classe del convertitore per la conversione
         return converterClassName;

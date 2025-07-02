@@ -1,6 +1,10 @@
 package webService.server;
 
 import org.apache.jena.reasoner.IllegalParameterException;
+import webService.server.auth.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.PDFWatermarkApplier;
 import webService.server.converters.exception.*;
@@ -19,6 +23,7 @@ import webService.server.configuration.configHandlers.serverConfig.ConfigInstanc
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
 import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -193,7 +198,6 @@ public class ConverterWebServiceController {
             Path filePath = tempDirectory.resolve(Objects.requireNonNull(file.getOriginalFilename()));
             file.transferTo(filePath);
             ConversionContextInstance cci = new ConversionContextInstance(filePath.toFile());
-            logger.info("cci creato correttamente");
             ConversionContextData.update(cci);
             logger.info("Cofigurazione conversion config caricata con successo");
         } catch (IOException e) {
@@ -230,6 +234,156 @@ public class ConverterWebServiceController {
             return MediaType.parseMediaType(mimeType);
         } catch (IOException e) {
             return MediaType.APPLICATION_OCTET_STREAM;
+        }
+    }
+
+    @Autowired
+    private AuthService authService;
+
+    /**
+     * Endpoint per il login
+     */
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest loginRequest) {
+        logger.info("Tentativo di login per utente: {}", loginRequest.getUsername());
+
+        try {
+            AuthResponse authResponse = authService.authenticate(loginRequest);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("token", authResponse.getToken());
+            response.put("user", authResponse.getUser());
+            response.put("expiresAt", authResponse.getExpiresAt());
+
+            logger.info("Login riuscito per utente: {}", loginRequest.getUsername());
+            return ResponseEntity.ok(response);
+
+        } catch (AuthException e) {
+            logger.warn("Login fallito per utente {}: {}", loginRequest.getUsername(), e.getMessage());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (Exception e) {
+            logger.error("Errore interno durante login per utente {}: {}", loginRequest.getUsername(), e.getMessage());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Internal server error");
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Endpoint per il logout
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            authService.logout(token);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "true");
+            response.put("message", "Logout successful");
+
+            logger.info("Logout riuscito");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("Errore durante logout: {}", e.getMessage());
+
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "false");
+            response.put("message", "Logout failed");
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Endpoint per registrare un nuovo utente
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> register(
+            @Valid @RequestBody RegisterRequest registerRequest,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+        try {
+            logger.info("Tentativo di registrazione per utente: {}", registerRequest.getUsername());
+
+            // registrazione pubblica con controllo se c'è un token valido
+            if (authHeader != null && !authHeader.isEmpty()) {
+                try {
+                    String token = authHeader.replace("Bearer ", "");
+                    User currentUser = authService.getCurrentUser(token);
+
+                    // Se sei già autenticato e non sei admin, non puoi registrare altri
+                    if (!"ADMIN".equals(currentUser.getRole())) {
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("success", false);
+                        response.put("message", "Access denied. Admin role required for authenticated registration.");
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                    }
+                } catch (Exception e) {
+                    // Token non valido, procedi con registrazione pubblica
+                    logger.debug("Token non valido per registrazione: {}", e.getMessage());
+                }
+            }
+
+            // Registrazione pubblica o da admin
+            User newUser = authService.registerUser(registerRequest);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "User registered successfully");
+            response.put("user", new UserDTO(newUser));
+
+            logger.info("Nuovo utente registrato: {}", newUser.getUsername());
+            return ResponseEntity.ok(response);
+
+        } catch (AuthException e) {
+            logger.warn("Registrazione fallita per {}: {}", registerRequest.getUsername(), e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        } catch (Exception e) {
+            logger.error("Errore durante registrazione per {}: {}", registerRequest.getUsername(), e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Endpoint per verificare la validità del token
+     */
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verifyToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            User user = authService.getCurrentUser(token);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("valid", true);
+            response.put("user", new UserDTO(user));
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("valid", false);
+            response.put("message", "Invalid token");
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 }

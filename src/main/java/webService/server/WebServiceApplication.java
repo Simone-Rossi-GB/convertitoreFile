@@ -5,15 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.springframework.core.io.ClassPathResource;
 import webService.server.configuration.configHandlers.serverConfig.ConfigData;
 import webService.server.configuration.configHandlers.serverConfig.ConfigInstance;
 import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
 
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
 
 @SpringBootApplication
 public class WebServiceApplication {
@@ -26,37 +25,34 @@ public class WebServiceApplication {
      * se non c'è istanzia e avvia il contesto di esecuzione dell'applicazione webservice
      * context --> applicazione webservice
      */
-
-
     public static void startWebService() {
         try {
-            // Carica da classpath
-            InputStream configStream = WebServiceApplication.class.getClassLoader()
-                    .getResourceAsStream("serverConfig.json");
+            // Carica il file dalle resources
+            ClassPathResource resource = new ClassPathResource("serverConfig.json");
 
-            if (configStream != null) {
-                // Crea un file temporaneo
-                File tempConfigFile = File.createTempFile("serverConfig", ".json");
-                tempConfigFile.deleteOnExit();
-
-                // Usa Apache Commons IO per copiare
-                try (FileOutputStream fos = new FileOutputStream(tempConfigFile)) {
-                    IOUtils.copy(configStream, fos);
-                }
-
-                ConfigInstance ci = new ConfigInstance(tempConfigFile);
-                ConfigData.update(ci);
-                logger.info("Configurazione caricata dalle risorse");
-            } else {
-                logger.warn("File serverConfig.json non trovato nelle risorse");
+            if (!resource.exists()) {
+                logger.error("File serverConfig.json non trovato nelle resources");
+                throw new RuntimeException("File di configurazione non trovato");
             }
-        } catch (Exception e) {
-            logger.error("Errore nel caricamento configurazione: {}", e.getMessage());
-        }
 
-        if (context == null || !context.isActive()) {
-            context = SpringApplication.run(WebServiceApplication.class);
-            logger.trace("Web Service: Web Service avviato su porta 8080");
+            // Ottieni il file dalle resources
+            File configFile = resource.getFile();
+            logger.info("Configurazione caricata dalle risorse: " + configFile.getAbsolutePath());
+
+            ConfigInstance ci = new ConfigInstance(configFile);
+            ConfigData.update(ci);
+            logger.warn(ConfigReader.getConversions().get("pdf"));
+
+            if (context == null || !context.isActive()) {
+                context = SpringApplication.run(WebServiceApplication.class);
+                logger.info("Web Service avviato su porta 8080");
+            }
+        } catch (IOException e) {
+            logger.error("Errore nel caricamento del file di configurazione: " + e.getMessage(), e);
+            throw new RuntimeException("Impossibile caricare la configurazione", e);
+        } catch (Exception e) {
+            logger.error("Errore durante l'avvio del Web Service: " + e.getMessage(), e);
+            throw new RuntimeException("Errore nell'avvio del servizio", e);
         }
     }
 
