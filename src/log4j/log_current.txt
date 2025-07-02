@@ -740,3 +740,50 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-02 09:53:20 INFO  LoginController - Apertura schermata registrazione
 2025-07-02 09:53:20 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
 2025-07-02 09:53:21 INFO  RegisterController - RegisterController inizializzato
+2025-07-02 10:57:26 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-02 10:57:26 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-02 10:57:26 INFO  LoginController - LoginController inizializzato
+2025-07-02 10:57:26 INFO  MainApp - CSS login caricato
+2025-07-02 10:57:34 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-02 10:57:34 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-02 10:57:34 INFO  MainViewController - true
+2025-07-02 10:57:34 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-02 10:57:34 INFO  JsonUtility - JSON valido
+2025-07-02 10:57:34 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-02 10:57:34 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-02 10:57:34 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-02 10:57:34 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-02 10:57:34 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-02 10:57:34 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-02 10:57:34 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-02 10:57:34 INFO  JsonUtility - JSON valido
+2025-07-02 10:57:34 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-02 10:57:34 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 10:57:34 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-02 10:57:35 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-02 10:57:35 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-02 10:57:35 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-02 10:57:44 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\prova_mail_1 - Copia.eml
+2025-07-02 10:57:44 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\prova_mail_1 - Copia.eml
+2025-07-02 10:57:44 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-02 10:57:44 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 10:57:44 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-02 10:57:44 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-02 10:57:49 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-02 10:57:49 INFO  JsonUtility - JSON valido
+2025-07-02 10:57:49 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-02 10:57:49 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-02 10:58:20 INFO  MainViewController - Verifica file convertito:
+2025-07-02 10:58:20 INFO  MainViewController -   - Nome originale: prova_mail_1 - Copia.eml
+2025-07-02 10:58:20 INFO  MainViewController -   - Nome convertito atteso: prova_mail_1 - Copia.pdf
+2025-07-02 10:58:20 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\prova_mail_1 - Copia.pdf
+2025-07-02 10:58:20 INFO  MainViewController -   - File esiste: true
+2025-07-02 10:58:20 INFO  MainViewController - Conversione di prova_mail_1 - Copia.eml riuscita
+2025-07-02 10:58:20 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-02 10:59:15 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-02 10:59:15 INFO  MainViewController - Logout automatico in corso...
+2025-07-02 10:59:15 INFO  AuthManager - logout effettuato
+2025-07-02 10:59:15 INFO  AuthManager - Logout completato
+2025-07-02 10:59:15 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-02 10:59:15 INFO  DirectoryWatcher - Executor interrotto
+2025-07-02 10:59:16 INFO  MainViewController - Applicazione chiusa correttamente

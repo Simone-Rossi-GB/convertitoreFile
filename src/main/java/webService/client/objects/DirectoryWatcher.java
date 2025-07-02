@@ -124,7 +124,7 @@ public class DirectoryWatcher implements Runnable {
                     logger.warn("Overflow rilevato, evento ignorato");
                     continue;
                 }
-                //Risalgo al percorso del file che ha generato l'evento
+                //Risale al percorso del file che ha generato l'evento
                 @SuppressWarnings("unchecked")
                 WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path fileName = ev.context();

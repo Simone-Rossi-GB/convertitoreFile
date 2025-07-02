@@ -1,9 +1,11 @@
 package webService.client;
 
 import com.google.gson.Gson;
+import org.apache.cxf.bus.extension.ExtensionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -20,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import webService.client.objects.ErrorResponse;
 import webService.client.objects.Utility;
 import webService.client.objects.exceptions.FileMoveException;
+import webService.client.objects.exceptions.IllegalExtensionException;
 
 import javax.xml.ws.WebServiceException;
 import java.io.File;
@@ -126,9 +129,8 @@ public class ConverterWebServiceClient {
     public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile, String conversionContextFile) throws FileMoveException {
         // Verifica preliminare della disponibilità del servizio
         if (!isServiceAvailable()) {
-            throw new WebServiceException( "Servizio di conversione non disponibile.");
+            throw new WebServiceException("Servizio di conversione non disponibile.");
         }
-
 
 
         try {
@@ -188,7 +190,10 @@ public class ConverterWebServiceClient {
         } catch (IOException e) {
             // Gestisce errori nella scrittura del file locale
             throw new FileMoveException("Errore I/O durante il salvataggio del file convertito: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (MimeTypeException e){
+            // Gestisce qualsiasi altro errore inatteso
+            throw new IllegalExtensionException("Impossibile individuare il formato del file convertito");
+        }catch (Exception e) {
             // Gestisce qualsiasi altro errore inatteso
             throw new WebServiceException("Errore inatteso durante la conversione: " + e.getMessage());
         }
@@ -200,19 +205,14 @@ public class ConverterWebServiceClient {
      * @param mediaType Il tipo MIME del file (es. "application/pdf")
      * @return L'estensione corrispondente (es. ".pdf") o ".bin" come fallback
      */
-    private String getExtensionFromMediaType(String mediaType) {
-        try {
-            //Mediatype relativo a docx protetto, ma non permette di riconoscere l'estensione
-            if (mediaType.equals("application/x-tika-ooxml-protected"))
-                return ".docx";
-            // Utilizza Apache Tika per mappare il MIME type all'estensione
-            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-            MimeType mimeType = allTypes.forName(mediaType);
-            return mimeType.getExtension();
-        } catch (Exception e) {
-            // Ritorna un'estensione generica in caso di errore
-            return ".bin";
-        }
+    private String getExtensionFromMediaType(String mediaType) throws MimeTypeException {
+        //Mediatype relativo a docx protetto, ma non permette di riconoscere l'estensione
+        if (mediaType.equals("application/x-tika-ooxml-protected"))
+            return ".docx";
+        // Utilizza Apache Tika per mappare il MIME type all'estensione
+        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+        MimeType mimeType = allTypes.forName(mediaType);
+        return mimeType.getExtension();
     }
 
     /**

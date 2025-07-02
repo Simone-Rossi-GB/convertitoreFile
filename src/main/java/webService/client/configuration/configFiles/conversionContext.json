@@ -1,6 +1,6 @@
 {
   "data" : {
-    "destinationFormat" : "ico",
+    "destinationFormat" : "pdf",
     "password" : "samplefiles",
     "protected" : false,
     "union" : true,
