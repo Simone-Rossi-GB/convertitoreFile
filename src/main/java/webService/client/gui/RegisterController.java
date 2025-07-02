@@ -42,6 +42,7 @@ public class RegisterController {
     @FXML private Button backToLoginButton;
     @FXML private ToggleButton themeToggle;
     @FXML private Button langButton;
+    @FXML private Button exitBtn;
 
     private static final Logger logger = LogManager.getLogger(RegisterController.class);
     private Class<?> mainApp;
@@ -64,6 +65,7 @@ public class RegisterController {
     @FXML
     private void initialize() {
         try {
+            exitBtn.setOnAction(e -> exitApplication());
             authManager = MainApp.getAuthManager();
             bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
 
@@ -402,6 +404,10 @@ public class RegisterController {
     private void hideMessages() {
         errorLabel.setVisible(false);
         successLabel.setVisible(false);
+    }
+
+    private void exitApplication() {
+        Platform.exit();
     }
 
     public void setMainApp(Class<?> mainApp) {

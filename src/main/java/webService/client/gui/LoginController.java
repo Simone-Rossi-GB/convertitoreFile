@@ -34,6 +34,7 @@ public class LoginController {
     @FXML private ToggleButton themeToggle;
     @FXML private Button langButton;
     @FXML private Button registerButton;
+    @FXML private Button exitBtn;
 
     private static final Logger logger = LogManager.getLogger(LoginController.class);
     private Class<?> mainApp;
@@ -51,6 +52,7 @@ public class LoginController {
     @FXML
     private void initialize() {
         try {
+            exitBtn.setOnAction(e -> exitApplication());
             authManager = MainApp.getAuthManager();
             bundle = ResourceBundle.getBundle("languages.MessagesBundle", MainApp.getCurrentLocale());
 
@@ -207,6 +209,10 @@ public class LoginController {
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    private void exitApplication() {
+        Platform.exit();
     }
 
     private void hideError() {

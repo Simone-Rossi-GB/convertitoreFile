@@ -1,11 +1,11 @@
 {
   "data" : {
-    "destinationFormat" : "pdf",
+    "destinationFormat" : "ico",
     "password" : "samplefiles",
-    "protected" : true,
+    "protected" : false,
     "union" : true,
-    "zippedOutput" : true,
-    "watermark" : "dkjaflaòsdfòljasdfoiadsjflsk",
+    "zippedOutput" : false,
+    "watermark" : "",
     "multipleConversion" : false
   }
 }

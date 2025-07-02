@@ -616,3 +616,127 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-01 14:51:05 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
 2025-07-01 14:51:06 INFO  LoginController - LoginController inizializzato
 2025-07-01 14:51:06 INFO  MainApp - CSS login caricato
+2025-07-02 09:37:28 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-02 09:37:28 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-02 09:37:28 INFO  LoginController - LoginController inizializzato
+2025-07-02 09:37:28 INFO  MainApp - CSS login caricato
+2025-07-02 09:37:37 INFO  AuthManager - Login riuscito per: Frocio
+2025-07-02 09:37:37 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-02 09:37:37 INFO  MainViewController - true
+2025-07-02 09:37:37 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-02 09:37:37 INFO  JsonUtility - JSON valido
+2025-07-02 09:37:37 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-02 09:37:37 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-02 09:37:37 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-02 09:37:37 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-02 09:37:37 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-02 09:37:37 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-02 09:37:37 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-02 09:37:37 INFO  JsonUtility - JSON valido
+2025-07-02 09:37:37 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-02 09:37:37 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 09:37:37 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-02 09:37:37 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-02 09:37:37 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-02 09:37:37 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-02 09:37:56 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\mtcars.csv
+2025-07-02 09:37:56 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\tipot\IdeaProjects\convertitoreFile\src\input\mtcars.csv
+2025-07-02 09:37:56 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-02 09:37:56 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 09:37:56 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-02 09:37:56 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-02 09:37:59 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-02 09:37:59 INFO  JsonUtility - JSON valido
+2025-07-02 09:37:59 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-02 09:37:59 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-02 09:38:00 INFO  MainViewController - Verifica file convertito:
+2025-07-02 09:38:00 INFO  MainViewController -   - Nome originale: mtcars.csv
+2025-07-02 09:38:00 INFO  MainViewController -   - Nome convertito atteso: mtcars.zip
+2025-07-02 09:38:00 INFO  MainViewController -   - Percorso completo: C:\Users\tipot\IdeaProjects\convertitoreFile\src\output\success\mtcars.zip
+2025-07-02 09:38:00 INFO  MainViewController -   - File esiste: true
+2025-07-02 09:38:00 INFO  MainViewController - Conversione di mtcars.csv riuscita
+2025-07-02 09:38:00 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-02 09:38:20 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 09:38:20 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-02 09:38:20 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-02 09:38:20 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-02 09:38:22 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-02 09:39:02 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-02 09:39:02 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-02 09:39:02 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-02 09:39:10 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-02 09:39:10 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-02 09:39:10 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-02 09:39:10 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-02 09:39:10 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-02 09:39:10 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-02 09:39:10 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-02 09:39:10 INFO  JsonUtility - JSON valido
+2025-07-02 09:39:10 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-02 09:39:10 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-02 09:39:20 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\pizza.gif
+2025-07-02 09:39:20 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\tipot\IdeaProjects\convertitoreFile\src\input\pizza.gif
+2025-07-02 09:39:20 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-02 09:39:20 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 09:39:20 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-02 09:39:20 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-02 09:39:26 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-02 09:39:26 INFO  JsonUtility - JSON valido
+2025-07-02 09:39:26 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-02 09:39:26 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-02 09:39:27 INFO  MainViewController - Verifica file convertito:
+2025-07-02 09:39:27 INFO  MainViewController -   - Nome originale: pizza.gif
+2025-07-02 09:39:27 INFO  MainViewController -   - Nome convertito atteso: pizza.ico
+2025-07-02 09:39:27 INFO  MainViewController -   - Percorso completo: C:\Users\tipot\IdeaProjects\convertitoreFile\src\output\success\pizza.ico
+2025-07-02 09:39:27 INFO  MainViewController -   - File esiste: true
+2025-07-02 09:39:28 INFO  MainViewController - Conversione di pizza.gif riuscita
+2025-07-02 09:39:28 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-02 09:39:41 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\pizza.lnk
+2025-07-02 09:39:41 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\tipot\IdeaProjects\convertitoreFile\src\input\pizza.lnk
+2025-07-02 09:39:41 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=0
+2025-07-02 09:39:41 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-02 09:39:41 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-02 09:39:41 ERROR ConverterWebServiceClient - {"errorCode":1003,"message":"Formato di partenza non supportato","stackTrace":"webService.server.EngineWebService.getPossibleConversions(EngineWebService.java:44)"}
+2025-07-02 09:39:41 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\pizza.lnk
+2025-07-02 09:39:41 ERROR MainViewController - Formato di partenza non supportato
+2025-07-02 09:39:41 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=1
+2025-07-02 09:41:21 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-02 09:41:21 INFO  MainViewController - Logout automatico in corso...
+2025-07-02 09:41:21 INFO  AuthManager - logout effettuato
+2025-07-02 09:41:21 INFO  AuthManager - Logout completato
+2025-07-02 09:41:21 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-02 09:41:21 INFO  DirectoryWatcher - Executor interrotto
+2025-07-02 09:41:22 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-02 09:48:28 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-02 09:48:28 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-02 09:48:28 INFO  LoginController - LoginController inizializzato
+2025-07-02 09:48:28 INFO  MainApp - CSS login caricato
+2025-07-02 09:48:30 INFO  LoginController - Apertura schermata registrazione
+2025-07-02 09:48:30 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-02 09:48:30 INFO  RegisterController - RegisterController inizializzato
+2025-07-02 09:48:32 INFO  RegisterController - Ritorno alla schermata di login
+2025-07-02 09:48:36 INFO  LoginController - Apertura schermata registrazione
+2025-07-02 09:48:36 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-02 09:48:36 INFO  RegisterController - RegisterController inizializzato
+2025-07-02 09:48:38 INFO  RegisterController - Ritorno alla schermata di login
+2025-07-02 09:52:15 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-02 09:52:15 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-02 09:52:16 INFO  LoginController - LoginController inizializzato
+2025-07-02 09:52:16 INFO  MainApp - CSS login caricato
+2025-07-02 09:52:19 INFO  LoginController - Apertura schermata registrazione
+2025-07-02 09:52:19 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-02 09:52:19 INFO  RegisterController - RegisterController inizializzato
+2025-07-02 09:52:23 INFO  RegisterController - Ritorno alla schermata di login
+2025-07-02 09:52:24 INFO  LoginController - Apertura schermata registrazione
+2025-07-02 09:52:24 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-02 09:52:24 INFO  RegisterController - RegisterController inizializzato
+2025-07-02 09:52:57 INFO  AuthManager - Registrazione riuscita per: palle
+2025-07-02 09:52:57 INFO  RegisterController - Registrazione riuscita per utente: palle
+2025-07-02 09:52:59 INFO  RegisterController - Ritorno alla schermata di login
+2025-07-02 09:53:15 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-02 09:53:15 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-02 09:53:16 INFO  LoginController - LoginController inizializzato
+2025-07-02 09:53:16 INFO  MainApp - CSS login caricato
+2025-07-02 09:53:20 INFO  LoginController - Apertura schermata registrazione
+2025-07-02 09:53:20 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-02 09:53:21 INFO  RegisterController - RegisterController inizializzato
