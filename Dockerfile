@@ -1,8 +1,7 @@
-# Multi-stage build per supportare diverse architetture (Mac M3 → server)
-# Rileva automaticamente l'architettura target
+# Dockerfile per build multi-architettura (Mac M3 → server Linux/AMD64)
 FROM openjdk:8-jre-slim
 
-# Installa dipendenze necessarie per Chrome Headless e utilità di sistema
+# Installa dipendenze necessarie per Chrome e utilità di sistema
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -34,29 +33,27 @@ RUN apt-get update && apt-get install -y \
     libxshmfence1 \
     libglib2.0-0 \
     libgconf-2-4 \
-    libxrandr2 \
-    libasound2 \
     libpangocairo-1.0-0 \
-    libatk1.0-0 \
     libcairo-gobject2 \
-    libgtk-3-0 \
     libgdk-pixbuf2.0-0 \
+    locales \
     && rm -rf /var/lib/apt/lists/*
 
-# Scarica e installa Chrome Headless Shell - LINK CORRETTI dal sito ufficiale
-# Usa la versione Stable 136.0.7103.49 per Linux64
-RUN CHROME_VERSION="136.0.7103.49" \
-    && echo "Downloading Chrome Headless Shell ${CHROME_VERSION}..." \
-    && wget -q -O /tmp/chrome-headless-shell.zip \
-        "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chrome-headless-shell-linux64.zip" \
-    && cd /tmp \
-    && unzip chrome-headless-shell.zip \
-    && chmod +x chrome-headless-shell-linux64/chrome-headless-shell \
-    && mv chrome-headless-shell-linux64/chrome-headless-shell /usr/local/bin/ \
-    && rm -rf /tmp/chrome-headless-shell* \
-    && echo "Chrome Headless Shell ${CHROME_VERSION} installed successfully" \
-    && ls -la /usr/local/bin/chrome-headless-shell \
-    && /usr/local/bin/chrome-headless-shell --version
+# Configura locale per ICU
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Installa Google Chrome completo (con tutti i dati ICU)
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verifica installazione Chrome
+RUN google-chrome --version
 
 # Crea utente non-root per sicurezza
 RUN groupadd -r appuser && useradd -r -g appuser appuser
@@ -74,18 +71,16 @@ COPY target/*.jar app.jar
 # Copia eventuali file di configurazione delle risorse
 COPY src/main/resources/ /app/resources/
 
-# Crea directory lib per Chrome Headless (se necessario per il ChromeManager)
-RUN mkdir -p /app/lib/linux && \
-    ln -s /usr/local/bin/chrome-headless-shell /app/lib/linux/chrome-headless-shell
+# Directory lib non più necessaria con path assoluto
+# RUN mkdir -p /app/lib/linux
 
 # Imposta le variabili d'ambiente
-ENV CHROME_PATH=/usr/local/bin/chrome-headless-shell
+ENV CHROME_PATH=/usr/bin/google-chrome
 ENV JAVA_OPTS="-Xmx4096m -Djava.security.egd=file:/dev/./urandom"
 ENV APP_UPLOAD_DIR=/app/uploads
 
-# Cambia ownership per sicurezza e Chrome
-RUN chown -R appuser:appuser /app \
-    && chown appuser:appuser /usr/local/bin/chrome-headless-shell
+# Cambia ownership per sicurezza
+RUN chown -R appuser:appuser /app
 
 # Cambia utente
 USER appuser
