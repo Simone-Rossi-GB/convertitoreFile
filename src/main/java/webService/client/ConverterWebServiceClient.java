@@ -28,6 +28,8 @@ import javax.xml.ws.WebServiceException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -143,15 +145,28 @@ public class ConverterWebServiceClient {
 
             // Costruisce il corpo della richiesta multipart
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new FileSystemResource(inputFile)); // Aggiunge il file da convertire
-            body.add("targetFormat", targetFormat); // Aggiunge il formato target desiderato
-            File conversionContextConfig = new File(conversionContextFile);
-            body.add("configFile", new FileSystemResource(conversionContextConfig)); //Aggiunge il file di configurazione della conversione
 
-            // Crea l'entità HTTP completa con corpo e header
+// File da inviare
+            body.add("file", new FileSystemResource(inputFile));
+
+// Legge il file di configurazione JSON (Java 8 compatible)
+            File conversionContextConfig = new File(conversionContextFile);
+            byte[] bytes = Files.readAllBytes(conversionContextConfig.toPath());
+            String contentJson = new String(bytes, StandardCharsets.UTF_8);
+
+// Crea la parte JSON con il content-type corretto
+            HttpHeaders jsonHeaders = new HttpHeaders();
+            jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> jsonPart = new HttpEntity<>(contentJson, jsonHeaders);
+
+// Aggiunge il JSON alla richiesta multipart
+            body.add("config", jsonPart);
+
+// Crea la richiesta HTTP completa
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Esegue la richiesta POST e si aspetta un array di byte come risposta
+// Invia la richiesta
+            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<byte[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
