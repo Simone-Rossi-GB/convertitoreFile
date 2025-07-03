@@ -6,6 +6,7 @@
     "union" : true,
     "zippedOutput" : false,
     "watermark" : "",
-    "multipleConversion" : false
+    "multipleConversion" : false,
+    "token": ""
   }
 }
