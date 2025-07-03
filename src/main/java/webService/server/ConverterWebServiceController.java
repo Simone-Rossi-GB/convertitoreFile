@@ -16,14 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.apache.tika.Tika;
 
-
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-
 
 @RestController
 @RequestMapping("/api/converter")
@@ -35,80 +33,106 @@ public class ConverterWebServiceController {
     EngineWebService engine = new EngineWebService();
     private static final Logger logger = LogManager.getLogger(ConverterWebServiceController.class);
 
-    /**
-     * Ogni risposta al client viene data tramite json, più precisamente con un oggetto della
-     * classe ResponseEntity
-     */
+    @Autowired
+    private AuthService authService;
 
     /**
-     * @return lo stato del web service
+     * Metodo helper per estrarre e validare il token dall'header Authorization
+     */
+    private User validateAuthHeader(String authHeader) throws AuthException {
+        if (authHeader == null || authHeader.isEmpty()) {
+            throw new AuthException("il token è richiesto");
+        }
+
+        if (!authHeader.startsWith("Bearer ")) {
+            throw new AuthException("header token non valido. header atteso: Bearer <token>");
+        }
+
+        String token = authHeader.substring(7); // Rimuove "Bearer "
+        return authService.getCurrentUser(token);
+    }
+
+    /**
+     * @return lo stato del web service - NON RICHIEDE AUTENTICAZIONE
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
         logger.info("WebService: Richiesta stato ricevuta");
-        //ritorno una mappa immutabile con una sola chiave e un solo valore
         return ResponseEntity.ok(Collections.singletonMap("status", "active"));
     }
 
     /**
-     * ritorna le possibili conversioni in base al file .json
+     * Ritorna le possibili conversioni in base al file .json - RICHIEDE AUTENTICAZIONE
      * @param extension estensione di partenza
-     * @return
+     * @param authHeader header Authorization con Bearer token
+     * @return lista delle conversioni possibili
      */
     @GetMapping("/conversions/{extension}")
-    public ResponseEntity<List<String>> getPossibleConversions(@PathVariable String extension) {
-        logger.info("Richiesta conversioni possibili per estensione: {}", extension);
-        List<String> conversions = engine.getPossibleConversions(extension);
-        // ritorno un json contenente una lista con le possibili conversioni da un determinato formato d'origine
-        return ResponseEntity.ok(conversions);
+    public ResponseEntity<?> getPossibleConversions(
+            @PathVariable String extension,
+            @RequestHeader("Authorization") String authHeader) {
+
+        try {
+            // Valida il token
+            User user = validateAuthHeader(authHeader);
+            logger.info("Richiesta conversioni possibili per estensione: {} da utente: {}", extension, user.getUsername());
+
+            List<String> conversions = engine.getPossibleConversions(extension);
+            return ResponseEntity.ok(conversions);
+
+        } catch (AuthException e) {
+            logger.warn("Accesso negato a getPossibleConversions: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        } catch (Exception e) {
+            logger.error("Errore in getPossibleConversions: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     /**
-     * Effettua la conversione di un file
+     * Effettua la conversione di un file - RICHIEDE AUTENTICAZIONE
      * @param file file da convertire
-     * @param configuration stringa JSON di configurazione che viene mappata in un oggetto Config
-     * @return Response entity ok, con un array di byte che rappresenta il contenuto del file convertito, il content type, il nome e la lunghezza.
-     * In caso di errori ritora un internalServerError con un messaggio di spiegazione.
+     * @param configuration configurazione SENZA token (viene preso dall'header)
+     * @param authHeader header Authorization con Bearer token
+     * @return file convertito o errore
      */
     @PostMapping(value = "/convert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> convertFile(
-            @RequestPart("file") MultipartFile file, //parametri richiesti dopo il /convert/
-            @RequestPart("config") Config configuration) throws IOException, FileMoveException, AuthException { //Json di configurazione
-        logger.info(configuration.getData().getPassword() + ", " + configuration.getData().getDestinationFormat());
-        { //Json di configurazion
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("config") Config configuration,
+            @RequestHeader("Authorization") String authHeader) {
 
-            // controllo se il token è valido. La variabile non verrà più usata poi
-            logger.info("verifico token");
-            User user = authService.getCurrentUser(configuration.getData().getToken());
-            logger.info("token valido");
+        try {
+            // Valida il token dall'header invece che dal JSON
+            User user = validateAuthHeader(authHeader);
+            logger.info("Inizio conversione file: {} -> {} per utente: {}",
+                    file.getOriginalFilename(), configuration.getData().getDestinationFormat(), user.getUsername());
 
             Path tempInputFilePath = null;
             Path conversionTempDir = null;
             File convertedOutputFile = null;
-            logger.info("Inizio conversione file: {} -> {}", file.getOriginalFilename(), configuration.getData().getDestinationFormat());
 
             // Crea una directory temporanea con identificativo univoco per questa conversione
             conversionTempDir = Files.createTempDirectory("conversion-" + UUID.randomUUID() + "-");
             logger.info("Creata directory temporanea: {}", conversionTempDir);
+
             // Salva il file caricato nella directory temporanea
             String originalFilename = file.getOriginalFilename();
-            String extension = null;
+            String extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
 
-            // otteniamo direttamente dal file ricevuto il formato d'origine
-            extension = Utility.getExtension(new File(Objects.requireNonNull(file.getOriginalFilename())));
-
-            assert originalFilename != null; // diciamo al JVM che il nome non è mai null
-
-            // prendiamo la directory temporanea e col metodo resolve mettiamo in
-            // tempInputFilePath  percorsoTemporaneo/originalFileName.estensione
+            assert originalFilename != null;
             tempInputFilePath = conversionTempDir.resolve(originalFilename);
-
-            file.transferTo(tempInputFilePath); // spostiamo il file nella director y temporanea
+            file.transferTo(tempInputFilePath);
             logger.info("File salvato in: {}", tempInputFilePath);
 
-            // creiamo un oggetto file dal percorso del file
+            // Creiamo un oggetto file dal percorso del file
             File inputFileForEngine = tempInputFilePath.toFile();
             logger.info(inputFileForEngine.getAbsolutePath());
+
             // Chiama EngineWebService per la conversione
             convertedOutputFile = engine.conversione(extension, configuration, inputFileForEngine);
 
@@ -123,7 +147,7 @@ public class ConverterWebServiceController {
                 throw new ConversionException("File convertito inesistente");
             }
 
-            // crea un array di byte per la risposta al client leggendo i byte del file convertito
+            // Crea un array di byte per la risposta al client
             byte[] fileBytes = Files.readAllBytes(convertedOutputFile.toPath());
             logger.info("WebService: File convertito letto, dimensione: {} bytes", fileBytes.length);
 
@@ -132,48 +156,44 @@ public class ConverterWebServiceController {
 
             // Costruisci la risposta con i byte del file
             HttpHeaders headers = new HttpHeaders();
-
-            // inseriamo nell'header il tipo di contenuto della risposta
             headers.setContentType(contentType);
-
-            // aggiungiamo all'header come allegato il nome del file convertito
             headers.setContentDispositionFormData("attachment", convertedOutputFile.getName());
-
-            // aggiungiamo all'header la lunghezza in byte del contenuto della risposta
             headers.setContentLength(fileBytes.length);
 
             logger.info("Conversione completata con successo per: {}", originalFilename);
             clearTempFiles(tempInputFilePath, convertedOutputFile, conversionTempDir);
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+
+        } catch (AuthException e) {
+            logger.warn("Accesso negato a convertFile: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        } catch (Exception e) {
+            logger.error("Errore durante conversione: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Conversion failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
-
     /**
      * Elimina i vari file e directory temporanee
-     * @param tempInputFilePath file temporaneo di input
-     * @param convertedOutputFile file convertito
-     * @param conversionTempDir cartella temporanea
      */
-    private void clearTempFiles(Path tempInputFilePath, File convertedOutputFile, Path conversionTempDir){
+    private void clearTempFiles(Path tempInputFilePath, File convertedOutputFile, Path conversionTempDir) {
         try {
             if (tempInputFilePath != null && Files.exists(tempInputFilePath)) {
-                // elimina il file originale temporaneo spostato nella directory univoca
                 Files.delete(tempInputFilePath);
                 logger.info("File temporaneo di input eliminato");
             }
             if (convertedOutputFile != null && Files.exists(convertedOutputFile.toPath())) {
-                // elimina il file convertito temporaneo
                 Files.delete(convertedOutputFile.toPath());
                 logger.info("File temporaneo di output eliminato");
             }
 
-            // Elimina la directory univoca temporanea se vuota
             if (conversionTempDir != null && Files.exists(conversionTempDir)) {
-                //Elimina eventuali file temporanei creati nella cartella
                 eliminaContenuto(conversionTempDir.toFile());
                 logger.info("Directory temporanea svuotata");
-                //Elimina la cartella
                 Files.delete(conversionTempDir);
                 logger.info("Directory temporanea eliminata");
             }
@@ -184,25 +204,21 @@ public class ConverterWebServiceController {
 
     /**
      * Elimina il contenuto di una cartella in maniera ricorsiva
-     * @param directory cartella di cui eliminare il contenuto
      */
     private void eliminaContenuto(File directory) {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    eliminaContenuto(file); // Ricorsione
+                    eliminaContenuto(file);
                 }
-                file.delete(); // Elimina file o cartella vuota
+                file.delete();
             }
         }
     }
 
     /**
      * Metodo che riconosce automaticamente il MediaType dal nome del file tramite libreria Tika
-     * @param file fileConvertito
-     * @return mediaType corretto
-     * @throws IllegalExtensionException mediatype non riconosciuto
      */
     private MediaType determineMediaType(File file) {
         try {
@@ -214,11 +230,8 @@ public class ConverterWebServiceController {
         }
     }
 
-    @Autowired
-    private AuthService authService;
-
     /**
-     * Endpoint per il login
+     * Endpoint per il login con app client - NON RICHIEDE AUTENTICAZIONE
      */
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -239,52 +252,87 @@ public class ConverterWebServiceController {
 
         } catch (AuthException e) {
             logger.warn("Login fallito per utente {}: {}", loginRequest.getUsername(), e.getMessage());
-
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
             logger.error("Errore interno durante login per utente {}: {}", loginRequest.getUsername(), e.getMessage());
-
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Internal server error");
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     /**
-     * Endpoint per il logout
+     * Endpoint per il login senza app client
+     */
+    @PostMapping("/loginwa")
+    public ResponseEntity<Map<String, Object>> loginwa(@Valid @RequestBody String username, @RequestBody String password) {
+        logger.info("Tentativo di login per utente: {}", username);
+
+        try {
+            LoginRequest loginRequest = new LoginRequest(username, password);
+            AuthResponse authResponse = authService.authenticate(loginRequest);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("token", authResponse.getToken());
+            response.put("user", authResponse.getUser());
+            response.put("expiresAt", authResponse.getExpiresAt());
+
+            logger.info("Login riuscito per utente: {}", loginRequest.getUsername());
+            return ResponseEntity.ok(response);
+
+        } catch (AuthException e) {
+            logger.warn("Login fallito per utente {}: {}", username, e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (Exception e) {
+            logger.error("Errore interno durante login per utente {}: {}", username, e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Endpoint per il logout - RICHIEDE AUTENTICAZIONE
      */
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(@RequestHeader("Authorization") String authHeader) {
         try {
-            String token = authHeader.replace("Bearer ", "");
-            authService.logout(token);
+            User user = validateAuthHeader(authHeader);
+            logger.info("Logout per utente: {}", user.getUsername());
 
             Map<String, String> response = new HashMap<>();
             response.put("success", "true");
             response.put("message", "Logout successful");
 
-            logger.info("Logout riuscito");
             return ResponseEntity.ok(response);
 
+        } catch (AuthException e) {
+            logger.error("Errore durante logout: {}", e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "false");
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
             logger.error("Errore durante logout: {}", e.getMessage());
-
             Map<String, String> response = new HashMap<>();
             response.put("success", "false");
             response.put("message", "Logout failed");
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     /**
-     * Endpoint per registrare un nuovo utente
+     * Endpoint per registrare un nuovo utente - REGISTRAZIONE PUBBLICA O DA ADMIN
      */
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(
@@ -294,11 +342,10 @@ public class ConverterWebServiceController {
         try {
             logger.info("Tentativo di registrazione per utente: {}", registerRequest.getUsername());
 
-            // registrazione pubblica con controllo se c'è un token valido
+            // Registrazione pubblica con controllo se c'è un token valido
             if (authHeader != null && !authHeader.isEmpty()) {
                 try {
-                    String token = authHeader.replace("Bearer ", "");
-                    User currentUser = authService.getCurrentUser(token);
+                    User currentUser = validateAuthHeader(authHeader);
 
                     // Se sei già autenticato e non sei admin, non puoi registrare altri
                     if (!"ADMIN".equals(currentUser.getRole())) {
@@ -307,7 +354,7 @@ public class ConverterWebServiceController {
                         response.put("message", "Access denied. Admin role required for authenticated registration.");
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
                     }
-                } catch (Exception e) {
+                } catch (AuthException e) {
                     // Token non valido, procedi con registrazione pubblica
                     logger.debug("Token non valido per registrazione: {}", e.getMessage());
                 }
@@ -341,13 +388,12 @@ public class ConverterWebServiceController {
     }
 
     /**
-     * Endpoint per verificare la validità del token
+     * Endpoint per verificare la validità del token - RICHIEDE AUTENTICAZIONE
      */
     @GetMapping("/verify")
     public ResponseEntity<Map<String, Object>> verifyToken(@RequestHeader("Authorization") String authHeader) {
         try {
-            String token = authHeader.replace("Bearer ", "");
-            User user = authService.getCurrentUser(token);
+            User user = validateAuthHeader(authHeader);
 
             Map<String, Object> response = new HashMap<>();
             response.put("valid", true);
@@ -355,11 +401,15 @@ public class ConverterWebServiceController {
 
             return ResponseEntity.ok(response);
 
+        } catch (AuthException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("valid", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("valid", false);
             response.put("message", "Invalid token");
-
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }

@@ -2,6 +2,7 @@ package webService.server.converters.mailConverters;
 
 import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
+import webService.server.converters.exception.WatermarkException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hsmf.MAPIMessage;
@@ -30,7 +31,7 @@ public class MSGtoPDFconverter extends Converter {
     private String originalBaseName;
 
     private static final boolean DEBUG_OPEN_HTML_IN_BROWSER = false;
-    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per evitare il cleanup
+    private static final boolean DEBUG_KEEP_TEMP_FILES = true; // Mantenuto TRUE per debugging
 
     /**
      * Converte un file MSG in PDF utilizzando Chrome Headless.
@@ -42,7 +43,7 @@ public class MSGtoPDFconverter extends Converter {
      * @throws IOException Se si verificano errori durante la conversione
      */
     @Override
-    public File convert(File msgFile, Config configuration) throws IOException {
+    public File convert(File msgFile, Config configuration) throws IOException, WatermarkException {
         if (msgFile == null || !msgFile.exists()) {
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
@@ -59,23 +60,13 @@ public class MSGtoPDFconverter extends Converter {
 
             // Debug: apri HTML nel browser se richiesto
             if (DEBUG_OPEN_HTML_IN_BROWSER) {
-                openHtmlInBrowser(htmlFile, ChromeManager.getInstance().getChromePath());
+                String chromePath = ChromeManager.getInstance().getChromePath();
+                openHtmlInBrowser(htmlFile, chromePath);
             }
 
             File pdfFile = convertHtmlToPdfWithChrome(htmlFile);
 
             logger.info("Conversione completata: {}", pdfFile.getName());
-
-
-            if (!configuration.getData().getWatermark().isEmpty()) {
-                logger.info("Applying watermark to PDF...");
-
-                // Crea un file temporaneo per il PDF con watermark nella stessa directory
-                File tempFile = new File(pdfFile.getParent(), "watermarked_" + pdfFile.getName());
-
-                logger.info("Original file: {}", pdfFile.getAbsolutePath());
-                logger.info("Temp file for watermark: {}", tempFile.getAbsolutePath());
-            }
 
             return pdfFile;
 
@@ -124,7 +115,7 @@ public class MSGtoPDFconverter extends Converter {
             throw new IOException("Chrome non disponibile tramite ChromeManager");
         }
 
-        // Usa il nome base originale (del file EML) per il nome del file PDF
+        // Usa il nome base originale (del file MSG) per il nome del file PDF
         File pdfFile = new File(tempDir, originalBaseName + ".pdf");
 
         List<String> command = new ArrayList<String>();
@@ -245,13 +236,13 @@ public class MSGtoPDFconverter extends Converter {
         html.append("    <style>\n");
         html.append("        @page {\n");
         html.append("            size: A4;\n");
-        html.append("            margin: 0;\n");
+        html.append("            margin: 0; /* Imposta i margini della pagina di stampa a 0 per eliminare spazi vuoti */\n");
         html.append("        }\n");
         html.append("        \n");
         html.append("        html, body {\n");
         html.append("            margin: 0;\n");
         html.append("            padding: 0;\n");
-        html.append("            height: 100%;\n");
+        html.append("            height: 100%;\n"); // Assicura che html e body coprano l'intera altezza
         html.append("            width: 100%;\n");
         html.append("        }\n");
         html.append("        \n");
@@ -263,7 +254,7 @@ public class MSGtoPDFconverter extends Converter {
         html.append("            font-family: 'Segoe UI', Arial, sans-serif;\n");
         html.append("            font-size: 11px;\n");
         html.append("            line-height: 1.4;\n");
-        html.append("            color: #333;\n");
+        // html.append("            color: #333;\n");
         html.append("            background: white;\n");
         html.append("        }\n");
         html.append("        .email-content {\n");
@@ -305,11 +296,14 @@ public class MSGtoPDFconverter extends Converter {
         html.append("            border: none;\n");
         html.append("        }\n");
         html.append("        \n");
+        // CSS per nascondere i footer/header di stampa di Chrome
         html.append("        @media print {\n");
+        html.append("            /* Nasconde gli header/footer testuali di Chrome */\n");
         html.append("            body::before, body::after {\n");
         html.append("                content: none !important;\n");
         html.append("                display: none !important;\n");
         html.append("            }\n");
+        html.append("            /* Forza i margini della pagina a zero per evitare spazi bianchi indesiderati */\n");
         html.append("            @page {\n");
         html.append("                margin: 0 !important;\n");
         html.append("            }\n");
@@ -375,10 +369,13 @@ public class MSGtoPDFconverter extends Converter {
             // Fallback finale su text body
             String textBody = message.getTextBody();
             if (textBody != null && !textBody.trim().isEmpty()) {
-                html.append("<pre style=\"white-space: pre-wrap; font-family: inherit;\">")
-                        .append(escapeHtml(textBody))
-                        .append("</pre>");
-                logger.info("Usato text body del MSG");
+                // Come nel convertitore EML, ma qui non generiamo HTML per il testo plain
+                // se non desiderato. Tuttavia, per MSG potrebbe essere necessario mostrarlo.
+                // Commento temporaneo per evitare contenuto in caso di solo testo
+                // html.append("<pre style=\"white-space: pre-wrap; font-family: inherit;\">")
+                //         .append(escapeHtml(textBody))
+                //         .append("</pre>");
+                logger.info("Text body trovato nel MSG ma non visualizzato (seguendo logica EML)");
                 return;
             }
         } catch (ChunkNotFoundException e) {
@@ -396,9 +393,8 @@ public class MSGtoPDFconverter extends Converter {
      *
      * @param message L'oggetto MAPIMessage da cui estrarre le immagini
      * @throws IOException Se si verificano errori durante l'estrazione
-     * @throws ChunkNotFoundException Se i chunks degli allegati non sono trovati
      */
-    private void extractEmbeddedImages(MAPIMessage message) throws IOException, ChunkNotFoundException {
+    private void extractEmbeddedImages(MAPIMessage message) throws IOException {
         AttachmentChunks[] attachments = message.getAttachmentFiles();
         if (attachments == null) return;
 
