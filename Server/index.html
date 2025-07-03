@@ -20,7 +20,7 @@
     
     
       
-        <title>Web Service - ByteBridge</title>
+        <title>Server - ByteBridge</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#documentazione-converter-webservice" class="md-skip">
+        <a href="#documentazione-server" class="md-skip">
           Skip to content
         </a>
       
@@ -107,7 +107,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Web Service
+              Server
             
           </span>
         </div>
@@ -294,7 +294,7 @@
   
   
   <span class="md-ellipsis">
-    Web Service
+    Server
     
   </span>
   
@@ -307,7 +307,7 @@
   
   
   <span class="md-ellipsis">
-    Web Service
+    Server
     
   </span>
   
@@ -330,19 +330,238 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#panoramica-del-progetto" class="md-nav__link">
+  <a href="#componenti-server" class="md-nav__link">
     <span class="md-ellipsis">
-      Panoramica del Progetto
+      Componenti Server
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Panoramica del Progetto">
+    <nav class="md-nav" aria-label="Componenti Server">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#architettura-del-sistema" class="md-nav__link">
+  <a href="#1-webserviceapplicationjava" class="md-nav__link">
     <span class="md-ellipsis">
-      Architettura del Sistema
+      1. WebServiceApplication.java
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-enginewebservicejava" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. EngineWebService.java
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. EngineWebService.java">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getpossibleconversionsstring-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      getPossibleConversions(String extension)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversionestring-srcext-string-outext-file-srcfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      conversione(String srcExt, String outExt, File srcFile)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversione-multipla" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversione Multipla
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversione-singola" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversione Singola
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-errorresponsejava" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. ErrorResponse.java
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flusso-di-conversione" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flusso di Conversione
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flusso di Conversione">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-richiesta-formati-disponibili" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Richiesta Formati Disponibili
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-conversione-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Conversione File
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gestione-file-temporanei" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestione File Temporanei
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gestione-degli-errori" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestione degli Errori
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gestione degli Errori">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-validazione-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Validazione Input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-gestione-eccezioni-di-conversione" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Gestione Eccezioni di Conversione
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-risposte-http-strutturate" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Risposte HTTP Strutturate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sicurezza-e-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sicurezza e Performance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sicurezza e Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gestione-concorrenza" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestione Concorrenza
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validazione-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validazione File
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estensibilita" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estensibilità
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estensibilità">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggiunta-nuovi-convertitori" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggiunta Nuovi Convertitori
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggiunta-nuovi-formati" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggiunta Nuovi Formati
     </span>
   </a>
   
@@ -432,19 +651,238 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#panoramica-del-progetto" class="md-nav__link">
+  <a href="#componenti-server" class="md-nav__link">
     <span class="md-ellipsis">
-      Panoramica del Progetto
+      Componenti Server
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Panoramica del Progetto">
+    <nav class="md-nav" aria-label="Componenti Server">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#architettura-del-sistema" class="md-nav__link">
+  <a href="#1-webserviceapplicationjava" class="md-nav__link">
     <span class="md-ellipsis">
-      Architettura del Sistema
+      1. WebServiceApplication.java
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-enginewebservicejava" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. EngineWebService.java
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. EngineWebService.java">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getpossibleconversionsstring-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      getPossibleConversions(String extension)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversionestring-srcext-string-outext-file-srcfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      conversione(String srcExt, String outExt, File srcFile)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversione-multipla" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversione Multipla
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversione-singola" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversione Singola
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-errorresponsejava" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. ErrorResponse.java
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flusso-di-conversione" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flusso di Conversione
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flusso di Conversione">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-richiesta-formati-disponibili" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Richiesta Formati Disponibili
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-conversione-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Conversione File
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gestione-file-temporanei" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestione File Temporanei
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gestione-degli-errori" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestione degli Errori
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gestione degli Errori">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-validazione-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Validazione Input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-gestione-eccezioni-di-conversione" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Gestione Eccezioni di Conversione
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-risposte-http-strutturate" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Risposte HTTP Strutturate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sicurezza-e-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sicurezza e Performance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sicurezza e Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gestione-concorrenza" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestione Concorrenza
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validazione-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validazione File
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estensibilita" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estensibilità
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estensibilità">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggiunta-nuovi-convertitori" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggiunta Nuovi Convertitori
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggiunta-nuovi-formati" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggiunta Nuovi Formati
     </span>
   </a>
   
@@ -471,19 +909,7 @@
 
 
 
-<h1 id="documentazione-converter-webservice">Documentazione Converter WebService</h1>
-<h2 id="panoramica-del-progetto">Panoramica del Progetto</h2>
-<p>Il Converter WebService è un'applicazione distribuita che permette la conversione di file attraverso un'architettura client-server. Il sistema è composto da un'applicazione client che monitora una cartella locale e da un servizio web REST che gestisce le conversioni dei file.</p>
-<h3 id="architettura-del-sistema">Architettura del Sistema</h3>
-<pre><code>Client Application (JavaFX) ←→ WebService REST API (Spring Boot) ←→ Conversion Engine
-</code></pre>
-<p>Il progetto segue un'architettura a microservizi dove:</p>
-<ul>
-<li><strong>Client</strong>: Interfaccia grafica per la selezione dei file e delle opzioni di conversione</li>
-<li><strong>WebService</strong>: API REST per la gestione delle richieste di conversione</li>
-<li><strong>Engine</strong>: Motore di conversione che gestisce la logica di trasformazione dei file</li>
-</ul>
-<h1 id="_1"></h1>
+<h1 id="documentazione-server">Documentazione Server</h1>
 <h2 id="componenti-server">Componenti Server</h2>
 <h3 id="1-webserviceapplicationjava">1. WebServiceApplication.java</h3>
 <p>Classe principale dell'applicazione Spring Boot che gestisce il ciclo di vita del servizio web.</p>
@@ -498,44 +924,7 @@
 public static void stopWebService()     // Ferma il servizio web  
 public static boolean isRunning()       // Verifica se il servizio è attivo
 </code></pre>
-<h3 id="2-converterwebservicecontrollerjava">2. ConverterWebServiceController.java</h3>
-<p>Controller REST che espone le API per la conversione dei file. Gestisce le richieste HTTP e orchestra il processo di conversione.</p>
-<p><strong>Endpoints disponibili:</strong></p>
-<h4 id="get-apiconverterstatus">GET <code>/api/converter/status</code></h4>
-<p>Restituisce lo stato del servizio web.</p>
-<p><strong>Risposta:</strong></p>
-<pre><code class="language-json">{
-  &quot;status&quot;: &quot;active&quot;
-}
-</code></pre>
-<h4 id="get-apiconverterconversionsextension">GET <code>/api/converter/conversions/{extension}</code></h4>
-<p>Ottiene le possibili conversioni per un formato specifico.</p>
-<p><strong>Parametri:</strong></p>
-<ul>
-<li><code>extension</code>: Estensione del file di partenza</li>
-</ul>
-<p><strong>Risposta:</strong></p>
-<pre><code class="language-json">[&quot;pdf&quot;, &quot;docx&quot;, &quot;txt&quot;]
-</code></pre>
-<h4 id="post-apiconverterconvert">POST <code>/api/converter/convert</code></h4>
-<p>Effettua la conversione di un file.</p>
-<p><strong>Parametri:</strong></p>
-<ul>
-<li><code>file</code>: File da convertire (MultipartFile)</li>
-<li><code>targetFormat</code>: Formato di destinazione</li>
-<li><code>configFile</code>: File di configurazione per la conversione</li>
-</ul>
-<p><strong>Risposta:</strong> File convertito come array di byte con headers appropriati</p>
-<p><strong>Processo di conversione:</strong></p>
-<ol>
-<li>Creazione directory temporanea univoca</li>
-<li>Upload del file di configurazione</li>
-<li>Salvataggio del file di input nella directory temporanea</li>
-<li>Chiamata al motore di conversione</li>
-<li>Preparazione della risposta HTTP con file convertito</li>
-<li>Pulizia dei file temporanei</li>
-</ol>
-<h3 id="3-enginewebservicejava">3. EngineWebService.java</h3>
+<h3 id="2-enginewebservicejava">2. EngineWebService.java</h3>
 <p>Motore di conversione che gestisce la logica di trasformazione dei file. Supporta conversioni singole e multiple (tramite archivi ZIP).</p>
 <p><strong>Funzionalità principali:</strong></p>
 <h4 id="getpossibleconversionsstring-extension"><code>getPossibleConversions(String extension)</code></h4>
@@ -562,7 +951,7 @@ public static boolean isRunning()       // Verifica se il servizio è attivo
 <li>Esecuzione della conversione</li>
 <li>Pulizia dei file temporanei</li>
 </ol>
-<h3 id="4-errorresponsejava">4. ErrorResponse.java</h3>
+<h3 id="3-errorresponsejava">3. ErrorResponse.java</h3>
 <p>Classe DTO per la rappresentazione strutturata degli errori nelle risposte JSON.</p>
 <p><strong>Campi:</strong></p>
 <ul>
