@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import webService.server.converters.exception.EmptyFileException;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +25,7 @@ public class CSVtoJSONconverter extends Converter {
      * Converte un file CSV in un file JSON con delimitatore rilevato automaticamente.
      * Ogni riga del CSV diventa un oggetto JSON.
      */
-    public File convert(File srcFile) throws IOException, EmptyFileException {
+    public File convert(File srcFile, Config configuration) throws IOException, EmptyFileException {
         logger.info("Inizio conversione con parametri: \n | srcFile.getPath() = {}", srcFile.getPath());
         List<String> lines = Files.readAllLines(srcFile.toPath(), StandardCharsets.UTF_8);
         if (lines.isEmpty()) {

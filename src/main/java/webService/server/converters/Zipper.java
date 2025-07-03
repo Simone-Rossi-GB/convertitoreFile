@@ -1,6 +1,5 @@
 package webService.server.converters;
 
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.server.Utility;
@@ -74,9 +73,9 @@ public class Zipper {
      * @throws IOException in caso di errore di lettura/scrittura
      * @throws FileMoveException impossibile eliminare il file temporaneo
      */
-    public static File zipWithPassword(List<File> files) throws IOException, FileMoveException {
+    public static File zipWithPassword(List<File> files, String password) throws IOException, FileMoveException {
         File outputZip = new File(files.get(0).getParent(), "file.zip");
-        ZipFile zipFile = new ZipFile(outputZip, ConversionContextReader.getPassword().toCharArray());
+        ZipFile zipFile = new ZipFile(outputZip, password.toCharArray());
 
         ZipParameters parametrs = new ZipParameters();
         parametrs.setEncryptFiles(true);
@@ -166,10 +165,10 @@ public class Zipper {
      * @return File.zip
      * @throws IOException Impossibile rinominare il file
      */
-    public static File compressioneFileProtetto(ArrayList<File> files, String baseName) throws IOException, FileMoveException {
+    public static File compressioneFileProtetto(ArrayList<File> files, String baseName, String password) throws IOException, FileMoveException {
         logger.info("Compressione dei file generati in output");
         //Crea il file zip
-        File zippedFiles = zipWithPassword(files);
+        File zippedFiles = zipWithPassword(files, password);
         //Assegna al file il nome voluto
         zippedFiles = rinominaFileZip(zippedFiles, baseName);
         return zippedFiles;
@@ -182,11 +181,11 @@ public class Zipper {
      * @return File.zip
      * @throws IOException Impossibile rinominare il file
      */
-    public static File compressioneFileProtetto(File file, String baseName) throws IOException, FileMoveException {
+    public static File compressioneFileProtetto(File file, String baseName, String password) throws IOException, FileMoveException {
         //Crea una lista con un solo file
         ArrayList<File> files = new ArrayList<>();
         files.add(file);
-        return compressioneFileProtetto(files, baseName);
+        return compressioneFileProtetto(files, baseName, password);
     }
 
     /**

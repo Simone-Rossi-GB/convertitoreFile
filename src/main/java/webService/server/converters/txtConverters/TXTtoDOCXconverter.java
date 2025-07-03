@@ -2,6 +2,7 @@ package webService.server.converters.txtConverters;
 
 import java.io.*;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +19,7 @@ public class TXTtoDOCXconverter extends Converter {
      * @throws IOException errori di lettura/scrittura sul file
      */
     @Override
-    public File convert(File srcFile) throws IOException {
+    public File convert(File srcFile, Config configuration) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
         File output = new File(srcFile.getAbsolutePath().replaceAll("\\.txt$", ".docx"));
         //Crea un documento word vuoto

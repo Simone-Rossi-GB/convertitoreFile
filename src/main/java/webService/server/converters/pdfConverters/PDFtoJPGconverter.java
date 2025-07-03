@@ -1,6 +1,6 @@
 package webService.server.converters.pdfConverters;
 
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Zipper;
 import webService.server.converters.exception.FileMoveException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -70,9 +70,9 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
      *
      */
     @Override
-    public File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
+    public File convertInternal(File pdfFile, PDDocument pdfDocument, Config configuration) throws IOException {
         //Ottiene il boolean di unione dal JSON
-        boolean union = ConversionContextReader.getIsUnion();
+        boolean union = configuration.getData().isUnion();
         validateInputs(pdfFile, pdfDocument);
 
         logger.info("Inizio conversione con parametri: \n | pdfFile.getPath() = {}, union={}", pdfFile.getPath(), union);
@@ -106,8 +106,8 @@ public class PDFtoJPGconverter extends AbstractPDFConverter {
             }
             //Altrimenti zippa le singole immagini
             else{
-                if(ConversionContextReader.getProtected())
-                    outputFile = Zipper.compressioneFileProtetto(pages, baseName);
+                if(configuration.getData().isProtectedOutput())
+                    outputFile = Zipper.compressioneFileProtetto(pages, baseName, configuration.getData().getPassword());
                 else
                     outputFile = Zipper.compressioneFile(pages, baseName);
             }

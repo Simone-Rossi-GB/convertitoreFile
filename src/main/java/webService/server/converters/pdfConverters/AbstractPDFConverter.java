@@ -1,5 +1,6 @@
 package webService.server.converters.pdfConverters;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.ConverterDocumentsWithPasword;
 import webService.server.converters.exception.PasswordException;
 import com.twelvemonkeys.util.convert.ConversionException;
@@ -23,7 +24,7 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
      * @throws PasswordException Errori con la password
      */
     @Override
-    public File convertProtectedFile(File pdfFile, String password) throws IllegalArgumentException, IOException, PasswordException {
+    public File convertProtectedFile(File pdfFile, String password, Config configuration) throws IllegalArgumentException, IOException, PasswordException {
         if (pdfFile == null) {
             logger.error("File PDF nullo");
             throw new IllegalArgumentException("Il file PDF non può essere nullo");
@@ -49,7 +50,7 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
         }
         //Esegue la conversione
         try{
-            return convertInternal(pdfFile, pdf);
+            return convertInternal(pdfFile, pdf, configuration);
         } catch (IOException e) {
             throw new ConversionException(e.getMessage());
         } finally {
@@ -76,5 +77,5 @@ public abstract class AbstractPDFConverter extends ConverterDocumentsWithPasword
      * @param pdfDocument Documento pdf caricato
      * @return ArrayList di file convertiti
      */
-    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException;
+    protected abstract File convertInternal(File pdfFile, PDDocument pdfDocument, Config configuration) throws IOException;
 }

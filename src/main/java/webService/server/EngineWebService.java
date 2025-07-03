@@ -1,6 +1,6 @@
 package webService.server;
 
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.exception.*;
 import webService.server.converters.Converter;
 import webService.server.config.configHandlers.serverConfig.ConfigReader;
@@ -49,21 +49,21 @@ public class EngineWebService {
     /**
      * Esecuzione conversione - VERSIONE CORRETTA
      * @param srcExt Estensione file iniziale
-     * @param outExt Estensione file finale
+     * @param configuration json di configurazione
      * @param srcFile File iniziale
      * @throws IOException Errore nello spostamento dei file convertiti
      * @throws ConversionException Errore nella conversione o nel caricamento del convertitore
      * @throws FileMoveException Errore nella gestione del file temporaneo
      * @throws UnsupportedConversionException conversione non supportata
      */
-    public File conversione(String srcExt, String outExt, File srcFile) throws IOException, ConversionException, FileMoveException, UnsupportedConversionException, WatermarkException {
+    public File conversione(String srcExt, Config configuration, File srcFile) throws IOException, ConversionException, FileMoveException, UnsupportedConversionException, WatermarkException {
         File outFile = null; // Inizializza sempre la variabile
         try {
             //Controlla se deve eseguire una conversione multipla
-            if(ConversionContextReader.getIsMultipleConversionEnabled() && Utility.getExtension(srcFile).equals("zip")) {
-                outFile = conversioneMultipla(Zipper.extractFileExstension(srcFile), outExt, srcFile);
+            if(configuration.getData().isMultipleConversion() && Utility.getExtension(srcFile).equals("zip")) {
+                outFile = conversioneMultipla(Zipper.extractFileExstension(srcFile), configuration, srcFile);
             } else {
-                outFile = conversioneSingola(srcExt, outExt, srcFile);
+                outFile = conversioneSingola(srcExt, configuration, srcFile);
             }
 
             logger.info("Conversione completata con successo: {} -> {}", srcFile.getAbsolutePath(), outFile.getAbsolutePath());
@@ -97,7 +97,7 @@ public class EngineWebService {
     /**
      *
      * @param srcExt formato di partenza
-     * @param outExt formato di output
+     * @param configuration json di configurazione
      * @param srcFile file di partenza
      * @return file convertiti zippati
      * @throws ClassNotFoundException convertitore non trovato
@@ -107,11 +107,11 @@ public class EngineWebService {
      * @throws IllegalAccessException costruttore del convertitore non accessibile
      * @throws IOException errore nella gestione del file temp o dello zip
      */
-    private File conversioneMultipla(String srcExt, String outExt, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException, IllegalExtensionException, WatermarkException {
+    private File conversioneMultipla(String srcExt, Config configuration, File srcFile) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, FileMoveException, IllegalExtensionException, WatermarkException {
         ArrayList<File> zippedFiles = Zipper.unzip(srcFile);
         ArrayList<File> convertedFiles = new ArrayList<>();
         for (File f : zippedFiles){
-            convertedFiles.add(conversioneSingola(srcExt, outExt, f));
+            convertedFiles.add(conversioneSingola(srcExt, configuration, f));
         }
         //zippo i file convertiti
         return Zipper.compressioneFile(convertedFiles, Utility.getBaseName(srcFile));
@@ -119,7 +119,7 @@ public class EngineWebService {
 
 /** Effettua la conversione del singolo file
  * @param srcExt formato di partenza
- * @param outExt formato di output
+ * @param configuration json di configurazione
  * @param srcFile file di partenza
  * @return file convertito
  * @throws ClassNotFoundException convertitore non trovato
@@ -129,9 +129,9 @@ public class EngineWebService {
  * @throws IllegalAccessException costruttore del convertitore non accessibile
  * @throws IOException errore nella gestione del file temp
  */
-    private File conversioneSingola(String srcExt, String outExt, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, WatermarkException {
+    private File conversioneSingola(String srcExt, Config configuration, File srcFile) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, WatermarkException {
         //Istanzia il convertitore adatto
-        String converterClassName = checkParameters(srcExt, outExt, srcFile); // ritorna il nome del convertitore
+        String converterClassName = checkParameters(srcExt, configuration.getData().getDestinationFormat(), srcFile); // ritorna il nome del convertitore
         Class<?> clazz = Class.forName(converterClassName); // tramite il nome trova la classe
 
         //tramite l'interfaccia istanziamo il convertitore adatto ottenendo l'istanza dal costruttore
@@ -141,7 +141,7 @@ public class EngineWebService {
 
         try {
             // convertiamo il file
-            outFile = converter.conversione(srcFile);
+            outFile = converter.conversione(srcFile, configuration);
             logger.info("Conversione completata con successo: {}", outFile.getName());
         } catch (Exception e) {
             logger.error("Errore durante la conversione: {}", e.getMessage());

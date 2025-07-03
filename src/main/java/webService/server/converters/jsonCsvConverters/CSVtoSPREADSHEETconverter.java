@@ -8,7 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 
 import java.io.*;
@@ -22,7 +22,7 @@ public class CSVtoSPREADSHEETconverter extends Converter {
     public static final Logger logger = LogManager.getLogger(CSVtoSPREADSHEETconverter.class);
 
     @Override
-    public File convert(File srcFile) throws Exception {
+    public File convert(File srcFile, Config configuration) throws Exception {
         logger.info("Percorso file da convertire: " + srcFile.getAbsolutePath());
 
         if (!srcFile.exists() || !srcFile.isFile()) {
@@ -30,7 +30,7 @@ public class CSVtoSPREADSHEETconverter extends Converter {
             throw new IllegalArgumentException("Il file è vuoto o corrotto.");
         }
 
-        String format = ConversionContextReader.getDestinationFormat().toLowerCase();
+        String format = configuration.getData().getDestinationFormat().toLowerCase();
 
         if (format.equals("ods")) {
             return odsWriter(srcFile);

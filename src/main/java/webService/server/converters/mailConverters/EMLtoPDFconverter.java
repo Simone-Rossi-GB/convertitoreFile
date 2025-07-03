@@ -1,5 +1,6 @@
 package webService.server.converters.mailConverters;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import org.apache.james.mime4j.dom.*;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
@@ -43,7 +44,7 @@ public class EMLtoPDFconverter extends Converter {
      * @throws IOException Se si verificano errori durante la conversione
      */
     @Override
-    public File convert(File emlFile) throws IOException, WatermarkException {
+    public File convert(File emlFile, Config configuration) throws IOException, WatermarkException {
         if (emlFile == null || !emlFile.exists()) {
             throw new FileNotFoundException("File EML non trovato: " + emlFile);
         }

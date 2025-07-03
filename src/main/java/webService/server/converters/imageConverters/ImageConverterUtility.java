@@ -1,7 +1,7 @@
 package webService.server.converters.imageConverters;
 
 import webService.server.config.configExceptions.NullJsonValueException;
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,8 +13,8 @@ import java.io.IOException;
 public interface ImageConverterUtility {
     Logger logger = LogManager.getLogger(ImageConverterUtility.class);
 
-    static String getAndCheckOutputExtension() throws NullJsonValueException {
-        String ext = ConversionContextReader.getDestinationFormat();
+    static String getAndCheckOutputExtension(Config configuration) throws NullJsonValueException {
+        String ext = configuration.getData().getDestinationFormat();
         if (ext != null) {
             return ext;
         } else {

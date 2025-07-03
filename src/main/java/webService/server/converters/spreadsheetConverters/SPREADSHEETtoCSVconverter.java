@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.ConverterDocumentsWithPasword;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.EmptyFileException;
@@ -25,7 +26,7 @@ public class SPREADSHEETtoCSVconverter extends ConverterDocumentsWithPasword {
     private static final Logger logger = LogManager.getLogger(SPREADSHEETtoCSVconverter.class);
 
     @Override
-    public File convertProtectedFile(File spreadsheetFile, String password) throws IllegalArgumentException, ConversionException {
+    public File convertProtectedFile(File spreadsheetFile, String password, Config configuration) throws IllegalArgumentException, ConversionException {
         System.out.println("=================||INIZIO CONVERTITORE||=======================");
         System.out.println("password: " + password);
 

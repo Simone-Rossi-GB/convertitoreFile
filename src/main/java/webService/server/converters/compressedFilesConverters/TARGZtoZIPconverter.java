@@ -1,6 +1,7 @@
 package webService.server.converters.compressedFilesConverters;
 
 import webService.server.Utility;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import webService.server.converters.exception.ConversionException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -28,7 +29,7 @@ public class TARGZtoZIPconverter extends Converter {
      * @throws IOException In caso di errore durante la lettura o scrittura
      */
     @Override
-    public File convert(File tarGzFile) throws IOException {
+    public File convert(File tarGzFile, Config configuration) throws IOException {
         // Log dell'inizio del processo di conversione con il percorso del file in input
         logger.info("Inizio conversione con parametri: \n | tarGz.getPath() = {}", tarGzFile.getPath());
 

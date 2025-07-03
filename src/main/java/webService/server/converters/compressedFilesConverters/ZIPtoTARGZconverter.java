@@ -1,5 +1,6 @@
 package webService.server.converters.compressedFilesConverters;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.ConverterDocumentsWithPasword;
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.PasswordException;
@@ -32,7 +33,7 @@ public class ZIPtoTARGZconverter extends ConverterDocumentsWithPasword {
      * @throws PasswordException In caso di password errata o mancante
      */
     @Override
-    public File convertProtectedFile(File zipFile, String password) throws FileMoveException, PasswordException, IOException {
+    public File convertProtectedFile(File zipFile, String password, Config configuration) throws FileMoveException, PasswordException, IOException {
 
         logger.info("Conversione iniziata con parametri:\n | zipFile.getPath() = {}", zipFile.getAbsolutePath());
         File outputTarGz = null;

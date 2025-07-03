@@ -7,6 +7,7 @@ import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.ConverterDocumentsWithPasword;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.FileCreationException;
@@ -23,7 +24,7 @@ public class SPREADSHEETtoJSONconverter extends ConverterDocumentsWithPasword {
     private static final Logger logger = LogManager.getLogger(SPREADSHEETtoJSONconverter.class);
 
     @Override
-    public File convertProtectedFile(File spreadsheetFile, String password) throws IllegalArgumentException, ConversionException {
+    public File convertProtectedFile(File spreadsheetFile, String password, Config configuration) throws IllegalArgumentException, ConversionException {
         logger.info("Conversione iniziata con parametri:\n | inputFile.getPath() = {}", spreadsheetFile.getPath());
 
         // Controlla se il file esiste e non è corrotto

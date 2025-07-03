@@ -2,7 +2,7 @@ package webService.server.converters.txtConverters;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import webService.server.converters.PDFWatermarkApplier;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +25,7 @@ public class TXTtoPDFconverter extends Converter {
      * @throws WatermarkException errori nell'applicazione del watermark
      */
     @Override
-    public File convert(File srcFile) throws IOException, DocumentException, WatermarkException {
+    public File convert(File srcFile, Config configuration) throws IOException, DocumentException, WatermarkException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
 
         File output = new File(srcFile.getAbsolutePath().replaceAll("\\.txt$", ".pdf"));
@@ -45,7 +45,7 @@ public class TXTtoPDFconverter extends Converter {
         document.close();
 
         // Applica watermark se presente
-        if (!ConversionContextReader.getWatermark().isEmpty()) {
+        if (!configuration.getData().getWatermark().isEmpty()) {
             logger.info("Applying watermark to PDF...");
 
             // Crea un file temporaneo per il PDF con watermark nella stessa directory
@@ -58,7 +58,7 @@ public class TXTtoPDFconverter extends Converter {
                 boolean success = PDFWatermarkApplier.applyWatermark(
                         output,
                         tempFile,
-                        ConversionContextReader.getWatermark()
+                        configuration.getData().getWatermark()
                 );
 
                 logger.info("Watermark application completed, success: {}", success);

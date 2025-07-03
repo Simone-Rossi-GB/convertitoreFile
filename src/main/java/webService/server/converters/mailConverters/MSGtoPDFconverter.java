@@ -1,6 +1,6 @@
 package webService.server.converters.mailConverters;
 
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +42,7 @@ public class MSGtoPDFconverter extends Converter {
      * @throws IOException Se si verificano errori durante la conversione
      */
     @Override
-    public File convert(File msgFile) throws IOException {
+    public File convert(File msgFile, Config configuration) throws IOException {
         if (msgFile == null || !msgFile.exists()) {
             throw new FileNotFoundException("File MSG non trovato: " + msgFile);
         }
@@ -67,7 +67,7 @@ public class MSGtoPDFconverter extends Converter {
             logger.info("Conversione completata: {}", pdfFile.getName());
 
 
-            if (!ConversionContextReader.getWatermark().isEmpty()) {
+            if (!configuration.getData().getWatermark().isEmpty()) {
                 logger.info("Applying watermark to PDF...");
 
                 // Crea un file temporaneo per il PDF con watermark nella stessa directory

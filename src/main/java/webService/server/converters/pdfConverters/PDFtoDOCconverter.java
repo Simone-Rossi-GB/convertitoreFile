@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Range;
+import webService.server.config.configHandlers.Config;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,7 +20,7 @@ public class PDFtoDOCconverter extends AbstractPDFConverter {
     private static final Logger logger = LogManager.getLogger(PDFtoDOCconverter.class);
 
     @Override
-    protected File convertInternal(File pdfFile, PDDocument pdfDocument) throws IOException {
+    protected File convertInternal(File pdfFile, PDDocument pdfDocument, Config configuration) throws IOException {
         logger.info("Inizio conversione PDF → DOC: {}", pdfFile.getName());
 
         // Estrai testo dal PDF

@@ -1,5 +1,6 @@
 package webService.server.converters.spreadsheetConverters;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -88,7 +89,7 @@ public class XLSXtoJSONconverter extends Converter {
     }
 
     @Override
-    public File convert(File srcFile) throws IOException {
+    public File convert(File srcFile, Config configuration) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | srcFile.getPath() = {}", srcFile.getPath());
         return convertXlsxToJson(srcFile);
     }

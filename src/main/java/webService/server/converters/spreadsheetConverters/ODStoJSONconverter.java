@@ -1,6 +1,7 @@
 package webService.server.converters.spreadsheetConverters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
@@ -33,7 +34,7 @@ public class ODStoJSONconverter extends Converter {
      * @throws UnsupportedConversionException Se il file è nullo, vuoto o non valido
      */
     @Override
-    public File convert(File srcFile) throws Exception, UnsupportedConversionException {
+    public File convert(File srcFile, Config configuration) throws Exception, UnsupportedConversionException {
         if (controlloFileNonVuoto(srcFile)) {
             return convertInternal(srcFile);
         }

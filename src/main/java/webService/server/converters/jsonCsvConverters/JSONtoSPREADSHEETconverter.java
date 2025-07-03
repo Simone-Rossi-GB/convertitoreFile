@@ -1,6 +1,6 @@
 package webService.server.converters.jsonCsvConverters;
 
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +27,7 @@ public class JSONtoSPREADSHEETconverter extends Converter {
     /** * Metodo principale per la conversione del file JSON nel formato Spreadsheet desiderato.
      * * * @param srcFile File JSON di input * @return File Spreadsheet generato * @throws IOException Se il file è assente o non valido */
 
-    @Override public File convert(File srcFile) throws IOException {
+    @Override public File convert(File srcFile, Config configuration) throws IOException {
         if (!srcFile.exists() || !srcFile.isFile()) {
             logger.error("File vuoto o corrotto");
             throw new IOException("Il file è vuoto o corrotto");
@@ -38,7 +38,7 @@ public class JSONtoSPREADSHEETconverter extends Converter {
         for (int i = 0; i < jsonArray.length(); i++) {
             jsonObjects.add(jsonArray.getJSONObject(i));
         }
-        String format = ConversionContextReader.getDestinationFormat().toLowerCase();
+        String format = configuration.getData().getDestinationFormat().toLowerCase();
         if (format.equals("ods")) {
             try {
                 return writeJsonToOds(jsonObjects, srcFile);

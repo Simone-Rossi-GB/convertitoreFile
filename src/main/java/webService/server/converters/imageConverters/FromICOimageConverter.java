@@ -1,6 +1,7 @@
 package webService.server.converters.imageConverters;
 
 import webService.server.config.configExceptions.NullJsonValueException;
+import webService.server.config.configHandlers.Config;
 import webService.server.config.configHandlers.serverConfig.ConfigReader;
 import webService.server.converters.Converter;
 import net.ifok.image.image4j.codec.ico.ICODecoder;
@@ -20,8 +21,8 @@ import static webService.server.converters.imageConverters.ImageConverterUtility
 public class FromICOimageConverter extends Converter {
     private static final Logger logger = LogManager.getLogger(FromICOimageConverter.class);
     @Override
-    public File convert(File imgFile) throws NullJsonValueException, IOException {
-        String outputExtension = ImageConverterUtility.getAndCheckOutputExtension();
+    public File convert(File imgFile, Config configuration) throws NullJsonValueException, IOException {
+        String outputExtension = ImageConverterUtility.getAndCheckOutputExtension(configuration);
         logger.warn(outputExtension);
         List<String> formatsWithAlpha = ConfigReader.getFormatsWithAlphaChannel();
         List<String> formatsRequiringIntermediate = ConfigReader.getFormatsRequiringIntermediateConversion();

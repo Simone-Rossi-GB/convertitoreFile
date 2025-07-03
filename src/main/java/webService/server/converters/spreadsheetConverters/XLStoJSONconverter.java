@@ -1,5 +1,6 @@
 package webService.server.converters.spreadsheetConverters;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
 import webService.server.converters.exception.ConversionException;
 import webService.server.converters.exception.FileCreationException;
@@ -17,7 +18,7 @@ import org.apache.logging.log4j.LogManager;
 public class XLStoJSONconverter extends Converter {
     private static final Logger logger = LogManager.getLogger(XLStoJSONconverter.class);
     @Override
-    public File convert(File xlsFile) throws IOException {
+    public File convert(File xlsFile, Config configuration) throws IOException {
         logger.info("Conversione iniziata con parametri:\n | xlsFile.getPath() = {}", xlsFile.getPath());
         File jsonFile = null;
 

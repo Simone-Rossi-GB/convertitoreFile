@@ -1,5 +1,5 @@
 package webService.server.converters;
-import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,11 +13,11 @@ public abstract class ConverterDocumentsWithPasword extends Converter{
      * @return file convertito
      */
     @Override
-    public File convert(File srcFile) throws Exception{
+    public File convert(File srcFile, Config configuration) throws Exception{
         logger.info(srcFile.getAbsolutePath());
-        String extraParameter = ConversionContextReader.getPassword();
+        String extraParameter = configuration.getData().getPassword();
         logger.info("Password rilevata: {}", extraParameter);
-        return convertProtectedFile(srcFile, extraParameter);
+        return convertProtectedFile(srcFile, extraParameter, configuration);
     }
 
     /**
@@ -26,5 +26,5 @@ public abstract class ConverterDocumentsWithPasword extends Converter{
      * @param password Password letta dal JSON
      * @return file convertito
      */
-    public abstract File convertProtectedFile(File srcFile, String password) throws Exception;
+    public abstract File convertProtectedFile(File srcFile, String password, Config configuration) throws Exception;
 }
