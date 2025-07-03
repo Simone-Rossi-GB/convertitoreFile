@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import webService.server.auth.AuthException;
 import webService.server.converters.exception.*;
 
 import java.io.IOException;
@@ -66,6 +67,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorResponse> handleNullPointer(NullPointerException ex) {
         return buildErrorResponse(1011, ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAuth(AuthException ex) {
+        return buildErrorResponse(1012, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

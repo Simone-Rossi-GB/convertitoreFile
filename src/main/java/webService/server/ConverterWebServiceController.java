@@ -66,16 +66,19 @@ public class ConverterWebServiceController {
     /**
      * Effettua la conversione di un file
      * @param file file da convertire
-     * @param configuration JSON di configurazione
+     * @param configuration stringa JSON di configurazione che viene mappata in un oggetto Config
      * @return Response entity ok, con un array di byte che rappresenta il contenuto del file convertito, il content type, il nome e la lunghezza.
      * In caso di errori ritora un internalServerError con un messaggio di spiegazione.
      */
     @PostMapping(value = "/convert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> convertFile(
             @RequestPart("file") MultipartFile file, //parametri richiesti dopo il /convert/
-            @RequestPart("config") Config configuration)throws IOException, FileMoveException { //Json di configurazione
+            @RequestPart("config") Config configuration) throws IOException, FileMoveException, AuthException { //Json di configurazione
         logger.info(configuration.getData().getPassword() + ", " + configuration.getData().getDestinationFormat());
-        { //Json di configurazione
+        { //Json di configurazion
+
+            // controllo se il token è valido. La variabile non verrà più usata poi
+            User user = authService.getCurrentUser(configuration.getData().getToken());
 
             Path tempInputFilePath = null;
             Path conversionTempDir = null;

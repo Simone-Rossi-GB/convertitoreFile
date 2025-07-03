@@ -33,6 +33,7 @@ public class Config {
                 private boolean zippedOutput;
                 private String watermark;
                 private boolean multipleConversion;
+                private String token;
 
                 // Costruttore vuoto obbligatorio
                 public Data() {
@@ -49,6 +50,10 @@ public class Config {
 
                 public String getPassword() {
                         return password;
+                }
+
+                public String getToken() {
+                        return token;
                 }
 
                 public void setPassword(String password) {
@@ -83,6 +88,10 @@ public class Config {
                         return watermark;
                 }
 
+                public void getToken(String token) {
+                        this.token = token;
+                }
+
                 public void setWatermark(String watermark) {
                         this.watermark = watermark;
                 }
@@ -93,19 +102,6 @@ public class Config {
 
                 public void setMultipleConversion(boolean multipleConversion) {
                         this.multipleConversion = multipleConversion;
-                }
-
-                @Override
-                public String toString() {
-                        return "Data{" +
-                                "destinationFormat='" + destinationFormat + '\'' +
-                                ", password='" + password + '\'' +
-                                ", protectedOutput=" + protectedOutput +
-                                ", union=" + union +
-                                ", zippedOutput=" + zippedOutput +
-                                ", watermark='" + watermark + '\'' +
-                                ", multipleConversion=" + multipleConversion +
-                                '}';
                 }
         }
 }

@@ -124,30 +124,33 @@ public class MSGtoPDFconverter extends Converter {
             throw new IOException("Chrome non disponibile tramite ChromeManager");
         }
 
+        // Usa il nome base originale (del file EML) per il nome del file PDF
         File pdfFile = new File(tempDir, originalBaseName + ".pdf");
 
         List<String> command = new ArrayList<String>();
         command.add(chromePath);
         command.add("--headless");
-        command.add("--no-sandbox");
-        command.add("--disable-gpu");
-        command.add("--disable-dev-shm-usage");
-        command.add("--disable-extensions");
-        command.add("--disable-plugins");
-        command.add("--run-all-compositor-stages-before-draw");
-        command.add("--virtual-time-budget=10000");
+        //command.add("--no-sandbox"); // Necessario in alcuni ambienti Linux/Docker
+        command.add("--disable-gpu"); // Necessario per ambienti senza GUI/GPU
+        //command.add("--disable-dev-shm-usage"); // Utile in ambienti Docker/Linux
+        //command.add("--disable-extensions");
+        //command.add("--disable-plugins");
+        //command.add("--run-all-compositor-stages-before-draw"); // Garantisce rendering completo
+        //command.add("--virtual-time-budget=10000"); // 10 secondi timeout caricamento pagina
         command.add("--print-to-pdf=" + pdfFile.getAbsolutePath());
-        command.add("--print-to-pdf-no-header");
-        command.add("file://" + htmlFile.getAbsolutePath().replace("\\", "/"));
+        //command.add("--print-to-pdf-no-header"); // Flag per rimuovere header/footer predefiniti del browser
+        command.add("file://" + htmlFile.getAbsolutePath().replace("\\", "/")); // Percorso del file HTML da convertire
 
         logger.info("Esecuzione comando Chrome: {}", String.join(" ", command));
 
         ProcessBuilder pb = new ProcessBuilder(command);
+        logger.info("process.start superato");
         pb.redirectErrorStream(true);
 
         Process process = pb.start();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            logger.info("Reader iniziato");
             String line;
             StringBuilder output = new StringBuilder();
             while ((line = reader.readLine()) != null) {
