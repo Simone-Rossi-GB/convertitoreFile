@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(1011, ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(AuthException.class)
     public ResponseEntity<ErrorResponse> handleAuth(AuthException ex) {
         return buildErrorResponse(1012, ex.getMessage());
     }

@@ -78,7 +78,9 @@ public class ConverterWebServiceController {
         { //Json di configurazion
 
             // controllo se il token è valido. La variabile non verrà più usata poi
+            logger.info("verifico token");
             User user = authService.getCurrentUser(configuration.getData().getToken());
+            logger.info("token valido");
 
             Path tempInputFilePath = null;
             Path conversionTempDir = null;

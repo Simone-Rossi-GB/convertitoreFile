@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="converter">
+    <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="zip">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/ConverterWebServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/ConverterWebServiceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/config/configHandlers/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/config/configHandlers/Config.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/auth/AuthException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/auth/AuthException.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,19 +30,24 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.MainApp.executor&quot;: &quot;Run&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;Spring Boot.WebServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;docker&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/simo/Documents/GitHub/convertitoreFileDocker/src/main/java/webService/server&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MainApp.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "Spring Boot.WebServiceApplication.executor": "Run",
+    "git-widget-placeholder": "docker",
+    "last_opened_file_path": "/Users/simo/Documents/GitHub/convertitoreFileDocker/src/main/java/webService/server",
+    "node.js.selected.package.tslint": "(autodetect)"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/webService/server" />
@@ -138,6 +142,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="immagini funzionano" />
     <MESSAGE value="converter" />
-    <option name="LAST_COMMIT_MESSAGE" value="converter" />
+    <MESSAGE value="zip" />
+    <option name="LAST_COMMIT_MESSAGE" value="zip" />
   </component>
 </project>
