@@ -23,7 +23,10 @@ public class ConversionContextInstance {
                 "password",
                 "protected",
                 "union",
-                "zippedOutput"
+                "zippedOutput",
+                "watermark",
+                "multipleConversion",
+                "token"
         );
         this.jsonFile = new File(jsonFile.getAbsolutePath());
         // Esegue la validazione della struttura del JSON

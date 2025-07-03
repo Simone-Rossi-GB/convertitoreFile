@@ -5,11 +5,42 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="immagini funzionano">
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/compressedFilesConverters/TARGZtoZIPconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/compressedFilesConverters/ZIPtoTARGZconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/BatchConversionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/ConversionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/EmptyFileException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/FileCreationException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/FileMoveException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/FormatsException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/IllegalExtensionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/PasswordException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/UnsupportedConversionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/exception/WatermarkException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/imageConverters/FromICOimageConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/imageConverters/GenericImageConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/imageConverters/ImageConverterUtility.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/imageConverters/ToICOimageConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/jsonCsvConverters/CSVtoJSONconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/jsonCsvConverters/CSVtoSPREADSHEETconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/jsonCsvConverters/JSONtoSPREADSHEETconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/ChromeManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/EMLtoPDFconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/pdfConverters/AbstractPDFConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/pdfConverters/PDFtoDOCXconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/pdfConverters/PDFtoDOCconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/pdfConverters/PDFtoJPGconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/ODStoJSONconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/SPREADSHEETtoCSVconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/SPREADSHEETtoJSONconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/XLSXtoJSONconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/XLStoJSONconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoDOCXconverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/converter.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/converter.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/converter.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/converter.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/file-type-converter-1.0-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/file-type-converter-1.0-SNAPSHOT.jar.original" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/config/configHandlers/conversionContext/ConversionContextInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/config/configHandlers/conversionContext/ConversionContextInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/config/configHandlers/conversionContext/ConversionContextReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/config/configHandlers/conversionContext/ConversionContextReader.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751533579894</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="immagini funzionano">
+      <option name="closed" value="true" />
+      <created>1751535565437</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1751535565437</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

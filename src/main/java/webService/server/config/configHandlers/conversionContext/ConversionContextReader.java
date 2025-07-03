@@ -102,6 +102,14 @@ public class ConversionContextReader extends ConversionContextData {
     }
 
     /**
+     * Restituisce il token dell'autenticazione
+     */
+    public static String getToken() {
+        Object value = getContextValue("token", "");
+        return value.toString();
+    }
+
+    /**
      * Indica se la conversione multipla è abilitata.
      */
     public static Boolean getIsMultipleConversionEnabled() throws JsonStructureException {
