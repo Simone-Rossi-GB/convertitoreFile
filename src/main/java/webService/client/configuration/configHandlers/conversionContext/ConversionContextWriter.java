@@ -1,5 +1,7 @@
 package webService.client.configuration.configHandlers.conversionContext;
 
+import webService.client.configuration.jsonUtilities.JsonWriter;
+
 /**
  * Fornisce metodi per aggiornare i dati nel contesto di conversione
  * specifico per il thread corrente.
@@ -69,5 +71,14 @@ public class ConversionContextWriter extends ConversionContextData {
      */
     public static void setIsMultipleConversionEnabled(boolean isMultipleConversionEnabled) {
         context.get().put("multipleConversion", isMultipleConversionEnabled);
+    }
+
+    /**
+     * Scrive la preferenza per abilitare o meno le conversioni multiple.
+     *
+     * @param token valore da inserire nel campo "token"
+     */
+    public static void writeToken(String token) {
+        context.get().put("token", token);
     }
 }
