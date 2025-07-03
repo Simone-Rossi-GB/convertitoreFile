@@ -1,120 +1,101 @@
+# Multi-stage build per supportare diverse architetture (Mac M3 → server)
+# Rileva automaticamente l'architettura target
 FROM openjdk:8-jre-slim
 
-# Installa dipendenze base con retry
-RUN for i in 1 2 3; do \
-    apt-get update && \
-    apt-get install -y \
-        wget \
-        curl \
-        unzip \
-        ca-certificates \
-        gnupg \
-        fonts-liberation \
-        libasound2 \
-        libatk-bridge2.0-0 \
-        libatk1.0-0 \
-        libatspi2.0-0 \
-        libcups2 \
-        libdbus-1-3 \
-        libdrm2 \
-        libgtk-3-0 \
-        libnspr4 \
-        libnss3 \
-        libwayland-client0 \
-        libxcomposite1 \
-        libxdamage1 \
-        libxfixes3 \
-        libxkbcommon0 \
-        libxrandr2 \
-        libxss1 \
-        libgbm1 \
-        xdg-utils \
-    && rm -rf /var/lib/apt/lists/* \
-    && break || \
-    (echo "Attempt $i failed, retrying..." && sleep 10); \
-done
+# Installa dipendenze necessarie per Chrome Headless e utilità di sistema
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    xdg-utils \
+    libgbm1 \
+    libxshmfence1 \
+    libglib2.0-0 \
+    libgconf-2-4 \
+    libxrandr2 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libgtk-3-0 \
+    libgdk-pixbuf2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Rileva architettura e installa browser appropriato con retry
-RUN ARCH=$(dpkg --print-architecture) && \
-    echo "Detected architecture: $ARCH" && \
-    for i in 1 2 3; do \
-        if [ "$ARCH" = "amd64" ]; then \
-            echo "Installing Chrome for AMD64..." && \
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-            apt-get update && \
-            apt-get install -y google-chrome-stable && \
-            ln -sf /usr/bin/google-chrome-stable /usr/bin/chrome && \
-            break; \
-        else \
-            echo "Installing Chromium for ARM64..." && \
-            apt-get update && \
-            apt-get install -y chromium chromium-driver && \
-            ln -sf /usr/bin/chromium /usr/bin/chrome && \
-            break; \
-        fi || \
-        (echo "Browser install attempt $i failed, retrying..." && sleep 10); \
-    done && \
-    rm -rf /var/lib/apt/lists/*
+# Scarica e installa Chrome Headless Shell - LINK CORRETTI dal sito ufficiale
+# Usa la versione Stable 136.0.7103.49 per Linux64
+RUN CHROME_VERSION="136.0.7103.49" \
+    && echo "Downloading Chrome Headless Shell ${CHROME_VERSION}..." \
+    && wget -q -O /tmp/chrome-headless-shell.zip \
+        "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chrome-headless-shell-linux64.zip" \
+    && cd /tmp \
+    && unzip chrome-headless-shell.zip \
+    && chmod +x chrome-headless-shell-linux64/chrome-headless-shell \
+    && mv chrome-headless-shell-linux64/chrome-headless-shell /usr/local/bin/ \
+    && rm -rf /tmp/chrome-headless-shell* \
+    && echo "Chrome Headless Shell ${CHROME_VERSION} installed successfully" \
+    && ls -la /usr/local/bin/chrome-headless-shell \
+    && /usr/local/bin/chrome-headless-shell --version
 
-# Crea utente non-root
-RUN useradd -ms /bin/bash appuser && \
-    mkdir -p /app /app/temp /app/logs && \
-    chown -R appuser:appuser /app
+# Crea utente non-root per sicurezza
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
+# Crea directory per l'applicazione
 WORKDIR /app
 
-# Copia il JAR
-COPY target/file-type-converter-*.jar app.jar
-RUN chown appuser:appuser app.jar
+# Crea directory per uploads e conversioni temporanee
+RUN mkdir -p /app/uploads /app/temp && \
+    chown -R appuser:appuser /app
 
-# Script di avvio ottimizzato
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-echo "=== AVVIO CONTAINER ==="\n\
-\n\
-# Rileva browser disponibile\n\
-if [ -f "/usr/bin/google-chrome-stable" ]; then\n\
-    export CHROME_PATH="/usr/bin/google-chrome-stable"\n\
-    echo "Using Google Chrome Stable"\n\
-elif [ -f "/usr/bin/google-chrome" ]; then\n\
-    export CHROME_PATH="/usr/bin/google-chrome"\n\
-    echo "Using Google Chrome"\n\
-elif [ -f "/usr/bin/chromium" ]; then\n\
-    export CHROME_PATH="/usr/bin/chromium"\n\
-    echo "Using Chromium"\n\
-else\n\
-    echo "ERROR: No browser found!"\n\
-    echo "Available binaries:"\n\
-    ls -la /usr/bin/ | grep -E "(chrome|chromium)" || echo "None found"\n\
-    exit 1\n\
-fi\n\
-\n\
-# Test browser\n\
-echo "Testing browser..."\n\
-$CHROME_PATH --version || { echo "Browser test failed"; exit 1; }\n\
-\n\
-# Imposta argomenti Chrome ottimizzati\n\
-export CHROME_ARGS="--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-renderer-backgrounding --disable-features=TranslateUI --remote-debugging-port=0"\n\
-\n\
-echo "Starting application with browser: $CHROME_PATH"\n\
-echo "Java opts: $JAVA_OPTS"\n\
-exec java $JAVA_OPTS -Dserver.address=0.0.0.0 -jar app.jar' > start.sh && \
-chmod +x start.sh && \
-chown appuser:appuser start.sh
+# Copia il JAR dell'applicazione dal target locale
+COPY target/*.jar app.jar
 
-# Cambia a utente non-root
+# Copia eventuali file di configurazione delle risorse
+COPY src/main/resources/ /app/resources/
+
+# Crea directory lib per Chrome Headless (se necessario per il ChromeManager)
+RUN mkdir -p /app/lib/linux && \
+    ln -s /usr/local/bin/chrome-headless-shell /app/lib/linux/chrome-headless-shell
+
+# Imposta le variabili d'ambiente
+ENV CHROME_PATH=/usr/local/bin/chrome-headless-shell
+ENV JAVA_OPTS="-Xmx4096m -Djava.security.egd=file:/dev/./urandom"
+ENV APP_UPLOAD_DIR=/app/uploads
+
+# Cambia ownership per sicurezza e Chrome
+RUN chown -R appuser:appuser /app \
+    && chown appuser:appuser /usr/local/bin/chrome-headless-shell
+
+# Cambia utente
 USER appuser
 
+# Espone la porta dell'applicazione
 EXPOSE 8080
 
-# Environment variables
-ENV JAVA_OPTS="-Xmx5g -Xms4096m"
+# Healthcheck per verificare lo stato dell'applicazione
+HEALTHCHECK --interval=120s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/converter/status || exit 1
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/api/converter/status || exit 1
-
-# Avvio
-CMD ["./start.sh"]
+# Comando di avvio
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

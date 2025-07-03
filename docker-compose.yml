@@ -1,40 +1,112 @@
 services:
-  converter-service:
-    image: file-converter:latest
-    container_name: file-converter-app
-    ports:
-      - "0.0.0.0:8080:8080"
+  # Database PostgreSQL
+  postgres:
+    image: postgres:13-alpine
+    container_name: bytebridge-postgres
     environment:
-      - JAVA_OPTS=-Xmx5g -Xms4096m
-      - SERVER_ADDRESS=0.0.0.0  # Ascolta su tutte le interfacce
-      - SERVER_PORT=8080
-      
-      # Chrome environment variables
-      - CHROME_PATH=/usr/bin/chrome
-      - CHROME_ARGS=--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-renderer-backgrounding --disable-features=TranslateUI --remote-debugging-port=0
-
+      POSTGRES_DB: bytebridge
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: bytebridge
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./logs:/app/logs
-      - ./temp:/app/temp
-      - /usr/share/fonts:/usr/share/fonts:ro
-
-    # Configurazioni per Chrome
-    shm_size: 2gb
-    security_opt:
-      - seccomp:unconfined
-    
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"  # Esposto anche sulla LAN per admin/debug
+    # Rimuovo network specifico per usare quello default
     restart: unless-stopped
-    
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/converter/status"]
-      interval: 30s
+      test: ["CMD-SHELL", "pg_isready -U admin -d bytebridge"]
+      interval: 120s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 5
 
-    networks:
-      - converter-network
+  # Applicazione WebService
+  webservice:
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile  # Usa il Dockerfile multi-platform
+    image: bytebridge-webservice:latest
+    container_name: bytebridge-webservice
+    environment:
+      # Database configuration - usa il nome container per comunicazione interna
+      SPRING_DATASOURCE_URL: jdbc:postgresql://bytebridge-postgres:5432/bytebridge
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: bytebridge
+
+      # JPA/Hibernate configuration
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_SHOW_SQL: true
+
+      # Server configuration - IMPORTANTE: bind su tutte le interfacce
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 8080
+
+      # Application configuration
+      APP_UPLOAD_DIR: /app/uploads
+
+      # Chrome configuration
+      CHROME_PATH: /usr/local/bin/chrome-headless-shell
+
+      # Java options
+      JAVA_OPTS: -Xmx4096m -Djava.security.egd=file:/dev/./urandom
+
+      # Logging
+      LOGGING_LEVEL_WEBSERVICE: INFO
+    volumes:
+      - uploads_volume:/app/uploads
+      - temp_volume:/app/temp
+    ports:
+      - "8080:8080"  # client possono usare http://IP_SERVER:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/api/converter/status || exit 1"]
+      interval: 120s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # PgAdmin per gestione database (opzionale - rimuovi se non necessario)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bytebridge-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@bytebridge.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"  # Esposto sulla LAN per accesso admin
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    profiles:
+      - admin # Usa questo profilo per avviare pgadmin: docker-compose --profile admin up
+
+# Volumi persistenti
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  uploads_volume:
+    driver: local
+  temp_volume:
+    driver: local
 
 networks:
-  converter-network:
+  bytebridge-network:
     driver: bridge

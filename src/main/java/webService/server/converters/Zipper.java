@@ -1,6 +1,6 @@
 package webService.server.converters;
 
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.FileMoveException;
 import webService.server.converters.exception.IllegalExtensionException;
 import webService.server.Utility;
@@ -36,6 +36,7 @@ public class Zipper {
         File outputZip = new File(files.get(0).getParent(), "file.zip");
 
         try (FileOutputStream fos = new FileOutputStream(outputZip);
+             //wrapper per scrivere dati compressi
              ZipOutputStream zos = new ZipOutputStream(fos)) {
 
             for (File f : files) {
@@ -77,14 +78,15 @@ public class Zipper {
         File outputZip = new File(files.get(0).getParent(), "file.zip");
         ZipFile zipFile = new ZipFile(outputZip, ConversionContextReader.getPassword().toCharArray());
 
-        zipFile.setPassword(ConversionContextReader.getPassword().toCharArray());
+        ZipParameters parametrs = new ZipParameters();
+        parametrs.setEncryptFiles(true);
+        parametrs.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD);
 
         for (File f : files) {
             if (!f.exists() || !f.isFile()) {
                 logger.warn("File non valido: {}", f.getAbsolutePath());
                 continue;
             }
-
             zipFile.addFile(f);
 
             if (!f.delete()) {

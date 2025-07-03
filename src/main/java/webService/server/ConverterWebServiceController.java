@@ -5,30 +5,24 @@ import webService.server.auth.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
-import webService.server.converters.PDFWatermarkApplier;
+import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.apache.tika.Tika;
-import webService.server.configuration.configHandlers.serverConfig.ConfigData;
-import webService.server.configuration.configHandlers.serverConfig.ConfigInstance;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextData;
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextInstance;
+import webService.server.config.configHandlers.conversionContext.ConversionContextData;
+import webService.server.config.configHandlers.conversionContext.ConversionContextInstance;
 
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 

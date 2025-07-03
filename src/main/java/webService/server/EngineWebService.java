@@ -1,9 +1,9 @@
 package webService.server;
 
-import webService.server.configuration.configHandlers.conversionContext.ConversionContextReader;
+import webService.server.config.configHandlers.conversionContext.ConversionContextReader;
 import webService.server.converters.exception.*;
 import webService.server.converters.Converter;
-import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
+import webService.server.config.configHandlers.serverConfig.ConfigReader;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;

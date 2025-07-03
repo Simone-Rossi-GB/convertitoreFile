@@ -1,0 +1,160 @@
+package webService.server.config.jsonUtilities;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import webService.server.config.configExceptions.JsonFileNotFoundException;
+import webService.server.config.configExceptions.JsonStructureException;
+import webService.server.config.jsonUtilities.recognisedWrappers.RecognisedInput;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * Utility JSON che fornisce metodi per validare e caricare contenuti JSON
+ * da input riconosciuti come {@code File} o {@code String}, supportando la struttura
+ * del progetto attraverso un parser Jackson condiviso.
+ */
+public interface JsonUtility {
+
+    /** Logger per la tracciabilità di eventi e anomalie durante la manipolazione JSON. */
+    Logger logger = LogManager.getLogger(JsonUtility.class);
+
+    /** ObjectMapper Jackson condiviso per lettura e parsing JSON. */
+    ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * Esegue la validazione della struttura JSON da una sorgente {@link RecognisedInput},
+     * senza specificare campi obbligatori.
+     *
+     * @param jsonText input riconosciuto da validare
+     */
+    static <T extends RecognisedInput> void validateJsonFromStringOrFile(T jsonText) {
+        validateJsonFromStringOrFile(jsonText, null);
+    }
+
+    /**
+     * Valida un input JSON verificando la sua correttezza strutturale e la presenza dei campi obbligatori.
+     * <p>
+     * Tenta di leggere il contenuto come {@code File}, fallisce in fallback secondario — ma
+     * attualmente entrambe le chiamate usano {@code getValue()} come se fosse un {@code File},
+     * il che potrebbe generare ambiguità se supporti anche {@code String}.
+     *
+     * @param json input riconosciuto (es. {@code RecognisedFile}, {@code RecognisedString})
+     * @param mandatoryEntries lista dei campi obbligatori presenti nel nodo "data"
+     * @throws JsonStructureException se il contenuto non è valido o mancano campi obbligatori
+     */
+    /**
+     * Valida un input JSON verificando la sua correttezza strutturale e la presenza dei campi obbligatori.
+     *
+     * @param json input riconosciuto (es. {@code RecognisedFile}, {@code RecognisedString})
+     * @param mandatoryEntries lista dei campi obbligatori presenti nel nodo "data"
+     * @throws JsonStructureException se il contenuto non è valido o mancano campi obbligatori
+     */
+    static <T extends RecognisedInput> void validateJsonFromStringOrFile(T json, List<String> mandatoryEntries) throws JsonStructureException {
+        if (mandatoryEntries == null) {
+            mandatoryEntries = new ArrayList<>();
+        }
+
+        try {
+            JsonNode root;
+            Object value = json.getValue();
+
+            // Determina il tipo di input e legge di conseguenza
+            if (value instanceof File) {
+                File file = (File) value;
+                if (!file.exists()) {
+                    throw new JsonStructureException("File non trovato: " + file.getPath());
+                }
+                root = mapper.readTree(file);
+                logger.info("JSON letto da file: {}", file.getName());
+            } else if (value instanceof String) {
+                String jsonString = (String) value;
+                root = mapper.readTree(jsonString);
+                logger.info("JSON letto da stringa");
+            } else {
+                throw new JsonStructureException("Tipo di input non supportato: " +
+                        (value != null ? value.getClass().getSimpleName() : "null"));
+            }
+
+            // Validazione della struttura JSON
+            if (root == null) {
+                throw new JsonStructureException("JSON vuoto o non valido");
+            }
+
+            // Controlla se esiste il nodo "data" per la validazione dei campi obbligatori
+            JsonNode dataNode = root.get("data");
+            if (dataNode != null && mandatoryEntries != null && !mandatoryEntries.isEmpty()) {
+                List<String> missingEntries = new ArrayList<>();
+                for (String entry : mandatoryEntries) {
+                    if (!dataNode.has(entry)) {
+                        missingEntries.add(entry);
+                    }
+                }
+
+                if (!missingEntries.isEmpty()) {
+                    throw new JsonStructureException("JSON mancante di campi obbligatori: " + String.join(", ", missingEntries));
+                }
+            }
+
+            logger.info("JSON valido");
+
+        } catch (IOException e) {
+            logger.error("Errore nella lettura JSON: {}", e.getMessage());
+            throw new JsonStructureException("JSON non valido: " + e.getMessage());
+        } catch (JsonStructureException e) {
+            // Rilancia le eccezioni JsonStructureException senza wrapping aggiuntivo
+            throw e;
+        } catch (Exception e) {
+            logger.error("Errore imprevisto durante la validazione JSON: {}", e.getMessage());
+            throw new JsonStructureException("Errore imprevisto: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Verifica se il file esiste e se il nodo radice è già stato caricato.
+     * In caso contrario, ne innesca il caricamento.
+     *
+     * @param jsonFile file da caricare
+     * @param rootReference riferimento atomico al nodo radice che verrà popolato
+     * @throws JsonFileNotFoundException se il file non esiste sul file system
+     */
+    static void checkBuild(File jsonFile, AtomicReference<ObjectNode> rootReference) throws JsonFileNotFoundException, JsonStructureException {
+        if (jsonFile.exists()) {
+            try {
+                if (rootReference.get() == null || !rootReference.get().equals(mapper.readTree(jsonFile))) {
+                    loadJson(jsonFile, rootReference);
+                }
+            } catch (IOException e) {
+                logger.error("Mappatura di {} fallita", jsonFile.getName());
+                throw new JsonStructureException("Mappatura di "+jsonFile.getName()+" fallita");
+            }
+        } else {
+            logger.error("File {} non trovato", jsonFile.getPath());
+            throw new JsonFileNotFoundException("File " + jsonFile.getPath() + " non trovato");
+        }
+    }
+
+    /**
+     * Carica il file JSON e aggiorna il nodo radice condiviso usando {@link AtomicReference}.
+     * <p>
+     * Gestisce il parsing e solleva eccezioni strutturali in caso di errori.
+     *
+     * @param jsonFile file da leggere
+     * @param rootReference riferimento da aggiornare con il nodo radice
+     * @throws JsonStructureException se la lettura fallisce o il contenuto non è un {@link ObjectNode}
+     */
+    static void loadJson(File jsonFile, AtomicReference<ObjectNode> rootReference) throws JsonStructureException {
+        try {
+            rootReference.set((ObjectNode) mapper.readTree(jsonFile));
+        } catch (IOException e) {
+            logger.error("Errore durante la lettura di {}", jsonFile.getPath());
+            throw new JsonStructureException("Caricamento " + jsonFile.getName() + " fallito");
+        }
+    }
+}

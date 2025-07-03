@@ -6,13 +6,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.core.io.ClassPathResource;
-import webService.server.configuration.configHandlers.serverConfig.ConfigData;
-import webService.server.configuration.configHandlers.serverConfig.ConfigInstance;
-import webService.server.configuration.configHandlers.serverConfig.ConfigReader;
+import webService.server.config.configHandlers.serverConfig.ConfigData;
+import webService.server.config.configHandlers.serverConfig.ConfigInstance;
+import webService.server.config.configHandlers.serverConfig.ConfigReader;
 
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 @SpringBootApplication
 public class WebServiceApplication {
@@ -35,17 +38,25 @@ public class WebServiceApplication {
                 throw new RuntimeException("File di configurazione non trovato");
             }
 
-            // Ottieni il file dalle resources
-            File configFile = resource.getFile();
-            logger.info("Configurazione caricata dalle risorse: " + configFile.getAbsolutePath());
+            // ✅ NUOVO CODICE (funziona in JAR):
+            try (InputStream inputStream = resource.getInputStream()) {
+                // Crea un file temporaneo
+                File tempConfigFile = File.createTempFile("serverConfig", ".json");
+                tempConfigFile.deleteOnExit();
 
-            ConfigInstance ci = new ConfigInstance(configFile);
-            ConfigData.update(ci);
-            logger.warn(ConfigReader.getConversions().get("pdf"));
+                // Copia il contenuto nel file temporaneo
+                Files.copy(inputStream, tempConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-            if (context == null || !context.isActive()) {
-                context = SpringApplication.run(WebServiceApplication.class);
-                logger.info("Web Service avviato su porta 8080");
+                logger.info("Configurazione caricata dalle risorse: " + tempConfigFile.getAbsolutePath());
+
+                ConfigInstance ci = new ConfigInstance(tempConfigFile);
+                ConfigData.update(ci);
+                logger.warn(ConfigReader.getConversions().get("pdf"));
+
+                if (context == null || !context.isActive()) {
+                    context = SpringApplication.run(WebServiceApplication.class);
+                    logger.info("Web Service avviato su porta 8080");
+                }
             }
         } catch (IOException e) {
             logger.error("Errore nel caricamento del file di configurazione: " + e.getMessage(), e);
