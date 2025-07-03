@@ -38,8 +38,7 @@ public class MainApp extends Application {
         currentLocale = new Locale(config.getLang(), config.getLang().toUpperCase());
 
         // AVVIA PRIMA LA SCHERMATA DI LOGIN
-        //showLoginScreen();
-        showMainApplication();
+        showLoginScreen();
     }
 
     /**
@@ -143,6 +142,7 @@ public class MainApp extends Application {
 
             StackPane layeredRoot = new StackPane(root, overlayPane);
             controller.setOverlayPane(overlayPane);
+            System.out.println("Ho appena settato l'overlayPane");
 
             // Crea la scena principale con StackPane
             Scene scene = new Scene(layeredRoot);
@@ -202,6 +202,8 @@ public class MainApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.centerOnScreen();
             primaryStage.show();
+
+            controller.avviaGuida();
 
             // Handler per logout quando si chiude l'app
             primaryStage.setOnCloseRequest(evt -> {

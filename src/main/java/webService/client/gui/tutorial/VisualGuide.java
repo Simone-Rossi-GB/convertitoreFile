@@ -91,6 +91,7 @@ public class VisualGuide {
         messageBox.getStyleClass().removeAll("light", "dark");
 
         // Trova la root scene
+        System.out.println(overlayPane);
         javafx.scene.Scene scene = overlayPane.getScene();
         if (scene != null && scene.getRoot() != null) {
             Parent root = scene.getRoot();

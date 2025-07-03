@@ -223,7 +223,6 @@ public class MainViewController {
         if (monitorAtStart) {
             toggleMonitoring();
         }
-        if (jsonConfig.getIsFirstStart()) avviaGuida();
     }
 
     @FXML
