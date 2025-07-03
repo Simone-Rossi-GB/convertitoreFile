@@ -874,10 +874,7 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <p><code>file</code> (file): File da convertire</p>
 </li>
 <li>
-<p><code>targetFormat</code> (string): Formato di destinazione (es. <code>pdf</code>, <code>docx</code>)</p>
-</li>
-<li>
-<p><code>configFile</code> (file): File JSON con i parametri utili alla conversione</p>
+<p><code>config</code> (text): JSON di configurazione. Deve avere <code>application\json</code> come Content-Type.</p>
 </li>
 </ul>
 <p><strong>Response 200:</strong></p>
@@ -904,8 +901,7 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <p>Tutti gli errori restituiscono lo status HTTP <strong>500 Internal Server Error</strong> con corpo JSON nel seguente formato:</p>
 <pre><code class="language-json">{
  &quot;errorCode&quot;: &lt;codice numerico&gt;,
- &quot;message&quot;: &quot;Descrizione dell'errore&quot;,
- &quot;stackTrace&quot;: &quot;Prima riga dello stack trace&quot;
+ &quot;message&quot;: &quot;Descrizione dell'errore&quot;
 }
 </code></pre>
 <h5 id="elenco-dei-codici-di-errore">Elenco dei codici di errore</h5>
@@ -931,6 +927,8 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <p>Il file è protetto da password o non accessibile.</p>
 <h6 id="1011-nullpointerexception"><strong>1011.</strong>   NullPointerException:</h6>
 <p>Oggetto null.</p>
+<p><strong>1012.</strong>   AuthException:</p>
+<p>Token scaduto o non corretto.</p>
 <h6 id="9999-exception"><strong>9999.</strong>   Exception:</h6>
 <p>Errore interno inatteso (variabile nulla o oggetto non inizializzato).</p>
 <h2 id="flusso-tipico-di-utilizzo">Flusso tipico di utilizzo</h2>
@@ -942,10 +940,13 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <p>Il server cerca nel file serverConfig.json le informazioni richieste e allega alla risposta la lista di estensioni per la conversione.</p>
 </li>
 <li>
-<p>Il client fa una chiamata <code>POST /convert</code>, passando il file da convertire, l'estensione di destinazione e il file conversionContext.json, con i parametri validi solo per quella conversione.</p>
+<p>Il client fa una chiamata <code>POST /convert</code>, passando il file da convertire, l'estensione di destinazione e il contenuto del file conversionContext.json, con i parametri validi solo per quella conversione.</p>
 </li>
 <li>
-<p>Il server invia una risposta con un'array di byte che rappresenta il contenuto del file convertito e il mediaType rilevato nell'header</p>
+<p>Il server effettua l'autenticazione.</p>
+</li>
+<li>
+<p>Il server invia una risposta con un'array di byte che rappresenta il contenuto del file convertito e il mediaType rilevato nell'header.</p>
 </li>
 </ol>
 

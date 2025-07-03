@@ -508,6 +508,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#autenticazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autenticazione
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gestione-concorrenza" class="md-nav__link">
     <span class="md-ellipsis">
       Gestione Concorrenza
@@ -829,6 +838,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#autenticazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autenticazione
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gestione-concorrenza" class="md-nav__link">
     <span class="md-ellipsis">
       Gestione Concorrenza
@@ -957,7 +975,6 @@ public static boolean isRunning()       // Verifica se il servizio è attivo
 <ul>
 <li><code>errorCode</code>: Codice numerico identificativo dell'errore</li>
 <li><code>message</code>: Messaggio descrittivo dell'errore</li>
-<li><code>stackTrace</code>: Prima riga dello stack trace per il debugging</li>
 </ul>
 <h2 id="flusso-di-conversione">Flusso di Conversione</h2>
 <h3 id="1-richiesta-formati-disponibili">1. Richiesta Formati Disponibili</h3>
@@ -1006,9 +1023,12 @@ Server → Restituisce file al client
 <ul>
 <li>Codici di errore standardizzati</li>
 <li>Messaggi descrittivi per l'utente</li>
-<li>Stack trace per il debugging (solo primo livello)</li>
 </ul>
 <h2 id="sicurezza-e-performance">Sicurezza e Performance</h2>
+<h3 id="autenticazione">Autenticazione</h3>
+<ul>
+<li>Token JWT</li>
+</ul>
 <h3 id="gestione-concorrenza">Gestione Concorrenza</h3>
 <ul>
 <li>Directory temporanee univoche per conversioni parallele</li>
@@ -1039,9 +1059,7 @@ Server → Restituisce file al client
 <p>Implementare il convertitore specifico</p>
 <p>Aggiornare la configurazione dei formati supportati</p>
 <p>Opzionale: aggiungere validazioni specifiche nel <code>GlobalExceptionHandler</code></p>
-<ol>
-<li>Questa architettura modulare permette l'estensione del sistema senza modifiche al codice esistente, seguendo il principio Open/Closed del SOLID design.</li>
-</ol>
+<p>Questa architettura modulare permette l'estensione del sistema senza modifiche al codice esistente, seguendo il principio Open/Closed del SOLID design.</p>
 
 
 

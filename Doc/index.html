@@ -888,6 +888,7 @@
 <p>Il server espone un servizio di conversione gestito da un motore centrale.</p>
 <p>La conversione avviene appoggiandosi su una cartella temporanea che viene eliminata al termine delle operazioni.</p>
 <p>Il motore centrale si occupa di individuare il convertitore da utilizzare e il tipo di conversione utilizzare (singola o multipla in caso di cartelle compresse).</p>
+<p>Per effettuare la conversione è necessario autenticarsi con un token JWT.</p>
 <h2 id="classi-lato-server">Classi lato server</h2>
 <h3 id="converterwebservicecontrollerjava">ConverterWebServiceController.java</h3>
 <p>Controller REST Spring Boot che espone API per conversioni file via web service.</p>
@@ -911,17 +912,16 @@
 <li><strong>Funzione</strong>: Converte un file caricato nel formato richiesto.</li>
 <li><strong>Parametri</strong>:</li>
 <li><code>file</code>: File da convertire (MultipartFile).</li>
-<li><code>targetFormat</code>: Formato di destinazione.</li>
-<li><code>configFile</code> : File di configurazione con parametri utili alla conversione.</li>
+<li><code>config</code>: JSON di configurazione (Text).</li>
 </ul>
 <p><strong>Flusso tipico di utilizzo</strong>:</p>
 <ol>
-<li>Crea directory temporanea univoca con UUID.</li>
-<li>Salva il file di configurazione nella directory temporanea.</li>
-<li>Salva il file caricato nella directory temporanea.</li>
+<li>Effettua l'autenticazione usando il token letto nel JSON.</li>
+<li>Crea cartella temporanea univoca con UUID.</li>
+<li>Salva il file caricato nella cartella temporanea.</li>
 <li>Chiama <code>EngineWebService</code> per la conversione effettiva.</li>
 <li>Legge il file convertito e lo restituisce come array di byte.</li>
-<li>Pulisce automaticamente tutti i file temporanei nel <code>finally</code>.</li>
+<li>Pulisce automaticamente tutti i file temporanei.</li>
 </ol>
 <h3 id="enginewebservicejava">EngineWebService.java</h3>
 <p>Motore centrale di conversione che individua automaticamente il convertitore da usare e il tipo di conversione da effettuare (singola o multipla in caso di cartelle compresse).</p>
@@ -944,7 +944,7 @@
 <p><strong><code>conversione(srcExt, outExt, srcFile, outputDirectory)</code></strong></p>
 <ul>
 <li>
-<p>Legge dal file conversionContext.json se è abilitata la conversione multipla.</p>
+<p>Legge dall'oggetto <code>configuration</code> se è abilitata la conversione multipla.</p>
 </li>
 <li>
 <p>Individua se eseguire una conversione singola o una conversione multipla.</p>

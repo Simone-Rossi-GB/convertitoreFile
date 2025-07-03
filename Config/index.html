@@ -683,7 +683,7 @@
 <h2 id="introduzione">Introduzione</h2>
 <p>Il sistema di gestione della configurazione è stato progettato per gestire parametri di configurazione tramite file JSON, supportando operazioni di lettura e scrittura lato client e di sola lettura lato server. </p>
 <p>La configurazione può essere modificata dall'utente tramite un'interfaccia grafica dedicata nel client.</p>
-<p>Al momento della conversione al server viene inviato il file json con i parametri necessari alla conversione. Il file viene memorizzato in una cartella temporanea ed eliminato al termine dell'operazione.</p>
+<p>Al momento della conversione al server viene inviato il JSON con i parametri necessari alla conversione. Il contenuto viene gestito attraverso un'apposita classe DTO.</p>
 <h2 id="architettura-del-sistema">Architettura del Sistema</h2>
 <h3 id="lato-client">Lato client</h3>
 <ul>
@@ -700,7 +700,7 @@
 <p><strong>serverConfig.json</strong>: Contiene le informazioni relative alle conversioni supportate e i percorsi delle rispettive classi da istanziare per effettuare la conversione. Non può essere modificato.</p>
 </li>
 <li>
-<p><strong>conversionContext.json</strong>: Contiene le informazioni relative alle opzioni di conversione (es. password, watermark, compressione, ecc...). Ciascuno è associato ad una singola richiesta di conversione e viene memorizzato in una cartella temporanea. Al termine della conversione viene eliminato.</p>
+<p><strong>Config configuration</strong>: Istanza della classe DTO relativa a conversionContext.json. I valori degli attributi possono solo essere letti e non modificati. </p>
 </li>
 </ul>
 <h2 id="classi">Classi</h2>
