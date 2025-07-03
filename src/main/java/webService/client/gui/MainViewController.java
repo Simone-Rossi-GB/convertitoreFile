@@ -160,7 +160,7 @@ public class MainViewController {
         // 1) impostiamo subito l'aspetto del toggle
         themeToggle.setSelected(jsonConfig.getTheme().equals("light"));
         isLightTheme = themeToggle.isSelected();
-       themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
+        themeToggle.selectedProperty().addListener((obs, oldV, newV) -> {
             System.out.println("Palle: "+root);
             root.getStyleClass().removeAll("dark", "light");
             overlayPane.getStyleClass().removeAll("dark", "light");
@@ -223,6 +223,7 @@ public class MainViewController {
         if (monitorAtStart) {
             toggleMonitoring();
         }
+        if (jsonConfig.getIsFirstStart()) avviaGuida();
     }
 
     @FXML
@@ -715,9 +716,9 @@ public class MainViewController {
             // 2. Salva configurazione tema
             boolean isLightTheme = themeToggle.isSelected();
             if (isLightTheme) {
-                ConfigManager.writeConfig(new JsonConfig("light", MainApp.getCurrentLocale().getLanguage()));
+                ConfigManager.writeConfig(new JsonConfig("light", MainApp.getCurrentLocale().getLanguage(), false));
             } else {
-                ConfigManager.writeConfig(new JsonConfig("dark", MainApp.getCurrentLocale().getLanguage()));
+                ConfigManager.writeConfig(new JsonConfig("dark", MainApp.getCurrentLocale().getLanguage(), false));
             }
             addLogMessage("Configurazione salvata");
 

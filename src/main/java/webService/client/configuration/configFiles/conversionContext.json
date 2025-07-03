@@ -1,11 +1,12 @@
 {
   "data" : {
-    "destinationFormat" : "pdf",
-    "password" : "samplefiles",
-    "protected" : false,
-    "union" : true,
-    "zippedOutput" : false,
-    "watermark" : "",
-    "multipleConversion" : false
+    "destinationFormat": "pdf",
+    "password": "samplefiles",
+    "protected": false,
+    "union": true,
+    "zippedOutput": false,
+    "watermark": "",
+    "multipleConversion": false,
+    "token" : ""
   }
 }

@@ -38,7 +38,8 @@ public class MainApp extends Application {
         currentLocale = new Locale(config.getLang(), config.getLang().toUpperCase());
 
         // AVVIA PRIMA LA SCHERMATA DI LOGIN
-        showLoginScreen();
+        //showLoginScreen();
+        showMainApplication();
     }
 
     /**

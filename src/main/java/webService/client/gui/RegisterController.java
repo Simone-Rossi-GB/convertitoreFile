@@ -299,7 +299,7 @@ public class RegisterController {
 
         // Salva la preferenza
         JsonConfig config = ConfigManager.readConfig();
-        ConfigManager.writeConfig(new JsonConfig(newTheme, config.getLang()));
+        ConfigManager.writeConfig(new JsonConfig(newTheme, config.getLang(), false));
 
         logger.info("Tema cambiato a: {}", newTheme);
     }
@@ -344,7 +344,7 @@ public class RegisterController {
 
                 // Salva la preferenza lingua
                 JsonConfig config = ConfigManager.readConfig();
-                ConfigManager.writeConfig(new JsonConfig(config.getTheme(), locale.getLanguage()));
+                ConfigManager.writeConfig(new JsonConfig(config.getTheme(), locale.getLanguage(), false));
             });
 
             languageMenu.getItems().add(item);

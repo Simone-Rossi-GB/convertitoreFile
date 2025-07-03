@@ -1,4 +1,5 @@
 {
   "theme" : "dark",
-  "lang" : "it"
+  "lang" : "it",
+  "isFirstStart" : true
 }
