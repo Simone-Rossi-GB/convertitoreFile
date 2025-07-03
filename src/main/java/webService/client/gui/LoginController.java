@@ -103,6 +103,7 @@ public class LoginController {
 
         if (authManager.login(username, password)) {
             // LOGIN OK → apri app principale
+
             MainApp.showMainApplication();
         } else {
             // LOGIN FALLITO → mostra errore
