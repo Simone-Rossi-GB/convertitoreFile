@@ -90,7 +90,7 @@ public class ConverterWebServiceClient {
      * @return Una lista di estensioni di destinazione possibili per la conversione
      * @throws WebServiceException se il servizio non è disponibile o si verifica un errore
      */
-    public List<String> getPossibleConversions(String extension) throws WebServiceException {
+    public List<String> getPossibleConversions(String extension, String token) throws WebServiceException {
         logger.info("Chiedo al server i formati");
         // Verifica preliminare della disponibilità del servizio
         if (!isServiceAvailable()) {
@@ -99,10 +99,17 @@ public class ConverterWebServiceClient {
 
         try{// Costruisce l'URL per ottenere le conversioni possibili
             String url = baseUrl + "/api/converter/conversions/" + extension;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
 
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
             // Effettua la chiamata GET e riceve un array di stringhe
-            ResponseEntity<String[]> response = restTemplate.getForEntity(url, String[].class);
-
+            ResponseEntity<String[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String[].class);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 // Converte l'array in lista e lo ritorna
                 return Arrays.asList(response.getBody());
@@ -124,11 +131,10 @@ public class ConverterWebServiceClient {
      * Gestisce l'intero processo di upload, conversione e download del file risultante.
      *
      * @param inputFile    Il file originale da convertire
-     * @param targetFormat Il formato di destinazione desiderato (es. "pdf", "docx")
      * @param outputFile   Il percorso completo dove salvare il file convertito localmente
      * @return Un oggetto ConversionResult che indica successo/fallimento e dettagli dell'operazione
      */
-    public ConversionResult convertFile(File inputFile, String targetFormat, File outputFile, String conversionContextFile) throws FileMoveException {
+    public ConversionResult convertFile(File inputFile, File outputFile, String conversionContextFile, String token) throws FileMoveException {
         // Verifica preliminare della disponibilità del servizio
         if (!isServiceAvailable()) {
             throw new WebServiceException("Servizio di conversione non disponibile.");
@@ -142,6 +148,7 @@ public class ConverterWebServiceClient {
             // Prepara gli header HTTP per multipart/form-data
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.setBearerAuth(token);
 
             // Costruisce il corpo della richiesta multipart
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();

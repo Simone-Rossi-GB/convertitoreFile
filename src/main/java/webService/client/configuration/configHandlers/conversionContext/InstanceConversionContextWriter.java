@@ -79,13 +79,5 @@ public class InstanceConversionContextWriter {
     public void writeIsMultipleConversionEnabled(boolean isMonitoringEnabledAtStart) {
         JsonWriter.write(isMonitoringEnabledAtStart, "multipleConversion", jsonFile, rootReference);
     }
-
-    /**
-     * Scrive la preferenza per abilitare o meno le conversioni multiple.
-     *
-     * @param token valore da inserire nel campo "token"
-     */
-    public void writeToken(String token) {
-        JsonWriter.write(token, "token", jsonFile, rootReference);
-    }
+    
 }

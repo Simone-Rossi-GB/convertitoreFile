@@ -38,6 +38,10 @@ public class AuthManager {
         logger.info("AuthManager inizializzato per: {}", baseUrl);
     }
 
+    public String getJwtToken(){
+        return jwtToken;
+    }
+
     /**
      * Login - usa LoginRequest DTO
      */
@@ -70,8 +74,6 @@ public class AuthManager {
                     if (Boolean.TRUE.equals(responseMap.get("success"))) {
                         // Salva SOLO il token
                         this.jwtToken = (String) responseMap.get("token");
-                        InstanceConversionContextWriter ccw = new InstanceConversionContextWriter(new File("src/main/java/webService/client/configuration/configFiles/conversionContext.json"));
-                        ccw.writeToken(jwtToken);
                         logger.info("Login riuscito per: {}", username);
                         return true;
                     } else {

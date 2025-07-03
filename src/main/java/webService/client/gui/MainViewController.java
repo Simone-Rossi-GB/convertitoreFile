@@ -822,11 +822,11 @@ public class MainViewController {
      * @return lista di formati supportati
      * @throws WebServiceException web service non disponibile o errore durante la ricerca dei formati
      */
-    private List<String> getExtensionsFromWebService(String srcExtension) throws WebServiceException{
+    private List<String> getExtensionsFromWebService(String srcExtension) throws WebServiceException, IOException {
         List<String> formats = null;
         // Controlla se il webService è attivo
         if (webServiceClient.isServiceAvailable()) {
-            formats =  webServiceClient.getPossibleConversions(srcExtension);
+            formats =  webServiceClient.getPossibleConversions(srcExtension, mainApp.getToken());
             logger.info("Formati ottenuti dal web service");
         } else {
             launchAlertError("Il web service non è disponibile");
@@ -875,7 +875,7 @@ public class MainViewController {
 
             // Fase 5: Conversione in corso
             updateProgressInLog(filename, 60, "Conversione in corso...");
-            ConversionResult result = webServiceClient.convertFile(srcFile, targetFormat, outputDestinationFile, conversionContextFile);
+            ConversionResult result = webServiceClient.convertFile(srcFile, outputDestinationFile, conversionContextFile, mainApp.getToken());
             outputDestinationFile = result.getResult();
 
             // Fase 6: Elaborazione risultato

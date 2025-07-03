@@ -41,6 +41,10 @@ public class MainApp extends Application {
         showLoginScreen();
     }
 
+    public String getToken(){
+        return authManager.getJwtToken();
+    }
+
     /**
      * Mostra la schermata di login
      */
