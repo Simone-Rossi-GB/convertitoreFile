@@ -1036,12 +1036,12 @@ Server → Restituisce file al client
 <li>Il sistema caricherà dinamicamente la classe tramite reflection</li>
 </ol>
 <h3 id="aggiunta-nuovi-formati">Aggiunta Nuovi Formati</h3>
+<p>Implementare il convertitore specifico</p>
+<p>Aggiornare la configurazione dei formati supportati</p>
+<p>Opzionale: aggiungere validazioni specifiche nel <code>GlobalExceptionHandler</code></p>
 <ol>
-<li>Implementare il convertitore specifico</li>
-<li>Aggiornare la configurazione dei formati supportati</li>
-<li>Opzionale: aggiungere validazioni specifiche nel <code>GlobalExceptionHandler</code></li>
+<li>Questa architettura modulare permette l'estensione del sistema senza modifiche al codice esistente, seguendo il principio Open/Closed del SOLID design.</li>
 </ol>
-<p>Questa architettura modulare permette l'estensione del sistema senza modifiche al codice esistente, seguendo il principio Open/Closed del SOLID design.</p>
 
 
 
