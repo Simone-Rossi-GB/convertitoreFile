@@ -203,7 +203,9 @@ public class MainApp extends Application {
             primaryStage.centerOnScreen();
             primaryStage.show();
 
-            controller.avviaGuida();
+            if (ConfigManager.readConfig().getIsFirstStart()) {
+                controller.avviaGuida();
+            }
 
             // Handler per logout quando si chiude l'app
             primaryStage.setOnCloseRequest(evt -> {

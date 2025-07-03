@@ -78,7 +78,7 @@ public class ConversionContextWriter extends ConversionContextData {
      *
      * @param token valore da inserire nel campo "token"
      */
-    public static void writeToken(String token) {
+    public static void getToken(String token) {
         context.get().put("token", token);
     }
 }

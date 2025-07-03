@@ -1081,3 +1081,51 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-03 14:46:01 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
 2025-07-03 14:46:01 INFO  LoginController - LoginController inizializzato
 2025-07-03 14:46:01 INFO  MainApp - CSS login caricato
+2025-07-03 14:55:57 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-03 14:55:57 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-03 14:56:19 WARN  ConverterWebServiceClient - Servizio web non disponibile (connessione fallita): I/O error on GET request for "http://172.20.10.3:8080/api/converter/status": Connection timed out: connect; nested exception is java.net.ConnectException: Connection timed out: connect
+2025-07-03 14:56:19 INFO  MainViewController - false
+2025-07-03 14:56:19 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-03 14:56:19 INFO  JsonUtility - JSON valido
+2025-07-03 14:56:19 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-03 14:56:19 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-03 14:56:19 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-03 14:56:19 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-03 14:56:19 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-03 14:56:19 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-03 14:56:19 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-03 14:56:19 INFO  JsonUtility - JSON valido
+2025-07-03 14:56:19 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-03 14:56:19 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-03 14:56:19 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-03 14:56:19 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-03 14:56:19 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-03 14:56:19 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-03 14:56:45 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-03 14:56:45 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-03 14:56:45 INFO  DirectoryWatcher - Executor interrotto
+2025-07-03 14:56:45 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-03 14:56:53 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-03 14:56:53 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-03 14:57:15 WARN  ConverterWebServiceClient - Servizio web non disponibile (connessione fallita): I/O error on GET request for "http://172.20.10.3:8080/api/converter/status": Connection timed out: connect; nested exception is java.net.ConnectException: Connection timed out: connect
+2025-07-03 14:57:15 INFO  MainViewController - false
+2025-07-03 14:57:15 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-03 14:57:15 INFO  JsonUtility - JSON valido
+2025-07-03 14:57:15 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-03 14:57:15 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-03 14:57:15 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-03 14:57:15 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-03 14:57:15 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-03 14:57:15 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-03 14:57:15 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-03 14:57:15 INFO  JsonUtility - JSON valido
+2025-07-03 14:57:15 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-03 14:57:15 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-03 14:57:15 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-03 14:57:15 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-03 14:57:15 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-03 14:57:15 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-03 14:57:20 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-03 14:57:20 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-03 14:57:20 INFO  DirectoryWatcher - Executor interrotto
+2025-07-03 14:57:20 INFO  MainViewController - Applicazione chiusa correttamente
