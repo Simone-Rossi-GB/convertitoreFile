@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import webService.client.configuration.configHandlers.conversionContext.ConversionContextWriter;
+import webService.client.configuration.configHandlers.conversionContext.InstanceConversionContextWriter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +70,8 @@ public class AuthManager {
                     if (Boolean.TRUE.equals(responseMap.get("success"))) {
                         // Salva SOLO il token
                         this.jwtToken = (String) responseMap.get("token");
+                        InstanceConversionContextWriter ccw = new InstanceConversionContextWriter(new File("src/main/java/webService/client/configuration/configFiles/conversionContext.json"));
+                        ccw.writeToken(jwtToken);
                         logger.info("Login riuscito per: {}", username);
                         return true;
                     } else {
