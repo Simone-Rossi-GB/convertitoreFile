@@ -397,6 +397,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -660,6 +669,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -842,6 +860,7 @@
 <p>Questo servizio REST permette di interrogare lo stato del server, ottenere le possibili conversioni di file supportate per un dato formato e convertire file da un formato ad un altro.</p>
 <p>Base URL: <code>/api/converter</code><br />
 Cross-Origin abilitato per tutti i domini.</p>
+<p>Ciascun Endpoint, ad eccezione di <code>/status</code>, richiede un token di autenticazione Bearer nell'header.</p>
 <h2 id="endpoints">Endpoints</h2>
 <h3 id="stato-del-servizio">Stato del servizio</h3>
 <p><strong>GET</strong> <code>/status</code></p>
@@ -895,6 +914,39 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <p><code>Content-Length</code>: Lunghezza in byte</p>
 </li>
 </ul>
+<h3 id="login">Login</h3>
+<p><strong>POST</strong> /login</p>
+<p><strong>Descrizione:</strong><br />
+Ritorna il token di autenticazione se username e password sono corretti.</p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>
+<p>Body:</p>
+</li>
+<li>
+<p><code>LoginRequest</code>: Oggetto java che ha come attributi <code>username</code> e <code>password</code>.</p>
+</li>
+</ul>
+<p><strong>Response 200:</strong></p>
+<ul>
+<li>Token bearer di autenticazione.</li>
+</ul>
+<p><strong>POST</strong> /loginwa</p>
+<p><strong>Descrizione:</strong><br />
+Ritorna il token di autenticazione se username e password sono corretti.</p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>
+<p>Body:</p>
+</li>
+<li>
+<p><code>Map&lt;String,String&gt;</code>: JSON con campi "username" e "password"</p>
+</li>
+</ul>
+<p><strong>Response 200:</strong></p>
+<ul>
+<li>Token bearer di autenticazione.</li>
+</ul>
 <h2 id="errori">Errori</h2>
 <p>Gli errori vengono gestiti centralmente tramite un <strong>Rest Controller Advice</strong> che intercetta le eccezioni e ritorna una risposta con codice di errore mappato sulla base del tipo di eccezione.</p>
 <h5 id="response-500-errore-interno-del-server">Response 500 – Errore Interno del Server</h5>
@@ -927,8 +979,8 @@ Converte un file caricato da un formato di origine al formato di destinazione sp
 <p>Il file è protetto da password o non accessibile.</p>
 <h6 id="1011-nullpointerexception"><strong>1011.</strong>   NullPointerException:</h6>
 <p>Oggetto null.</p>
-<p><strong>1012.</strong>   AuthException:</p>
-<p>Token scaduto o non corretto.</p>
+<p><strong>1012.</strong>   <strong>AuthException:</strong></p>
+<p>Token scaduto o non corretto (Status error 401).</p>
 <h6 id="9999-exception"><strong>9999.</strong>   Exception:</h6>
 <p>Errore interno inatteso (variabile nulla o oggetto non inizializzato).</p>
 <h2 id="flusso-tipico-di-utilizzo">Flusso tipico di utilizzo</h2>
