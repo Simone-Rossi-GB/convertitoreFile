@@ -86,14 +86,15 @@ public class Zipper {
                 logger.warn("File non valido: {}", f.getAbsolutePath());
                 continue;
             }
-            zipFile.addFile(f);
+            // *** CORREZIONE: Passa i parametri di crittografia ***
+            zipFile.addFile(f, parametrs);  // <-- Aggiunto 'parametrs'
 
             if (!f.delete()) {
                 throw new FileMoveException("Impossibile eliminare il file temporaneo");
             }
         }
 
-        return outputZip;
+        return outputZip;  // ← Questo È IL FILE ZIP PROTETTO! ✅
     }
 
 

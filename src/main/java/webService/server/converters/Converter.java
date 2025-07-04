@@ -17,8 +17,12 @@ public abstract class Converter {
         logger.info(outFile.getAbsolutePath());
         // Controlla se il file in output deve essere zippato
         if(configuration.getData().isZippedOutput() && !Utility.getExtension(outFile).equals("zip")) {
-            if (configuration.getData().isUnion())
+           logger.info(configuration.getData().isProtectedOutput());
+            if (configuration.getData().isProtectedOutput())
+                {
+                logger.info("Compressione protetta");
                 return Zipper.compressioneFileProtetto(outFile, Utility.getBaseName(srcFile), configuration.getData().getPassword());
+            }
             else
                 return Zipper.compressioneFile(outFile, Utility.getBaseName(srcFile));
         }

@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="converter">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/ConverterWebServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/ConverterWebServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/Converter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/Converter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/PDFWatermarkApplier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/PDFWatermarkApplier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/Zipper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/Zipper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,22 +31,22 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Simone-Rossi-GB"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Simone-Rossi-GB&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Simone-Rossi-GB/convertitoreFile.git",
-    "accountId": "16ca8634-d246-4f42-88af-20327ac34cc3"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Simone-Rossi-GB/convertitoreFile.git&quot;,
+    &quot;accountId&quot;: &quot;16ca8634-d246-4f42-88af-20327ac34cc3&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 5
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2zMmnwDB3S2QFXhSFsBikXNnvd7" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />

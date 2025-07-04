@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
+import webService.server.config.configHandlers.Config;
 import webService.server.converters.exception.WatermarkException;
 
 public class PDFWatermarkApplier {
@@ -22,9 +23,9 @@ public class PDFWatermarkApplier {
      * @param watermarkText Il testo da usare come watermark.
      * @return true se il watermark è stato applicato con successo, false altrimenti.
      */
-    public static boolean applyWatermark(File inputPdf, File outputPdf, String watermarkText) throws WatermarkException{
+    public static boolean applyWatermark(File inputPdf, File outputPdf, String watermarkText, Config configuration) throws WatermarkException{
 
-        try (PDDocument document = PDDocument.load(inputPdf)) {
+        try (PDDocument document = PDDocument.load(inputPdf, configuration.getData().getPassword())) {
 
             // Imposta font, dimensioni e colore per il watermark
             PDFont font = PDType1Font.HELVETICA_BOLD;
