@@ -88,8 +88,10 @@ public class TXTtoPDFconverter extends Converter {
         } else {
             logger.info("No watermark specified - skipping watermark application");
         }
-        if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null))
+        if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null)) {
             encryptPDF(output, configuration.getData().getPassword());
+            logger.info("Password applicata: " + configuration.getData().getPassword());
+        }
         return output;
     }
 
