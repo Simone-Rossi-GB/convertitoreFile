@@ -2,6 +2,8 @@ package webService.server.converters.mailConverters;
 
 import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
+import webService.server.converters.PDFWatermarkApplier;
+import webService.server.converters.PdfPasswordApplier;
 import webService.server.converters.exception.WatermarkException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +14,8 @@ import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import java.awt.Desktop;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +69,51 @@ public class MSGtoPDFconverter extends Converter {
             }
 
             File pdfFile = convertHtmlToPdfWithChrome(htmlFile);
+
+            // Applica watermark se presente
+            if (!configuration.getData().getWatermark().isEmpty()) {
+                logger.info("Applying watermark to PDF...");
+
+                // Crea un file temporaneo per il PDF con watermark nella stessa directory
+                File tempFile = new File(pdfFile.getParent(), "watermarked_" + pdfFile.getName());
+
+                logger.info("Original file: {}", pdfFile.getAbsolutePath());
+                logger.info("Temp file for watermark: {}", tempFile.getAbsolutePath());
+
+                try {
+                    boolean success = PDFWatermarkApplier.applyWatermark(
+                            pdfFile,
+                            tempFile,
+                            configuration.getData().getWatermark()
+                    );
+
+                    logger.info("Watermark application completed, success: {}", success);
+
+                    if (success && tempFile.exists() && tempFile.length() > 0) {
+                        logger.info("Watermark applied successfully, replacing original file");
+
+                        // Usa Files.move() per sostituzione atomica
+                        try {
+                            Files.move(tempFile.toPath(), pdfFile.toPath(),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                            logger.info("File watermarkato sostituito correttamente");
+                            return pdfFile; // Ritorna sempre pdfFile
+                        } catch (IOException e) {
+                            logger.warn("Impossibile sostituire il file: {}", e.getMessage());
+                            throw new WatermarkException("Impossibile sostituire il file con watermark: " + e.getMessage());
+                        }
+                    } else {
+                        logger.warn("Watermark application failed - temp file not created or empty");
+                        throw new WatermarkException("Watermark non applicato correttamente");
+                    }
+                } catch (Exception e) {
+                    throw new WatermarkException("Impossibile applicare il watermark: " + e.getMessage());
+                }
+            }
+
+            if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null)) {
+                PdfPasswordApplier.encryptPDF(pdfFile, configuration.getData().getPassword());
+            }
 
             logger.info("Conversione completata: {}", pdfFile.getName());
 

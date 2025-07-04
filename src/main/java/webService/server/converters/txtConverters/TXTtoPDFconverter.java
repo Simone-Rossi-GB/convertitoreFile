@@ -9,6 +9,7 @@ import webService.server.converters.Converter;
 import webService.server.converters.PDFWatermarkApplier;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import webService.server.converters.PdfPasswordApplier;
 import webService.server.converters.exception.WatermarkException;
 
 import java.io.*;
@@ -89,29 +90,9 @@ public class TXTtoPDFconverter extends Converter {
             logger.info("No watermark specified - skipping watermark application");
         }
         if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null)) {
-            encryptPDF(output, configuration.getData().getPassword());
-            logger.info("Password applicata: " + configuration.getData().getPassword());
+            PdfPasswordApplier.encryptPDF(output, configuration.getData().getPassword());
         }
         return output;
     }
 
-    private void encryptPDF(File inputPDF, String password) throws IOException, DocumentException {
-        File encryptedPDF = new File(inputPDF.getParent(), "encrypted_" + inputPDF.getName());
-
-        PdfReader reader = new PdfReader(inputPDF.getAbsolutePath());
-        PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(encryptedPDF));
-
-        stamper.setEncryption(
-                password.getBytes(),
-                password.getBytes(),
-                PdfWriter.ALLOW_PRINTING,
-                PdfWriter.ENCRYPTION_AES_128
-        );
-
-        stamper.close();
-        reader.close();
-
-        // Sovrascrive l'originale
-        Files.move(encryptedPDF.toPath(), inputPDF.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    }
 }
