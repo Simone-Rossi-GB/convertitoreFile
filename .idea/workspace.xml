@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="converter">
+    <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" afterDir="false" />
     </list>
@@ -113,6 +113,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MainApp" />
         <item itemvalue="Application.MainApp" />
         <item itemvalue="Application.MainApp" />
         <item itemvalue="Application.MainApp" />

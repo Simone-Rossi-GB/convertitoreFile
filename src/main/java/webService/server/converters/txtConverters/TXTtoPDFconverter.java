@@ -1,6 +1,8 @@
 package webService.server.converters.txtConverters;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
 import webService.server.config.configHandlers.Config;
 import webService.server.converters.Converter;
@@ -58,8 +60,7 @@ public class TXTtoPDFconverter extends Converter {
                 boolean success = PDFWatermarkApplier.applyWatermark(
                         output,
                         tempFile,
-                        configuration.getData().getWatermark(),
-                        configuration
+                        configuration.getData().getWatermark()
                 );
 
                 logger.info("Watermark application completed, success: {}", success);
@@ -88,12 +89,27 @@ public class TXTtoPDFconverter extends Converter {
             logger.info("No watermark specified - skipping watermark application");
         }
         if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null))
-            writer.setEncryption(
-                    configuration.getData().getPassword().getBytes(),
-                    configuration.getData().getPassword().getBytes(),
-                    PdfWriter.ALLOW_PRINTING,
-                    PdfWriter.ENCRYPTION_AES_128
-            );
+            encryptPDF(output, configuration.getData().getPassword());
         return output;
+    }
+
+    private void encryptPDF(File inputPDF, String password) throws IOException, DocumentException {
+        File encryptedPDF = new File(inputPDF.getParent(), "encrypted_" + inputPDF.getName());
+
+        PdfReader reader = new PdfReader(inputPDF.getAbsolutePath());
+        PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(encryptedPDF));
+
+        stamper.setEncryption(
+                password.getBytes(),
+                password.getBytes(),
+                PdfWriter.ALLOW_PRINTING,
+                PdfWriter.ENCRYPTION_AES_128
+        );
+
+        stamper.close();
+        reader.close();
+
+        // Sovrascrive l'originale
+        Files.move(encryptedPDF.toPath(), inputPDF.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 }

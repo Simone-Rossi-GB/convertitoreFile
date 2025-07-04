@@ -23,9 +23,9 @@ public class PDFWatermarkApplier {
      * @param watermarkText Il testo da usare come watermark.
      * @return true se il watermark è stato applicato con successo, false altrimenti.
      */
-    public static boolean applyWatermark(File inputPdf, File outputPdf, String watermarkText, Config configuration) throws WatermarkException{
+    public static boolean applyWatermark(File inputPdf, File outputPdf, String watermarkText) throws WatermarkException{
 
-        try (PDDocument document = PDDocument.load(inputPdf, configuration.getData().getPassword())) {
+        try (PDDocument document = PDDocument.load(inputPdf)) {
 
             // Imposta font, dimensioni e colore per il watermark
             PDFont font = PDType1Font.HELVETICA_BOLD;
