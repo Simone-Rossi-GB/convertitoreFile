@@ -64,7 +64,7 @@ public class InstanceConversionContextWriter {
      * @param isProtected {@code true} protegge quando possibile i file in output
      */
     public void writeProtected(boolean isProtected) {
-        JsonWriter.write(isProtected, "protected", jsonFile, rootReference);
+        JsonWriter.write(isProtected, "protectedOutput", jsonFile, rootReference);
     }
 
     public void writeWatermark(String watermark) {

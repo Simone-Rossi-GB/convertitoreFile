@@ -1702,3 +1702,1694 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-04 09:10:37 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
 2025-07-04 09:10:37 INFO  DirectoryWatcher - Executor interrotto
 2025-07-04 09:10:37 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:13:31 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 09:13:31 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:13:31 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:13:31 INFO  MainApp - CSS login caricato
+2025-07-04 09:13:42 ERROR AuthManager - Errore connessione durante login per gianluca: Failed to connect to localhost/0:0:0:0:0:0:0:1:8080
+2025-07-04 09:13:51 ERROR AuthManager - Errore connessione durante login per gianluca: Failed to connect to localhost/0:0:0:0:0:0:0:1:8080
+2025-07-04 09:13:55 ERROR AuthManager - Errore connessione durante login per gianluca: Failed to connect to localhost/0:0:0:0:0:0:0:1:8080
+2025-07-04 09:14:40 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:14:40 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:14:41 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:14:41 INFO  MainApp - CSS login caricato
+2025-07-04 09:14:48 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:14:48 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:14:48 INFO  MainViewController - true
+2025-07-04 09:14:48 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:14:48 INFO  JsonUtility - JSON valido
+2025-07-04 09:14:48 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:14:48 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:14:48 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:14:48 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:14:48 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:14:48 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:14:48 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:14:48 INFO  JsonUtility - JSON valido
+2025-07-04 09:14:48 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:14:48 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:14:48 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:14:48 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:14:48 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:14:48 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:14:52 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\conversione_multipla - Copia.zip
+2025-07-04 09:14:52 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\conversione_multipla - Copia.zip
+2025-07-04 09:14:52 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:14:52 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:14:52 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:14:52 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:14:52 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:14:56 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:14:56 INFO  JsonUtility - JSON valido
+2025-07-04 09:14:56 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:14:56 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:14:58 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:14:58 INFO  MainViewController -   - Nome originale: conversione_multipla - Copia.zip
+2025-07-04 09:14:58 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla - Copia.zip
+2025-07-04 09:14:58 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\conversione_multipla - Copia.zip
+2025-07-04 09:14:58 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:14:58 INFO  MainViewController - Conversione di conversione_multipla - Copia.zip riuscita
+2025-07-04 09:14:58 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:15:03 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:15:03 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:15:03 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:15:03 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:15:06 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 09:15:10 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 09:15:10 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 09:15:10 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 09:15:10 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:15:10 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:15:10 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:15:14 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:15:14 INFO  JsonUtility - JSON valido
+2025-07-04 09:15:14 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:15:14 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:15:21 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:15:21 INFO  MainViewController -   - Nome originale: protected - Copia.pdf
+2025-07-04 09:15:21 INFO  MainViewController -   - Nome convertito atteso: protected - Copia.jpg
+2025-07-04 09:15:21 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia.jpg
+2025-07-04 09:15:21 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:15:21 INFO  MainViewController - Conversione di protected - Copia.pdf riuscita
+2025-07-04 09:15:21 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 09:15:37 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\prova_mail_1 - Copia.eml
+2025-07-04 09:15:37 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\prova_mail_1 - Copia.eml
+2025-07-04 09:15:37 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=0
+2025-07-04 09:15:37 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:15:37 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:15:38 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:15:40 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:15:40 INFO  JsonUtility - JSON valido
+2025-07-04 09:15:40 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:15:40 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:16:12 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:16:12 INFO  MainViewController -   - Nome originale: prova_mail_1 - Copia.eml
+2025-07-04 09:16:12 INFO  MainViewController -   - Nome convertito atteso: prova_mail_1 - Copia.pdf
+2025-07-04 09:16:12 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\prova_mail_1 - Copia.pdf
+2025-07-04 09:16:12 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:16:12 INFO  MainViewController - Conversione di prova_mail_1 - Copia.eml riuscita
+2025-07-04 09:16:12 INFO  MainViewController - Stato: ricevuti=3, convertiti=3, scartati=0
+2025-07-04 09:16:29 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:16:29 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:16:29 INFO  MainViewController - Stato: ricevuti=4, convertiti=3, scartati=0
+2025-07-04 09:16:29 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:16:30 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:16:30 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:16:37 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:16:37 INFO  JsonUtility - JSON valido
+2025-07-04 09:16:37 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:16:37 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:16:38 ERROR MainViewController - Errore durante conversione di sample_640×426 - Copia.jpg: Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:16:38 ERROR MainViewController - Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:16:38 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\sample_640×426 - Copia.jpg
+2025-07-04 09:16:38 INFO  MainViewController - Stato: ricevuti=4, convertiti=3, scartati=1
+2025-07-04 09:16:46 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:16:46 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:16:46 INFO  MainViewController - Stato: ricevuti=5, convertiti=3, scartati=1
+2025-07-04 09:16:46 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:16:47 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:16:47 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:16:51 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:16:51 INFO  JsonUtility - JSON valido
+2025-07-04 09:16:51 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:16:51 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:16:52 ERROR MainViewController - Errore durante conversione di sample_640×426 - Copia.jpg: Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:16:52 ERROR MainViewController - Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:16:52 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\sample_640×426 - Copia.jpg
+2025-07-04 09:16:52 INFO  MainViewController - Stato: ricevuti=5, convertiti=3, scartati=2
+2025-07-04 09:16:58 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:16:58 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:16:58 INFO  MainViewController - Stato: ricevuti=6, convertiti=3, scartati=2
+2025-07-04 09:16:58 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:16:58 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:16:58 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:17:02 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:17:02 INFO  JsonUtility - JSON valido
+2025-07-04 09:17:02 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:17:02 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:17:02 ERROR MainViewController - Errore durante conversione di sample_640×426 - Copia.jpg: Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:17:02 ERROR MainViewController - Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:17:02 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\sample_640×426 - Copia.jpg
+2025-07-04 09:17:02 INFO  MainViewController - Stato: ricevuti=6, convertiti=3, scartati=3
+2025-07-04 09:17:13 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:17:13 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\sample_640×426 - Copia.jpg
+2025-07-04 09:17:13 INFO  MainViewController - Stato: ricevuti=7, convertiti=3, scartati=3
+2025-07-04 09:17:13 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:17:13 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:17:13 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:17:24 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:17:24 INFO  JsonUtility - JSON valido
+2025-07-04 09:17:24 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:17:24 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:17:25 ERROR MainViewController - Errore durante conversione di sample_640×426 - Copia.jpg: Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:17:25 ERROR MainViewController - Malformed input or input contains unmappable characters: sample_640×426 - Copia.jpg
+2025-07-04 09:17:25 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\sample_640×426 - Copia.jpg
+2025-07-04 09:17:25 INFO  MainViewController - Stato: ricevuti=7, convertiti=3, scartati=4
+2025-07-04 09:17:46 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\imageSample.jpg
+2025-07-04 09:17:46 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\imageSample.jpg
+2025-07-04 09:17:46 INFO  MainViewController - Stato: ricevuti=8, convertiti=3, scartati=4
+2025-07-04 09:17:46 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:17:46 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:17:46 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:17:51 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:17:51 INFO  JsonUtility - JSON valido
+2025-07-04 09:17:51 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:17:51 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:17:53 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:17:53 INFO  MainViewController -   - Nome originale: imageSample.jpg
+2025-07-04 09:17:53 INFO  MainViewController -   - Nome convertito atteso: imageSample.bmp
+2025-07-04 09:17:53 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\imageSample.bmp
+2025-07-04 09:17:53 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:17:53 INFO  MainViewController - Conversione di imageSample.jpg riuscita
+2025-07-04 09:17:53 INFO  MainViewController - Stato: ricevuti=8, convertiti=4, scartati=4
+2025-07-04 09:18:05 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:18:05 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:18:05 INFO  AuthManager - logout effettuato
+2025-07-04 09:18:05 INFO  AuthManager - Logout completato
+2025-07-04 09:18:05 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:18:05 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:18:05 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:21:09 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:21:09 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:21:09 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:21:09 INFO  MainApp - CSS login caricato
+2025-07-04 09:21:17 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:21:17 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:21:18 INFO  MainViewController - true
+2025-07-04 09:21:18 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:21:18 INFO  JsonUtility - JSON valido
+2025-07-04 09:21:18 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:21:18 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:21:18 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:21:18 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:21:18 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:21:18 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:21:18 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:21:18 INFO  JsonUtility - JSON valido
+2025-07-04 09:21:18 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:21:18 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:21:18 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:21:18 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:21:18 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:21:18 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:21:21 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\username - Copia.csv
+2025-07-04 09:21:21 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\username - Copia.csv
+2025-07-04 09:21:21 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:21:21 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:21:21 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:21:21 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:21:26 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:21:26 INFO  JsonUtility - JSON valido
+2025-07-04 09:21:26 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:21:26 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:21:28 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:21:28 INFO  MainViewController -   - Nome originale: username - Copia.csv
+2025-07-04 09:21:28 INFO  MainViewController -   - Nome convertito atteso: username - Copia.xls
+2025-07-04 09:21:28 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\username - Copia.xls
+2025-07-04 09:21:28 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:21:28 INFO  MainViewController - Conversione di username - Copia.csv riuscita
+2025-07-04 09:21:28 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:21:47 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:21:47 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:21:47 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:21:47 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:21:53 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:21:53 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:21:53 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:21:53 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:21:53 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:21:53 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:21:53 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:21:53 INFO  JsonUtility - JSON valido
+2025-07-04 09:21:53 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:21:53 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:21:59 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\prova_mail_1 - Copia.eml
+2025-07-04 09:21:59 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\prova_mail_1 - Copia.eml
+2025-07-04 09:21:59 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 09:21:59 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:21:59 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:22:00 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:22:06 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:22:06 INFO  JsonUtility - JSON valido
+2025-07-04 09:22:06 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:22:06 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:22:43 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:22:43 INFO  MainViewController -   - Nome originale: prova_mail_1 - Copia.eml
+2025-07-04 09:22:43 INFO  MainViewController -   - Nome convertito atteso: prova_mail_1 - Copia.pdf
+2025-07-04 09:22:43 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\prova_mail_1 - Copia.pdf
+2025-07-04 09:22:43 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:22:43 INFO  MainViewController - Conversione di prova_mail_1 - Copia.eml riuscita
+2025-07-04 09:22:43 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 09:23:17 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:23:17 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:23:17 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:23:17 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:23:19 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:23:19 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:23:19 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:23:19 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:23:19 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:23:19 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:23:19 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:23:19 INFO  JsonUtility - JSON valido
+2025-07-04 09:23:19 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:23:19 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:23:30 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\prova_mail_1 - Copia.eml
+2025-07-04 09:23:30 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\prova_mail_1 - Copia.eml
+2025-07-04 09:23:30 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=0
+2025-07-04 09:23:30 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:23:30 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:23:30 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:23:33 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:23:33 INFO  JsonUtility - JSON valido
+2025-07-04 09:23:33 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:23:33 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:24:14 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:24:14 INFO  MainViewController -   - Nome originale: prova_mail_1 - Copia.eml
+2025-07-04 09:24:14 INFO  MainViewController -   - Nome convertito atteso: prova_mail_1 - Copia.pdf
+2025-07-04 09:24:14 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\prova_mail_1 - Copia.pdf
+2025-07-04 09:24:14 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:24:14 INFO  MainViewController - Conversione di prova_mail_1 - Copia.eml riuscita
+2025-07-04 09:24:14 INFO  MainViewController - Stato: ricevuti=3, convertiti=3, scartati=0
+2025-07-04 09:25:33 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple.txt
+2025-07-04 09:25:33 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple.txt
+2025-07-04 09:25:33 INFO  MainViewController - Stato: ricevuti=4, convertiti=3, scartati=0
+2025-07-04 09:25:33 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:25:33 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:25:33 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:25:41 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:25:41 INFO  JsonUtility - JSON valido
+2025-07-04 09:25:41 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:25:41 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:25:42 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:25:42 INFO  MainViewController -   - Nome originale: simple.txt
+2025-07-04 09:25:42 INFO  MainViewController -   - Nome convertito atteso: simple.pdf
+2025-07-04 09:25:42 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple.pdf
+2025-07-04 09:25:42 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:25:42 INFO  MainViewController - Conversione di simple.txt riuscita
+2025-07-04 09:25:42 INFO  MainViewController - Stato: ricevuti=4, convertiti=4, scartati=0
+2025-07-04 09:26:03 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:26:03 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:26:03 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:26:03 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:26:07 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:26:07 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:26:07 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:26:07 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:26:07 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:26:07 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:26:07 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:26:07 INFO  JsonUtility - JSON valido
+2025-07-04 09:26:07 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:26:07 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:26:10 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 09:26:10 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 09:26:10 INFO  MainViewController - Stato: ricevuti=5, convertiti=4, scartati=0
+2025-07-04 09:26:10 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:26:10 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:26:10 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:26:14 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:26:14 INFO  JsonUtility - JSON valido
+2025-07-04 09:26:14 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:26:14 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:26:15 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:26:15 INFO  MainViewController -   - Nome originale: simple - Copia.txt
+2025-07-04 09:26:15 INFO  MainViewController -   - Nome convertito atteso: simple - Copia.pdf
+2025-07-04 09:26:15 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia.pdf
+2025-07-04 09:26:15 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:26:15 INFO  MainViewController - Conversione di simple - Copia.txt riuscita
+2025-07-04 09:26:15 INFO  MainViewController - Stato: ricevuti=5, convertiti=5, scartati=0
+2025-07-04 09:26:36 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:26:36 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:26:36 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:26:36 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:26:40 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:26:40 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:26:40 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:26:40 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:26:40 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:26:40 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:26:40 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:26:40 INFO  JsonUtility - JSON valido
+2025-07-04 09:26:40 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:26:40 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:26:44 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (2).txt
+2025-07-04 09:26:44 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (2).txt
+2025-07-04 09:26:44 INFO  MainViewController - Stato: ricevuti=6, convertiti=5, scartati=0
+2025-07-04 09:26:44 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:26:44 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:26:44 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:26:49 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:26:49 INFO  JsonUtility - JSON valido
+2025-07-04 09:26:49 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:26:49 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:26:50 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:26:50 INFO  MainViewController -   - Nome originale: simple - Copia (2).txt
+2025-07-04 09:26:50 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (2).zip
+2025-07-04 09:26:50 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (2).zip
+2025-07-04 09:26:50 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:26:50 INFO  MainViewController - Conversione di simple - Copia (2).txt riuscita
+2025-07-04 09:26:50 INFO  MainViewController - Stato: ricevuti=6, convertiti=6, scartati=0
+2025-07-04 09:27:07 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (3).txt
+2025-07-04 09:27:07 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (3).txt
+2025-07-04 09:27:07 INFO  MainViewController - Stato: ricevuti=7, convertiti=6, scartati=0
+2025-07-04 09:27:07 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:27:07 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:27:07 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:27:12 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:27:12 INFO  JsonUtility - JSON valido
+2025-07-04 09:27:12 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:27:12 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:27:13 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:27:13 INFO  MainViewController -   - Nome originale: simple - Copia (3).txt
+2025-07-04 09:27:13 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (3).zip
+2025-07-04 09:27:13 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (3).zip
+2025-07-04 09:27:13 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:27:13 INFO  MainViewController - Conversione di simple - Copia (3).txt riuscita
+2025-07-04 09:27:13 INFO  MainViewController - Stato: ricevuti=7, convertiti=7, scartati=0
+2025-07-04 09:28:04 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:28:04 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:28:04 INFO  AuthManager - logout effettuato
+2025-07-04 09:28:04 INFO  AuthManager - Logout completato
+2025-07-04 09:28:04 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:28:04 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:28:04 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:30:13 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:30:13 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:30:13 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:30:13 INFO  MainApp - CSS login caricato
+2025-07-04 09:30:24 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:30:24 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:30:25 INFO  MainViewController - true
+2025-07-04 09:30:25 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:30:25 INFO  JsonUtility - JSON valido
+2025-07-04 09:30:25 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:30:25 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:30:25 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:30:25 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:30:25 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:30:25 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:30:25 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:30:25 INFO  JsonUtility - JSON valido
+2025-07-04 09:30:25 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:30:25 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:30:25 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:30:25 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:30:25 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:30:25 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:30:26 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:30:26 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:30:26 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:30:26 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:30:35 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:30:35 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:30:35 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:30:35 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:30:35 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:30:35 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:30:35 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:30:35 INFO  JsonUtility - JSON valido
+2025-07-04 09:30:35 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:30:35 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:30:40 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (4).txt
+2025-07-04 09:30:40 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (4).txt
+2025-07-04 09:30:40 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:30:40 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:30:40 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:30:40 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:30:43 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:30:43 INFO  JsonUtility - JSON valido
+2025-07-04 09:30:43 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:30:43 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:30:44 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:30:44 INFO  MainViewController -   - Nome originale: simple - Copia (4).txt
+2025-07-04 09:30:44 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (4).zip
+2025-07-04 09:30:44 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (4).zip
+2025-07-04 09:30:44 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:30:44 INFO  MainViewController - Conversione di simple - Copia (4).txt riuscita
+2025-07-04 09:30:44 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:30:50 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (5).txt
+2025-07-04 09:30:50 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (5).txt
+2025-07-04 09:30:50 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 09:30:50 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:30:50 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:30:50 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:30:54 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:30:54 INFO  JsonUtility - JSON valido
+2025-07-04 09:30:54 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:30:54 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:30:54 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:30:54 INFO  MainViewController -   - Nome originale: simple - Copia (5).txt
+2025-07-04 09:30:54 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (5).zip
+2025-07-04 09:30:54 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (5).zip
+2025-07-04 09:30:54 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:30:54 INFO  MainViewController - Conversione di simple - Copia (5).txt riuscita
+2025-07-04 09:30:54 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 09:31:25 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 09:31:25 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 09:31:25 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=0
+2025-07-04 09:31:25 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:31:25 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:31:25 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:31:30 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:31:30 INFO  JsonUtility - JSON valido
+2025-07-04 09:31:30 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:31:30 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:31:32 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:31:32 INFO  MainViewController -   - Nome originale: protected - Copia.pdf
+2025-07-04 09:31:32 INFO  MainViewController -   - Nome convertito atteso: protected - Copia.zip
+2025-07-04 09:31:32 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia.zip
+2025-07-04 09:31:32 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:31:32 INFO  MainViewController - Conversione di protected - Copia.pdf riuscita
+2025-07-04 09:31:32 INFO  MainViewController - Stato: ricevuti=3, convertiti=3, scartati=0
+2025-07-04 09:32:16 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:32:16 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:32:16 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:32:16 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:32:27 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:32:27 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:32:27 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:32:27 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:32:27 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:32:27 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:32:27 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:32:27 INFO  JsonUtility - JSON valido
+2025-07-04 09:32:27 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:32:27 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:32:31 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:32:31 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:32:31 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:32:31 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:32:34 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:32:34 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:32:34 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:32:34 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:32:34 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:32:34 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:32:34 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:32:34 INFO  JsonUtility - JSON valido
+2025-07-04 09:32:34 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:32:34 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:32:43 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 09:32:43 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 09:32:43 INFO  MainViewController - Stato: ricevuti=4, convertiti=3, scartati=0
+2025-07-04 09:32:43 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:32:43 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:32:43 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:32:46 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:32:46 INFO  JsonUtility - JSON valido
+2025-07-04 09:32:46 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:32:46 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:32:47 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:32:47 INFO  MainViewController -   - Nome originale: simple - Copia.txt
+2025-07-04 09:32:47 INFO  MainViewController -   - Nome convertito atteso: simple - Copia.zip
+2025-07-04 09:32:47 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia.zip
+2025-07-04 09:32:47 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:32:47 INFO  MainViewController - Conversione di simple - Copia.txt riuscita
+2025-07-04 09:32:47 INFO  MainViewController - Stato: ricevuti=4, convertiti=4, scartati=0
+2025-07-04 09:33:25 INFO  ConfigWindowController - Configurazione caricata correttamente
+2025-07-04 09:33:25 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione
+2025-07-04 09:33:27 INFO  ConfigWindowController - Finestra di configurazione chiusa senza modifiche
+2025-07-04 09:33:27 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:33:27 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:33:27 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:33:27 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:33:27 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:33:27 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:33:27 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:33:27 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:33:27 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:33:27 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:33:27 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:33:28 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:33:28 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:33:33 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:33:33 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:33:33 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:33:33 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:33:33 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:33:33 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:33:33 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:33:33 INFO  JsonUtility - JSON valido
+2025-07-04 09:33:33 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:33:33 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:33:38 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 09:33:38 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 09:33:38 INFO  MainViewController - Stato: ricevuti=5, convertiti=4, scartati=0
+2025-07-04 09:33:38 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:33:38 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:33:38 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:33:41 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:33:41 INFO  JsonUtility - JSON valido
+2025-07-04 09:33:41 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:33:41 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:33:43 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:33:43 INFO  MainViewController -   - Nome originale: simple - Copia.txt
+2025-07-04 09:33:43 INFO  MainViewController -   - Nome convertito atteso: simple - Copia.docx
+2025-07-04 09:33:43 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia.docx
+2025-07-04 09:33:43 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:33:43 INFO  MainViewController - Conversione di simple - Copia.txt riuscita
+2025-07-04 09:33:43 INFO  MainViewController - Stato: ricevuti=5, convertiti=5, scartati=0
+2025-07-04 09:34:02 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:34:02 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:34:02 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:34:02 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:34:05 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 09:34:06 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:34:06 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:34:06 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:34:10 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:34:10 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:34:10 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:34:10 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:34:10 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:34:10 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:34:10 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:34:10 INFO  JsonUtility - JSON valido
+2025-07-04 09:34:10 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:34:10 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:34:16 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 09:34:16 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 09:34:16 INFO  MainViewController - Stato: ricevuti=6, convertiti=5, scartati=0
+2025-07-04 09:34:16 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:34:16 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:34:16 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:34:19 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:34:19 INFO  JsonUtility - JSON valido
+2025-07-04 09:34:19 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:34:19 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:34:20 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:34:20 INFO  MainViewController -   - Nome originale: simple - Copia.txt
+2025-07-04 09:34:20 INFO  MainViewController -   - Nome convertito atteso: simple - Copia.pdf
+2025-07-04 09:34:20 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia.pdf
+2025-07-04 09:34:20 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:34:20 INFO  MainViewController - Conversione di simple - Copia.txt riuscita
+2025-07-04 09:34:20 INFO  MainViewController - Stato: ricevuti=6, convertiti=6, scartati=0
+2025-07-04 09:34:38 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:34:38 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:34:38 INFO  AuthManager - logout effettuato
+2025-07-04 09:34:38 INFO  AuthManager - Logout completato
+2025-07-04 09:34:38 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:34:38 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:34:39 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:37:34 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:37:34 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:37:34 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:37:34 INFO  MainApp - CSS login caricato
+2025-07-04 09:37:42 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:37:42 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:37:43 INFO  MainViewController - true
+2025-07-04 09:37:43 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:37:43 INFO  JsonUtility - JSON valido
+2025-07-04 09:37:43 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:37:43 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:37:43 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:37:43 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:37:43 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:37:43 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:37:43 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:37:43 INFO  JsonUtility - JSON valido
+2025-07-04 09:37:43 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:37:43 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:37:43 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:37:43 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:37:43 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:37:43 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:37:47 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:37:47 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:37:47 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:37:47 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:37:50 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:37:50 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:37:50 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:37:50 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:37:50 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:37:50 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:37:50 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:37:50 INFO  JsonUtility - JSON valido
+2025-07-04 09:37:50 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:37:50 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:37:51 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:37:51 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:37:51 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:37:51 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:37:53 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 09:37:57 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (2).txt
+2025-07-04 09:37:57 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (2).txt
+2025-07-04 09:37:57 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:37:57 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:37:57 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:37:57 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:38:05 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:38:05 INFO  JsonUtility - JSON valido
+2025-07-04 09:38:05 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:38:05 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:38:08 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:38:08 INFO  MainViewController -   - Nome originale: simple - Copia (2).txt
+2025-07-04 09:38:08 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (2).pdf
+2025-07-04 09:38:08 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (2).pdf
+2025-07-04 09:38:08 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:38:08 INFO  MainViewController - Conversione di simple - Copia (2).txt riuscita
+2025-07-04 09:38:08 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:38:19 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:38:19 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:38:19 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:38:19 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:38:22 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:38:22 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:38:22 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:38:22 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:38:22 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:38:22 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:38:22 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:38:22 INFO  JsonUtility - JSON valido
+2025-07-04 09:38:22 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:38:22 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:38:31 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (3).txt
+2025-07-04 09:38:31 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (3).txt
+2025-07-04 09:38:31 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 09:38:31 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:38:31 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:38:31 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:38:37 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:38:37 INFO  JsonUtility - JSON valido
+2025-07-04 09:38:37 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:38:37 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:38:38 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:38:38 INFO  MainViewController -   - Nome originale: simple - Copia (3).txt
+2025-07-04 09:38:38 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (3).zip
+2025-07-04 09:38:38 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (3).zip
+2025-07-04 09:38:38 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:38:38 INFO  MainViewController - Conversione di simple - Copia (3).txt riuscita
+2025-07-04 09:38:38 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 09:38:43 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia (4).txt
+2025-07-04 09:38:43 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia (4).txt
+2025-07-04 09:38:43 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=0
+2025-07-04 09:38:43 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:38:43 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:38:43 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:38:47 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:38:47 INFO  JsonUtility - JSON valido
+2025-07-04 09:38:47 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:38:47 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:38:48 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:38:48 INFO  MainViewController -   - Nome originale: simple - Copia (4).txt
+2025-07-04 09:38:48 INFO  MainViewController -   - Nome convertito atteso: simple - Copia (4).zip
+2025-07-04 09:38:48 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\simple - Copia (4).zip
+2025-07-04 09:38:48 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:38:48 INFO  MainViewController - Conversione di simple - Copia (4).txt riuscita
+2025-07-04 09:38:48 INFO  MainViewController - Stato: ricevuti=3, convertiti=3, scartati=0
+2025-07-04 09:39:11 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:39:11 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:39:11 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:39:11 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:39:14 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:39:14 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:39:14 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:39:14 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:39:14 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:39:14 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:39:14 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:39:14 INFO  JsonUtility - JSON valido
+2025-07-04 09:39:14 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:39:14 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:39:17 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\conversione_multipla - Copia.zip
+2025-07-04 09:39:17 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\conversione_multipla - Copia.zip
+2025-07-04 09:39:17 INFO  MainViewController - Stato: ricevuti=4, convertiti=3, scartati=0
+2025-07-04 09:39:17 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:39:17 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:39:17 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:39:20 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:39:20 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:39:20 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:39:20 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:39:21 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:39:21 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:39:21 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:39:21 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:39:21 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:39:21 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:39:21 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:39:21 INFO  JsonUtility - JSON valido
+2025-07-04 09:39:21 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:39:21 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:39:25 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\conversione_multipla - Copia (2).zip
+2025-07-04 09:39:25 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\conversione_multipla - Copia (2).zip
+2025-07-04 09:39:25 INFO  MainViewController - Stato: ricevuti=5, convertiti=3, scartati=0
+2025-07-04 09:39:25 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:39:25 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:39:26 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:39:26 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:39:29 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:39:29 INFO  JsonUtility - JSON valido
+2025-07-04 09:39:29 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:39:29 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:39:30 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:39:30 INFO  MainViewController -   - Nome originale: conversione_multipla - Copia (2).zip
+2025-07-04 09:39:30 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla - Copia (2).zip
+2025-07-04 09:39:30 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\conversione_multipla - Copia (2).zip
+2025-07-04 09:39:30 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:39:30 INFO  MainViewController - Conversione di conversione_multipla - Copia (2).zip riuscita
+2025-07-04 09:39:30 INFO  MainViewController - Stato: ricevuti=5, convertiti=4, scartati=0
+2025-07-04 09:40:06 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:40:06 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:40:06 INFO  AuthManager - logout effettuato
+2025-07-04 09:40:06 INFO  AuthManager - Logout completato
+2025-07-04 09:40:06 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:40:06 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:40:06 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:40:14 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:40:14 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:40:14 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:40:14 INFO  MainApp - CSS login caricato
+2025-07-04 09:40:27 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:40:27 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:40:28 INFO  MainViewController - true
+2025-07-04 09:40:28 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:40:28 INFO  JsonUtility - JSON valido
+2025-07-04 09:40:28 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:40:28 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:40:28 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:40:28 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:40:28 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:40:28 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:40:28 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:40:28 INFO  JsonUtility - JSON valido
+2025-07-04 09:40:28 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:40:28 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:40:28 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:40:28 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:40:28 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:40:28 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:40:31 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:40:31 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:40:31 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:40:31 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:40:33 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 09:40:39 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:40:39 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:40:39 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:40:45 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 09:40:51 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 09:40:51 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 09:40:51 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:40:51 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:40:51 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:40:51 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:40:57 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:40:57 INFO  JsonUtility - JSON valido
+2025-07-04 09:40:57 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:40:57 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:40:59 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:40:59 INFO  MainViewController -   - Nome originale: protected - Copia.pdf
+2025-07-04 09:40:59 INFO  MainViewController -   - Nome convertito atteso: protected - Copia.zip
+2025-07-04 09:40:59 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia.zip
+2025-07-04 09:40:59 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:40:59 INFO  MainViewController - Conversione di protected - Copia.pdf riuscita
+2025-07-04 09:40:59 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:41:17 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 09:41:17 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 09:41:17 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 09:41:17 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:41:17 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:41:17 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:41:25 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:41:25 INFO  JsonUtility - JSON valido
+2025-07-04 09:41:25 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:41:25 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:41:26 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:41:26 INFO  MainViewController -   - Nome originale: protected - Copia.pdf
+2025-07-04 09:41:26 INFO  MainViewController -   - Nome convertito atteso: protected - Copia.docx
+2025-07-04 09:41:26 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia.docx
+2025-07-04 09:41:26 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:41:26 INFO  MainViewController - Conversione di protected - Copia.pdf riuscita
+2025-07-04 09:41:26 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 09:48:57 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:48:57 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:48:58 INFO  AuthManager - logout effettuato
+2025-07-04 09:48:58 INFO  AuthManager - Logout completato
+2025-07-04 09:48:58 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:48:58 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:48:58 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:50:16 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:50:16 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:50:17 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:50:17 INFO  MainApp - CSS login caricato
+2025-07-04 09:50:39 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:50:39 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:50:39 INFO  MainViewController - true
+2025-07-04 09:50:39 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:50:39 INFO  JsonUtility - JSON valido
+2025-07-04 09:50:39 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:50:39 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:50:39 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:50:39 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:50:39 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:50:39 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:50:39 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:50:39 INFO  JsonUtility - JSON valido
+2025-07-04 09:50:39 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:50:39 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:50:39 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:50:39 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:50:39 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:50:39 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:50:43 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:50:43 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:50:43 INFO  AuthManager - logout effettuato
+2025-07-04 09:50:43 INFO  AuthManager - Logout completato
+2025-07-04 09:50:43 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:50:43 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:50:43 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:50:51 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:50:51 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:50:51 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:50:52 INFO  MainApp - CSS login caricato
+2025-07-04 09:51:27 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:51:27 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:51:27 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:51:27 INFO  MainApp - CSS login caricato
+2025-07-04 09:51:35 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 09:51:35 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:51:35 INFO  MainViewController - true
+2025-07-04 09:51:35 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:51:35 INFO  JsonUtility - JSON valido
+2025-07-04 09:51:35 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 09:51:35 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:51:35 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:51:35 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:51:35 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:51:35 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:51:35 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:51:35 INFO  JsonUtility - JSON valido
+2025-07-04 09:51:35 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 09:51:35 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:51:35 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:51:35 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 09:51:35 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 09:51:35 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:51:42 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:51:42 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:51:42 INFO  AuthManager - logout effettuato
+2025-07-04 09:51:42 INFO  AuthManager - Logout completato
+2025-07-04 09:51:42 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:51:42 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:51:42 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:51:51 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 09:51:51 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:51:51 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:51:51 INFO  MainApp - CSS login caricato
+2025-07-04 10:13:32 INFO  LoginController - Apertura schermata registrazione
+2025-07-04 10:13:32 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-04 10:13:32 INFO  RegisterController - RegisterController inizializzato
+2025-07-04 10:13:39 INFO  RegisterController - Ritorno alla schermata di login
+2025-07-04 10:13:49 INFO  AuthManager - Login riuscito per: kirito
+2025-07-04 10:13:49 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 10:13:50 INFO  MainViewController - true
+2025-07-04 10:13:50 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 10:13:50 INFO  JsonUtility - JSON valido
+2025-07-04 10:13:50 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 10:13:50 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 10:13:50 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 10:13:50 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 10:13:50 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 10:13:50 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 10:13:50 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 10:13:50 INFO  JsonUtility - JSON valido
+2025-07-04 10:13:50 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:13:50 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:13:50 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 10:13:50 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 10:13:50 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 10:13:50 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 10:14:55 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:14:55 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 10:14:55 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 10:14:55 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 10:15:09 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 10:15:09 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 10:15:09 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 10:15:09 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 10:15:09 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 10:15:09 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 10:15:09 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 10:15:09 INFO  JsonUtility - JSON valido
+2025-07-04 10:15:09 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:15:09 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 10:15:13 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\conversione_multipla - Copia.zip
+2025-07-04 10:15:13 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\conversione_multipla - Copia.zip
+2025-07-04 10:15:13 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 10:15:13 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:15:13 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 10:15:14 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:15:14 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:15:25 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:15:25 INFO  JsonUtility - JSON valido
+2025-07-04 10:15:25 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:15:25 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:15:27 INFO  MainViewController - Verifica file convertito:
+2025-07-04 10:15:27 INFO  MainViewController -   - Nome originale: conversione_multipla - Copia.zip
+2025-07-04 10:15:27 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla - Copia.zip
+2025-07-04 10:15:27 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\conversione_multipla - Copia.zip
+2025-07-04 10:15:27 INFO  MainViewController -   - File esiste: true
+2025-07-04 10:15:27 INFO  MainViewController - Conversione di conversione_multipla - Copia.zip riuscita
+2025-07-04 10:15:27 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 10:16:14 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\imageSample - Copia.jpg
+2025-07-04 10:16:14 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\imageSample - Copia.jpg
+2025-07-04 10:16:14 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 10:16:14 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:16:14 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:16:14 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:16:28 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:16:28 INFO  JsonUtility - JSON valido
+2025-07-04 10:16:28 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:16:28 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:16:33 INFO  MainViewController - Verifica file convertito:
+2025-07-04 10:16:33 INFO  MainViewController -   - Nome originale: imageSample - Copia.jpg
+2025-07-04 10:16:33 INFO  MainViewController -   - Nome convertito atteso: imageSample - Copia.png
+2025-07-04 10:16:33 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\imageSample - Copia.png
+2025-07-04 10:16:33 INFO  MainViewController -   - File esiste: true
+2025-07-04 10:16:33 INFO  MainViewController - Conversione di imageSample - Copia.jpg riuscita
+2025-07-04 10:16:33 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 10:17:02 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:17:02 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 10:17:02 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 10:17:02 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 10:17:22 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 10:17:22 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 10:17:22 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 10:17:22 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 10:17:22 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 10:17:22 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 10:17:22 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 10:17:22 INFO  JsonUtility - JSON valido
+2025-07-04 10:17:22 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:17:22 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 10:17:26 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 10:17:26 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 10:17:26 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=0
+2025-07-04 10:17:26 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:17:26 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:17:26 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:17:41 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:17:41 INFO  JsonUtility - JSON valido
+2025-07-04 10:17:41 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:17:41 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:17:42 ERROR MainViewController - Errore durante conversione di protected - Copia.pdf: null
+2025-07-04 10:17:42 ERROR MainViewController - null
+2025-07-04 10:17:42 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\protected - Copia.pdf
+2025-07-04 10:17:42 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=1
+2025-07-04 10:17:53 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:17:53 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 10:17:53 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 10:17:53 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 10:17:59 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 10:17:59 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 10:17:59 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 10:17:59 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 10:17:59 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 10:17:59 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 10:17:59 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 10:17:59 INFO  JsonUtility - JSON valido
+2025-07-04 10:17:59 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:17:59 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 10:18:12 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 10:18:12 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 10:18:12 INFO  MainViewController - Stato: ricevuti=4, convertiti=2, scartati=1
+2025-07-04 10:18:12 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:18:12 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:18:12 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:18:16 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:18:16 INFO  JsonUtility - JSON valido
+2025-07-04 10:18:16 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:18:16 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:18:17 ERROR MainViewController - Errore durante conversione di protected - Copia.pdf: null
+2025-07-04 10:18:17 ERROR MainViewController - null
+2025-07-04 10:18:17 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\protected - Copia.pdf
+2025-07-04 10:18:17 INFO  MainViewController - Stato: ricevuti=4, convertiti=2, scartati=2
+2025-07-04 10:18:37 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia.pdf
+2025-07-04 10:18:37 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia.pdf
+2025-07-04 10:18:37 INFO  MainViewController - Stato: ricevuti=5, convertiti=2, scartati=2
+2025-07-04 10:18:37 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:18:38 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:18:38 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:18:44 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:18:44 INFO  JsonUtility - JSON valido
+2025-07-04 10:18:44 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:18:44 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:18:45 INFO  MainViewController - Verifica file convertito:
+2025-07-04 10:18:45 INFO  MainViewController -   - Nome originale: protected - Copia.pdf
+2025-07-04 10:18:45 INFO  MainViewController -   - Nome convertito atteso: protected - Copia.doc
+2025-07-04 10:18:45 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia.doc
+2025-07-04 10:18:45 INFO  MainViewController -   - File esiste: true
+2025-07-04 10:18:45 INFO  MainViewController - Conversione di protected - Copia.pdf riuscita
+2025-07-04 10:18:45 INFO  MainViewController - Stato: ricevuti=5, convertiti=3, scartati=2
+2025-07-04 10:19:09 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (2).pdf
+2025-07-04 10:19:09 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (2).pdf
+2025-07-04 10:19:09 INFO  MainViewController - Stato: ricevuti=6, convertiti=3, scartati=2
+2025-07-04 10:19:09 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:19:09 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:19:09 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:19:13 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:19:13 INFO  JsonUtility - JSON valido
+2025-07-04 10:19:13 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:19:13 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:19:15 INFO  MainViewController - Verifica file convertito:
+2025-07-04 10:19:15 INFO  MainViewController -   - Nome originale: protected - Copia (2).pdf
+2025-07-04 10:19:15 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (2).docx
+2025-07-04 10:19:15 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (2).docx
+2025-07-04 10:19:15 INFO  MainViewController -   - File esiste: true
+2025-07-04 10:19:15 INFO  MainViewController - Conversione di protected - Copia (2).pdf riuscita
+2025-07-04 10:19:15 INFO  MainViewController - Stato: ricevuti=6, convertiti=4, scartati=2
+2025-07-04 10:19:41 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\prova_mail_1 - Copia.eml
+2025-07-04 10:19:41 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\prova_mail_1 - Copia.eml
+2025-07-04 10:19:41 INFO  MainViewController - Stato: ricevuti=7, convertiti=4, scartati=2
+2025-07-04 10:19:41 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:19:41 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:19:41 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:19:51 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:19:51 INFO  JsonUtility - JSON valido
+2025-07-04 10:19:51 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:19:51 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:20:21 INFO  MainViewController - Verifica file convertito:
+2025-07-04 10:20:21 INFO  MainViewController -   - Nome originale: prova_mail_1 - Copia.eml
+2025-07-04 10:20:21 INFO  MainViewController -   - Nome convertito atteso: prova_mail_1 - Copia.pdf
+2025-07-04 10:20:21 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\prova_mail_1 - Copia.pdf
+2025-07-04 10:20:21 INFO  MainViewController -   - File esiste: true
+2025-07-04 10:20:21 INFO  MainViewController - Conversione di prova_mail_1 - Copia.eml riuscita
+2025-07-04 10:20:21 INFO  MainViewController - Stato: ricevuti=7, convertiti=5, scartati=2
+2025-07-04 10:21:07 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\username - Copia.csv
+2025-07-04 10:21:07 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\username - Copia.csv
+2025-07-04 10:21:07 INFO  MainViewController - Stato: ricevuti=8, convertiti=5, scartati=2
+2025-07-04 10:21:07 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 10:21:07 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 10:21:07 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 10:21:14 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 10:21:14 INFO  JsonUtility - JSON valido
+2025-07-04 10:21:14 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 10:21:14 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 10:21:15 INFO  MainViewController - Verifica file convertito:
+2025-07-04 10:21:15 INFO  MainViewController -   - Nome originale: username - Copia.csv
+2025-07-04 10:21:15 INFO  MainViewController -   - Nome convertito atteso: username - Copia.xls
+2025-07-04 10:21:15 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\username - Copia.xls
+2025-07-04 10:21:15 INFO  MainViewController -   - File esiste: true
+2025-07-04 10:21:15 INFO  MainViewController - Conversione di username - Copia.csv riuscita
+2025-07-04 10:21:15 INFO  MainViewController - Stato: ricevuti=8, convertiti=6, scartati=2
+2025-07-04 10:21:41 INFO  ConfigWindowController - Configurazione caricata correttamente
+2025-07-04 10:21:41 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione
+2025-07-04 10:22:04 INFO  ConfigWindowController - Finestra di configurazione chiusa senza modifiche
+2025-07-04 10:22:04 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 10:22:04 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 10:22:04 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 10:22:04 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 10:22:04 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 10:22:04 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 10:22:04 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 10:22:04 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 10:22:04 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:03:04 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:03:04 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:03:04 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:03:04 INFO  MainApp - CSS login caricato
+2025-07-04 12:03:14 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:03:14 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:03:15 INFO  MainViewController - true
+2025-07-04 12:03:15 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:03:15 INFO  JsonUtility - JSON valido
+2025-07-04 12:03:15 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:03:15 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:03:15 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:03:15 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:03:15 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:03:15 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:03:15 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:03:15 INFO  JsonUtility - JSON valido
+2025-07-04 12:03:15 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:03:15 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:03:15 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:03:15 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:03:15 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:03:15 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:03:20 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:03:20 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:03:20 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:03:20 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:03:24 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 12:03:24 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 12:03:24 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 12:03:24 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 12:03:24 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 12:03:24 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 12:03:24 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 12:03:24 INFO  JsonUtility - JSON valido
+2025-07-04 12:03:24 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:03:24 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 12:03:29 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 12:03:29 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 12:03:29 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 12:03:29 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:03:30 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:03:30 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:03:37 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:03:37 INFO  JsonUtility - JSON valido
+2025-07-04 12:03:37 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:03:37 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:03:37 ERROR MainViewController - Errore durante conversione di simple - Copia.txt: null
+2025-07-04 12:03:37 ERROR MainViewController - null
+2025-07-04 12:03:37 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\simple - Copia.txt
+2025-07-04 12:03:37 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=1
+2025-07-04 12:03:48 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\prova_mail_1 - Copia (2).eml
+2025-07-04 12:03:48 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\prova_mail_1 - Copia (2).eml
+2025-07-04 12:03:48 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=1
+2025-07-04 12:03:48 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:03:48 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:03:48 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:03:52 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:03:52 INFO  JsonUtility - JSON valido
+2025-07-04 12:03:52 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:03:52 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:03:58 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:03:58 INFO  MainViewController -   - Nome originale: prova_mail_1 - Copia (2).eml
+2025-07-04 12:03:58 INFO  MainViewController -   - Nome convertito atteso: prova_mail_1 - Copia (2).pdf
+2025-07-04 12:03:58 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\prova_mail_1 - Copia (2).pdf
+2025-07-04 12:03:58 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:03:58 INFO  MainViewController - Conversione di prova_mail_1 - Copia (2).eml riuscita
+2025-07-04 12:03:58 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=1
+2025-07-04 12:05:32 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:05:32 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:05:32 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:05:32 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:05:36 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 12:05:36 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 12:05:36 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 12:05:36 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 12:05:36 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 12:05:36 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 12:05:36 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 12:05:36 INFO  JsonUtility - JSON valido
+2025-07-04 12:05:36 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:05:36 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 12:05:44 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (3).pdf
+2025-07-04 12:05:44 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (3).pdf
+2025-07-04 12:05:44 INFO  MainViewController - Stato: ricevuti=3, convertiti=1, scartati=1
+2025-07-04 12:05:44 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:05:44 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:05:44 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:05:56 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:05:56 INFO  JsonUtility - JSON valido
+2025-07-04 12:05:56 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:05:56 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:05:59 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:05:59 INFO  MainViewController -   - Nome originale: protected - Copia (3).pdf
+2025-07-04 12:05:59 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (3).zip
+2025-07-04 12:05:59 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (3).zip
+2025-07-04 12:05:59 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:05:59 INFO  MainViewController - Conversione di protected - Copia (3).pdf riuscita
+2025-07-04 12:05:59 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=1
+2025-07-04 12:06:21 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (3) - Copia.pdf
+2025-07-04 12:06:21 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (3) - Copia.pdf
+2025-07-04 12:06:21 INFO  MainViewController - Stato: ricevuti=4, convertiti=2, scartati=1
+2025-07-04 12:06:21 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:06:21 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:06:21 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:06:27 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:06:27 INFO  JsonUtility - JSON valido
+2025-07-04 12:06:27 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:06:27 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:06:28 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:06:28 INFO  MainViewController -   - Nome originale: protected - Copia (3) - Copia.pdf
+2025-07-04 12:06:28 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (3) - Copia.zip
+2025-07-04 12:06:28 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (3) - Copia.zip
+2025-07-04 12:06:28 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:06:28 INFO  MainViewController - Conversione di protected - Copia (3) - Copia.pdf riuscita
+2025-07-04 12:06:28 INFO  MainViewController - Stato: ricevuti=4, convertiti=3, scartati=1
+2025-07-04 12:08:52 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:08:52 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:08:52 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:08:52 INFO  MainApp - CSS login caricato
+2025-07-04 12:09:01 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:09:01 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:09:02 INFO  MainViewController - true
+2025-07-04 12:09:02 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:09:02 INFO  JsonUtility - JSON valido
+2025-07-04 12:09:02 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:09:02 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:09:02 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:09:02 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:09:02 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:09:02 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:09:02 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:09:02 INFO  JsonUtility - JSON valido
+2025-07-04 12:09:02 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:09:02 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:09:02 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:09:02 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:09:02 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:09:02 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:09:06 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:09:06 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:09:06 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:09:06 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:09:08 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 12:09:13 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (4) - Copia.pdf
+2025-07-04 12:09:13 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (4) - Copia.pdf
+2025-07-04 12:09:13 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 12:09:13 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:09:13 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:09:13 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:09:19 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:09:19 INFO  JsonUtility - JSON valido
+2025-07-04 12:09:19 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:09:19 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:09:21 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:09:21 INFO  MainViewController -   - Nome originale: protected - Copia (4) - Copia.pdf
+2025-07-04 12:09:21 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (4) - Copia.zip
+2025-07-04 12:09:21 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (4) - Copia.zip
+2025-07-04 12:09:21 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:09:21 INFO  MainViewController - Conversione di protected - Copia (4) - Copia.pdf riuscita
+2025-07-04 12:09:21 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 12:09:41 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (4) - Copia - Copia.pdf
+2025-07-04 12:09:41 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (4) - Copia - Copia.pdf
+2025-07-04 12:09:41 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=0
+2025-07-04 12:09:41 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:09:41 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:09:41 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:09:48 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:09:48 INFO  JsonUtility - JSON valido
+2025-07-04 12:09:48 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:09:48 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:09:49 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:09:49 INFO  MainViewController -   - Nome originale: protected - Copia (4) - Copia - Copia.pdf
+2025-07-04 12:09:49 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (4) - Copia - Copia.zip
+2025-07-04 12:09:49 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (4) - Copia - Copia.zip
+2025-07-04 12:09:49 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:09:49 INFO  MainViewController - Conversione di protected - Copia (4) - Copia - Copia.pdf riuscita
+2025-07-04 12:09:49 INFO  MainViewController - Stato: ricevuti=2, convertiti=2, scartati=0
+2025-07-04 12:14:37 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:14:37 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:14:37 INFO  AuthManager - logout effettuato
+2025-07-04 12:14:37 INFO  AuthManager - Logout completato
+2025-07-04 12:14:37 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:14:37 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:14:37 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 12:14:51 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:14:51 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:14:51 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:14:51 INFO  MainApp - CSS login caricato
+2025-07-04 12:15:03 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:15:03 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:15:03 INFO  MainViewController - true
+2025-07-04 12:15:03 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:15:03 INFO  JsonUtility - JSON valido
+2025-07-04 12:15:03 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:15:03 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:15:04 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:15:04 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:15:04 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:15:04 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:15:04 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:15:04 INFO  JsonUtility - JSON valido
+2025-07-04 12:15:04 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:15:04 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:15:04 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:15:04 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:15:04 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:15:04 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:15:07 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:15:07 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:15:07 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:15:07 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:15:14 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 12:15:20 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (4) - Copia - Copia - Copia.pdf
+2025-07-04 12:15:20 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (4) - Copia - Copia - Copia.pdf
+2025-07-04 12:15:20 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 12:15:20 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:15:21 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:15:21 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:15:28 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:15:28 INFO  JsonUtility - JSON valido
+2025-07-04 12:15:28 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:15:28 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:15:29 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:15:29 INFO  MainViewController -   - Nome originale: protected - Copia (4) - Copia - Copia - Copia.pdf
+2025-07-04 12:15:29 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (4) - Copia - Copia - Copia.zip
+2025-07-04 12:15:29 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (4) - Copia - Copia - Copia.zip
+2025-07-04 12:15:29 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:15:29 INFO  MainViewController - Conversione di protected - Copia (4) - Copia - Copia - Copia.pdf riuscita
+2025-07-04 12:15:29 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 12:18:29 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:18:29 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:18:29 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:18:29 INFO  MainApp - CSS login caricato
+2025-07-04 12:18:37 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:18:37 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:18:38 INFO  MainViewController - true
+2025-07-04 12:18:38 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:18:38 INFO  JsonUtility - JSON valido
+2025-07-04 12:18:38 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:18:38 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:18:38 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:18:38 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:18:38 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:18:38 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:18:38 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:18:38 INFO  JsonUtility - JSON valido
+2025-07-04 12:18:38 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:18:38 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:18:38 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:18:38 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:18:38 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:18:38 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:18:51 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 12:18:51 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 12:18:51 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 12:18:51 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:18:51 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:18:52 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:18:59 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:18:59 INFO  JsonUtility - JSON valido
+2025-07-04 12:18:59 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:18:59 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:18:59 ERROR MainViewController - Errore durante conversione di simple - Copia.txt: null
+2025-07-04 12:18:59 ERROR MainViewController - null
+2025-07-04 12:18:59 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\simple - Copia.txt
+2025-07-04 12:18:59 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=1
+2025-07-04 12:20:15 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (4).pdf
+2025-07-04 12:20:15 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (4).pdf
+2025-07-04 12:20:15 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=1
+2025-07-04 12:20:15 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:20:15 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:20:15 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:20:28 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:20:28 INFO  JsonUtility - JSON valido
+2025-07-04 12:20:28 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:20:28 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:20:29 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:20:29 INFO  MainViewController -   - Nome originale: protected - Copia (4).pdf
+2025-07-04 12:20:29 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (4).zip
+2025-07-04 12:20:29 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (4).zip
+2025-07-04 12:20:29 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:20:30 INFO  MainViewController - Conversione di protected - Copia (4).pdf riuscita
+2025-07-04 12:20:30 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=1
+2025-07-04 12:20:33 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:20:33 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:20:33 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:20:33 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:22:12 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 12:22:14 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:22:14 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:22:14 INFO  AuthManager - logout effettuato
+2025-07-04 12:22:14 INFO  AuthManager - Logout completato
+2025-07-04 12:22:14 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:22:14 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:22:14 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 12:22:42 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:22:42 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:22:43 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:22:43 INFO  MainApp - CSS login caricato
+2025-07-04 12:22:51 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:22:51 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:22:51 INFO  MainViewController - true
+2025-07-04 12:22:51 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:22:51 INFO  JsonUtility - JSON valido
+2025-07-04 12:22:51 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:22:51 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:22:51 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:22:51 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:22:51 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:22:51 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:22:51 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:22:51 ERROR JsonUtility - JSON non valido: JSON mancante di campi obbligatori: protected
+2025-07-04 12:22:51 ERROR MainApp - Errore nell'avvio dell'applicazione principale: 
+/C:/Users/DELLMuletto/IdeaProjects/convertitoreFile/target/classes/GraphicalMenu.fxml
+
+2025-07-04 12:23:12 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:23:12 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:23:12 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:23:12 INFO  MainApp - CSS login caricato
+2025-07-04 12:23:21 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:23:21 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:23:22 INFO  MainViewController - true
+2025-07-04 12:23:22 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:23:22 INFO  JsonUtility - JSON valido
+2025-07-04 12:23:22 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:23:22 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:23:22 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:23:22 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:23:22 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:23:22 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:23:22 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:23:22 ERROR JsonUtility - JSON non valido: JSON mancante di campi obbligatori: protected
+2025-07-04 12:23:22 ERROR MainApp - Errore nell'avvio dell'applicazione principale: 
+/C:/Users/DELLMuletto/IdeaProjects/convertitoreFile/target/classes/GraphicalMenu.fxml
+
+2025-07-04 12:24:46 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:24:46 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:24:46 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:24:46 INFO  MainApp - CSS login caricato
+2025-07-04 12:24:54 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:24:54 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:24:55 INFO  MainViewController - true
+2025-07-04 12:24:55 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:24:55 INFO  JsonUtility - JSON valido
+2025-07-04 12:24:55 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:24:55 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:24:55 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:24:55 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:24:55 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:24:55 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:24:55 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:24:55 INFO  JsonUtility - JSON valido
+2025-07-04 12:24:55 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:24:55 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:24:55 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:24:55 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:24:55 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:24:55 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:24:59 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:24:59 ERROR MainViewController - Impossibile aprire l'editor di configurazione: 
+/C:/Users/DELLMuletto/IdeaProjects/convertitoreFile/target/classes/ConversionConfigWindow.fxml
+
+2025-07-04 12:24:59 INFO  MainViewController - Stato: ricevuti=0, convertiti=0, scartati=1
+2025-07-04 12:25:10 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\protected - Copia (5) - Copia.pdf
+2025-07-04 12:25:10 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\protected - Copia (5) - Copia.pdf
+2025-07-04 12:25:10 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=1
+2025-07-04 12:25:10 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:25:10 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:25:10 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:25:17 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:25:17 INFO  JsonUtility - JSON valido
+2025-07-04 12:25:17 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:25:17 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:25:17 INFO  MainViewController - Verifica file convertito:
+2025-07-04 12:25:17 INFO  MainViewController -   - Nome originale: protected - Copia (5) - Copia.pdf
+2025-07-04 12:25:17 INFO  MainViewController -   - Nome convertito atteso: protected - Copia (5) - Copia.zip
+2025-07-04 12:25:17 INFO  MainViewController -   - Percorso completo: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\output\success\protected - Copia (5) - Copia.zip
+2025-07-04 12:25:17 INFO  MainViewController -   - File esiste: true
+2025-07-04 12:25:17 INFO  MainViewController - Conversione di protected - Copia (5) - Copia.pdf riuscita
+2025-07-04 12:25:17 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=1
+2025-07-04 12:25:30 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:25:30 ERROR MainViewController - Impossibile aprire l'editor di configurazione: 
+/C:/Users/DELLMuletto/IdeaProjects/convertitoreFile/target/classes/ConversionConfigWindow.fxml
+
+2025-07-04 12:25:30 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=2
+2025-07-04 12:26:22 INFO  ConfigWindowController - Configurazione caricata correttamente
+2025-07-04 12:26:22 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione
+2025-07-04 12:26:23 INFO  ConfigWindowController - Finestra di configurazione chiusa senza modifiche
+2025-07-04 12:26:23 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:26:23 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:26:23 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:26:23 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:26:23 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:26:23 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:26:23 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:26:23 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:26:23 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:26:24 ERROR MainViewController - Impossibile aprire l'editor di configurazione: 
+/C:/Users/DELLMuletto/IdeaProjects/convertitoreFile/target/classes/ConversionConfigWindow.fxml
+
+2025-07-04 12:26:24 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=3
+2025-07-04 12:26:28 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:26:28 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:26:28 INFO  AuthManager - logout effettuato
+2025-07-04 12:26:28 INFO  AuthManager - Logout completato
+2025-07-04 12:26:28 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:26:28 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:26:28 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 12:27:41 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:27:41 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:27:41 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:27:41 INFO  MainApp - CSS login caricato
+2025-07-04 12:28:00 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:28:00 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:28:01 INFO  MainViewController - true
+2025-07-04 12:28:01 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:28:01 INFO  JsonUtility - JSON valido
+2025-07-04 12:28:01 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:28:01 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:28:01 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:28:01 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:28:01 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:28:01 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:28:01 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:28:01 INFO  JsonUtility - JSON valido
+2025-07-04 12:28:01 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:28:01 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:28:01 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:28:01 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:28:01 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:28:01 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:28:04 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:28:04 ERROR MainViewController - Impossibile aprire l'editor di configurazione: 
+/C:/Users/DELLMuletto/IdeaProjects/convertitoreFile/target/classes/ConversionConfigWindow.fxml
+
+2025-07-04 12:28:04 INFO  MainViewController - Stato: ricevuti=0, convertiti=0, scartati=1
+2025-07-04 12:28:26 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:28:26 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:28:26 INFO  AuthManager - logout effettuato
+2025-07-04 12:28:26 INFO  AuthManager - Logout completato
+2025-07-04 12:28:26 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:28:26 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:28:27 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 12:29:50 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:29:50 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:29:51 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:29:51 INFO  MainApp - CSS login caricato
+2025-07-04 12:30:00 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:30:00 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:30:00 INFO  MainViewController - true
+2025-07-04 12:30:00 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:30:00 INFO  JsonUtility - JSON valido
+2025-07-04 12:30:00 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:30:00 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:30:00 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:30:00 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:30:00 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:30:00 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:30:00 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:30:00 INFO  JsonUtility - JSON valido
+2025-07-04 12:30:00 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:30:00 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:30:00 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:30:00 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:30:00 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:30:00 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:30:03 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:30:03 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:30:03 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:30:03 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:30:06 INFO  ConversionConfigWindowController - Finestra di configurazione conversione chiusa senza modifiche
+2025-07-04 12:30:08 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:30:08 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:30:08 INFO  AuthManager - logout effettuato
+2025-07-04 12:30:08 INFO  AuthManager - Logout completato
+2025-07-04 12:30:08 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:30:08 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:30:08 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 12:42:13 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:42:13 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:42:14 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:42:14 INFO  MainApp - CSS login caricato
+2025-07-04 12:42:33 ERROR AuthManager - Errore connessione durante login per gianluca: connect timed out
+2025-07-04 12:43:53 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:43:53 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:43:53 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:43:53 INFO  MainApp - CSS login caricato
+2025-07-04 12:44:01 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:44:01 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:44:02 INFO  MainViewController - true
+2025-07-04 12:44:02 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:44:02 INFO  JsonUtility - JSON valido
+2025-07-04 12:44:02 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:44:02 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:44:02 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:44:02 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:44:02 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:44:02 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:44:02 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:44:02 INFO  JsonUtility - JSON valido
+2025-07-04 12:44:02 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:44:02 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:44:02 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:44:02 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:44:02 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:44:02 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:44:04 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:44:04 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 12:44:04 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 12:44:04 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 12:44:08 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 12:44:08 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 12:44:08 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 12:44:08 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 12:44:08 INFO  JsonWriter - Chiave 'protectedOutput' aggiornata correttamente
+2025-07-04 12:44:08 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 12:44:08 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 12:44:08 INFO  JsonUtility - JSON valido
+2025-07-04 12:44:08 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:44:08 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 12:44:13 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 12:44:13 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 12:44:13 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 12:44:13 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:44:13 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:44:13 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:44:17 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:44:17 INFO  JsonUtility - JSON valido
+2025-07-04 12:44:17 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:44:17 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:44:18 ERROR MainViewController - Errore durante conversione di simple - Copia.txt: null
+2025-07-04 12:44:18 ERROR MainViewController - null
+2025-07-04 12:44:18 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\simple - Copia.txt
+2025-07-04 12:44:18 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=1
+2025-07-04 12:48:05 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:48:05 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:48:05 INFO  AuthManager - logout effettuato
+2025-07-04 12:48:05 INFO  AuthManager - Logout completato
+2025-07-04 12:48:05 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:48:05 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:48:05 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 12:48:13 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 12:48:13 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 12:48:14 INFO  LoginController - LoginController inizializzato
+2025-07-04 12:48:14 INFO  MainApp - CSS login caricato
+2025-07-04 12:48:21 INFO  AuthManager - Login riuscito per: gianluca
+2025-07-04 12:48:21 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 12:48:21 INFO  MainViewController - true
+2025-07-04 12:48:21 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 12:48:21 INFO  JsonUtility - JSON valido
+2025-07-04 12:48:21 INFO  ConfigInstance - src\main\java\webService\client\configuration\configFiles\config.json validato correttamente
+2025-07-04 12:48:21 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 12:48:21 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 12:48:21 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 12:48:21 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 12:48:21 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 12:48:21 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 12:48:21 INFO  JsonUtility - JSON valido
+2025-07-04 12:48:21 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:48:21 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:48:21 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 12:48:21 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src\input
+2025-07-04 12:48:21 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src\input
+2025-07-04 12:48:21 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 12:48:28 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src\input\simple - Copia.txt
+2025-07-04 12:48:28 INFO  DirectoryWatcher - Avvio conversione automatica per: C:\Users\DELLMuletto\IdeaProjects\convertitoreFile\src\input\simple - Copia.txt
+2025-07-04 12:48:28 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 12:48:28 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 12:48:28 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 12:48:28 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 12:48:33 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 12:48:33 INFO  JsonUtility - JSON valido
+2025-07-04 12:48:33 INFO  ConversionContextInstance - src\main\java\webService\client\configuration\configFiles\conversionContext.json validato correttamente
+2025-07-04 12:48:33 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 12:48:34 ERROR MainViewController - Errore durante conversione di simple - Copia.txt: null
+2025-07-04 12:48:34 ERROR MainViewController - null
+2025-07-04 12:48:34 INFO  MainViewController - File originale spostato in cartella errori: src\output\error\simple - Copia.txt
+2025-07-04 12:48:34 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=1
+2025-07-04 12:48:57 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 12:48:57 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 12:48:57 INFO  AuthManager - logout effettuato
+2025-07-04 12:48:57 INFO  AuthManager - Logout completato
+2025-07-04 12:48:57 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 12:48:57 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 12:48:58 INFO  MainViewController - Applicazione chiusa correttamente

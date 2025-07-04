@@ -52,7 +52,7 @@ public class ConversionContextReader extends ConversionContextData {
      * @return {@code true} se è richiesta la protezione; {@code false} altrimenti
      */
     public static boolean getProtected() {
-        return (boolean) context.get().get("protected");
+        return (boolean) context.get().get("protectedOutput");
     }
 
     /**

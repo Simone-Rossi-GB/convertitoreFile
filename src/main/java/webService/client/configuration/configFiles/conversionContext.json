@@ -1,11 +1,11 @@
 {
   "data" : {
-    "destinationFormat" : "docx",
+    "destinationFormat" : "pdf",
     "password" : "samplefiles",
-    "protected" : false,
-    "union" : true,
+    "protectedOutput" : true,
+    "union" : false,
     "zippedOutput" : false,
-    "watermark" : "",
-    "multipleConversion" : true
+    "watermark" : "Panthera",
+    "multipleConversion" : false
   }
 }

@@ -53,7 +53,7 @@ public class ConversionContextWriter extends ConversionContextData {
      * @param isProtected {@code true} se l’output va protetto; {@code false} altrimenti
      */
     public static void setProtected(boolean isProtected) {
-        context.get().put("protected", isProtected);
+        context.get().put("protectedOutput", isProtected);
     }
 
     /**
