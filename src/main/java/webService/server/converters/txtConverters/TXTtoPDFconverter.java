@@ -33,13 +33,6 @@ public class TXTtoPDFconverter extends Converter {
         // Crea un nuovo documento pdf
         Document document = new Document();
         PdfWriter writer = PdfWriter.getInstance(document, Files.newOutputStream(output.toPath()));
-        if(configuration.getData().isProtectedOutput() || !(configuration.getData().getPassword() == null))
-        writer.setEncryption(
-                configuration.getData().getPassword().getBytes(),
-                configuration.getData().getPassword().getBytes(),
-                PdfWriter.ALLOW_PRINTING,
-                PdfWriter.ENCRYPTION_AES_128
-        );
         document.open();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(srcFile))) {
@@ -94,7 +87,13 @@ public class TXTtoPDFconverter extends Converter {
         } else {
             logger.info("No watermark specified - skipping watermark application");
         }
-
+        if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null))
+            writer.setEncryption(
+                    configuration.getData().getPassword().getBytes(),
+                    configuration.getData().getPassword().getBytes(),
+                    PdfWriter.ALLOW_PRINTING,
+                    PdfWriter.ENCRYPTION_AES_128
+            );
         return output;
     }
 }
