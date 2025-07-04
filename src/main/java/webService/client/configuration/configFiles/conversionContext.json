@@ -1,11 +1,11 @@
 {
   "data" : {
-    "destinationFormat" : "xls",
+    "destinationFormat" : "docx",
     "password" : "samplefiles",
     "protected" : false,
     "union" : true,
     "zippedOutput" : false,
     "watermark" : "",
-    "multipleConversion" : false
+    "multipleConversion" : true
   }
 }

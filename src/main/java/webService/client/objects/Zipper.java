@@ -105,7 +105,7 @@ public class Zipper {
      */
     public static ArrayList<File> unzip(File zipFile) throws IOException {
         ArrayList<File> extractedFiles = new ArrayList<>();
-        File outputDir = new File(zipFile.getParent());
+        File outputDir = new File("src/temp");
 
         // Crea la cartella di output se non esiste
         if (!outputDir.exists()) {

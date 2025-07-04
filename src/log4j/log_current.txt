@@ -1129,6 +1129,56 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-03 14:57:20 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
 2025-07-03 14:57:20 INFO  DirectoryWatcher - Executor interrotto
 2025-07-03 14:57:20 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 08:55:39 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
+2025-07-04 08:55:39 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 08:55:39 INFO  LoginController - LoginController inizializzato
+2025-07-04 08:55:39 INFO  MainApp - CSS login caricato
+2025-07-04 08:55:50 ERROR AuthManager - Errore connessione durante login per admin: Failed to connect to /172.20.10.3:8080
+2025-07-04 08:55:53 INFO  LoginController - Apertura schermata registrazione
+2025-07-04 08:55:53 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-04 08:55:53 INFO  RegisterController - RegisterController inizializzato
+2025-07-04 08:57:07 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 08:57:07 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 08:57:07 INFO  LoginController - LoginController inizializzato
+2025-07-04 08:57:07 INFO  MainApp - CSS login caricato
+2025-07-04 08:57:23 WARN  AuthManager - Login fallito per admin - HTTP 401: {"errorCode":1012,"message":"Invalid username or password"}
+2025-07-04 08:57:25 INFO  LoginController - Apertura schermata registrazione
+2025-07-04 08:57:25 INFO  MainApp - ======== AVVIO SCHERMATA REGISTRAZIONE ========
+2025-07-04 08:57:25 INFO  RegisterController - RegisterController inizializzato
+2025-07-04 08:57:43 INFO  AuthManager - Registrazione riuscita per: kirito
+2025-07-04 08:57:43 INFO  RegisterController - Registrazione riuscita per utente: kirito
+2025-07-04 08:57:45 INFO  RegisterController - Ritorno alla schermata di login
+2025-07-04 08:57:54 INFO  JsonWriter - Chiave 'token' aggiornata correttamente
+2025-07-04 08:57:54 INFO  AuthManager - Login riuscito per: kirito
+2025-07-04 08:57:54 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 08:57:55 INFO  MainViewController - true
+2025-07-04 08:57:55 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 08:57:55 INFO  JsonUtility - JSON valido
+2025-07-04 08:57:55 INFO  ConfigInstance - src/main/java/webService/client/configuration/configFiles/config.json validato correttamente
+2025-07-04 08:57:55 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 08:57:55 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 08:57:55 INFO  MainViewController - Cartella mancante creata: src/input
+2025-07-04 08:57:55 INFO  MainViewController - Cartella mancante creata: src/output/success
+2025-07-04 08:57:55 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 08:57:55 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 08:57:55 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 08:57:55 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 08:57:55 INFO  JsonUtility - JSON valido
+2025-07-04 08:57:55 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 08:57:55 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 08:57:55 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 08:57:55 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 08:57:55 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 08:57:55 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:01:15 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla.zip
+2025-07-04 09:01:15 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla.zip
+2025-07-04 09:01:15 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:01:15 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:01:15 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:01:15 ERROR ConverterWebServiceClient - {"errorCode":9999,"message":"Required request header 'Authorization' for method parameter type String is not present"}
+2025-07-04 09:01:15 INFO  MainViewController - File originale spostato in cartella errori: src/output/error/conversione_multipla.zip
+2025-07-04 09:01:15 ERROR MainViewController - Required request header 'Authorization' for method parameter type String is not present
+2025-07-04 09:01:15 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=1
 2025-07-03 15:00:37 INFO  AuthManager - AuthManager inizializzato per: http://172.20.10.3:8080
 2025-07-03 15:00:37 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
 2025-07-03 15:00:37 INFO  LoginController - LoginController inizializzato
@@ -1339,3 +1389,316 @@ See tika-parsers/pom.xml for the correct version.
 2025-07-03 16:25:42 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
 2025-07-03 16:25:42 INFO  DirectoryWatcher - Executor interrotto
 2025-07-03 16:25:42 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:02:06 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 09:02:06 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:02:07 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:02:07 INFO  MainApp - CSS login caricato
+2025-07-04 09:02:08 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 09:02:08 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:02:08 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:02:08 INFO  MainApp - CSS login caricato
+2025-07-04 09:02:14 INFO  AuthManager - Login riuscito per: kirito
+2025-07-04 09:02:14 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:02:14 INFO  MainViewController - true
+2025-07-04 09:02:14 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:02:14 INFO  JsonUtility - JSON valido
+2025-07-04 09:02:14 INFO  ConfigInstance - src/main/java/webService/client/configuration/configFiles/config.json validato correttamente
+2025-07-04 09:02:14 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:02:14 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:02:14 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:02:14 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:02:14 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:02:14 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:02:14 INFO  JsonUtility - JSON valido
+2025-07-04 09:02:14 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:02:14 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:02:14 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:02:14 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:02:14 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:02:14 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:02:15 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:02:15 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:02:19 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:02:19 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:02:19 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:02:29 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla.zip
+2025-07-04 09:02:29 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla.zip
+2025-07-04 09:02:29 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:02:29 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:02:29 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:02:29 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:02:37 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:02:37 INFO  ConversionConfigWindowController - Configurazione conversione caricata correttamente
+2025-07-04 09:02:37 INFO  MainViewController - CSS moderno caricato per la finestra di configurazione conversione
+2025-07-04 09:02:37 INFO  MainViewController - Editor configurazione conversione aperto
+2025-07-04 09:02:53 INFO  ConversionConfigWindowController - Configurazione di conversione salvata con successo
+2025-07-04 09:02:53 INFO  JsonWriter - Chiave 'union' aggiornata correttamente
+2025-07-04 09:02:53 INFO  JsonWriter - Chiave 'zippedOutput' aggiornata correttamente
+2025-07-04 09:02:53 INFO  JsonWriter - Chiave 'password' aggiornata correttamente
+2025-07-04 09:02:53 INFO  JsonWriter - Chiave 'protected' aggiornata correttamente
+2025-07-04 09:02:53 INFO  JsonWriter - Chiave 'watermark' aggiornata correttamente
+2025-07-04 09:02:53 INFO  JsonWriter - Chiave 'multipleConversion' aggiornata correttamente
+2025-07-04 09:02:53 INFO  JsonUtility - JSON valido
+2025-07-04 09:02:53 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:02:53 INFO  ConversionConfigWindowController - Configurazione salvata con successo
+2025-07-04 09:02:58 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:02:58 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:02:59 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:02:59 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:02:59 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:03:09 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/.DS_Store
+2025-07-04 09:03:09 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/.DS_Store
+2025-07-04 09:03:09 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla.zip
+2025-07-04 09:03:09 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla.zip
+2025-07-04 09:03:09 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:03:09 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:03:09 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=0
+2025-07-04 09:03:09 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:03:09 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:03:09 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:03:09 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:03:09 ERROR ConverterWebServiceClient - {"errorCode":1003,"message":"Formato di partenza non supportato"}
+2025-07-04 09:03:09 INFO  MainViewController - File originale spostato in cartella errori: src/output/error/.DS_Store
+2025-07-04 09:03:09 ERROR MainViewController - Formato di partenza non supportato
+2025-07-04 09:03:09 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:03:09 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=1
+2025-07-04 09:03:19 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/ciao1.txt
+2025-07-04 09:03:19 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/ciao1.txt
+2025-07-04 09:03:19 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/ciao1 - Copia (2).txt
+2025-07-04 09:03:19 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/ciao1 - Copia (2).txt
+2025-07-04 09:03:19 INFO  MainViewController - Stato: ricevuti=3, convertiti=0, scartati=1
+2025-07-04 09:03:19 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/ciao1 - Copia.txt
+2025-07-04 09:03:19 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/ciao1 - Copia.txt
+2025-07-04 09:03:19 INFO  MainViewController - Stato: ricevuti=4, convertiti=0, scartati=1
+2025-07-04 09:03:19 INFO  MainViewController - Stato: ricevuti=5, convertiti=0, scartati=1
+2025-07-04 09:03:19 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:03:19 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:03:19 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:03:19 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:03:19 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:03:19 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:03:19 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:03:54 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:03:54 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:03:54 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:03:54 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:03:54 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:04:04 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/.DS_Store
+2025-07-04 09:04:04 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/.DS_Store
+2025-07-04 09:04:04 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla.zip
+2025-07-04 09:04:04 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:04:04 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla.zip
+2025-07-04 09:04:04 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=0
+2025-07-04 09:04:04 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:04:04 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:04:04 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:04:04 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:04:04 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:04:04 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:04:04 ERROR ConverterWebServiceClient - {"errorCode":1003,"message":"Formato di partenza non supportato"}
+2025-07-04 09:04:04 INFO  MainViewController - File originale spostato in cartella errori: src/output/error/.DS_Store
+2025-07-04 09:04:04 ERROR MainViewController - Formato di partenza non supportato
+2025-07-04 09:04:04 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=1
+2025-07-04 09:04:14 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/ciao1.txt
+2025-07-04 09:04:14 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/ciao1.txt
+2025-07-04 09:04:14 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/ciao1 - Copia (2).txt
+2025-07-04 09:04:14 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/ciao1 - Copia (2).txt
+2025-07-04 09:04:14 INFO  MainViewController - Stato: ricevuti=3, convertiti=0, scartati=1
+2025-07-04 09:04:14 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/ciao1 - Copia.txt
+2025-07-04 09:04:14 INFO  MainViewController - Stato: ricevuti=4, convertiti=0, scartati=1
+2025-07-04 09:04:14 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/ciao1 - Copia.txt
+2025-07-04 09:04:14 INFO  MainViewController - Stato: ricevuti=5, convertiti=0, scartati=1
+2025-07-04 09:04:14 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:04:14 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:04:14 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:04:14 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:04:14 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:04:14 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:04:14 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:04:14 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:04:14 INFO  JsonUtility - JSON valido
+2025-07-04 09:04:14 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:04:14 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:04:17 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:04:17 INFO  MainViewController -   - Nome originale: conversione_multipla.zip
+2025-07-04 09:04:17 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla.zip
+2025-07-04 09:04:17 INFO  MainViewController -   - Percorso completo: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/output/success/conversione_multipla.zip
+2025-07-04 09:04:17 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:04:17 INFO  MainViewController - Conversione di conversione_multipla.zip riuscita
+2025-07-04 09:04:17 INFO  MainViewController - Stato: ricevuti=5, convertiti=1, scartati=1
+2025-07-04 09:07:16 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 09:07:16 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:07:17 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:07:17 INFO  MainApp - CSS login caricato
+2025-07-04 09:07:26 INFO  AuthManager - Login riuscito per: kirito
+2025-07-04 09:07:26 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:07:26 INFO  MainViewController - true
+2025-07-04 09:07:26 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:07:26 INFO  JsonUtility - JSON valido
+2025-07-04 09:07:26 INFO  ConfigInstance - src/main/java/webService/client/configuration/configFiles/config.json validato correttamente
+2025-07-04 09:07:26 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:07:26 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:07:26 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:07:26 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:07:26 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:07:26 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:07:26 INFO  JsonUtility - JSON valido
+2025-07-04 09:07:26 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:07:26 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:07:26 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:07:26 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:07:26 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:07:26 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:07:31 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:07:31 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:07:36 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:07:36 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:07:36 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:07:46 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/.DS_Store
+2025-07-04 09:07:46 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/.DS_Store
+2025-07-04 09:07:46 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla.zip
+2025-07-04 09:07:46 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla.zip
+2025-07-04 09:07:46 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:07:46 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=0
+2025-07-04 09:07:46 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:07:46 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:07:46 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:07:46 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:07:46 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:07:46 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:07:46 ERROR ConverterWebServiceClient - {"errorCode":1003,"message":"Formato di partenza non supportato"}
+2025-07-04 09:07:47 INFO  MainViewController - File originale spostato in cartella errori: src/output/error/.DS_Store
+2025-07-04 09:07:47 ERROR MainViewController - Formato di partenza non supportato
+2025-07-04 09:07:47 INFO  MainViewController - Stato: ricevuti=2, convertiti=0, scartati=1
+2025-07-04 09:07:54 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:07:54 INFO  JsonUtility - JSON valido
+2025-07-04 09:07:54 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:07:54 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:07:55 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:07:55 INFO  MainViewController -   - Nome originale: conversione_multipla.zip
+2025-07-04 09:07:55 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla.zip
+2025-07-04 09:07:55 INFO  MainViewController -   - Percorso completo: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/output/success/conversione_multipla.zip
+2025-07-04 09:07:55 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:07:56 INFO  MainViewController - Conversione di conversione_multipla.zip riuscita
+2025-07-04 09:07:56 INFO  MainViewController - Stato: ricevuti=2, convertiti=1, scartati=1
+2025-07-04 09:08:16 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla 2.zip
+2025-07-04 09:08:16 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla 2.zip
+2025-07-04 09:08:16 INFO  MainViewController - Stato: ricevuti=3, convertiti=1, scartati=1
+2025-07-04 09:08:16 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:08:16 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:08:16 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:08:16 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:08:25 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:08:25 INFO  JsonUtility - JSON valido
+2025-07-04 09:08:25 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:08:25 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:08:25 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:08:25 INFO  MainViewController -   - Nome originale: conversione_multipla 2.zip
+2025-07-04 09:08:25 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla 2.zip
+2025-07-04 09:08:25 INFO  MainViewController -   - Percorso completo: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/output/success/conversione_multipla 2.zip
+2025-07-04 09:08:25 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:08:25 INFO  MainViewController - Conversione di conversione_multipla 2.zip riuscita
+2025-07-04 09:08:25 INFO  MainViewController - Stato: ricevuti=3, convertiti=2, scartati=1
+2025-07-04 09:08:29 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:08:29 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:08:29 INFO  AuthManager - logout effettuato
+2025-07-04 09:08:29 INFO  AuthManager - Logout completato
+2025-07-04 09:08:29 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:08:29 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:08:29 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:08:36 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 09:08:36 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:08:37 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:08:37 INFO  MainApp - CSS login caricato
+2025-07-04 09:08:46 INFO  AuthManager - Login riuscito per: kirito
+2025-07-04 09:08:46 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:08:46 INFO  MainViewController - true
+2025-07-04 09:08:46 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:08:46 INFO  JsonUtility - JSON valido
+2025-07-04 09:08:46 INFO  ConfigInstance - src/main/java/webService/client/configuration/configFiles/config.json validato correttamente
+2025-07-04 09:08:46 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:08:46 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:08:46 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:08:46 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:08:46 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:08:46 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:08:46 INFO  JsonUtility - JSON valido
+2025-07-04 09:08:46 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:08:46 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:08:46 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:08:46 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:08:46 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:08:46 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:08:56 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla 3.zip
+2025-07-04 09:08:56 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla 3.zip
+2025-07-04 09:08:56 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:08:56 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:08:56 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:08:56 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:08:57 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:09:03 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:09:03 INFO  JsonUtility - JSON valido
+2025-07-04 09:09:03 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:09:03 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:09:04 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:09:04 INFO  MainViewController -   - Nome originale: conversione_multipla 3.zip
+2025-07-04 09:09:04 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla 3.zip
+2025-07-04 09:09:04 INFO  MainViewController -   - Percorso completo: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/output/success/conversione_multipla 3.zip
+2025-07-04 09:09:04 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:09:04 INFO  MainViewController - Conversione di conversione_multipla 3.zip riuscita
+2025-07-04 09:09:04 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:09:11 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:09:11 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:09:11 INFO  AuthManager - logout effettuato
+2025-07-04 09:09:11 INFO  AuthManager - Logout completato
+2025-07-04 09:09:11 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:09:11 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:09:11 INFO  MainViewController - Applicazione chiusa correttamente
+2025-07-04 09:09:52 INFO  AuthManager - AuthManager inizializzato per: http://localhost:8080
+2025-07-04 09:09:52 INFO  MainApp - ======== AVVIO SCHERMATA LOGIN ========
+2025-07-04 09:09:52 INFO  LoginController - LoginController inizializzato
+2025-07-04 09:09:52 INFO  MainApp - CSS login caricato
+2025-07-04 09:10:00 INFO  AuthManager - Login riuscito per: kirito
+2025-07-04 09:10:00 INFO  MainApp - ======== AVVIO APPLICAZIONE PRINCIPALE ========
+2025-07-04 09:10:00 INFO  MainViewController - true
+2025-07-04 09:10:00 INFO  MainViewController - Applicazione avviata. Caricamento configurazione...
+2025-07-04 09:10:00 INFO  JsonUtility - JSON valido
+2025-07-04 09:10:00 INFO  ConfigInstance - src/main/java/webService/client/configuration/configFiles/config.json validato correttamente
+2025-07-04 09:10:00 INFO  JsonReader - Lettura "data" da config.json completata
+2025-07-04 09:10:00 INFO  ConfigData - Configurazione aggiornata correttamente da config.json
+2025-07-04 09:10:00 INFO  MainViewController - Configurazione caricata da config.json
+2025-07-04 09:10:00 INFO  MainViewController - Cartella monitorata: src/input
+2025-07-04 09:10:00 INFO  MainViewController - Cartella file convertiti: src/output/success
+2025-07-04 09:10:00 INFO  MainViewController - Cartella file falliti: src/output/error
+2025-07-04 09:10:00 INFO  JsonUtility - JSON valido
+2025-07-04 09:10:00 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:10:00 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:10:00 INFO  DirectoryWatcher - Inizializzazione DirectoryWatcher per: src/input
+2025-07-04 09:10:00 INFO  DirectoryWatcher - Registrata directory per il monitoraggio: src/input
+2025-07-04 09:10:00 INFO  DirectoryWatcher - DirectoryWatcher avviato per: src/input
+2025-07-04 09:10:00 INFO  MainApp - CSS dialog moderni caricato globalmente da /styles/
+2025-07-04 09:10:10 INFO  DirectoryWatcher - Nuovo file/directory rilevato: src/input/conversione_multipla copia.zip
+2025-07-04 09:10:10 INFO  DirectoryWatcher - Avvio conversione automatica per: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/input/conversione_multipla copia.zip
+2025-07-04 09:10:10 INFO  MainViewController - Stato: ricevuti=1, convertiti=0, scartati=0
+2025-07-04 09:10:10 INFO  JsonReader - Lettura "data" da conversionContext.json completata
+2025-07-04 09:10:10 INFO  Zipper - Estraggo le estensioni dei file compressi
+2025-07-04 09:10:10 INFO  ConverterWebServiceClient - Chiedo al server i formati
+2025-07-04 09:10:10 INFO  MainViewController - Formati ottenuti dal web service
+2025-07-04 09:10:15 INFO  JsonWriter - Chiave 'destinationFormat' aggiornata correttamente
+2025-07-04 09:10:15 INFO  JsonUtility - JSON valido
+2025-07-04 09:10:15 INFO  ConversionContextInstance - src/main/java/webService/client/configuration/configFiles/conversionContext.json validato correttamente
+2025-07-04 09:10:15 INFO  MainViewController - Tentativo conversione tramite web service...
+2025-07-04 09:10:15 INFO  MainViewController - Verifica file convertito:
+2025-07-04 09:10:15 INFO  MainViewController -   - Nome originale: conversione_multipla copia.zip
+2025-07-04 09:10:15 INFO  MainViewController -   - Nome convertito atteso: conversione_multipla copia.zip
+2025-07-04 09:10:15 INFO  MainViewController -   - Percorso completo: /Users/simo/Documents/GitHub/convertitoreFileDocker/src/output/success/conversione_multipla copia.zip
+2025-07-04 09:10:15 INFO  MainViewController -   - File esiste: true
+2025-07-04 09:10:15 INFO  MainViewController - Conversione di conversione_multipla copia.zip riuscita
+2025-07-04 09:10:15 INFO  MainViewController - Stato: ricevuti=1, convertiti=1, scartati=0
+2025-07-04 09:10:37 INFO  MainViewController - Avvio procedura di chiusura applicazione...
+2025-07-04 09:10:37 INFO  MainViewController - Logout automatico in corso...
+2025-07-04 09:10:37 INFO  AuthManager - logout effettuato
+2025-07-04 09:10:37 INFO  AuthManager - Logout completato
+2025-07-04 09:10:37 WARN  DirectoryWatcher - Thread interrotto, chiusura DirectoryWatcher
+2025-07-04 09:10:37 INFO  DirectoryWatcher - Executor interrotto
+2025-07-04 09:10:37 INFO  MainViewController - Applicazione chiusa correttamente

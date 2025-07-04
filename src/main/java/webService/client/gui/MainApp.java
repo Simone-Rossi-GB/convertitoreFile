@@ -33,7 +33,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         JsonConfig config = ConfigManager.readConfig();
         MainApp.primaryStage = stage;
-        MainApp.authManager = new AuthManager("http://172.20.10.3:8080");
+        MainApp.authManager = new AuthManager("http://localhost:8080");
 
         currentLocale = new Locale(config.getLang(), config.getLang().toUpperCase());
 
