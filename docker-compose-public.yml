@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: bytebridge-postgres
+    environment:
+      POSTGRES_DB: bytebridge
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: bytebridge
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d bytebridge"]
+      interval: 100s
+      timeout: 10s
+      retries: 5
+
+  webservice:
+    # *** PROVA CON TAG DIVERSO ***
+    image: ghcr.io/simone-rossi-gb/bytebridge:1.0  # ← Tag 1.0 invece di latest
+    container_name: bytebridge
+    command: ["sh", "-c", "java ${JAVA_OPTS:-'-Xmx4096m'} -jar app.jar"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://bytebridge-postgres:5432/bytebridge
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: bytebridge
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 8080
+      CHROME_PATH: /usr/bin/google-chrome
+      JAVA_OPTS: "-Xmx4096m"
+    volumes:
+      - uploads_volume:/app/uploads
+      - temp_volume:/app/temp
+      - logs_volume:/app/logs
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_volume:
+  temp_volume:
+  logs_volume:
