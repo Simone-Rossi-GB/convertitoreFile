@@ -11,12 +11,14 @@ webService/server/config/configHandlers/serverConfig/InstanceConfigReader$7.clas
 webService/server/converters/exception/ConversionException.class
 webService/server/converters/exception/IllegalExtensionException.class
 webService/server/converters/jsonCsvConverters/CSVtoJSONconverter.class
+webService/server/config/configHandlers/Config$Data.class
 webService/server/converters/exception/FileCreationException.class
 webService/server/config/configExceptions/NullJsonValueException.class
 webService/server/converters/spreadsheetConverters/ODStoJSONconverter.class
 webService/server/config/jsonUtilities/JsonUtility.class
 webService/server/converters/compressedFilesConverters/TARGZtoZIPconverter.class
 webService/server/config/configExceptions/JsonWriteException.class
+webService/server/config/configHandlers/Config.class
 webService/server/converters/exception/FormatsException.class
 webService/server/converters/txtConverters/TXTtoPDFconverter.class
 webService/server/converters/PDFWatermarkApplier.class
@@ -27,7 +29,6 @@ webService/server/auth/RegisterRequest.class
 webService/server/config/jsonUtilities/JsonWriter.class
 webService/server/ErrorResponse.class
 webService/server/config/configExceptions/JsonException.class
-webService/server/config/configHandlers/conversionContext/ConversionContextReader.class
 webService/server/converters/pdfConverters/PDFtoDOCXconverter$LineAwareStripper.class
 webService/server/config/SecurityConfig.class
 webService/server/converters/spreadsheetConverters/SPREADSHEETtoCSVconverter$1.class
@@ -39,7 +40,6 @@ webService/server/converters/exception/BatchConversionException.class
 webService/server/converters/spreadsheetConverters/XLSXtoJSONconverter$1.class
 webService/server/converters/pdfConverters/PDFtoDOCXconverter.class
 webService/server/config/configHandlers/serverConfig/InstanceConfigReader$5.class
-webService/server/config/configHandlers/conversionContext/ConversionContextInstance.class
 webService/server/converters/exception/FileMoveException.class
 webService/server/converters/compressedFilesConverters/ZIPtoTARGZconverter.class
 webService/server/WebServiceApplication.class
@@ -68,7 +68,6 @@ webService/server/converters/spreadsheetConverters/SPREADSHEETtoCSVconverter.cla
 webService/server/converters/pdfConverters/PDFtoDOCconverter.class
 webService/server/converters/imageConverters/ToICOimageConverter.class
 webService/server/GlobalExceptionHandler.class
-webService/server/config/configHandlers/conversionContext/ConversionContextData$1.class
 webService/server/converters/mailConverters/EMLtoPDFconverter.class
 webService/server/config/configHandlers/serverConfig/InstanceConfigReader.class
 webService/server/converters/Zipper.class
@@ -82,7 +81,7 @@ webService/server/ConverterWebServiceController.class
 webService/server/converters/imageConverters/ImageConverterUtility.class
 webService/server/config/jsonUtilities/recognisedWrappers/RecognisedInput.class
 webService/server/converters/pdfConverters/AbstractPDFConverter.class
-webService/server/config/configHandlers/conversionContext/ConversionContextData.class
+webService/server/converters/PdfPasswordApplier.class
 webService/server/auth/LoginRequest.class
 webService/server/Utility.class
 webService/server/converters/spreadsheetConverters/SPREADSHEETtoJSONconverter.class

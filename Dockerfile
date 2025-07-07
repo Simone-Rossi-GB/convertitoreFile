@@ -41,9 +41,9 @@ RUN apt-get update && apt-get install -y \
 
 # Configura locale per ICU
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 # Installa Google Chrome completo (con tutti i dati ICU)
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -61,9 +61,12 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 # Crea directory per l'applicazione
 WORKDIR /app
 
-# Crea directory per uploads e conversioni temporanee
-RUN mkdir -p /app/uploads /app/temp && \
-    chown -R appuser:appuser /app
+# Crea directory per uploads, conversioni temporanee e LOG con file iniziale
+RUN mkdir -p /app/uploads /app/temp /app/logs && \
+    touch /app/logs/log_current.txt && \
+    chown -R appuser:appuser /app && \
+    chmod 755 /app/logs && \
+    chmod 644 /app/logs/log_current.txt
 
 # Copia il JAR dell'applicazione dal target locale
 COPY target/*.jar app.jar

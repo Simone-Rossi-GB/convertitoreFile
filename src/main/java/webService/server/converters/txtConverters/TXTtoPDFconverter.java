@@ -74,7 +74,6 @@ public class TXTtoPDFconverter extends Converter {
                         Files.move(tempFile.toPath(), output.toPath(),
                                 StandardCopyOption.REPLACE_EXISTING);
                         logger.info("File watermarkato sostituito correttamente");
-                        return output; // Ritorna sempre pdfFile
                     } catch (IOException e) {
                         logger.warn("Impossibile sostituire il file: {}", e.getMessage());
                         throw new WatermarkException("Impossibile sostituire il file con watermark: " + e.getMessage());
@@ -89,6 +88,7 @@ public class TXTtoPDFconverter extends Converter {
         } else {
             logger.info("No watermark specified - skipping watermark application");
         }
+        logger.info("Protected: " + configuration.getData().getPassword() + ", Password: " + configuration.getData().isProtectedOutput());
         if(configuration.getData().isProtectedOutput() && !(configuration.getData().getPassword() == null)) {
             PdfPasswordApplier.encryptPDF(output, configuration.getData().getPassword());
         }

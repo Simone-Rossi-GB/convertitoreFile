@@ -97,7 +97,6 @@ public class MSGtoPDFconverter extends Converter {
                             Files.move(tempFile.toPath(), pdfFile.toPath(),
                                     StandardCopyOption.REPLACE_EXISTING);
                             logger.info("File watermarkato sostituito correttamente");
-                            return pdfFile; // Ritorna sempre pdfFile
                         } catch (IOException e) {
                             logger.warn("Impossibile sostituire il file: {}", e.getMessage());
                             throw new WatermarkException("Impossibile sostituire il file con watermark: " + e.getMessage());

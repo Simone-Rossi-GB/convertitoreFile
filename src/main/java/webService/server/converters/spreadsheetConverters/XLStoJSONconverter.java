@@ -41,7 +41,7 @@ public class XLStoJSONconverter extends Converter {
     private File convertToJson(File xlsFile) throws IOException {
         // Usa nome file base e salva in src/temp/
         String baseName = xlsFile.getName().replaceFirst("[.][^.]+$", "");
-        File outputDir = new File("src/temp");
+        File outputDir = new File(xlsFile.getParent());
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
