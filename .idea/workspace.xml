@@ -5,23 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0047896f-fd62-487b-b240-631fe7025364" name="Changes" comment="Protezione">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/setup-github-registry.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deploy_bytebridge.ps1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup_docker.sh" beforeDir="false" afterPath="$PROJECT_DIR$/setup_docker.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/EMLtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/EMLtoPDFconverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/mailConverters/MSGtoPDFconverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/pdfConverters/PDFtoJPGconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/pdfConverters/PDFtoJPGconverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/SPREADSHEETtoJSONconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/SPREADSHEETtoJSONconverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/XLStoJSONconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/spreadsheetConverters/XLStoJSONconverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webService/server/converters/txtConverters/TXTtoPDFconverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/file-type-converter-1.0-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/file-type-converter-1.0-SNAPSHOT.jar.original" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,7 +198,23 @@
       <option name="project" value="LOCAL" />
       <updated>1751626225969</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Protezione">
+      <option name="closed" value="true" />
+      <created>1751889526317</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1751889526317</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Protezione">
+      <option name="closed" value="true" />
+      <created>1751889560376</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1751889560376</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
